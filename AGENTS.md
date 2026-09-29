@@ -15,6 +15,7 @@
 
 # Workflow
 
-- Branches: Before creating a branch, opening or merging a pull request, or tagging, follow Git Flow strictly with `feature/<name>`, `release/<semver>`, and `hotfix/<semver>` branches, and tag each merge into `main` as `v<semver>`. Change `main` and `develop` only through pull requests with merge commits, because users install skills from `main`.
+- Branches: Before creating a branch, opening or merging a pull request, or tagging, follow Git Flow strictly. Open pull requests into `main` only from `release/<semver>` or `hotfix/<name>`, and tag each merge into `main` as `v<semver>`. Send every other change, including `feature/<name>` and `bugfix/<name>`, through a pull request into `develop`. Change `main` and `develop` only through pull requests with merge commits, because users install skills from `main`.
+- Merging: Merge a pull request into `develop` yourself once every required check passes. Leave pull requests into `main` for the human to merge.
 - Commits: Before creating a commit or proposing or using a commit message, read and follow [`docs/agents/commit-policy.md`](docs/agents/commit-policy.md).
 - Checks: Before each commit, run `scripts/check.sh`. Done when it exits 0; fix every error it reports.

@@ -1,0 +1,21 @@
+name: gitflow
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Allow only release/X.Y.Z and hotfix/<name>
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ] ||
+            ! [[ "$HEAD_REF" =~ ^release/[0-9]+\.[0-9]+\.[0-9]+$ || "$HEAD_REF" =~ ^hotfix/.+$ ]]; then
+            echo "::error::PRs into main must come from release/X.Y.Z or hotfix/<name> in $GITHUB_REPOSITORY, got $HEAD_REPO:$HEAD_REF"
+            exit 1
+          fi
