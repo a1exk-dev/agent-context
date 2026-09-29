@@ -1,0 +1,2 @@
+[default.extend-words]
+# Project words that typos flags by mistake, e.g. `foo = "foo"`.

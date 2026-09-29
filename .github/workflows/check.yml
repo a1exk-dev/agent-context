@@ -1,0 +1,14 @@
+name: check
+
+on:
+  push:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: crate-ci/typos@v1.50.3
+      - run: scripts/check.sh

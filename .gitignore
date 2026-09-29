@@ -1,0 +1,8 @@
+.agents/
+.claude/
+.codex/
+.opencode/
+.scratch/
+AGENTS.override.md
+CLAUDE.local.md
+skills-lock.json
