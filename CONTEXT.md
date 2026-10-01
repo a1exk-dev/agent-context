@@ -6,7 +6,7 @@ A folder `skills/<category>/<name>/` with a `SKILL.md`, installed with the `skil
 
 ## Rule
 
-A short Markdown file `rules/<category>/<name>.md` that a project adds to `AGENTS.md` or `.claude/rules/`. An agent loads it in every session, unlike a **Skill**. No installer exists yet.
+A short Markdown file `rules/<category>/<name>.md` whose text a project adds to `AGENTS.md` or `CLAUDE.md`, never to `.claude/rules/`. An agent loads it in every session, unlike a **Skill**. No installer exists yet.
 
 ## Category
 
