@@ -23,3 +23,11 @@ Applies when: an agent researches or checks work against an ISO standard, for ex
 Guidance: Work from the ISO catalogue page, the bodies that drafted the standard, and other public secondary sources. Cite the standard by number and title, and paraphrase its principles in our own words. Before an agent reads ISO preview pages or a purchased copy, get the operator's confirmation that the licence allows AI use.
 
 Reason: The ISO Online Browsing Platform terms (2026-09-18) forbid AI ingestion, restatement, or summary of ISO content, and ISO copyright covers every part of a standard. See the ISO 24495-1 research on `research/iso-24495-1`.
+
+## Skills and Rules target Codex, OpenCode, and Claude Code
+
+Applies when: writing or changing a Skill or Rule, or deciding which agent platforms it supports.
+
+Guidance: Make each Skill and Rule work on Codex, OpenCode, and Claude Code. Leave other platforms, for example Copilot and Cursor, for a later effort.
+
+Reason: The operator supports these three platforms for now and plans to add others later. See "Which jobs does the agent-instructions skill do?" (#6).
