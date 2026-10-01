@@ -11,3 +11,7 @@ A short Markdown file `rules/<category>/<name>.md` that a project adds to `AGENT
 ## Category
 
 A folder that groups **Skills** under `skills/` and **Rules** under `rules/`, one level deep. It is never a **Skill** itself.
+
+## Agent instruction
+
+A document whose reader is an agent, not the human operator. Every **Skill** and **Rule** is an Agent instruction, and so are `AGENTS.md`, `CLAUDE.md`, `CONTEXT.md`, `MEMORY.md`, and the files under `docs/agents/`. `README.md` is not, because the operator reads it.
