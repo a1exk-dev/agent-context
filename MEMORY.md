@@ -12,7 +12,7 @@ Reason: A term or lesson only matters once its feature lands, and the operator w
 
 Applies when: an Agent instruction, script, or test needs ASD-STE100 rules or dictionary entries.
 
-Guidance: Paraphrase the rules in our own words, cite rule numbers, and link to the official download. Load dictionary data only from the operator's own copy of the standard. Describe tools as STE-based, never as STE compliant or certified.
+Guidance: Paraphrase the rules in our own words, cite rule numbers, and link to the official download. Load dictionary data only from the operator's own copy of the standard. A shipped word list holds only our own technical nouns and verbs with our own meanings, never a table that maps non-approved words to approved ones, because those pairs are dictionary content. Describe tools as STE-based, never as STE compliant or certified.
 
 Reason: ASD reserves every reproduction of the standard "in whole or in part", and certifies no tool. See the ASD-STE100 research on `research/asd-ste100`.
 
