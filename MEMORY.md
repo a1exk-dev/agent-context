@@ -28,6 +28,6 @@ Reason: The ISO Online Browsing Platform terms (2026-09-18) forbid AI ingestion,
 
 Applies when: writing or changing a Skill or Rule, or deciding which agent platforms it supports.
 
-Guidance: Make each Skill and Rule work on Codex, OpenCode, and Claude Code. Leave other platforms, for example Copilot and Cursor, for a later effort.
+Guidance: Make each Skill and Rule work on Codex, OpenCode, and Claude Code. Use only `name` and `description` frontmatter for behaviour, and point to other files with a plain sentence, not `@path`. Leave other platforms, for example Copilot and Cursor, for a later effort.
 
-Reason: The operator supports these three platforms for now and plans to add others later. See "Which jobs does the agent-instructions skill do?" (#6).
+Reason: The operator supports these three platforms for now and plans to add others later. See "Which jobs does the agent-instructions skill do?" (#6). Only Claude Code reads other frontmatter fields or expands `@path`. See the agent platform research on `research/agent-platforms`.
