@@ -31,3 +31,11 @@ Applies when: writing or changing a Skill or Rule, or deciding which agent platf
 Guidance: Make each Skill and Rule work on Codex, OpenCode, and Claude Code. Use only `name` and `description` frontmatter for behaviour, and point to other files with a plain sentence, not `@path`. Leave other platforms, for example Copilot and Cursor, for a later effort.
 
 Reason: The operator supports these three platforms for now and plans to add others later. See "Which jobs does the agent-instructions skill do?" (#6). Only Claude Code reads other frontmatter fields or expands `@path`. See the agent platform research on `research/agent-platforms`.
+
+## Test files live under tests/, outside the Skill folder
+
+Applies when: adding test files, eval requests, or sample files for a Skill or Rule.
+
+Guidance: Put them under `tests/` with a path that copies the repo layout: `tests/skills/<category>/<name>/` for a Skill and `tests/rules/<category>/<name>/` for a Rule. Keep the Skill folder for files the Skill reads at run time.
+
+Reason: The skills CLI installs the full Skill folder, so test files inside it go to every user. See "Which test prompts and pass criteria go in the skill's eval plan?" (#16).
