@@ -32,6 +32,14 @@ Guidance: Make each Skill and Rule work on Codex, OpenCode, and Claude Code. Use
 
 Reason: The operator supports these three platforms for now and plans to add others later. See "Which jobs does the agent-instructions skill do?" (#6). Only Claude Code reads other frontmatter fields or expands `@path`. See the agent platform research on `research/agent-platforms`.
 
+## A SKILL.md stays at 20,000 bytes or less
+
+Applies when: writing or changing a `SKILL.md`, or changing the Skill size check in `scripts/check.sh`.
+
+Guidance: Keep each `SKILL.md` at 20,000 bytes or less, about 5,000 tokens. Move detail into reference files, because reference files have no limit. The check fails over 20,000 bytes. It does not count lines.
+
+Reason: After compaction, Claude Code keeps only the first 5,000 tokens of a Skill, so it loses the end of a longer file. Codex shell output has a limit of about 10,000 tokens. When Codex reads a longer `SKILL.md` with a shell command, it removes the middle of the file. OpenCode has no limit. No platform refuses to load a long file. See "Review findings: agent-instructions SKILL.md (round 1)" (#28).
+
 ## Test files live under tests/, outside the Skill folder
 
 Applies when: adding test files, eval requests, or sample files for a Skill or Rule.
