@@ -59,3 +59,7 @@ These rules apply fully to Agent instructions.
 - Use "-ing" forms only in technical nouns.
 - A noun cluster has a maximum of 3 words.
 - Write words in their American English form. Use no Latin abbreviations.
+
+## When you write a word in capital letters
+
+- A word in capital letters is not emphasis when the text names the word itself, for example "Use CAN or an explicit condition."

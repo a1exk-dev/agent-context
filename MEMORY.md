@@ -40,6 +40,14 @@ Guidance: Keep each `SKILL.md` at 20,000 bytes or less, about 5,000 tokens. Move
 
 Reason: After compaction, Claude Code keeps only the first 5,000 tokens of a Skill, so it loses the end of a longer file. Codex shell output has a limit of about 10,000 tokens. When Codex reads a longer `SKILL.md` with a shell command, it removes the middle of the file. OpenCode has no limit. No platform refuses to load a long file. See "Review findings: agent-instructions SKILL.md (round 1)" (#28).
 
+## A Skill term follows the CONTEXT.md term
+
+Applies when: a Skill names an item that `CONTEXT.md` also names.
+
+Guidance: Use the `CONTEXT.md` term in the Skill. Define the term in the Skill in a general form, because other projects install the Skill without this `CONTEXT.md`.
+
+Reason: The agent-instructions Skill said "Rule file" where `CONTEXT.md` says "Rule". Its ISO 24495-1 reviewer reported the two names as a problem 2 times. See "Review findings: agent-instructions SKILL.md (round 1)" (#28).
+
 ## Test files live under tests/, outside the Skill folder
 
 Applies when: adding test files, eval requests, or sample files for a Skill or Rule.
