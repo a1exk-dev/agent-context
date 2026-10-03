@@ -21,7 +21,9 @@ while read -r f; do
   [ "$name" = "$dir" ] || err "$f: name '$name' does not match folder '$dir'"
   [[ "$name" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ && ${#name} -le 64 ]] || err "$f: invalid name '$name'"
   [[ -n "$desc" && ${#desc} -le 1024 ]] || err "$f: description must be 1-1024 characters"
-  [ "$(wc -l < "$f")" -le 500 ] || warn "$f: over 500 lines, move detail into references/"
+  # About 5,000 tokens: Claude Code keeps only that much of a skill after compaction.
+  size=$(wc -c < "$f")
+  [ "$size" -le 20000 ] || err "$f: $size bytes (max 20000), move detail into references/"
   names+=("$name")
 done < <(find skills -mindepth 3 -maxdepth 3 -name SKILL.md | sort)
 
