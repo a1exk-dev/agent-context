@@ -59,6 +59,9 @@ List extraction candidates separately: section heading, proposed file, and point
 Include candidates in sections that the author cannot edit.
 <For the ASD-STE100 reviewer only:> First, list each sentence with its mood
 (imperative or descriptive) and its word count. The counts are best effort.
+Save this list to a new file in a temporary folder outside the project.
+This file is the one permitted exception to the read-only limit.
+In your report, give the path of the list, not the list.
 Then judge each sentence.
 Word choice comes from model knowledge. Do not read the ASD-STE100 dictionary
 or a copy of the standard.
@@ -132,7 +135,8 @@ Read the files that the instruction tells you to read for this task.
 Report:
 1. Your steps for the task, in sequence.
 2. For each step, the part of the instruction that you used, as a quote.
-3. Each part of the instruction that was not clear to you.
+3. Each part of the instruction that was not clear to you, or "None".
+Give only these 3 parts. Write each step on one line.
 ```
 
 ## When no subagent is available
