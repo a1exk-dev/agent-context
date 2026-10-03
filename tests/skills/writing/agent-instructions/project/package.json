@@ -1,0 +1,10 @@
+{
+  "name": "shop-api",
+  "version": "1.4.0",
+  "private": true,
+  "packageManager": "pnpm@10.4.0",
+  "scripts": {
+    "test": "vitest run",
+    "fmt": "prettier --write ."
+  }
+}

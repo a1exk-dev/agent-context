@@ -1,0 +1,276 @@
+{
+  "skill_name": "agent-instructions",
+  "evals": [
+    {
+      "id": 1,
+      "name": "01-write-skill",
+      "prompt": "Write a skill for this repo that walks the agent through a release: bump the version, update CHANGELOG.md, tag the merge, and open the pull request into main.",
+      "expected_output": "See assertions.",
+      "files": [],
+      "setup": {
+        "overlay": null,
+        "remove": []
+      },
+      "assertions": [
+        "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+        "[2] Each reviewer finding names its rule and quotes the text.",
+        "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 near-miss task. No reader subagent wrote a file.",
+        "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
+        "[5] The report says that word choice was checked from model knowledge, not against the ASD-STE100 dictionary.",
+        "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
+        "[7] In the new or changed text, each imperative sentence has a maximum of 20 words. Each other sentence has a maximum of 25 words.",
+        "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
+        "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
+        "[1.1] The frontmatter has only `name` and `description`, and `name` matches the folder name.",
+        "[1.2] The description starts with the condition (\"When ...\") and quotes words that users type.",
+        "[1.3] The steps are a numbered list in task order. A CAUTION comes before the tag and the pull request steps.",
+        "[1.4] `SKILL.md` has a maximum of 500 lines and no \"Gotchas\" section."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "02-write-entry-file-pair",
+      "prompt": "Set up agent instructions for this repo: run tests with `make test`, never push to main, and use pnpm, not npm.",
+      "expected_output": "See assertions.",
+      "files": [],
+      "setup": {
+        "overlay": null,
+        "remove": [
+          "AGENTS.md",
+          "CLAUDE.md"
+        ]
+      },
+      "assertions": [
+        "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+        "[2] Each reviewer finding names its rule and quotes the text.",
+        "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 near-miss task. No reader subagent wrote a file.",
+        "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
+        "[5] The report says that word choice was checked from model knowledge, not against the ASD-STE100 dictionary.",
+        "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
+        "[7] In the new or changed text, each imperative sentence has a maximum of 20 words. Each other sentence has a maximum of 25 words.",
+        "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
+        "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
+        "[2.1] The shared rules are in `AGENTS.md`.",
+        "[2.2] `CLAUDE.md` holds `@AGENTS.md` and only lines that apply to Claude Code alone.",
+        "[2.3] Each file has a maximum of 200 lines."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "03-edit-agents-md",
+      "prompt": "Add a rule to AGENTS.md: release branches are named release/<semver> and branch from develop.",
+      "expected_output": "See assertions.",
+      "files": [],
+      "setup": {
+        "overlay": "fixtures/03-edit-agents-md",
+        "remove": []
+      },
+      "assertions": [
+        "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+        "[2] Each reviewer finding names its rule and quotes the text.",
+        "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 near-miss task. No reader subagent wrote a file.",
+        "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
+        "[5] The report says that word choice was checked from model knowledge, not against the ASD-STE100 dictionary.",
+        "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
+        "[7] In the new or changed text, each imperative sentence has a maximum of 20 words. Each other sentence has a maximum of 25 words.",
+        "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
+        "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
+        "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+        "[3.1] The new rule is under a heading that names its situation."
+      ],
+      "known_mistakes": [
+        "\"You should run the tests before a commit.\"",
+        "the pointer \"See docs/agents/style.md.\" with no condition",
+        "a heading \"Notes\""
+      ]
+    },
+    {
+      "id": 4,
+      "name": "04-edit-context-md",
+      "prompt": "Add 'Release' to CONTEXT.md: a tagged merge of a release branch into main.",
+      "expected_output": "See assertions.",
+      "files": [],
+      "setup": {
+        "overlay": "fixtures/04-edit-context-md",
+        "remove": []
+      },
+      "assertions": [
+        "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+        "[2] Each reviewer finding names its rule and quotes the text.",
+        "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 near-miss task. No reader subagent wrote a file.",
+        "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
+        "[5] The report says that word choice was checked from model knowledge, not against the ASD-STE100 dictionary.",
+        "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
+        "[7] In the new or changed text, each imperative sentence has a maximum of 20 words. Each other sentence has a maximum of 25 words.",
+        "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
+        "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
+        "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+        "[4.1] The new entry uses the same format as the other entries in the file."
+      ],
+      "known_mistakes": [
+        "the Order definition uses \"client\", a synonym of the glossary term Customer",
+        "the sentence \"A Product may have a discount.\" uses \"may\""
+      ]
+    },
+    {
+      "id": 5,
+      "name": "05-edit-memory-md",
+      "prompt": "Record in MEMORY.md that the CI runner has no network access, so tests that call outside services fail there.",
+      "expected_output": "See assertions.",
+      "files": [],
+      "setup": {
+        "overlay": "fixtures/05-edit-memory-md",
+        "remove": []
+      },
+      "assertions": [
+        "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+        "[2] Each reviewer finding names its rule and quotes the text.",
+        "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 near-miss task. No reader subagent wrote a file.",
+        "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
+        "[5] The report says that word choice was checked from model knowledge, not against the ASD-STE100 dictionary.",
+        "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
+        "[7] In the new or changed text, each imperative sentence has a maximum of 20 words. Each other sentence has a maximum of 25 words.",
+        "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
+        "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
+        "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+        "[5.1] The new entry uses the file's \"Applies when / Guidance / Reason\" format."
+      ],
+      "known_mistakes": [
+        "the entry \"The payment sandbox resets at midnight UTC\" has no \"Applies when\" line",
+        "the sentence \"Ensure that each total is also in cents.\" uses \"ensure\""
+      ]
+    },
+    {
+      "id": 6,
+      "name": "06-write-docs-agents-file",
+      "prompt": "Write docs/agents/review-policy.md: how the agent reviews a pull request here. Run make check, read the linked issue, comment with findings, and never approve its own pull request. Point to it from AGENTS.md.",
+      "expected_output": "See assertions.",
+      "files": [],
+      "setup": {
+        "overlay": null,
+        "remove": []
+      },
+      "assertions": [
+        "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+        "[2] Each reviewer finding names its rule and quotes the text.",
+        "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 near-miss task. No reader subagent wrote a file.",
+        "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
+        "[5] The report says that word choice was checked from model knowledge, not against the ASD-STE100 dictionary.",
+        "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
+        "[7] In the new or changed text, each imperative sentence has a maximum of 20 words. Each other sentence has a maximum of 25 words.",
+        "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
+        "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
+        "[6.1] The steps are a numbered list in task order.",
+        "[6.2] The pointer in `AGENTS.md` states when to read the file, and the file is one level from `AGENTS.md`."
+      ]
+    },
+    {
+      "id": 7,
+      "name": "07-claude-only-feature",
+      "prompt": "Add `@docs/agents/testing.md` to CLAUDE.md so Claude always loads our testing notes.",
+      "expected_output": "See assertions.",
+      "files": [],
+      "setup": {
+        "overlay": null,
+        "remove": []
+      },
+      "assertions": [
+        "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+        "[2] Each reviewer finding names its rule and quotes the text.",
+        "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 near-miss task. No reader subagent wrote a file.",
+        "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
+        "[5] The report says that word choice was checked from model knowledge, not against the ASD-STE100 dictionary.",
+        "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
+        "[7] In the new or changed text, each imperative sentence has a maximum of 20 words. Each other sentence has a maximum of 25 words.",
+        "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`. (Test 7 has an exception: the `@docs/agents/testing.md` line that the user asked for.)",
+        "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
+        "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+        "[7.1] `CLAUDE.md` has the `@docs/agents/testing.md` line.",
+        "[7.2] The report warns that Codex and OpenCode do not read it, and gives the portable alternative: a prose pointer in `AGENTS.md`."
+      ],
+      "known_mistakes": []
+    },
+    {
+      "id": 8,
+      "name": "08-reported-misbehavior",
+      "prompt": "The agent keeps running npm install in this repo, but AGENTS.md says to use pnpm. Fix the instruction.",
+      "expected_output": "See assertions.",
+      "files": [],
+      "setup": {
+        "overlay": "fixtures/08-reported-misbehavior",
+        "remove": []
+      },
+      "assertions": [
+        "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+        "[2] Each reviewer finding names its rule and quotes the text.",
+        "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 near-miss task. No reader subagent wrote a file.",
+        "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
+        "[5] The report says that word choice was checked from model knowledge, not against the ASD-STE100 dictionary.",
+        "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
+        "[7] In the new or changed text, each imperative sentence has a maximum of 20 words. Each other sentence has a maximum of 25 words.",
+        "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
+        "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
+        "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+        "[8.1] The reported misbehavior is one of the 2 typical reader-test tasks.",
+        "[8.2] The fixed rule states when it applies."
+      ],
+      "known_mistakes": [
+        "the pnpm rule is inside a long paragraph with no condition"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "09-over-size-limit",
+      "prompt": "Add a rule to AGENTS.md: format code with pnpm fmt before each commit.",
+      "expected_output": "See assertions.",
+      "files": [],
+      "setup": {
+        "overlay": "fixtures/09-over-size-limit",
+        "remove": []
+      },
+      "assertions": [
+        "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+        "[2] Each reviewer finding names its rule and quotes the text.",
+        "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 near-miss task. No reader subagent wrote a file.",
+        "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
+        "[5] The report says that word choice was checked from model knowledge, not against the ASD-STE100 dictionary.",
+        "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
+        "[7] In the new or changed text, each imperative sentence has a maximum of 20 words. Each other sentence has a maximum of 25 words.",
+        "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
+        "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
+        "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+        "[9.1] The report warns that the file is over 200 lines.",
+        "[9.2] The report lists each section to move, with the proposed file and pointer. The run moves nothing."
+      ],
+      "known_mistakes": [
+        "the file is about 260 lines, over the 200-line limit for entry files"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "10-no-subagents",
+      "prompt": "Write a skill for this repo that walks the agent through a release: bump the version, update CHANGELOG.md, tag the merge, and open the pull request into main.",
+      "expected_output": "See assertions.",
+      "files": [],
+      "setup": {
+        "overlay": null,
+        "remove": []
+      },
+      "assertions": [
+        "[2] Each reviewer finding names its rule and quotes the text.",
+        "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
+        "[5] The report says that word choice was checked from model knowledge, not against the ASD-STE100 dictionary.",
+        "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
+        "[7] In the new or changed text, each imperative sentence has a maximum of 20 words. Each other sentence has a maximum of 25 words.",
+        "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
+        "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
+        "[10.1] The run started no subagent.",
+        "[10.2] The author agent did the 3 reviews and the 3 reader-test tasks itself, one after the other.",
+        "[10.3] The report says that the checks were not independent."
+      ],
+      "disallowed_tools": [
+        "Agent"
+      ]
+    }
+  ]
+}
