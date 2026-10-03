@@ -1,0 +1,82 @@
+[
+  {
+    "query": "the agent keeps ignoring our branch rule in AGENTS.md, can you fix the wording",
+    "should_trigger": true
+  },
+  {
+    "query": "write a skill that walks the agent through our release checklist",
+    "should_trigger": true
+  },
+  {
+    "query": "tidy up CLAUDE.md, it got long and half of it is outdated",
+    "should_trigger": true
+  },
+  {
+    "query": "add 'tenant' to CONTEXT.md, it means one paying customer org, not a user",
+    "should_trigger": true
+  },
+  {
+    "query": "record in MEMORY.md that the staging db resets every night at 02:00 UTC",
+    "should_trigger": true
+  },
+  {
+    "query": "rewrite the description in skills/git/branch-cleanup/SKILL.md so it triggers when people say 'clean up branches'",
+    "should_trigger": true
+  },
+  {
+    "query": "codex doesn't follow our testing instructions, make AGENTS.md clearer",
+    "should_trigger": true
+  },
+  {
+    "query": "create docs/agents/commit-policy.md and point AGENTS.md at it",
+    "should_trigger": true
+  },
+  {
+    "query": "draft rules/git/no-force-push.md",
+    "should_trigger": true
+  },
+  {
+    "query": "make the agent instructions in this repo shorter and easier to follow",
+    "should_trigger": true
+  },
+  {
+    "query": "update the install steps in README.md for the new pnpm version",
+    "should_trigger": false
+  },
+  {
+    "query": "write a .cursor/rules file so Cursor uses tabs",
+    "should_trigger": false
+  },
+  {
+    "query": "add a .github/copilot-instructions.md for Copilot",
+    "should_trigger": false
+  },
+  {
+    "query": "create a subagent definition in .claude/agents/reviewer.md for code review",
+    "should_trigger": false
+  },
+  {
+    "query": "improve the system prompt string in src/chat/prompt.ts that our app sends to the model",
+    "should_trigger": false
+  },
+  {
+    "query": "write a CONTRIBUTING.md for human contributors",
+    "should_trigger": false
+  },
+  {
+    "query": "fix the docstrings in src/parser.py",
+    "should_trigger": false
+  },
+  {
+    "query": "write the commit message for these staged changes",
+    "should_trigger": false
+  },
+  {
+    "query": "add an ADR in docs/adr/ about choosing Postgres",
+    "should_trigger": false
+  },
+  {
+    "query": "rewrite our user manual in docs/manual/ in Simplified Technical English",
+    "should_trigger": false
+  }
+]

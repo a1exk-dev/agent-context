@@ -6,3 +6,6 @@
 AGENTS.override.md
 CLAUDE.local.md
 skills-lock.json
+!tests/**/project/.claude/
+!tests/**/project/.agents/
+__pycache__/

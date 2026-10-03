@@ -39,3 +39,27 @@ Applies when: adding test files, eval requests, or sample files for a Skill or R
 Guidance: Put them under `tests/` with a path that copies the repo layout: `tests/skills/<category>/<name>/` for a Skill and `tests/rules/<category>/<name>/` for a Rule. Keep the Skill folder for files the Skill reads at run time.
 
 Reason: The skills CLI installs the full Skill folder, so test files inside it go to every user. See "Which test prompts and pass criteria go in the skill's eval plan?" (#16).
+
+## Eval runs stay at 5 at a time
+
+Applies when: running output tests, load tests, or grader subagents for a Skill or Rule.
+
+Guidance: Run a maximum of 5 runs or subagents at the same time. Ask the operator before you run more. Start a fresh grader subagent for each run. Check progress directly. Do not use sleep or delayed retries to wait for a usage limit.
+
+Reason: More runs at the same time hit the operator's usage limit. A run that hits the limit stops early, and its result does not count.
+
+## Fix failed eval topics before the full matrix
+
+Applies when: output tests for a Skill or Rule fail.
+
+Guidance: Run only the failed topics until every statement for those topics passes. Then run the full matrix again.
+
+Reason: The operator wants agents to fix failures before they repeat tests that passed. The full matrix then checks the other topics.
+
+## One check per message makes agents work in sequence
+
+Applies when: an Agent instruction tells the agent to do several checks or tasks itself, one after the other, without subagents.
+
+Guidance: Tell the agent to save each result with one tool call, sent alone in a new message. Keep the results in files, not in long message text.
+
+Reason: In test 10 of the agent-instructions Skill (#17), Opus 5.5 put 3 checks in one tool call when a rule only asked for a separate file per check. It almost never sent a required long report as message text in the middle of a run. The rule "one tool call alone in a new message" passed 2 of 2 runs.
