@@ -37,7 +37,7 @@ When the user explicitly asks for a single-platform feature, write it. Then add 
 | File | Limit |
 |---|---|
 | Entry files | The chain of entry files from the project root to the file is less than 32 KiB in total, the Codex budget. Each entry file has less than 200 lines. These limits apply for all targets. |
-| Skills | `SKILL.md` has less than 500 lines and approximately 5,000 tokens. This limit is advice from the Agent Skills specification, thus tier 4. |
+| Skills | `SKILL.md` has a maximum of 20,000 bytes. Measure the bytes, for example with `wc -c`. 20,000 bytes are approximately 5,000 tokens. When Claude Code makes the context window smaller, it keeps only the first 5,000 tokens of a Skill. |
 | `CONTEXT.md`, `MEMORY.md`, and `docs/agents/` files | No limit |
 
 If a file is over a limit, add a warning with its extraction suggestion.
@@ -51,8 +51,8 @@ This suggestion applies to entry files and Skills, also when the file is under i
 3. List each candidate in the Extraction candidates part of the report.
 4. Move nothing until the user says yes.
 
-## When the file is CONTEXT.md, MEMORY.md, or a Rule file
+## When the file is CONTEXT.md, MEMORY.md, or a Rule
 
 - `CONTEXT.md` and `MEMORY.md` use the format that the project already uses. Copy the format of the entries in the file. This skill has no template for them.
-- This skill has no form for Rule files. Edit a Rule file as you edit other Agent instructions.
+- This skill has no template for Rules. Edit a Rule as you edit other Agent instructions.
 - A file that is not a Skill gets the STE rules, the plain-language checks, the size limits, and the suggestion to move text. No other part of the Agent Skills specification applies to it.
