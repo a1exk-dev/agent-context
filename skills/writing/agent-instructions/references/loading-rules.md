@@ -1,10 +1,10 @@
 # Loading rules
 
-These rules are tier 1. A file that breaks one of them does not load, or a platform does not read it. They apply to each Agent instruction.
+This file gives the loading rules, which are tier 1, and the steps that use them. When a file does not obey a loading rule, one of 3 results occurs. A platform does not load the file, a check gives an error, or the platform does not read all of the file. The loading rules are applicable to each Agent instruction. They are not applicable to other files, for example `README.md` or `.claude/settings.json`. If `SKILL.md` of this skill is not in your context window, read it before you use this file. It defines the terms, the tiers, and the end-of-run report.
 
 ## When you find the target platforms
 
-Find the target platforms from the project files:
+When you find the target platforms, examine the project files for these signals:
 
 | Signal | Target platforms |
 |---|---|
@@ -12,47 +12,54 @@ Find the target platforms from the project files:
 | `AGENTS.md` or `.agents/` | Codex and OpenCode |
 | `.opencode/` or `opencode.json` | OpenCode |
 
-If you find no signal, or a signal conflicts with the request, ask the user once. Support for all three platforms is a choice of the project. Do not add a platform that the project does not target.
+A folder is a signal also when it contains only `.gitkeep`. A request that gives one target platform agrees with the signals when the signals include that platform.
+
+If you find no signal, or a signal does not agree with the request, speak to the user one time. Get the names of the target platforms from the user. The project selects its target platforms. Do not add a platform that is not a target platform of the project.
 
 ## When you select a feature
 
-Write only features that Codex, OpenCode, and Claude Code all read. This rule applies also when Claude Code is the only target.
+Write only features that Codex, OpenCode, and Claude Code all read. This rule is also applicable when Claude Code is the only target, because the project can add a target platform later.
 
 - Do not write `@path`, `.claude/rules/`, frontmatter that only Claude Code reads, or `AGENTS.override.md`.
-- The `@AGENTS.md` line in `CLAUDE.md` is the one exception.
-- Write each pointer as a prose sentence that names the file and the condition to read it.
-- When its heading gives the condition, also put the condition in the pointer sentence.
+- You can write only one `@path` line: the `@AGENTS.md` line in `CLAUDE.md`.
+- Write each pointer as a sentence that gives the file and the condition to read it.
+- When the heading of a pointer gives the condition, also put the condition in the pointer sentence.
+- Put a new pointer in a section whose heading gives its condition. If no heading gives the condition, add a heading. A topic heading, for example "Tests", gives no condition. This rule is also applicable to a pointer whose condition you change.
 
-When the user explicitly asks for a single-platform feature, write it. Then add a warning. The warning names the platforms that do not read the feature and gives the portable alternative. For an `@path` line in `CLAUDE.md`, the portable alternative is a prose pointer in `AGENTS.md`.
+When the user tells you clearly to write a feature that only one platform reads, write it. This rule is also applicable to the items in the list above. Put an `@path` line in `CLAUDE.md` after the `@AGENTS.md` line. Then add a warning. The warning gives the platforms that do not read the feature and the alternative that all three platforms read. For an `@path` line in `CLAUDE.md`, the alternative is a pointer sentence in `AGENTS.md`. If `AGENTS.md` has a pointer to the same file, the alternative is a change to the condition of that pointer. When the user wants the file in each session, use the condition "At the start of each session". When two rules give a warning for the same feature, write one warning.
 
 ## When you write or edit an entry file
 
-- When the targets are Claude Code and Codex or OpenCode, the write job puts the shared text in `AGENTS.md`. `CLAUDE.md` then holds the `@AGENTS.md` line and only lines for Claude Code alone.
+- When the write job has Claude Code and Codex or OpenCode as targets, put the text for all targets in `AGENTS.md`. `CLAUDE.md` then contains the `@AGENTS.md` line and only the lines that are only for Claude Code.
 - When there is one target platform, the entry file of that platform is the only entry file.
-- The edit job changes only the part that the user asked for. If the layout leaves a target platform without the text, add a warning.
+- If the layout gives no copy of the text to a target platform, add a warning.
 - Put Rule text in `AGENTS.md` or `CLAUDE.md`. Do not put it in `.claude/rules/`.
 
-## When you check the file size
+## When you examine the file size
 
 | File | Limit |
 |---|---|
-| Entry files | The chain of entry files from the project root to the file is less than 32 KiB in total, the Codex budget. Each entry file has less than 200 lines. These limits apply for all targets. |
-| Skills | `SKILL.md` has a maximum of 20,000 bytes. Measure the bytes, for example with `wc -c`. 20,000 bytes are approximately 5,000 tokens. When Claude Code makes the context window smaller, it keeps only the first 5,000 tokens of a Skill. |
+| Entry files | The entry files from the project root to the file have a total file size of less than 32 KiB. This total is the Codex limit. A file that an `@path` line imports is not in this total. Each entry file has less than 200 lines. These limits are applicable to all targets. |
+| Skills | `SKILL.md` has a maximum of 20,000 bytes. Measure the bytes with the command after this table. 20,000 bytes are approximately 5,000 tokens. When Claude Code makes the context window smaller, it keeps only the first 5,000 tokens of a Skill. |
 | `CONTEXT.md`, `MEMORY.md`, and `docs/agents/` files | No limit |
 
-If a file is over a limit, add a warning with its extraction suggestion.
+```sh
+wc -c SKILL.md
+```
 
-## When you suggest text to move
+If the file size is more than the limit, add a warning with the recommended extraction.
 
-This suggestion applies to entry files and Skills, also when the file is under its limit.
+## When you recommend text to move
 
-1. Find each section that has a condition that you can name, for example "before a release".
-2. For each section, propose a reference file and a pointer sentence that states the condition.
-3. List each candidate in the Extraction candidates part of the report.
-4. Move nothing until the user says yes.
+This recommendation is applicable to entry files and Skills, also when the file size is less than the limit.
+
+1. Find each section that has a specified condition, for example "before a release". A section that contains only a pointer is not a candidate. A section with only 1 or 2 rules is also not a candidate.
+2. For each section, recommend a reference file and a pointer sentence that gives the condition.
+3. Write each candidate in the Extraction candidates part of the report.
+4. Move no text until the user gives approval.
 
 ## When the file is CONTEXT.md, MEMORY.md, or a Rule
 
-- `CONTEXT.md` and `MEMORY.md` use the format that the project already uses. Copy the format of the entries in the file. This skill has no template for them.
+- `CONTEXT.md` and `MEMORY.md` use the format that the project uses. Copy the format of the entries in the file. This skill has no template for `CONTEXT.md` or `MEMORY.md`. When the project has no `CONTEXT.md`, give each term and its definition, as `technical-terms.md` tells you.
 - This skill has no template for Rules. Edit a Rule as you edit other Agent instructions.
-- A file that is not a Skill gets the STE rules, the plain-language checks, the size limits, and the suggestion to move text. No other part of the Agent Skills specification applies to it.
+- The STE rules and the plain-language checks are also applicable to these files. For a Rule, use the file-size limit and the extraction recommendation of the entry file that contains its text. The Agent Skills specification is not applicable to a Rule.
