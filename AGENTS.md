@@ -15,7 +15,7 @@
 
 # Workflow
 
-- Branches: Before creating a branch, opening or merging a pull request, or tagging, follow Git Flow strictly. Open pull requests into `main` only from `release/<semver>` or `hotfix/<name>`. Send every other change, including `feature/<name>` and `bugfix/<name>`, through a pull request into `develop`. Change `main` and `develop` only through pull requests with merge commits, because users install skills from `main`.
+- Branches: Before creating a branch, opening or merging a pull request, follow Git Flow strictly. Open pull requests into `main` only from `release/<semver>` or `hotfix/<name>`. Send every other change, including `feature/<name>` and `bugfix/<name>`, through a pull request into `develop`. Change `main` and `develop` only through pull requests with merge commits, because users install skills from `main`.
 - Merging: Merge a pull request into `develop` yourself once every required check passes. Leave pull requests into `main` for the human to merge. GitHub deletes the remote branch of a merged pull request, but your local branch stays. After you merge a pull request from a `feature/<name>` or `bugfix/<name>` branch into `develop`, do these steps:
   1. Run `git switch develop`.
   2. Run `git pull`.
