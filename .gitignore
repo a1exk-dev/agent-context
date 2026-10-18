@@ -1,8 +1,9 @@
-.agents/
-.claude/
-.codex/
-.opencode/
+.claude/worktrees/
 .scratch/
 AGENTS.override.md
 CLAUDE.local.md
 skills-lock.json
+!tests/**/project/.claude/
+!tests/**/project/.agents/
+node_modules/
+.playwright-mcp/

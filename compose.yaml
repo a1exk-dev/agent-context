@@ -1,0 +1,12 @@
+services:
+  bun:
+    build: .
+    # Rebuild from the cache on each run, so a change to package.json or
+    # bun.lock reaches node_modules.
+    pull_policy: build
+    user: "${UID:-1000}:${GID:-1000}"
+    working_dir: /repo
+    volumes:
+      - .:/repo
+      - /repo/node_modules
+    entrypoint: ["bun"]
