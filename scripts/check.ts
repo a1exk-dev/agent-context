@@ -1,0 +1,122 @@
+// Repo checks for Skills and Rules. Run with `bun run check:repo`.
+
+import { Buffer } from "node:buffer";
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
+export type RepoFile = { path: string; text: string };
+export type Finding = { level: "error" | "warning"; message: string };
+export type ParseYaml = (text: string) => unknown;
+
+export function checkRepo(files: RepoFile[], parseYaml: ParseYaml): Finding[] {
+    const findings: Finding[] = [];
+    const error = (message: string) =>
+        findings.push({ level: "error", message });
+    const warning = (message: string) =>
+        findings.push({ level: "warning", message });
+    const names: string[] = [];
+
+    for (const file of files) {
+        const parts = file.path.split("/");
+        if (parts[0] === "rules" && file.path.endsWith(".md")) {
+            // Rules load into every session, so keep each one small.
+            const size = Buffer.byteLength(file.text);
+            if (size > 3072) error(`${file.path}: ${size} bytes (max 3072)`);
+            else if (size > 2048)
+                warning(`${file.path}: ${size} bytes (aim for 2048)`);
+            continue;
+        }
+        if (parts[0] !== "skills" || parts.at(-1) !== "SKILL.md") continue;
+        if (parts.length === 3) {
+            // Category folders hold Skills, they are not Skills themselves.
+            error(`${file.path}: category folders must not contain SKILL.md`);
+            continue;
+        }
+        if (parts.length !== 4) continue;
+
+        const folder = parts[2];
+        const lines = file.text.split(/\r?\n/);
+        const end = lines.indexOf("---", 1);
+        if (lines[0] !== "---" || end === -1) {
+            error(`${file.path}: missing frontmatter`);
+            continue;
+        }
+        const frontmatter = parseMapping(
+            lines.slice(1, end).join("\n"),
+            parseYaml,
+        );
+        if (!frontmatter) {
+            error(`${file.path}: invalid frontmatter YAML`);
+            continue;
+        }
+        const name = frontmatter.name;
+        if (typeof name === "string") names.push(name);
+        if (name !== folder) {
+            error(
+                `${file.path}: name '${name}' does not match folder '${folder}'`,
+            );
+        }
+        if (
+            typeof name !== "string" ||
+            !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(name) ||
+            name.length > 64
+        ) {
+            error(`${file.path}: invalid name '${name}'`);
+        }
+        const description = frontmatter.description;
+        if (
+            typeof description !== "string" ||
+            description.length < 1 ||
+            description.length > 1024
+        ) {
+            error(`${file.path}: description must be 1-1024 characters`);
+        }
+        // About 5,000 tokens: Claude Code keeps only that much of a Skill after compaction.
+        const size = Buffer.byteLength(file.text);
+        if (size > 20000) {
+            error(
+                `${file.path}: ${size} bytes (max 20000), move detail into references/`,
+            );
+        }
+    }
+
+    const dupes = [
+        ...new Set(names.filter((name, i) => names.indexOf(name) !== i)),
+    ];
+    if (dupes.length > 0)
+        error(`duplicate skill names: ${dupes.sort().join(", ")}`);
+    return findings;
+}
+
+function parseMapping(
+    text: string,
+    parseYaml: ParseYaml,
+): Record<string, unknown> | undefined {
+    let value: unknown;
+    try {
+        value = parseYaml(text);
+    } catch {
+        return undefined;
+    }
+    if (typeof value !== "object" || value === null || Array.isArray(value))
+        return undefined;
+    return value as Record<string, unknown>;
+}
+
+function readRepoFiles(): RepoFile[] {
+    return ["skills", "rules"].flatMap((root) =>
+        readdirSync(root, { recursive: true, withFileTypes: true })
+            .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
+            .map((entry) => join(entry.parentPath, entry.name))
+            .sort()
+            .map((path) => ({ path, text: readFileSync(path, "utf8") })),
+    );
+}
+
+if (import.meta.main) {
+    process.chdir(join(import.meta.dir, ".."));
+    const findings = checkRepo(readRepoFiles(), Bun.YAML.parse);
+    for (const { level, message } of findings)
+        console.error(`${level}: ${message}`);
+    process.exit(findings.some((finding) => finding.level === "error") ? 1 : 0);
+}

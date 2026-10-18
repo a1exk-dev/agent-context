@@ -1,0 +1,23 @@
+{
+    "name": "agent-context",
+    "private": true,
+    "type": "module",
+    "packageManager": "bun@1.4.3",
+    "scripts": {
+        "check:repo": "bun scripts/check.ts",
+        "typecheck": "tsc",
+        "lint": "biome check --error-on-warnings",
+        "fix": "biome check --write",
+        "spell": "cspell \"**\"",
+        "test": "vitest run",
+        "check": "bun run check:repo && bun run typecheck && bun run lint && bun run spell && bun run test"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^2.5.14",
+        "@types/bun": "^1.4.3",
+        "@types/node": "^24",
+        "cspell": "^10.3.4",
+        "typescript": "^7.0.2",
+        "vitest": "^5.0.2"
+    }
+}

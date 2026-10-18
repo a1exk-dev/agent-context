@@ -1,0 +1,30 @@
+{
+    "version": "0.2",
+    "language": "en,en-GB",
+    "useGitignore": true,
+    "enableGlobDot": true,
+    "ignorePaths": [
+        ".git/**",
+        ".agents/**",
+        ".claude/worktrees/**",
+        "bun.lock",
+        "tests/**/project/**",
+        "tests/**/fixtures/**"
+    ],
+    "words": [
+        "actioned",
+        "agentskills",
+        "docstrings",
+        "evals",
+        "frontmatter",
+        "gitflow",
+        "gpgsign",
+        "mattpocock",
+        "mktemp",
+        "opencode",
+        "vitest",
+        "wayfinder",
+        "wayfinding",
+        "worktrees"
+    ]
+}

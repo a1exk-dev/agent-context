@@ -6,3 +6,5 @@ skills-lock.json
 !tests/**/project/.claude/
 !tests/**/project/.agents/
 __pycache__/
+node_modules/
+.playwright-mcp/

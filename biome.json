@@ -1,0 +1,25 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+    "files": {
+        "includes": ["**", "!.agents"]
+    },
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "formatter": {
+        "indentStyle": "space",
+        "indentWidth": 4
+    },
+    "linter": {
+        "rules": {
+            "nursery": {
+                "noFloatingPromises": "error"
+            },
+            "correctness": {
+                "useImportExtensions": "error"
+            }
+        }
+    }
+}
