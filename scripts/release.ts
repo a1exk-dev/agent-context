@@ -10,9 +10,10 @@ const tags = (await Bun.$`git tag --list ${"v*"}`.text())
     .filter(Boolean);
 try {
     const version = nextVersion(headRef, tags);
-    await Bun.$`gh release create ${`v${version}`} --target ${mergeSha} --generate-notes`;
-    // The back-merge job reads the version from this job output.
+    // The back-merge job reads the version from this job output. Write it
+    // first, so a failed write leaves no tag behind.
     appendFileSync(process.env.GITHUB_OUTPUT ?? "", `version=${version}\n`);
+    await Bun.$`gh release create ${`v${version}`} --target ${mergeSha} --generate-notes`;
 } catch (error) {
     console.log(`::error::${(error as Error).message}`);
     process.exitCode = 1;

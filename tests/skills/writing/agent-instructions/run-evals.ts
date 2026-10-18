@@ -21,8 +21,9 @@ import {
     readOptions,
     renderTranscript,
     runPool,
-    writeJson,
+    spawnTimed,
     writeMetadata,
+    writeTiming,
 } from "./eval-lib.ts";
 
 const USAGE = `Run the agent-instructions output tests with \`claude -p\`.
@@ -61,25 +62,16 @@ async function run(ev: Eval, config: string, options: Options) {
     if (ev.disallowed_tools?.length) {
         cmd.push("--disallowedTools", ...ev.disallowed_tools);
     }
-    const start = performance.now();
-    const proc = Bun.spawn(cmd, {
-        cwd: work,
-        env: claudeEnv(),
-        stdout: "pipe",
-        stderr: "pipe",
-    });
-    let timedOut = false;
-    const timer = setTimeout(() => {
-        timedOut = true;
-        proc.kill();
-    }, options.timeout * 1000);
+    const { proc, exited } = spawnTimed(
+        cmd,
+        { cwd: work, env: claudeEnv(), stdout: "pipe", stderr: "pipe" },
+        options.timeout,
+    );
     const [raw, stderr] = await Promise.all([
         new Response(proc.stdout).text(),
         new Response(proc.stderr).text(),
     ]);
-    await proc.exited;
-    clearTimeout(timer);
-    const duration = (performance.now() - start) / 1000;
+    const { timedOut, seconds: duration } = await exited;
 
     writeFileSync(join(runDir, "transcript.jsonl"), raw);
     const err = timedOut ? "timeout" : stderr;
@@ -96,10 +88,7 @@ async function run(ev: Eval, config: string, options: Options) {
         "cache_read_input_tokens",
         "cache_creation_input_tokens",
     ].reduce((sum, key) => sum + (usage[key] ?? 0), 0);
-    writeJson(join(runDir, "timing.json"), {
-        total_tokens: tokens,
-        duration_ms: Math.trunc(duration * 1000),
-        total_duration_seconds: Math.round(duration * 10) / 10,
+    writeTiming(runDir, tokens, duration, {
         cost_usd: result?.total_cost_usd ?? null,
         work_dir: work,
     });

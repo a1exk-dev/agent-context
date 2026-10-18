@@ -23,6 +23,7 @@ import {
     runPool,
     SKILL,
     SKILL_DIR,
+    spawnTimed,
     toolCalls,
     usageError,
     writeJson,
@@ -58,50 +59,42 @@ async function runOnce(
     cpSync(join(HERE, "project"), work, { recursive: true });
     cpSync(SKILL, join(work, SKILL_DIR), { recursive: true });
     const { model } = options;
-    const proc =
+    const cmd =
         options.platform === "opencode"
-            ? Bun.spawn(
-                  [
-                      "opencode",
-                      "run",
-                      "--pure",
-                      "--dir",
-                      work,
-                      "--model",
-                      model,
-                      "--format",
-                      "json",
-                      query,
-                  ],
-                  {
-                      cwd: work,
-                      env: openCodeEnv(model, work, true, false),
-                      stdout: "pipe",
-                      stderr: "ignore",
-                  },
-              )
-            : Bun.spawn(
-                  [
-                      "claude",
-                      "-p",
-                      query,
-                      "--output-format",
-                      "stream-json",
-                      "--verbose",
-                      "--setting-sources",
-                      "project,local",
-                      "--model",
-                      model,
-                  ],
-                  {
-                      cwd: work,
-                      env: claudeEnv(),
-                      stdout: "pipe",
-                      stderr: "ignore",
-                  },
-              );
-    const start = performance.now();
-    const watchdog = setTimeout(() => proc.kill(), options.timeout * 1000);
+            ? [
+                  "opencode",
+                  "run",
+                  "--pure",
+                  "--dir",
+                  work,
+                  "--model",
+                  model,
+                  "--format",
+                  "json",
+                  query,
+              ]
+            : [
+                  "claude",
+                  "-p",
+                  query,
+                  "--output-format",
+                  "stream-json",
+                  "--verbose",
+                  "--setting-sources",
+                  "project,local",
+                  "--model",
+                  model,
+              ];
+    const env =
+        options.platform === "opencode"
+            ? openCodeEnv(model, work, { noSubagents: true })
+            : claudeEnv();
+    const { proc, exited } = spawnTimed(
+        cmd,
+        { cwd: work, env, stdout: "pipe", stderr: "ignore" },
+        options.timeout,
+    );
+    let seconds = 0;
     const calls: string[] = [];
     let hit = false;
     let limit = false;
@@ -134,15 +127,15 @@ async function runOnce(
             }
         }
     } finally {
-        clearTimeout(watchdog);
         proc.kill();
-        await proc.exited;
+        ({ seconds } = await exited);
         rmSync(dirname(work), { recursive: true, force: true });
     }
     if (limit) throw new Error(`usage limit hit for: ${query}`);
     if (!valid) {
-        const seconds = ((performance.now() - start) / 1000).toFixed(0);
-        throw new Error(`incomplete load-test run after ${seconds}s: ${query}`);
+        throw new Error(
+            `incomplete load-test run after ${seconds.toFixed(0)}s: ${query}`,
+        );
     }
     return { hit, calls };
 }

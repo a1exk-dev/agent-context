@@ -1,13 +1,18 @@
 // cspell:ignore toolu
+import { mkdtempSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
     completedSession,
     hitUsageLimit,
     isSkillLoad,
     loadVerdict,
+    openCodeEnv,
     renderTranscript,
     sessionProblem,
     toolCalls,
+    writeTiming,
 } from "./eval-lib.ts";
 
 describe("renderTranscript", () => {
@@ -300,5 +305,44 @@ describe("toolCalls", () => {
 
     it("reads no tool calls from other events", () => {
         expect(toolCalls({ type: "result", result: "Done." })).toEqual([]);
+    });
+});
+
+describe("openCodeEnv", () => {
+    function config(env: Record<string, string | undefined>) {
+        return JSON.parse(env.OPENCODE_CONFIG_CONTENT ?? "");
+    }
+
+    it("denies subagents and forces the Skill when the options ask", () => {
+        const env = openCodeEnv("openai/gpt-6-astra", "/work", {
+            noSubagents: true,
+            forceSkill: true,
+        });
+        expect(config(env).permission).toEqual({ "*": "allow", task: "deny" });
+        expect(config(env).agent.build.prompt).toBe(
+            "Use the agent-instructions skill for this task.",
+        );
+        expect(env.PWD).toBe("/work");
+    });
+
+    it("allows subagents and adds no prompt by default", () => {
+        const env = openCodeEnv("openai/gpt-6-astra", "/work", {});
+        expect(config(env).permission).toEqual({ "*": "allow", task: "allow" });
+        expect(config(env).agent.build.prompt).toBe("");
+    });
+});
+
+describe("writeTiming", () => {
+    it("writes the duration fields, then the extra fields, to timing.json", () => {
+        const runDir = mkdtempSync(join(tmpdir(), "timing-"));
+        writeTiming(runDir, 1234, 12.3456, { work_dir: "/work" });
+        expect(
+            JSON.parse(readFileSync(join(runDir, "timing.json"), "utf8")),
+        ).toEqual({
+            total_tokens: 1234,
+            duration_ms: 12345,
+            total_duration_seconds: 12.3,
+            work_dir: "/work",
+        });
     });
 });

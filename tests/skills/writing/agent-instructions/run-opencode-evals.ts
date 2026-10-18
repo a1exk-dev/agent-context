@@ -19,8 +19,10 @@ import {
     readOptions,
     runPool,
     sessionProblem,
+    spawnTimed,
     writeJson,
     writeMetadata,
+    writeTiming,
 } from "./eval-lib.ts";
 
 const USAGE = `Run the agent-instructions output tests on OpenCode.
@@ -117,8 +119,7 @@ async function run(ev: Eval, options: Options): Promise<string> {
         model: options.model,
     });
     const transcript = join(runDir, "transcript.jsonl");
-    const start = performance.now();
-    const proc = Bun.spawn(
+    const { exited } = spawnTimed(
         [
             "opencode",
             "run",
@@ -133,23 +134,16 @@ async function run(ev: Eval, options: Options): Promise<string> {
         ],
         {
             cwd: work,
-            env: openCodeEnv(
-                options.model,
-                work,
-                Boolean(ev.disallowed_tools?.length),
-                true,
-            ),
+            env: openCodeEnv(options.model, work, {
+                noSubagents: Boolean(ev.disallowed_tools?.length),
+                forceSkill: true,
+            }),
             stdout: Bun.file(transcript),
             stderr: Bun.file(join(runDir, "stderr.txt")),
         },
+        options.timeout,
     );
-    let timedOut = false;
-    const timer = setTimeout(() => {
-        timedOut = true;
-        proc.kill();
-    }, options.timeout * 1000);
-    const exitCode = await proc.exited;
-    clearTimeout(timer);
+    const { exitCode, timedOut, seconds: duration } = await exited;
     if (timedOut) {
         writeFileSync(
             join(runDir, "INCOMPLETE"),
@@ -157,7 +151,6 @@ async function run(ev: Eval, options: Options): Promise<string> {
         );
         return `${ev.name}: INCOMPLETE (timeout)`;
     }
-    const duration = (performance.now() - start) / 1000;
 
     const events = parseJsonLines<OpenCodeEvent>(
         readFileSync(transcript, "utf8"),
@@ -186,10 +179,7 @@ async function run(ev: Eval, options: Options): Promise<string> {
         events.findLast((event) => event.type === "text")?.part?.text ?? "";
     writeFileSync(join(outputs, "report.md"), report);
     await collectChanges(work, startCommit, outputs);
-    writeJson(join(runDir, "timing.json"), {
-        total_tokens: rendered.tokens,
-        duration_ms: Math.trunc(duration * 1000),
-        total_duration_seconds: Math.round(duration * 10) / 10,
+    writeTiming(runDir, rendered.tokens, duration, {
         work_dir: work,
         platform: "OpenCode",
         model: options.model,

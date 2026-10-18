@@ -1,6 +1,7 @@
 // Shared code for the agent-instructions eval runners: fixture copy, git,
-// job pool, options, output collection, and the pure parsers. The pure
-// parsers call no Bun API, so vitest can import them on Node.
+// job pool, timed process runs, options, output collection, and the pure
+// parsers. The pure parsers call no Bun API, so vitest can import them on
+// Node.
 
 import {
     copyFileSync,
@@ -16,6 +17,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
+import type { SpawnOptions } from "bun";
 
 export const HERE = dirname(fileURLToPath(import.meta.url));
 export const SKILL = join(
@@ -127,6 +129,31 @@ export async function runPool<T, R>(
     return results;
 }
 
+// Runs cmd and kills it after timeoutSeconds. `exited` gives the exit code,
+// whether the timeout killed the run, and the run time in seconds.
+export function spawnTimed<
+    const Out extends SpawnOptions.Readable,
+    const Err extends SpawnOptions.Readable,
+>(
+    cmd: string[],
+    options: SpawnOptions.SpawnOptions<"ignore", Out, Err>,
+    timeoutSeconds: number,
+) {
+    const start = performance.now();
+    const proc = Bun.spawn(cmd, options);
+    let timedOut = false;
+    const timer = setTimeout(() => {
+        timedOut = true;
+        proc.kill();
+    }, timeoutSeconds * 1000);
+    const exited = proc.exited.then((exitCode) => {
+        clearTimeout(timer);
+        const seconds = (performance.now() - start) / 1000;
+        return { exitCode, timedOut, seconds };
+    });
+    return { proc, exited };
+}
+
 export async function git(cwd: string, args: string[]): Promise<string> {
     return await Bun.$`git ${args}`.cwd(cwd).quiet().text();
 }
@@ -198,6 +225,21 @@ export function writeJson(path: string, value: unknown): void {
     writeFileSync(path, JSON.stringify(value, null, 2));
 }
 
+// Writes timing.json in runDir: the tokens and duration of a run, then extra.
+export function writeTiming(
+    runDir: string,
+    tokens: number,
+    seconds: number,
+    extra: Record<string, unknown>,
+): void {
+    writeJson(join(runDir, "timing.json"), {
+        total_tokens: tokens,
+        duration_ms: Math.trunc(seconds * 1000),
+        total_duration_seconds: Math.round(seconds * 10) / 10,
+        ...extra,
+    });
+}
+
 // Writes eval_metadata.json for the grader in out/eval-<name>/.
 export function writeMetadata(evalDir: string, ev: Eval): void {
     writeJson(join(evalDir, "eval_metadata.json"), {
@@ -214,8 +256,7 @@ export function writeMetadata(evalDir: string, ev: Eval): void {
 export function openCodeEnv(
     model: string,
     work: string,
-    noSubagents: boolean,
-    forceSkill: boolean,
+    options: { noSubagents?: boolean; forceSkill?: boolean },
 ): Record<string, string | undefined> {
     const config = {
         $schema: "https://opencode.ai/config.json",
@@ -223,9 +264,12 @@ export function openCodeEnv(
         share: "disabled",
         instructions: [],
         skills: { paths: [SKILL_DIR] },
-        permission: { "*": "allow", task: noSubagents ? "deny" : "allow" },
+        permission: {
+            "*": "allow",
+            task: options.noSubagents ? "deny" : "allow",
+        },
         agent: {
-            build: { prompt: forceSkill ? FORCE_SKILL : "" },
+            build: { prompt: options.forceSkill ? FORCE_SKILL : "" },
             general: { model },
             explore: { model },
         },
