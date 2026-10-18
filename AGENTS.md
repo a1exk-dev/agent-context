@@ -15,10 +15,20 @@
 
 # Workflow
 
-- Branches: Before creating a branch, opening or merging a pull request, or tagging, follow Git Flow strictly. Open pull requests into `main` only from `release/<semver>` or `hotfix/<name>`, and tag each merge into `main` as `v<semver>`. Send every other change, including `feature/<name>` and `bugfix/<name>`, through a pull request into `develop`. Change `main` and `develop` only through pull requests with merge commits, because users install skills from `main`.
-- Merging: Merge a pull request into `develop` yourself once every required check passes. Leave pull requests into `main` for the human to merge.
+- Branches: Before creating a branch, opening or merging a pull request, follow Git Flow strictly. Open pull requests into `main` only from `release/<semver>` or `hotfix/<name>`. Send every other change, including `feature/<name>` and `bugfix/<name>`, through a pull request into `develop`. Change `main` and `develop` only through pull requests with merge commits, because users install skills from `main`.
+- Merging: Merge a pull request into `develop` yourself once every required check passes. Leave pull requests into `main` for the human to merge. GitHub deletes the remote branch of a merged pull request, but your local branch stays. After you merge a pull request from a `feature/<name>` or `bugfix/<name>` branch into `develop`, do these steps:
+  1. Run `git switch develop`.
+  2. Run `git pull`.
+  3. Run `git fetch --prune`.
+  4. CAUTION: Delete a local branch only with `git branch -d`, not `git branch -D`. `git branch -D` deletes commits that no other branch contains.
+  5. Delete the local branch of that pull request with `git branch -d <branch>`.
 - Commits: Before creating a commit or proposing or using a commit message, read and follow [`docs/agents/commit-policy.md`](docs/agents/commit-policy.md).
-- Checks: Before each commit, run `scripts/check.sh`. Done when it exits 0; fix every error it reports.
+- Checks: Before each commit, run `docker compose run --rm bun run check`. Done when it exits 0; fix every error it reports. To fix formatting, run `docker compose run --rm bun run fix`.
+- Back-merges: After the user merges a pull request into `main`, `release.yml` opens the back-merge pull request from `main` into `develop`. If the `back-merge` job stops because Git cannot merge `main` into `develop`, do not change that pull request. If you change that pull request, you push commits to `main`. Run `git fetch`. Then do these steps:
+  1. Make the branch `bugfix/back-merge-v<semver>` from `origin/develop`. The title of the back-merge pull request gives `<semver>`.
+  2. On that branch, run `git merge origin/main` and correct the files that Git cannot merge.
+  3. Open a pull request from that branch into `develop`.
+  4. Close the back-merge pull request, because the new pull request replaces it.
 
 # Agent skills
 

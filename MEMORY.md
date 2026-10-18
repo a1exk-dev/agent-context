@@ -34,7 +34,7 @@ Reason: The operator supports these three platforms for now and plans to add oth
 
 ## A SKILL.md stays at 20,000 bytes or less
 
-Applies when: writing or changing a `SKILL.md`, or changing the Skill size check in `scripts/check.sh`.
+Applies when: writing or changing a `SKILL.md`, or changing the Skill size check in `scripts/check.ts`.
 
 Guidance: Keep each `SKILL.md` at 20,000 bytes or less, about 5,000 tokens. Move detail into reference files, because reference files have no limit. The check fails over 20,000 bytes. It does not count lines.
 
@@ -95,3 +95,19 @@ Applies when: adding a file to a Skill, or telling a project how to get a Rule.
 Guidance: Keep each file that a Skill uses in the folder of that Skill. Tell a project to copy the text of a Rule into its `AGENTS.md` or `CLAUDE.md`.
 
 Reason: The `skills` CLI installs and tracks updates for each Skill folder alone. No installer for Rules exists yet.
+
+## Skills and Rules use no script to do their work
+
+Applies when: adding a file to a Skill or Rule.
+
+Guidance: A Skill can contain code files in any language, and a Rule can contain code blocks. A code file can be an example or a file that the agent copies into the user's project. Do not make a Skill or a Rule run a script to do its own work. When a prompt tells you to write a script for a Skill and gives the reason, you can write it. Then read "How does a TypeScript script that a Skill ships run on the user's machine?" (#21). Then, in the specification issue of that Skill, select the program that runs the script.
+
+Reason: The operator wants each Skill to operate in the same way on Codex, OpenCode, and Claude Code. Also, an example file gets its TypeScript settings from the project of the user, so the TypeScript check of this repository skips Skills and Rules. See "What is the rule for scripts a Skill ships, and where does it live?" (#27).
+
+## The check and source-branch job names stay
+
+Applies when: an agent edits the `check` job or the `source-branch` job in `.github/workflows/check.yml`.
+
+Guidance: Keep the job IDs `check` and `source-branch`. Add no `name:` value to these jobs. Before you change these IDs or add a `name:` value, ask the operator, because only the operator changes the rulesets.
+
+Reason: The `main` ruleset waits for the jobs `check` and `source-branch` to pass, and the `develop` ruleset waits for `check`. GitHub finds each job by its `name:` value, or by its job ID when the job has no `name:` value. When that name changes, no pull request can merge into a branch if its ruleset contains the old name. See "What happens to gitflow.yml's inline bash step?" (#36).
