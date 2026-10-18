@@ -1,7 +1,4 @@
-.agents/
-.claude/
-.codex/
-.opencode/
+.claude/worktrees/
 .scratch/
 AGENTS.override.md
 CLAUDE.local.md
