@@ -27,3 +27,23 @@ jobs:
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
           GH_TOKEN: ${{ github.token }}
         run: bun scripts/release.ts
+
+  # Re-run this job alone after a failure: the tag and release already exist.
+  back-merge:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: Open the back-merge PR into develop
+        env:
+          VERSION: ${{ needs.release.outputs.version }}
+          MERGED_BY: ${{ github.event.pull_request.merged_by.login }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          GH_TOKEN: ${{ github.token }}
+        run: bun scripts/back-merge.ts
