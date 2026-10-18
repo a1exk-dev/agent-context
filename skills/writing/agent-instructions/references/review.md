@@ -23,8 +23,8 @@ In each round, start 3 new, read-only reviewer subagents, one after the other:
 | Reviewer | Checks | Reference files |
 |---|---|---|
 | Loading reviewer | The loading rules for each file type, and the Agent Skills specification for a Skill | `review.md`, `loading-rules.md`, and `agent-skills-spec.md` for a Skill |
-| ASD-STE100 reviewer | The STE rules | `review.md`, `ste-rules.md`, `technical-terms.md`, and the project `CONTEXT.md` |
-| ISO 24495-1 reviewer | The plain-language checks | `review.md`, `plain-language-checks.md`, the project `CONTEXT.md`, and the files that the file under review identifies with pointers |
+| ASD-STE100 reviewer | The STE rules | `review.md`, `ste-rules.md`, `technical-terms.md`, and the glossary |
+| ISO 24495-1 reviewer | The plain-language checks | `review.md`, `plain-language-checks.md`, the glossary, and the files that the file under review identifies with pointers |
 
 Each reviewer reads the prompt in this file to know the requirements for its report. A reviewer does only the review that the author gave to it.
 
@@ -42,7 +42,7 @@ Project folder: <absolute path>
 Target platforms: <the target platforms that you found with loading-rules.md, for example "Claude Code, Codex, and OpenCode">
 Rules: <absolute paths of all reference files for this reviewer in the table>
 Report requirements: <absolute path of this review.md file>
-Project CONTEXT.md: <absolute path of CONTEXT.md, or "none">
+Glossary: <absolute path of GLOSSARY.md or CONTEXT.md, or "none">
 Pointer targets: <absolute paths of the files that the pointers in the file identify, or "none">
 
 Before the review, read the report requirements from their file.

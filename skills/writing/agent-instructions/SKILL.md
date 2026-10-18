@@ -1,6 +1,6 @@
 ---
 name: agent-instructions
-description: "When you write, edit, make shorter, or correct a file that an agent reads as instructions, use this skill. These files are SKILL.md files and their reference files, AGENTS.md, AGENTS.override.md, CLAUDE.md, CLAUDE.local.md, CONTEXT.md, MEMORY.md, and Rules. A Rule is a short file. A project adds the text of a Rule to AGENTS.md or CLAUDE.md. These files also include the files in docs/agents/, .claude/rules/, .claude/skills/, .agents/skills/, and .opencode/skills/, and the targets of their pointers. When a user tells you to \"draft a skill\", \"rewrite AGENTS.md\", \"tidy up CLAUDE.md\", \"add a term to CONTEXT.md\", or \"record in MEMORY.md\", use this skill. When a user tells you that \"the agent keeps ignoring\" an instruction or does not obey a rule, use this skill. When a user wants Agent instructions that are shorter or more clear, use this skill. Do not use it for files that persons read, Cursor or Copilot files, or subagent definitions. Do not use it for prompt text in product code."
+description: "When you write, edit, make shorter, or correct a file that an agent reads as instructions, use this skill. These files are SKILL.md files and their reference files, AGENTS.md, AGENTS.override.md, CLAUDE.md, CLAUDE.local.md, GLOSSARY.md, CONTEXT.md, MEMORY.md, and Rules. A Rule is a short file. A project adds the text of a Rule to AGENTS.md or CLAUDE.md. These files also include the files in docs/agents/, .claude/rules/, .claude/skills/, .agents/skills/, and .opencode/skills/, and the targets of their pointers. When a user tells you to \"draft a skill\", \"rewrite AGENTS.md\", \"tidy up CLAUDE.md\", \"add a term to CONTEXT.md\", or \"record in MEMORY.md\", use this skill. When a user tells you that \"the agent keeps ignoring\" an instruction or does not obey a rule, use this skill. When a user wants Agent instructions that are shorter or more clear, use this skill. Do not use it for files that persons read, Cursor or Copilot files, or subagent definitions. Do not use it for prompt text in product code."
 ---
 
 # Agent instructions
@@ -14,10 +14,11 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - An **Agent instruction** is a file that an agent reads as instructions. Agent instructions are these files:
   - In a Skill folder, the `SKILL.md` file and its reference files are Agent instructions.
   - The entry files `AGENTS.md`, `CLAUDE.md`, `CLAUDE.local.md`, and `AGENTS.override.md` are Agent instructions.
-  - `CONTEXT.md`, `MEMORY.md`, Rules, the files in `.claude/rules/`, and the files in `docs/agents/` are Agent instructions.
+  - `GLOSSARY.md`, `CONTEXT.md`, `MEMORY.md`, Rules, the files in `.claude/rules/`, and the files in `docs/agents/` are Agent instructions.
   - The files that pointers in these files identify are also Agent instructions. A file for persons is not an Agent instruction, also when a pointer identifies it.
 - The **author** is you, the agent that uses this skill. The **user** is the person who gave you the task.
 - The **write job** makes a new Agent instruction. The **edit job** changes an Agent instruction that the project has.
+- The **glossary** is the file that gives the terms of the project. Its name is `GLOSSARY.md` or `CONTEXT.md`. If the project has the two files, use `GLOSSARY.md`.
 - A **Rule** is a short Markdown file. A project adds the text of a Rule to `AGENTS.md` or `CLAUDE.md`.
 - A **finding** is one problem that a reviewer subagent gives in its report.
 - A **warning** is one item in the Warnings part of the end-of-run report. It is not the STE signal word WARNING, which this skill does not use.
@@ -77,7 +78,7 @@ If two sources do not agree in a case that is not in this table, use the tier se
 Do these steps in the write job and in the edit job.
 
 1. Before you select target platforms, read `references/loading-rules.md`. Then find the target platforms as that file tells you.
-2. If the project has a `CONTEXT.md` file, read it. Its terms are technical nouns for this task. If no file gives a project fact for the task, speak to the user one time. An example is a branch name. If the project does not have a command or a path from the task, speak to the user one time.
+2. If the project has a glossary, read it. Its terms are technical nouns for this task. If no file gives a project fact for the task, speak to the user one time. An example is a branch name. If the project does not have a command or a path from the task, speak to the user one time.
 3. Find when the file loads: in each session, only when a task makes it necessary, or through a pointer. Use the result to select the file type and the file-size limit.
 4. In the write job, select the file type:
    - If the user gives a file type, write that type. If that type is not correct for the text, add a warning.
@@ -120,7 +121,7 @@ The job stops with one report. Use this structure. Do not write a part that has 
 - <Section> → <recommended file>. Pointer: "<pointer sentence>"
 
 ## Base-list words with a project meaning
-- <Word>: <the meaning in CONTEXT.md>
+- <Word>: <the meaning in the glossary>
 ```
 
 In the Summary part of the edit job, include each problem that you recorded before you changed the file. Give the cause and the change that corrected it.
@@ -140,9 +141,9 @@ The Warnings part always starts with the word-selection warning. Copy it with th
 - An entry-file layout that gives no copy of the text to a target platform.
 - An Agent instruction that does not load in each session and that no pointer identifies.
 - A file size that is more than its limit, and the recommended extraction.
-- A word that is not approved, not in the base list, and not in `CONTEXT.md`. Give the recommended STE word or `CONTEXT.md` entry.
+- A word that is not approved, not in the base list, and not in the glossary. Give the recommended STE word or glossary entry.
 - A Skill folder that a target platform does not load, with that platform.
 
 Copy the full candidate list of the loading reviewer from the round-1 review into the Extraction candidates part. Use the corrected items from the reviews after round 1. Add each finding of the other reviewers that recommends that you move text to a different file. When one extraction corrects a file-size problem, keep the other candidates also. Use the heading of each section as the name of its candidate.
 
-The last part gives each base-list word that has a different meaning in the project `CONTEXT.md`.
+The last part gives each base-list word that has a different meaning in the glossary.

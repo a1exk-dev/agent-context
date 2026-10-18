@@ -2,7 +2,7 @@
 
 ## Knowledge edits ride on their feature branch
 
-Applies when: planning or building a feature produces an edit to `CONTEXT.md` or `MEMORY.md`.
+Applies when: planning or building a feature produces an edit to `GLOSSARY.md` or `MEMORY.md`.
 
 Guidance: Commit the edit on that feature's `feature/<name>` branch, so it merges into `develop` in the same pull request as the feature.
 
@@ -40,13 +40,13 @@ Guidance: Keep each `SKILL.md` at 20,000 bytes or less, about 5,000 tokens. Move
 
 Reason: After compaction, Claude Code keeps only the first 5,000 tokens of a Skill, so it loses the end of a longer file. Codex shell output has a limit of about 10,000 tokens. When Codex reads a longer `SKILL.md` with a shell command, it removes the middle of the file. OpenCode has no limit. No platform refuses to load a long file. See "Review findings: agent-instructions SKILL.md (round 1)" (#28).
 
-## A Skill term follows the CONTEXT.md term
+## A Skill term follows the GLOSSARY.md term
 
-Applies when: a Skill names an item that `CONTEXT.md` also names.
+Applies when: a Skill names an item that `GLOSSARY.md` also names.
 
-Guidance: Use the `CONTEXT.md` term in the Skill. Define the term in the Skill in a general form, because other projects install the Skill without this `CONTEXT.md`.
+Guidance: Use the `GLOSSARY.md` term in the Skill. Define the term in the Skill in a general form, because other projects install the Skill without this `GLOSSARY.md`.
 
-Reason: The agent-instructions Skill said "Rule file" where `CONTEXT.md` says "Rule". Its ISO 24495-1 reviewer reported the two names as a problem 2 times. See "Review findings: agent-instructions SKILL.md (round 1)" (#28).
+Reason: The agent-instructions Skill said "Rule file" where `GLOSSARY.md` says "Rule". Its ISO 24495-1 reviewer reported the two names as a problem 2 times. See "Review findings: agent-instructions SKILL.md (round 1)" (#28).
 
 ## Test files live under tests/, outside the Skill folder
 
@@ -79,3 +79,19 @@ Applies when: an Agent instruction tells the agent to do several checks or tasks
 Guidance: Tell the agent to save each result with one tool call, sent alone in a new message. Keep the results in files, not in long message text.
 
 Reason: In test 10 of the agent-instructions Skill (#17), Opus 5.5 put 3 checks in one tool call when a rule only asked for a separate file per check. It almost never sent a required long report as message text in the middle of a run. The rule "one tool call alone in a new message" passed 2 of 2 runs.
+
+## The glossary file is GLOSSARY.md
+
+Applies when: naming the project glossary file, or changing how a Skill finds the glossary of a project.
+
+Guidance: Name the glossary of this repo `GLOSSARY.md`. In each Skill, accept `GLOSSARY.md` and `CONTEXT.md`, and use `GLOSSARY.md` when a project has the two files.
+
+Reason: Since 2026-09-24, the mattpocock/skills Skills that this repo installs, for example `domain-modeling`, `tdd`, and `pr`, read only `GLOSSARY.md`. With `CONTEXT.md`, `domain-modeling` makes a second glossary. Projects that install our Skills can still use `CONTEXT.md`.
+
+## Skills and Rules reach projects in different ways
+
+Applies when: adding a file to a Skill, or telling a project how to get a Rule.
+
+Guidance: Keep each file that a Skill uses in the folder of that Skill. Tell a project to copy the text of a Rule into its `AGENTS.md` or `CLAUDE.md`.
+
+Reason: The `skills` CLI installs and tracks updates for each Skill folder alone. No installer for Rules exists yet.

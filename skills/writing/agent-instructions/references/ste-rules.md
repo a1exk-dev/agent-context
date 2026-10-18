@@ -18,7 +18,7 @@ ASD-STE100 is tier 2. If `SKILL.md` of this skill is not in your context window,
 - Use only the verb forms and the adjective forms that the dictionary gives (rules 1.4 and 3.1). When the dictionary gives no comparative form for an adjective, write "more" or "most" before it.
 - When a change of one word makes the sentence not clear, write a different sentence with the same meaning (rule 9.1).
 - Do not use two words together as a verb with a new meaning, for example "set up" or "carry out" (rule 9.3).
-- When a word is not approved, examine the base list in `technical-terms.md` and the project `CONTEXT.md`.
+- When a word is not approved, examine the base list in `technical-terms.md` and the glossary.
 - Select words from model knowledge. Do not read the ASD-STE100 dictionary or a copy of the standard. This skill also operates in projects that have no copy. If model knowledge tells you that a word is not approved, write a different sentence. If no different sentence is clear, keep the word and add a warning. Do not add a warning for a word only because you are not sure about it. The word-selection warning of the end-of-run report is applicable to all words.
 
 ### When you find a known word that is not approved
@@ -35,8 +35,8 @@ Always replace these words. This list gives no replacement words, because a tabl
 
 - Use a word that is not approved only in a technical noun or a technical verb (rule 1.6).
 - Each technical noun is in one of the 22 word groups of rule 1.5. Each technical verb is in one of the 4 word groups of rule 1.12. When you select a word from the base list in `technical-terms.md`, find its word group in that list.
-- When you select a technical noun, use a noun from `CONTEXT.md` or the base list in `technical-terms.md` (rule 1.8).
-- When you must select a new technical noun, select a short noun that the reader knows (rule 1.9). Use a maximum of 3 words. Then do the steps in "When a word is not in the base list or in CONTEXT.md" in `technical-terms.md`.
+- When you select a technical noun, use a noun from the glossary or the base list in `technical-terms.md` (rule 1.8).
+- When you must select a new technical noun, select a short noun that the reader knows (rule 1.9). Use a maximum of 3 words. Then do the steps in "When a word is not in the base list or in the glossary" in `technical-terms.md`.
 - Do not use regional words, slang, or jargon as technical nouns (rule 1.10).
 - Use one technical noun for each item, and one item for each technical noun (rule 1.11).
 - Do not use a technical noun as a verb (rule 1.7). A technical verb can be a technical noun only when it is in word groups of rules 1.5 and 1.12. An example is "commit".

@@ -26,7 +26,7 @@ The checks are in four groups. Each group agrees with one of the four principles
 
 - Put procedure steps in the sequence of the task, with the necessary conditions first.
 - In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. The heading of that section gives the condition where the rule is applicable, for example "Before a commit". A topic heading, for example "Branches", gives no condition.
-- In `CONTEXT.md` and `MEMORY.md`, copy the format of the entries that the file has. This rule replaces the heading rules of this section for these files.
+- In the glossary and `MEMORY.md`, copy the format of the entries that the file has. This rule replaces the heading rules of this section for these files.
 - When you add a rule and no heading gives its condition, add a heading for the rule. Use the level of the other condition headings. If the file has only a level 1 heading, use level 2. Put the new section after the last section of the file. Put a new rule in a section after the last rule of that section. Do not change the headings of the other rules.
 - Do not write the condition of the heading again in each rule of the section. A pointer sentence is different, because it gives its condition.
 - No section template is necessary.
@@ -40,9 +40,9 @@ The checks are in four groups. Each group agrees with one of the four principles
 ## When you select the words and the tone
 
 - For words that the reader knows, and for clear, short sentences and paragraphs, obey the rules in `ste-rules.md`.
-- When the project has a `CONTEXT.md` file, use each project term with its meaning in that file.
+- When the project has a glossary, use each project term with its meaning in that file.
 - Use one term for each item: the project term, not a different word with the same meaning.
-- Make sure that all parts of the file agree. When the file has a pointer, also make sure that the file agrees with the pointer target. When the project has a `CONTEXT.md`, also make sure that the file agrees with that `CONTEXT.md`.
+- Make sure that all parts of the file agree. When the file has a pointer, also make sure that the file agrees with the pointer target. When the project has a glossary, also make sure that the file agrees with the glossary.
 - Use no images and no Mermaid diagrams. Show a sequence or a structure as a numbered list or a table. You can also use a tree with indents in a code block.
 - Use a neutral and direct tone. Write no text that tells the agent about a punishment or a reward. Write no text that tells the agent good things about itself.
 - Do not tell the agent that it is an expert. Write a sentence about the work of the agent only when the sentence gives a correct fact.

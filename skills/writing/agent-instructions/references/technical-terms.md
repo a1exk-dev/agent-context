@@ -3,7 +3,7 @@
 ## When you find the sources of technical words
 
 - This file gives the base list of technical nouns (TN) and technical verbs (TV).
-- When the project has a `CONTEXT.md` file, its terms are also technical nouns.
+- When the project has a glossary, its terms are also technical nouns.
 - These terms are applicable only to Agent instructions. They are not applicable to text for persons, for example `README.md`.
 - If `SKILL.md` of this skill is not in your context window, read it before you use this file. It defines the terms, the tiers, and the end-of-run report.
 - To find the text of a rule from its rule number, read `ste-rules.md`.
@@ -17,7 +17,7 @@
 - Add a verb to the base list when no approved STE verb gives the same instruction (rule 1.12).
 - Each noun has a maximum of 3 words (rule 1.9). It is not a regional word, slang, or jargon (rule 1.10).
 - Platform file names and commands have no entry, because a path and a code span count as 1 word.
-- The term "rule" has the meaning "a requirement in a text" in this list. A project can also give the name Rule to a type of file. Then the `CONTEXT.md` meaning is correct for that file.
+- The term "rule" has the meaning "a requirement in a text" in this list. A project can also give the name Rule to a type of file. Then the glossary meaning is correct for that file.
 - Terms of one platform only are also not in the list, for example "hook" or "slash command".
 - Each table row has 5 columns: term, type, word group, definition, and the words that this list does not permit.
 - The type is TN or TV. The word group of a TN is a number from rule 1.5. The word group of a TV is a number and a letter from rule 1.12.
@@ -35,18 +35,18 @@
 | 2b | 1.12 | Computer processes: user interface and applications |
 | 2c | 1.12 | Computer processes: system operations |
 
-## When CONTEXT.md gives a different meaning
+## When the glossary gives a different meaning
 
-When the project `CONTEXT.md` gives a base-list word a different meaning, use the project meaning. The report gives the name of each word of this type.
+When the glossary gives a base-list word a different meaning, use the project meaning. The report gives the name of each word of this type.
 
-## When a word is not in the base list or in CONTEXT.md
+## When a word is not in the base list or in the glossary
 
-When a word is not an approved word, not in this list, and not in `CONTEXT.md`, add a warning. This rule is also applicable to a word that the user or a different project file uses.
+When a word is not an approved word, not in this list, and not in the glossary, add a warning. This rule is also applicable to a word that the user or a different project file uses.
 
 1. If an approved STE word has the same meaning, recommend that word.
-2. If no word has the same meaning, recommend a `CONTEXT.md` entry in the format of the project.
-3. If the project has no `CONTEXT.md`, recommend a new `CONTEXT.md` with a short structure: the term and its definition.
-4. Do not write the recommended word or the `CONTEXT.md` entry until the user gives approval. Until then, use an approved word or a different sentence. A command in a code span is permitted. Do not put a different word in a code span to avoid these steps. When the user tells you to add a term to `CONTEXT.md`, the user gives approval for that term. If the entries are in alphabetical order, put the new entry in that order. If not, put it after the last entry.
+2. If no word has the same meaning, recommend a glossary entry in the format of the project.
+3. If the project has no glossary, recommend a new `GLOSSARY.md` with a short structure: the term and its definition.
+4. Do not write the recommended word or the glossary entry until the user gives approval. Until then, use an approved word or a different sentence. A command in a code span is permitted. Do not put a different word in a code span to avoid these steps. When the user tells you to add a term to the glossary, the user gives approval for that term. If the entries are in alphabetical order, put the new entry in that order. If not, put it after the last entry.
 
 This list uses model knowledge to find approved words. Do these steps only for a word that model knowledge tells you is not approved.
 
