@@ -41,7 +41,7 @@ When the user tells you clearly to write a feature that only one platform reads,
 |---|---|
 | Entry files | The entry files from the project root to the file have a total file size of less than 32 KiB. This total is the Codex limit. A file that an `@path` line imports is not in this total. Each entry file has less than 200 lines. These limits are applicable to all targets. |
 | Skills | `SKILL.md` has a maximum of 20,000 bytes. Measure the bytes with the command after this table. 20,000 bytes are approximately 5,000 tokens. When Claude Code makes the context window smaller, it keeps only the first 5,000 tokens of a Skill. |
-| `CONTEXT.md`, `MEMORY.md`, and `docs/agents/` files | No limit |
+| The glossary, `MEMORY.md`, and `docs/agents/` files | No limit |
 
 ```sh
 wc -c SKILL.md
@@ -58,8 +58,8 @@ This recommendation is applicable to entry files and Skills, also when the file 
 3. Write each candidate in the Extraction candidates part of the report.
 4. Move no text until the user gives approval.
 
-## When the file is CONTEXT.md, MEMORY.md, or a Rule
+## When the file is the glossary, MEMORY.md, or a Rule
 
-- `CONTEXT.md` and `MEMORY.md` use the format that the project uses. Copy the format of the entries in the file. This skill has no template for `CONTEXT.md` or `MEMORY.md`. When the project has no `CONTEXT.md`, give each term and its definition, as `technical-terms.md` tells you.
+- The glossary and `MEMORY.md` use the format that the project uses. Copy the format of the entries in the file. This skill has no template for the glossary or `MEMORY.md`. When the project has no glossary, give each term and its definition, as `technical-terms.md` tells you.
 - This skill has no template for Rules. Edit a Rule as you edit other Agent instructions.
 - The STE rules and the plain-language checks are also applicable to these files. For a Rule, use the file-size limit and the extraction recommendation of the entry file that contains its text. The Agent Skills specification is not applicable to a Rule.

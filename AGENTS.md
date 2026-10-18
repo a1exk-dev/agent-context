@@ -10,9 +10,8 @@
 
 # Knowledge
 
-- Before exploring or changing the repo, read `CONTEXT.md` for canonical concepts and `MEMORY.md` for applicable durable guidance.
+- Before you examine or change the repository, read `GLOSSARY.md` for the project terms and `MEMORY.md` for the applicable entries. Before you change a part of the project, read the ADRs in `docs/adr/` that are related to that part. Obey these ADRs, because each ADR records a decision that the code does not show.
 - Prototypes: `prototypes/` holds throwaway work. Take facts and decisions from the rest of the repo, and open `prototypes/` only when the human's current prompt asks for it.
-- Before defining or editing `AGENTS.md`, `CONTEXT.md`, or `MEMORY.md`, and at task completion, follow [`docs/agents/domain.md`](docs/agents/domain.md).
 
 # Workflow
 
@@ -20,3 +19,17 @@
 - Merging: Merge a pull request into `develop` yourself once every required check passes. Leave pull requests into `main` for the human to merge.
 - Commits: Before creating a commit or proposing or using a commit message, read and follow [`docs/agents/commit-policy.md`](docs/agents/commit-policy.md).
 - Checks: Before each commit, run `scripts/check.sh`. Done when it exits 0; fix every error it reports.
+
+# Agent skills
+
+## Issue tracker
+
+GitHub Issues on a1exk-dev/agent-context, tracked in the private "agent-context" project. See `docs/agents/issue-tracker.md`.
+
+## Triage labels
+
+Default labels: needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix. See `docs/agents/triage-labels.md`.
+
+## Domain docs
+
+Before you write or edit `AGENTS.md`, `GLOSSARY.md`, `MEMORY.md`, or an ADR, and when you complete a task, obey `docs/agents/domain.md`.
