@@ -23,7 +23,7 @@
   4. CAUTION: Delete a local branch only with `git branch -d`, not `git branch -D`. `git branch -D` deletes commits that no other branch contains.
   5. Delete the local branch of that pull request with `git branch -d <branch>`.
 - Commits: Before creating a commit or proposing or using a commit message, read and follow [`docs/agents/commit-policy.md`](docs/agents/commit-policy.md).
-- Checks: Before each commit, run `scripts/check.sh`. Done when it exits 0; fix every error it reports.
+- Checks: Before each commit, run `docker compose run --rm bun run check`. Done when it exits 0; fix every error it reports. To fix formatting, run `docker compose run --rm bun run fix`.
 - Back-merges: After the user merges a pull request into `main`, `release.yml` opens the back-merge pull request from `main` into `develop`. If the `back-merge` job stops because Git cannot merge `main` into `develop`, do not change that pull request. If you change that pull request, you push commits to `main`. Run `git fetch`. Then do these steps:
   1. Make the branch `bugfix/back-merge-v<semver>` from `origin/develop`. The title of the back-merge pull request gives `<semver>`.
   2. On that branch, run `git merge origin/main` and correct the files that Git cannot merge.

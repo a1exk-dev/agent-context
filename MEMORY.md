@@ -34,7 +34,7 @@ Reason: The operator supports these three platforms for now and plans to add oth
 
 ## A SKILL.md stays at 20,000 bytes or less
 
-Applies when: writing or changing a `SKILL.md`, or changing the Skill size check in `scripts/check.sh`.
+Applies when: writing or changing a `SKILL.md`, or changing the Skill size check in `scripts/check.ts`.
 
 Guidance: Keep each `SKILL.md` at 20,000 bytes or less, about 5,000 tokens. Move detail into reference files, because reference files have no limit. The check fails over 20,000 bytes. It does not count lines.
 
