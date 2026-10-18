@@ -88,6 +88,23 @@ export function checkRepo(files: RepoFile[], parseYaml: ParseYaml): Finding[] {
     return findings;
 }
 
+// The Docker image and CI must run the same Bun, so both pins must match.
+export function checkBunPin(
+    packageJson: string,
+    dockerfile: string,
+): Finding[] {
+    const pin = (JSON.parse(packageJson) as { packageManager?: unknown })
+        .packageManager;
+    const tag = /^FROM\s+oven\/bun:(\S+)/m.exec(dockerfile)?.[1];
+    if (pin === `bun@${tag}`) return [];
+    return [
+        {
+            level: "error",
+            message: `Dockerfile: oven/bun tag '${tag}' differs from packageManager '${pin}' in package.json`,
+        },
+    ];
+}
+
 function parseMapping(
     text: string,
     parseYaml: ParseYaml,
@@ -115,7 +132,13 @@ function readRepoFiles(): RepoFile[] {
 
 if (import.meta.main) {
     process.chdir(join(import.meta.dir, ".."));
-    const findings = checkRepo(readRepoFiles(), Bun.YAML.parse);
+    const findings = [
+        ...checkRepo(readRepoFiles(), Bun.YAML.parse),
+        ...checkBunPin(
+            readFileSync("package.json", "utf8"),
+            readFileSync("Dockerfile", "utf8"),
+        ),
+    ];
     for (const { level, message } of findings)
         console.error(`${level}: ${message}`);
     process.exit(findings.some((finding) => finding.level === "error") ? 1 : 0);

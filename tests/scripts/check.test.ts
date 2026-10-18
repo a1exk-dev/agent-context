@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkRepo } from "../../scripts/check.ts";
+import { checkBunPin, checkRepo } from "../../scripts/check.ts";
 
 // Vitest runs on Node, which has no Bun.YAML. JSON is valid YAML, so the
 // tests write frontmatter as JSON and parse it with JSON.parse.
@@ -235,6 +235,26 @@ describe("checkRepo", () => {
                 level: "error",
                 message:
                     "skills/writing/next/SKILL.md: name 'other' does not match folder 'next'",
+            },
+        ]);
+    });
+});
+
+describe("checkBunPin", () => {
+    const packageJson = JSON.stringify({ packageManager: "bun@1.4.3" });
+
+    it("passes when the Dockerfile tag matches packageManager", () => {
+        const dockerfile = "FROM oven/bun:1.4.3\nRUN bun install\n";
+        expect(checkBunPin(packageJson, dockerfile)).toEqual([]);
+    });
+
+    it("fails when the Dockerfile tag differs from packageManager", () => {
+        const dockerfile = "FROM oven/bun:1.4.2\nRUN bun install\n";
+        expect(checkBunPin(packageJson, dockerfile)).toEqual([
+            {
+                level: "error",
+                message:
+                    "Dockerfile: oven/bun tag '1.4.2' differs from packageManager 'bun@1.4.3' in package.json",
             },
         ]);
     });
