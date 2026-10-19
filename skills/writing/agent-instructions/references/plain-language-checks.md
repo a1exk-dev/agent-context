@@ -41,6 +41,7 @@ The checks are in four groups. Each group agrees with one of the four principles
 
 - For words that the reader knows, and for clear, short sentences and paragraphs, obey the rules in `ste-rules.md`.
 - When the project has a glossary, use each project term with its meaning in that file.
+- Do not use the word of a glossary term with a different meaning. This rule is also applicable when you write the word in lowercase letters.
 - Use one term for each item: the project term, not a different word with the same meaning.
 - Make sure that all parts of the file agree. When the file has a pointer, also make sure that the file agrees with the pointer target. When the project has a glossary, also make sure that the file agrees with the glossary.
 - Use no images and no Mermaid diagrams. Show a sequence or a structure as a numbered list or a table. You can also use a tree with indents in a code block.

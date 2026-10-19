@@ -70,6 +70,7 @@ This table gives the known cases where two sources do not agree, and the decisio
 | ISO neutral tone and CAUTION | You can use CAUTION. Use no other emphasis. |
 | The rule "Write each pointer as a sentence that gives the file" and the rule "Make no sequences of pointers" | When a reference file refers to a different reference file that `SKILL.md` also points to, give the file name. This text is not a sequence of pointers. |
 | File size | When you examine the file size, use only the limits in `references/loading-rules.md` and `references/agent-skills-spec.md`. |
+| The rule "Copy the format of the entries" for the glossary and `MEMORY.md`, and the STE rule "Do not omit words" | Copy the format of the entries. If the entries start the definition without the term, start the new definition without the term. |
 
 If two sources do not agree in a case that is not in this table, use the tier sequence. Write a warning that gives the case and the tier that you obeyed.
 
@@ -97,6 +98,7 @@ Do these steps in the write job and in the edit job.
 
 - When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.
 - If you cannot correct a finding without help from the user, put it in a warning. An example is a word that makes a new technical noun in the project necessary.
+- A finding comes only from a reviewer report. When you find a problem yourself, give it in a warning, not as a finding. In that warning, give the text in quotation marks and the problem.
 
 ## End-of-run report
 

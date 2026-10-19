@@ -108,7 +108,7 @@ This list uses model knowledge to find approved words. Do these steps only for a
 | Term | Type | Word group | Definition | Do not use |
 |---|---|---|---|---|
 | text | TN | 15 | The words of a file or of a part of a file | "content", "copy" |
-| sentence | TN | 15 | A group of words that starts with a capital letter and stops with a period, a colon, or a question mark | |
+| sentence | TN | 15 | A group of words that starts with a capital letter and stops with a period or a question mark. "When you count words" in `ste-rules.md` tells when a colon stops a sentence | |
 | term | TN | 21 | A word or words with one specified meaning | "keyword" |
 | rule | TN | 21 | A requirement in a text that tells the reader what to do or not to do | "guideline", "directive" |
 | section | TN | 15 | The part of a file from one heading to the next heading with the same number of `#` characters | "chapter" |

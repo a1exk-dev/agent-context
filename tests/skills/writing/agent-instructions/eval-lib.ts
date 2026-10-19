@@ -487,3 +487,15 @@ export function toolCalls(event: ClaudeEvent & OpenCodeEvent): ToolCall[] {
     }
     return [];
 }
+
+// Counts one sentence by "When you count words" in the skill's ste-rules.md.
+// A code span, quoted text, and text in parentheses each count as 1 word.
+export function countWords(sentence: string): number {
+    return sentence
+        .replace(/^\s*(?:\d+\.|[-*])\s+/, "")
+        .replace(/`[^`]*`/g, " x ")
+        .replace(/"[^"]*"|“[^”]*”/g, " x ")
+        .replace(/\([^)]*\)/g, " x ")
+        .split(/\s+/)
+        .filter((word) => /[\p{L}\p{N}]/u.test(word)).length;
+}
