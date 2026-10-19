@@ -97,6 +97,7 @@ Do these steps in the write job and in the edit job.
 
 - When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.
 - If you cannot correct a finding without help from the user, put it in a warning. An example is a word that makes a new technical noun in the project necessary.
+- A finding comes only from a reviewer report. When you find a problem yourself, give it in a warning, not as a finding. In that warning, give the text in quotation marks and the problem.
 
 ## End-of-run report
 
