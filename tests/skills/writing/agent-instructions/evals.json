@@ -112,7 +112,7 @@
         {
             "id": 5,
             "name": "05-edit-memory-md",
-            "prompt": "Record in MEMORY.md that the CI runner has no network access, so tests that call outside services fail there.",
+            "prompt": "Record in MEMORY.md that the CI runner has no network access, so tests that call outside services fail there. Tests must use a mock for each outside service.",
             "expected_output": "See assertions.",
             "files": [],
             "setup": {
@@ -130,7 +130,7 @@
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
                 "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
-                "[5.1] The new entry uses the file's \"Applies when / Guidance / Reason\" format."
+                "[5.1] The new entry has an \"Applies when\" line, a \"Guidance\" line that gives an action, and a \"Reason\" line, in that sequence."
             ],
             "known_mistakes": [
                 "the entry \"The payment sandbox resets at midnight UTC\" has no \"Applies when\" line",

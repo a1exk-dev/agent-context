@@ -89,7 +89,7 @@ Do not add other notes or questions.
 
 1. Round 1 examines the full file, also in the edit job. In each prompt, give the parts to review and, in a different line, the parts that the author can edit. In the edit job, put each finding about text that is not in the changed part in a warning.
 2. For each finding, correct your text, or reject the finding. To reject a finding, give the rule or the text type that permits the text. Examples are an "-ing" technical noun and quoted text. Write each finding that you reject in a warning.
-3. Before you correct your text after a round, save a copy of the file. Put the copy in a temporary folder that is not in the project. In rounds 2 and 3, start all 3 reviewers again, but only for the sections that the previous round changed. To find these sections, compare the file with the copy, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
+3. Before you correct your text after a round, save a copy of the file. Do not make the copy in a tool call that saves a report. Put the copy in a temporary folder that is not in the project. In rounds 2 and 3, start all 3 reviewers again, but only for the sections that the previous round changed. To find these sections, compare the file with the copy, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
 4. The self-check stops when a round gives no finding in your text that you accept, or after round 3.
 5. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
 
@@ -158,7 +158,7 @@ Do not use a specified path, because a different session can use the same path. 
 Do these 2 steps for each check: each review and each reader task. Do not start the next check before you complete step 2.
 
 1. Do the check as the reviewer prompt or the reader prompt tells you.
-2. Save the full report to a new file. Send only this tool call in a new message. Wait for its result before you start the next check. This tool call writes only one file. Do not change a report after you save it.
+2. Save the full report to a new file. Send only this tool call in a new message. Put no other tool call in that message, for example a `git` command or a copy of the file. Wait for its result before you start the next check. This tool call writes only one file. Do not change a report after you save it.
 
 If you find an error in a saved report, do not correct that file. Give the correction in the Warnings part of the end-of-run report.
 
