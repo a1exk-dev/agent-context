@@ -18,9 +18,8 @@
     * 'style',
     * 'test'
     Operator is allowed to add his own types if they are needed.
-  3. Ask operator if he wants "!"" for breaking changes, and add this setting for the commit policy.
+  3. Ask operator if he wants "!" for breaking changes, and add this setting for the commit policy.
   4. Skill should always read docs/agents/commit-policy.md before doing anything 
-
 
 ## Basic principles
   * We strictly follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)
