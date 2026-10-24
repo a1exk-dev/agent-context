@@ -23,30 +23,51 @@ An instruction about commits can come from this skill, a different skill, a proj
 - When the Commit policy and a different instruction do not agree, obey the Commit policy. The Operator records the commit decisions of the project only in the Commit policy.
 - When a different skill or a project instruction tells you to commit, use this skill for the commit. Only this skill makes the commit obey the Commit policy.
 - When a footer that the platform adds obeys the footer form of Conventional Commits, you can keep that footer. An example is `Co-Authored-By:`.
-- Do not change a Setting yourself. When the Operator wants a different Setting, the Operator edits the Commit policy.
+- Do not change a Setting yourself. When the Operator wants a different Setting, the Operator edits the Commit policy. Add a Setting only as the section "When a Setting is not in the Commit policy" tells you.
 
 ## Before the first `git add`
 
-1. Before the first `git add`, read `docs/agents/commit-policy.md`.
+1. Before the first `git add`, run `cat -n docs/agents/commit-policy.md` to read the Commit policy and its line numbers.
 2. If the file is not there, stop. Without the Settings, you cannot write a message that the project accepts.
-3. Before the first `git add`, examine the Commit policy. Make sure that it has the title `# Commit policy` and one Setting for each name in the table. Blank lines are permitted.
-4. If the file has no Setting for a name in the table, or 2 Settings with the same name, stop.
-5. If the value of a Setting is not in the table, stop.
-6. If a line is not a Setting, the title, or a blank line, stop. That line can be a commit decision that this skill cannot obey.
-7. When you stop, do not stage, commit, or change a file. In your report, give the cause.
+3. Before the first `git add`, examine each line of the Commit policy. A correct line is one of these lines:
+   - The line is the title `# Commit policy`.
+   - The line is blank.
+   - The line is a Setting with a name and a value from the table.
 
-| Setting | Values |
-|---|---|
-| Scope | The value is `off`, `optional`, or `required`. |
-| Scopes | The value is `any`, or a list of scopes. A comma is between each 2 scopes. |
-| Types | The value is a list of types. A comma is between each 2 types. The list always contains `feat`, `fix`, and `revert`. |
-| Breaking change | The value is `!`, `footer`, or `both`. |
-| Issue footer | The value is `off`, or one footer token, for example `Refs`, `Closes`, or `Fixes`. |
-| Header length | The value is a number of characters, or `none`. |
-| Body | The value is `optional` or `required`. |
-| Description style | The value has 3 parts. A comma is between each 2 parts. The case part is `lower case`, `sentence case`, or `any case`. The mood part is `imperative` or `any mood`. The period part is `no full stop` or `full stop`. |
-| Commit approval | The value is `confirm` or `automatic`. |
-| Push | The value is `off`, `confirm`, or `automatic`. |
+   Each other line is an incorrect line. When 2 or more Settings have the same name, each Setting after the first Setting is an incorrect line.
+4. If the Commit policy has an incorrect line, stop. You cannot know which commit decision an incorrect line gives. Examples of incorrect lines are a sentence, a different heading, `- Sign-off: yes`, and `- Header length: short`.
+5. If the Commit policy has no incorrect line, examine each name in the table. If a name has no Setting, do the steps in the section "When a Setting is not in the Commit policy".
+
+When you stop in this section:
+
+- Do not stage, commit, or change a file.
+- Do not ask the Operator a question, because only a change to the Commit policy can correct the problem.
+- Do not change an incorrect line into a Setting. Only the Operator knows the commit decisions of the project.
+- In your report, give the cause. For each incorrect line, give its line number and its text.
+- When you stop because of incorrect lines, tell the Operator to write the file again. Tell the Operator to use only the title and the Settings. Also tell the Operator that the Operator can delete the file.
+
+| Setting | Values | Default value |
+|---|---|---|
+| Scope | The value is `off`, `optional`, or `required`. | `optional` |
+| Scopes | The value is `any`, or a list of scopes. A comma is between each 2 scopes. | `any` |
+| Types | The value is a list of types. A comma is between each 2 types. The list always contains `feat`, `fix`, and `revert`. | `build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test` |
+| Breaking change | The value is `!`, `footer`, or `both`. | `both` |
+| Issue footer | The value is `off`, or one footer token, for example `Refs`, `Closes`, or `Fixes`. | `Refs` |
+| Header length | The value is a number of characters, or `none`. | `72` |
+| Body | The value is `optional` or `required`. | `optional` |
+| Description style | The value has 3 parts. A comma is between each 2 parts. The case part is `lower case`, `sentence case`, or `any case`. The mood part is `imperative` or `any mood`. The period part is `no full stop` or `full stop`. | `lower case, imperative, no full stop` |
+| Commit approval | The value is `confirm` or `automatic`. | `confirm` |
+| Push | The value is `off`, `confirm`, or `automatic`. | `off` |
+
+## When a Setting is not in the Commit policy
+
+When the Commit policy has no incorrect line and a name in the table has no Setting, do these steps:
+
+1. For each name that has no Setting, ask the Operator one question with the question tool of the platform. Give the default value as the first answer. Tell the Operator that the default value is the recommended answer.
+2. If the platform has no question tool, or the question tool gives an error, use the default value. In these conditions, the Operator cannot give an answer.
+3. Add one Setting for each of these names to the Commit policy, in the sequence of the table. Use the answer of the Operator or the default value. Then, at the next commit, you do not ask a question about these Settings.
+4. Stage only `docs/agents/commit-policy.md`. Commit it alone with the message `chore: update commit policy`, as the section "When you commit" tells you. Then the change to the Commit policy is not in a commit of the task.
+5. Then stage the task files as the section "When you stage files" tells you. Then commit the task files.
 
 ## When you stage files
 

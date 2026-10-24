@@ -58,6 +58,18 @@
             ]
         },
         {
+            "id": 9,
+            "name": "09-missing-push",
+            "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it.",
+            "setup": { "overlay": "fixtures/09-missing-push", "steps": [] },
+            "assertions": [
+                "[9.1] There are exactly 2 new commits. The first commit has the header `chore: update commit policy` and changes only `docs/agents/commit-policy.md`.",
+                "[9.2] The first commit only adds the line `- Push: off`: its stat shows 1 insertion and no deletion, and the Commit policy in `git-after.md` has that line.",
+                "[9.3] The second commit changes only `src/strings.ts`, and it is a child of the first commit.",
+                "[9.4] The run made no push: the refs of `origin` are the same in `git-before.md` and `git-after.md`."
+            ]
+        },
+        {
             "id": 18,
             "name": "18-conflicting-instruction",
             "prompt": "Add a function `truncate(text: string, max: number): string` to `src/strings.ts` that cuts the text to `max` characters. Then commit it.",
@@ -68,6 +80,24 @@
             "assertions": [
                 "[18.1] The header follows the Commit policy, not the `[TICKET] Message` form that `AGENTS.md` gives.",
                 "[18.2] A `Co-Authored-By:` footer is allowed. When the message has one, it is a valid footer after a blank line."
+            ]
+        },
+        {
+            "id": 19,
+            "name": "19-free-prose-policy",
+            "prompt": "Commit the change to `src/strings.ts`.",
+            "setup": {
+                "overlay": "fixtures/19-free-prose-policy",
+                "steps": [
+                    "printf -- '\\nexport function shout(text: string): string {\\n    return text.toUpperCase();\\n}\\n' >> src/strings.ts"
+                ]
+            },
+            "assertions": [
+                "[19.1] There is no new commit, and nothing is staged.",
+                "[19.2] The run changed no file: `git status --porcelain` and the Commit policy are the same in `git-before.md` and `git-after.md`.",
+                "[19.3] The report gives lines 3, 4, and 6 of the Commit policy as incorrect, and does not give line 7 (`- Header length: 72`) as incorrect.",
+                "[19.4] The report tells the Operator to rewrite the Commit policy in the Setting format, or to delete it.",
+                "[19.5] The run asked no question: the run record has no call of a question tool, for example `AskUserQuestion`."
             ]
         }
     ]

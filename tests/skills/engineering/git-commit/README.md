@@ -30,3 +30,11 @@ For each run, the runner copies `project/` and the test's overlay to a temporary
 Runs with the skill install it in `.claude/skills/git-commit/` before the start commit and add "Use the git-commit skill for this task." to the system prompt. `--setting-sources project,local` keeps user skills and user memory out of the run.
 
 The runner saves the git state before and after the run in `outputs/git-before.md` and `outputs/git-after.md`, and the audit of the git commands in `outputs/audit.json`.
+
+## Manual checks
+
+The output tests run with no human, so these checks test the human paths. The Operator runs them once on Claude Code, in an interactive session, before the build pull request merges, and records the results in that pull request. Start each check in a copy of `project/` with the Skill in `.claude/skills/git-commit/`, as the runner makes it.
+
+| Check | Setup | Pass when |
+|---|---|---|
+| M6 | Delete the line `- Push: off` from `docs/agents/commit-policy.md`. Ask for a commit. Then ask for a second commit. | The first commit asks one question about `Push`, with `off` as the recommended answer. The Skill writes the line, and commits `chore: update commit policy` alone before the task commit. The second commit asks nothing about `Push`. |
