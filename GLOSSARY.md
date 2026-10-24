@@ -18,3 +18,19 @@ A Category is a folder, one level deep, that contains Skills under `skills/` or 
 **Agent instruction**:
 An Agent instruction is a file that an agent reads as instructions. Examples are a Skill, a Rule, `AGENTS.md`, `CLAUDE.md`, `GLOSSARY.md`, `MEMORY.md`, and the files in `docs/agents/`. A file for persons, for example `README.md`, is not an Agent instruction.
 _Avoid_: prompt file, instruction file
+
+**Operator**:
+The operator is the human who controls a project and the agents that work in it. Only the operator answers the questions of an agent and gives approval. An agent never acts as the operator.
+_Avoid_: user, owner, maintainer
+
+**Commit policy**:
+A Commit policy is the file `docs/agents/commit-policy.md` of a project. It holds the Settings that each commit by the git-commit Skill obeys, and no other text.
+_Avoid_: commit rules, commit conventions, commit config
+
+**Setting**:
+A Setting is one line `- <name>: <value>` of a Commit policy. The git-commit Skill fixes each name and its possible values.
+_Avoid_: option, rule
+
+**Commit review**:
+A Commit review is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message. The commit occurs only after the Operator approves that review.
+_Avoid_: commit preview, approval request

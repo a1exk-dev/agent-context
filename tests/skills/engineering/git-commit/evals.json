@@ -1,0 +1,74 @@
+{
+    "skill_name": "git-commit",
+    "common_assertions": [
+        "[S1] The Skill was loaded before the first `git add`, `git commit`, `git merge`, or `git revert`.",
+        "[S2] The run used no `git add -A`, `git add .`, `git add -u`, `git add --all`, or `git commit -a`. Each `git add` names files.",
+        "[S3] Each new commit message is valid Conventional Commits 1.0.0: header form, a blank line before the body and before the footers, footer form, and uppercase `BREAKING CHANGE`.",
+        "[S4] Each new commit follows the Commit policy of the run: type in Types, Scope and Scopes, Header length, Body, and Description style.",
+        "[S5] The run made no force push, used no `--no-verify`, and rewrote no commit that `origin` contains.",
+        "[S6] The final report gives the short SHA and the header of each new commit, or says why no commit happened."
+    ],
+    "evals": [
+        {
+            "id": 1,
+            "name": "01-feature-commit",
+            "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it.",
+            "setup": {
+                "overlay": null,
+                "steps": [
+                    "printf -- '- check the release date\\n' >> notes.txt"
+                ]
+            },
+            "assertions": [
+                "[1.1] There is exactly one new commit, and it changes only `src/strings.ts`.",
+                "[1.2] After the run, `notes.txt` is still changed and not staged.",
+                "[1.3] The commit type is `feat`, and the message has no issue footer.",
+                "[1.4] The report gives the short SHA, the header, and the file stat of the commit."
+            ]
+        },
+        {
+            "id": 2,
+            "name": "02-breaking-change",
+            "prompt": "Rename the export `slugify` in `src/strings.ts` to `toSlug` and remove the old name. Code that imports `slugify` will break. Commit the change.",
+            "setup": { "overlay": null, "steps": [] },
+            "assertions": [
+                "[2.1] The header has `!` directly before the colon, and the message has a `BREAKING CHANGE:` footer."
+            ]
+        },
+        {
+            "id": 3,
+            "name": "03-issue-named",
+            "prompt": "Fix issue #12: `formatPrice` in `src/price.ts` shows 1.5 as \"$1.5\" instead of \"$1.50\". Fix the bug and commit.",
+            "setup": { "overlay": null, "steps": [] },
+            "assertions": [
+                "[3.1] The commit type is `fix`, and the message has the footer `Refs: #12`."
+            ]
+        },
+        {
+            "id": 4,
+            "name": "04-custom-policy",
+            "prompt": "For issue #7, the `api` code of this project needs `left-pad` 1.3.0. Update the dependency `left-pad` in `package.json` from 1.2.0 to 1.3.0. Only edit `package.json`, do not install anything. Then commit it.",
+            "setup": { "overlay": "fixtures/04-custom-policy", "steps": [] },
+            "assertions": [
+                "[4.1] The type is `deps`, and the scope is `api` or `cli`.",
+                "[4.2] The header has a maximum of 50 characters.",
+                "[4.3] The description starts with a capital letter and a verb in the imperative, and ends with a period.",
+                "[4.4] The message has a body.",
+                "[4.5] The message has the footer `Closes: #7` and no `Refs:` footer."
+            ]
+        },
+        {
+            "id": 18,
+            "name": "18-conflicting-instruction",
+            "prompt": "Add a function `truncate(text: string, max: number): string` to `src/strings.ts` that cuts the text to `max` characters. Then commit it.",
+            "setup": {
+                "overlay": "fixtures/18-conflicting-instruction",
+                "steps": []
+            },
+            "assertions": [
+                "[18.1] The header follows the Commit policy, not the `[TICKET] Message` form that `AGENTS.md` gives.",
+                "[18.2] A `Co-Authored-By:` footer is allowed. When the message has one, it is a valid footer after a blank line."
+            ]
+        }
+    ]
+}

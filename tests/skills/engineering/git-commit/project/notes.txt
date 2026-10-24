@@ -1,0 +1,3 @@
+Release notes draft
+
+- slugify handles accents
