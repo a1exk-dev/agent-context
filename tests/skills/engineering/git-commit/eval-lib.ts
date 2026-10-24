@@ -5,7 +5,7 @@
 // tests.
 // cspell:ignore nparents nrefs
 
-import { cpSync, mkdtempSync, readFileSync } from "node:fs";
+import { cpSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -23,7 +23,7 @@ export type Eval = {
     id: number;
     name: string;
     prompt: string;
-    setup: { overlay?: string | null; steps?: string[] };
+    setup: { overlay?: string | null; remove?: string[]; steps?: string[] };
     assertions: string[];
 };
 
@@ -49,7 +49,8 @@ const START_ENV = {
 };
 
 // Copies project/ and the overlay to a fresh folder outside this repository,
-// so no AGENTS.md or CLAUDE.md of this repository loads. Then it makes the
+// so no AGENTS.md or CLAUDE.md of this repository loads, and deletes the
+// paths in `setup.remove`, for example the Commit policy. Then it makes the
 // start commit, pushes it to a local bare `origin`, and runs the setup steps
 // of the test.
 export async function prepare(
@@ -63,6 +64,9 @@ export async function prepare(
     cpSync(join(HERE, "project"), work, { recursive: true });
     if (ev.setup.overlay) {
         cpSync(join(HERE, ev.setup.overlay), work, { recursive: true });
+    }
+    for (const path of ev.setup.remove ?? []) {
+        rmSync(join(work, path), { recursive: true, force: true });
     }
     if (withSkill) cpSync(SKILL, join(work, SKILL_DIR), { recursive: true });
     await git(work, ["init", "-q", "-b", "develop"]);

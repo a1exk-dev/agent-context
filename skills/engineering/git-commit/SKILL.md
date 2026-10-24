@@ -28,7 +28,7 @@ An instruction about commits can come from this skill, a different skill, a proj
 ## Before the first `git add`
 
 1. Before the first `git add`, run `cat -n docs/agents/commit-policy.md` to read the Commit policy and its line numbers.
-2. If the file is not there, stop. Without the Settings, you cannot write a message that the project accepts.
+2. If the file is not there, do the steps in the section "When the Commit policy is not there". Without the Settings, you cannot write a message that the project accepts.
 3. Before the first `git add`, examine each line of the Commit policy. A correct line is one of these lines:
    - The line is the title `# Commit policy`.
    - The line is blank.
@@ -44,7 +44,7 @@ When you stop in this section:
 - Do not ask the Operator a question, because only a change to the Commit policy can correct the problem.
 - Do not change an incorrect line into a Setting. Only the Operator knows the commit decisions of the project.
 - In your report, give the cause. For each incorrect line, give its line number and its text.
-- When you stop because of incorrect lines, tell the Operator to write the file again. Tell the Operator to use only the title and the Settings. Also tell the Operator that the Operator can delete the file.
+- When you stop because of incorrect lines, tell the Operator to write the file again. Tell the Operator to use only the title and the Settings. Also tell the Operator that the Operator can delete the file. Then, at the next commit, this skill writes a new Commit policy from the answers of the Operator.
 
 | Setting | Values | Default value |
 |---|---|---|
@@ -66,7 +66,9 @@ When the Commit policy has no incorrect line and a name in the table has no Sett
 1. For each name that has no Setting, ask the Operator one question with the question tool of the platform. Give the default value as the first answer. Tell the Operator that the default value is the recommended answer.
 2. If the platform has no question tool, or the question tool gives an error, use the default value. In these conditions, the Operator cannot give an answer.
 3. Add one Setting for each of these names to the Commit policy, in the sequence of the table. Use the answer of the Operator or the default value. Then, at the next commit, you do not ask a question about these Settings.
-4. Stage only `docs/agents/commit-policy.md`. Commit it alone with the message `chore: update commit policy`, as the section "When you commit" tells you. Then the change to the Commit policy is not in a commit of the task.
+4. Stage only `docs/agents/commit-policy.md`. Commit it alone with the message `chore: update commit policy`, as the sections "When you write the commit message" and "When you commit" tell you. Then the change to the Commit policy is not in a commit of the task. The `Commit approval` Setting of the changed Commit policy is applicable to this commit.
+
+   When you stop after this step and before the commit, do not stage the task files. An example of this stop is a Commit review that has no answer. Only the Commit policy stays staged. When the Operator answers `Commit` later, commit the Commit policy first. Then do step 5.
 5. Then stage the task files as the section "When you stage files" tells you. Then commit the task files.
 
 ## When you stage files
@@ -107,6 +109,8 @@ When you write the commit message, obey each Setting of the Commit policy:
 - **Description style:** When the case part is `lower case`, start the description with a small letter. When the case part is `sentence case`, start the description with a capital letter. When the mood part is `imperative`, start the description with a verb in the imperative, for example "add". When the period part is `full stop`, end the description with a period. When the period part is `no full stop`, end the description with no period.
 
 Before you commit, read the full message again. Compare the message with each instruction in this section.
+
+When a Setting does not permit the message `chore: add commit policy` or `chore: update commit policy`, change or add only the necessary part. Examples are a scope when `Scope` is `required`, and a body when `Body` is `required`. Another example is `chore: Add commit policy.` when `Description style` is `sentence case, imperative, full stop`. When `Types` does not contain `chore`, use a type from `Types` that agrees with a change to a project file. An example is `docs`.
 
 ## When you commit
 
@@ -168,7 +172,27 @@ Give the short SHA, the header, and the file stat of each new commit. For each n
 ## When you ask the Operator a question
 
 - Ask with the question tool of the platform.
-- When you cannot use a question tool for a question about a Setting, do the steps in the section "When a Setting is not in the Commit policy".
+- When you cannot use a question tool to add a Setting, do the steps in the section "When a Setting is not in the Commit policy".
+- When you cannot use a question tool to make a new Commit policy, do the steps in the section "When the Commit policy is not there".
 - When you cannot use a question tool for a different question, show the question and its answers as text. Then stop and wait for the next prompt of the Operator.
 - Ask a maximum of 3 questions in one tool call, because some platforms accept no more questions. Give 2 or 3 answers for each question, because some platforms accept a maximum of 3 answers.
 - If the Operator gives no answer, you have no approval. Do not commit. Do not push. In your report, give the question that has no answer.
+
+## When the Commit policy is not there
+
+Before the first `git add`, do these steps:
+
+1. Find the answers for the new Commit policy in the prompt. The prompt can tell you to "use the default commit policy". The prompt can also give a value for each name in the table.
+2. If the prompt gives one of these answers, go to step 6. Do not ask a question, because the prompt gives the answers.
+3. Show the default Commit policy to the Operator in a code block. Write the title `# Commit policy`, a blank line, and one Setting for each name in the sequence of the table. Use the default values. Then the Operator can see the default values before the answer.
+4. Ask the Operator one question with the answers `Use defaults` and `Choose each setting`. Give `Use defaults` as the first answer. Tell the Operator that `Use defaults` is the recommended answer.
+
+   When you cannot use a question tool in steps 4 to 6, do not write, stage, or commit a file. Only the Operator selects the values of a new Commit policy. These values give all commit decisions of the project. In your report, give each name in the table that has no answer. Tell the Operator to give a value for each of these names, or to tell you to "use the default commit policy". Then stop.
+5. When the Operator answers `Choose each setting`, ask one question for each name in the table, in the sequence of the table. Ask only one question in each tool call, because the answer to one Setting can change the next answer. Give the default value as the first answer. Tell the Operator that the default value is the recommended answer. For a list, a number, or a footer token, the Operator can also give a different value as text.
+6. Make sure that each name in the table has a value from the Values column. The answer `Use defaults` and the words "use the default commit policy" give the default values. If a name has no value, ask the question of step 5 for that name. When the value is not in that column, also ask that question.
+7. If the folder `docs/agents/` is not there, make the folder.
+8. Write the file `docs/agents/commit-policy.md`. Write the title `# Commit policy`, a blank line, and one Setting for each name in the sequence of the table. Use the values of step 6.
+9. Stage only `docs/agents/commit-policy.md`. Commit it alone with the message `chore: add commit policy`, as the sections "When you write the commit message" and "When you commit" tell you. Then the new Commit policy is not in a commit of the task. The `Commit approval` Setting of the new Commit policy is applicable to this commit.
+
+   When you stop after this step and before the commit, do not stage the task files. An example of this stop is a Commit review that has no answer. The Commit policy must be in a commit alone. Only the Commit policy stays staged. When the Operator answers `Commit` later, commit the Commit policy first. Then do step 10.
+10. After this commit, stage the task files as the section "When you stage files" tells you. Then commit the task files.

@@ -77,6 +77,42 @@
             ]
         },
         {
+            "id": 6,
+            "name": "06-no-policy-no-answers",
+            "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it.",
+            "setup": { "overlay": null, "remove": ["docs"], "steps": [] },
+            "assertions": [
+                "[6.1] There is no new commit, and nothing is staged.",
+                "[6.2] The run wrote no Commit policy: `docs/agents/commit-policy.md` is `(missing)` in `git-after.md`.",
+                "[6.3] The report lists the 10 Settings that have no answer: Scope, Scopes, Types, Breaking change, Issue footer, Header length, Body, Description style, Commit approval, and Push."
+            ]
+        },
+        {
+            "id": 7,
+            "name": "07-no-policy-use-defaults",
+            "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it. Use the default commit policy.",
+            "setup": { "overlay": null, "remove": ["docs"], "steps": [] },
+            "assertions": [
+                "[7.1] There is no new commit.",
+                "[7.2] The Commit policy in `git-after.md` is the default file: the title `# Commit policy` and the 10 Settings `Scope: optional`, `Scopes: any`, `Types: build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test`, `Breaking change: both`, `Issue footer: Refs`, `Header length: 72`, `Body: optional`, `Description style: lower case, imperative, no full stop`, `Commit approval: confirm`, and `Push: off`, in this sequence, and no other line except blank lines.",
+                "[7.3] Only `docs/agents/commit-policy.md` is staged. `src/strings.ts` is changed and not staged.",
+                "[7.4] A message of the agent in the run record shows the Commit review of the Commit policy: the staged-file stat, the diff of `docs/agents/commit-policy.md`, and the full message with the header `chore: add commit policy`. A valid `Co-Authored-By:` footer is allowed.",
+                "[7.5] The agent asks the Operator to answer `Commit`, `Request changes`, or `Reject`, and the report says that the commit waits for that answer."
+            ]
+        },
+        {
+            "id": 8,
+            "name": "08-no-policy-all-values",
+            "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it. This project has no commit policy yet. Use these values for it: Scope: off. Scopes: any. Types: chore, docs, feat, fix, revert, test. Breaking change: !. Issue footer: Closes. Header length: 60. Body: optional. Description style: sentence case, imperative, full stop. Commit approval: automatic. Push: off.",
+            "setup": { "overlay": null, "remove": ["docs"], "steps": [] },
+            "assertions": [
+                "[8.1] There are exactly 2 new commits. The first commit changes only `docs/agents/commit-policy.md`, and its header is `chore: Add commit policy.`: the fixed header, with the description in sentence case and with a full stop, as the given Description style asks.",
+                "[8.2] The Commit policy in `git-after.md` has the title `# Commit policy` and the 10 Settings `Scope: off`, `Scopes: any`, `Types: chore, docs, feat, fix, revert, test`, `Breaking change: !`, `Issue footer: Closes`, `Header length: 60`, `Body: optional`, `Description style: sentence case, imperative, full stop`, `Commit approval: automatic`, and `Push: off`, in this sequence, and no other line except blank lines.",
+                "[8.3] The second commit changes only `src/strings.ts`, it is a child of the first commit, and its header has the type `feat` and no scope.",
+                "[8.4] The run made no push: the refs of `origin` are the same in `git-before.md` and `git-after.md`."
+            ]
+        },
+        {
             "id": 9,
             "name": "09-missing-push",
             "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it.",

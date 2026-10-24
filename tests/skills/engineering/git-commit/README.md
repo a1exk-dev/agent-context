@@ -25,7 +25,7 @@ Then give `grader.md` and one eval folder to a fresh grader subagent, one grader
 
 ## The test repository
 
-For each run, the runner copies `project/` and the test's overlay to a temporary folder outside this repository. It runs `git init -b develop`, makes a start commit with a fixed date, and pushes it to a local bare repository as `origin`. Then it runs the shell commands in the test's `setup.steps`, for example a change to a file that must stay out of the commit. No test needs the network.
+For each run, the runner copies `project/` and the test's overlay to a temporary folder outside this repository, and deletes the paths in the test's `setup.remove`. Tests 6, 7, and 8 delete `docs` in this way, so the start commit has no Commit policy. It runs `git init -b develop`, makes a start commit with a fixed date, and pushes it to a local bare repository as `origin`. Then it runs the shell commands in the test's `setup.steps`, for example a change to a file that must stay out of the commit. No test needs the network.
 
 Runs with the skill install it in `.claude/skills/git-commit/` before the start commit and add "Use the git-commit skill for this task." to the system prompt. `--setting-sources project,local` keeps user skills and user memory out of the run.
 
@@ -35,10 +35,12 @@ The runner saves the git state before and after the run in `outputs/git-before.m
 
 The output tests run with no human, so these checks test the human paths. The Operator runs them once on Claude Code, in an interactive session, before the build pull request merges, and records the results in that pull request. Start each check in a copy of `project/` with the Skill in `.claude/skills/git-commit/`, as the runner makes it.
 
-For the checks M1, M2, M3, M9, and M10, first set `- Commit approval: confirm` in `docs/agents/commit-policy.md` and commit that change. Then make the change of the check. The request in these checks is "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it."
+The checks M4 and M5 use the request of the next paragraph and have no Commit policy. For the checks M1, M2, M3, M9, and M10, first set `- Commit approval: confirm` in `docs/agents/commit-policy.md` and commit that change. Then make the change of the check. The request in these checks is "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it."
 
 | Check | Setup | Pass when |
 |---|---|---|
+| M4 | Delete the folder `docs` and commit the deletion. Ask the request. Answer `Choose each setting`. Answer `50` for `Header length` and `Closes` for `Issue footer`, and answer the default value for the other Settings. Answer `Commit` 2 times. | The Skill first shows the default Commit policy and asks `Use defaults` or `Choose each setting`. Then it asks 10 questions, one at a time, in the sequence of the Setting table, each with the default value as the recommended answer. It writes `docs/agents/commit-policy.md` with the given values. It commits `chore: add commit policy` alone first, then the task commit, each after its own Commit review. |
+| M5 | Delete the folder `docs` and commit the deletion. Ask the request. Answer `Use defaults`. Answer `Commit` 2 times. | The Skill writes the default Commit policy. It commits `chore: add commit policy` alone first, then the task commit, each after its own Commit review. |
 | M6 | Delete the line `- Push: off` from `docs/agents/commit-policy.md`. Ask for a commit. Then ask for a second commit. | The first commit asks one question about `Push`, with `off` as the recommended answer. The Skill writes the line, and commits `chore: update commit policy` alone before the task commit. The second commit asks nothing about `Push`. |
 | M1 | Ask the request. Answer `Commit`. | The Commit review shows the staged-file stat, the full diff, the exact message, and the other changed files, and asks one question with `Commit`, `Request changes`, and `Reject`. After `Commit`, there is one new commit with exactly the shown diff and message. |
 | M2 | Ask the request. Answer `Request changes` and say "use scope strings". Then answer `Commit`. | A new Commit review shows the header with the scope `strings`. After `Commit`, the commit has that header. |
