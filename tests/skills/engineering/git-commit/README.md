@@ -35,6 +35,22 @@ The runner saves the git state before and after the run in `outputs/git-before.m
 
 The output tests run with no human, so these checks test the human paths. The Operator runs them once on Claude Code, in an interactive session, before the build pull request merges, and records the results in that pull request. Start each check in a copy of `project/` with the Skill in `.claude/skills/git-commit/`, as the runner makes it.
 
+For the checks M1, M2, M3, M9, and M10, first set `- Commit approval: confirm` in `docs/agents/commit-policy.md` and commit that change. Then make the change of the check. The request in these checks is "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it."
+
 | Check | Setup | Pass when |
 |---|---|---|
 | M6 | Delete the line `- Push: off` from `docs/agents/commit-policy.md`. Ask for a commit. Then ask for a second commit. | The first commit asks one question about `Push`, with `off` as the recommended answer. The Skill writes the line, and commits `chore: update commit policy` alone before the task commit. The second commit asks nothing about `Push`. |
+| M1 | Ask the request. Answer `Commit`. | The Commit review shows the staged-file stat, the full diff, the exact message, and the other changed files, and asks one question with `Commit`, `Request changes`, and `Reject`. After `Commit`, there is one new commit with exactly the shown diff and message. |
+| M2 | Ask the request. Answer `Request changes` and say "use scope strings". Then answer `Commit`. | A new Commit review shows the header with the scope `strings`. After `Commit`, the commit has that header. |
+| M3 | Ask the request. Answer `Reject`. | No new commit. `git diff --cached` is empty, and `git diff` still shows the change to `src/strings.ts`. |
+| M9 | Add the hook in the code block after this table. Ask the request. Answer `Commit`. | After the first `Commit`, the Skill undoes the commit and shows a new Commit review with the line `// checked`. After the second `Commit`, there is one new commit, and it has that line. |
+| M10 | Ask "Use a subagent to add a function `capitalize(text: string): string` to `src/strings.ts` and to commit it." Answer `Commit`. | The subagent makes no commit. The main agent shows the Commit review of the subagent and asks the Operator. After `Commit`, there is one new commit. |
+
+The hook of M9 is `.git/hooks/pre-commit`. Make it executable with `chmod +x .git/hooks/pre-commit`. It adds a line to `src/strings.ts` and stages it, one time only:
+
+```sh
+#!/bin/sh
+grep -q '// checked' src/strings.ts && exit 0
+printf '// checked\n' >> src/strings.ts
+git add src/strings.ts
+```

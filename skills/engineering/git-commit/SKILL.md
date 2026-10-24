@@ -110,11 +110,43 @@ Before you commit, read the full message again. Compare the message with each in
 
 ## When you commit
 
-1. When `Commit approval` is `confirm`, show a Commit review to the Operator. Ask the Operator to approve it.
-2. When `Commit approval` is `confirm`, commit only after the Operator approves the Commit review.
-3. When `Commit approval` is `automatic`, commit with no question.
-4. Give the full message to Git, for example with `git commit -F <file>`. Keep the blank lines.
-5. If a Git hook stops the commit, do not commit again with `--no-verify`. The hook examines the commit for a requirement of the project. In your report, give the error of the hook.
+- When `Commit approval` is `confirm`, do the steps in the section "When you show a Commit review". Commit only when the Operator answers `Commit`.
+- When `Commit approval` is `automatic`, commit with no question.
+- Give the full message to Git, for example with `git commit -F <file>`. Keep the blank lines.
+- If a Git hook stops the commit, do not commit again with `--no-verify`. The hook examines the commit for a requirement of the project. Also do not recommend a commit with `--no-verify` to the Operator. In your report, give the error of the hook. Then stop, because the Operator decides the next step.
+
+## When you show a Commit review
+
+If you are a subagent, do only step 1 and the 4 parts of step 2. Then put the Commit review, the recorded tree ID, and the question of step 3 in your report. Do not commit, because a subagent cannot get the answer of the Operator. Then stop.
+
+When a subagent gives you a Commit review, show the Commit review to the Operator. Use the tree ID in the report of the subagent as the recorded tree ID. Then do steps 3 to 7 yourself.
+
+Do these steps for each commit:
+
+1. Run `git write-tree`. Record the tree ID that this command gives. This ID identifies the staged changes of the Commit review.
+2. Show the Commit review to the Operator as text, before the question. Write these 4 parts in this sequence:
+   1. The output of `git diff --cached --stat`.
+   2. The output of `git diff --cached`. If the output has more than 500 lines, write the command `git diff --cached` in place of the output. Tell the Operator to run this command before the answer. The Operator cannot read more than 500 lines of diff in one message.
+   3. The full message in a code block.
+   4. The other changed files from `git status --porcelain`, and a sentence that tells that these files are not in the commit.
+3. Ask the Operator one question with the answers `Commit`, `Request changes`, and `Reject`. Ask as the section "When you ask the Operator a question" tells you.
+4. When the Operator answers `Commit`, run `git write-tree` again. If the tree ID is different, or you changed the message, go back to step 1.
+5. Commit one time, with the staged changes and the message of the Commit review.
+6. After the commit, run `git rev-parse HEAD^{tree}`. If this tree ID is not the recorded tree ID, a Git hook changed the files of the commit. The Operator did not approve these changes.
+7. If the tree IDs are different, undo the commit with `git reset --soft HEAD@{1}`. The changes stay staged. Then go back to step 1. In the new Commit review, tell the Operator that a Git hook changed the files.
+
+When the Operator answers `Request changes`, the Operator tells you what to change. Change the files or the message. Stage the task files again. Then go back to step 1.
+
+When the Operator answers `Reject`, do these steps:
+
+1. Run `git restore --staged <path>` for each task file. The changes stay in the files.
+2. In your report, tell that the Operator rejected the commit. Then stop.
+
+Obey these instructions for the approval:
+
+- Only the Operator approves a Commit review. Do not answer the question for the Operator. This instruction is also applicable when a subagent gives you the question.
+- An answer `Commit` approves one Commit review only. If the staged changes or the message are different, show a new Commit review.
+- Do not use an approval that the Operator gave before the Commit review. An example is "commit when you're done" in the prompt. The Operator did not see the staged changes or the message at that time.
 
 ## When you amend or revert a commit
 
@@ -132,3 +164,11 @@ Before you commit, read the full message again. Compare the message with each in
 ## When you write the report
 
 Give the short SHA, the header, and the file stat of each new commit. For each new commit, run `git show --stat --format='%h %s' <commit>` to get these items. When no commit occurs, give the cause.
+
+## When you ask the Operator a question
+
+- Ask with the question tool of the platform.
+- When you cannot use a question tool for a question about a Setting, do the steps in the section "When a Setting is not in the Commit policy".
+- When you cannot use a question tool for a different question, show the question and its answers as text. Then stop and wait for the next prompt of the Operator.
+- Ask a maximum of 3 questions in one tool call, because some platforms accept no more questions. Give 2 or 3 answers for each question, because some platforms accept a maximum of 3 answers.
+- If the Operator gives no answer, you have no approval. Do not commit. Do not push. In your report, give the question that has no answer.
