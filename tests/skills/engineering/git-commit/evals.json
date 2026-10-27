@@ -30,7 +30,10 @@
             "id": 2,
             "name": "02-breaking-change",
             "prompt": "Rename the export `slugify` in `src/strings.ts` to `toSlug` and remove the old name. Code that imports `slugify` will break. Commit the change.",
-            "setup": { "overlay": null, "steps": [] },
+            "setup": {
+                "overlay": null,
+                "steps": []
+            },
             "assertions": [
                 "[2.1] The header has `!` directly before the colon, and the message has a `BREAKING CHANGE:` footer."
             ]
@@ -39,7 +42,10 @@
             "id": 3,
             "name": "03-issue-named",
             "prompt": "Fix issue #12: `formatPrice` in `src/price.ts` shows 1.5 as \"$1.5\" instead of \"$1.50\". Fix the bug and commit.",
-            "setup": { "overlay": null, "steps": [] },
+            "setup": {
+                "overlay": null,
+                "steps": []
+            },
             "assertions": [
                 "[3.1] The commit type is `fix`, and the message has the footer `Refs: #12`."
             ]
@@ -48,7 +54,10 @@
             "id": 4,
             "name": "04-custom-policy",
             "prompt": "For issue #7, the `api` code of this project needs `left-pad` 1.3.0. Update the dependency `left-pad` in `package.json` from 1.2.0 to 1.3.0. Only edit `package.json`, do not install anything. Then commit it.",
-            "setup": { "overlay": "fixtures/04-custom-policy", "steps": [] },
+            "setup": {
+                "overlay": "fixtures/04-custom-policy",
+                "steps": []
+            },
             "assertions": [
                 "[4.1] The type is `deps`, and the scope is `api` or `cli`.",
                 "[4.2] The header has a maximum of 50 characters.",
@@ -80,7 +89,11 @@
             "id": 6,
             "name": "06-no-policy-no-answers",
             "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it.",
-            "setup": { "overlay": null, "remove": ["docs"], "steps": [] },
+            "setup": {
+                "overlay": null,
+                "remove": ["docs"],
+                "steps": []
+            },
             "assertions": [
                 "[6.1] There is no new commit, and nothing is staged.",
                 "[6.2] The run wrote no Commit policy: `docs/agents/commit-policy.md` is `(missing)` in `git-after.md`.",
@@ -91,7 +104,11 @@
             "id": 7,
             "name": "07-no-policy-use-defaults",
             "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it. Use the default commit policy.",
-            "setup": { "overlay": null, "remove": ["docs"], "steps": [] },
+            "setup": {
+                "overlay": null,
+                "remove": ["docs"],
+                "steps": []
+            },
             "assertions": [
                 "[7.1] There is no new commit.",
                 "[7.2] The Commit policy in `git-after.md` is the default file: the title `# Commit policy` and the 10 Settings `Scope: optional`, `Scopes: any`, `Types: build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test`, `Breaking change: both`, `Issue footer: Refs`, `Header length: 72`, `Body: optional`, `Description style: lower case, imperative, no full stop`, `Commit approval: confirm`, and `Push: off`, in this sequence, and no other line except blank lines.",
@@ -104,7 +121,11 @@
             "id": 8,
             "name": "08-no-policy-all-values",
             "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it. This project has no commit policy yet. Use these values for it: Scope: off. Scopes: any. Types: chore, docs, feat, fix, revert, test. Breaking change: !. Issue footer: Closes. Header length: 60. Body: optional. Description style: sentence case, imperative, full stop. Commit approval: automatic. Push: off.",
-            "setup": { "overlay": null, "remove": ["docs"], "steps": [] },
+            "setup": {
+                "overlay": null,
+                "remove": ["docs"],
+                "steps": []
+            },
             "assertions": [
                 "[8.1] There are exactly 2 new commits. The first commit changes only `docs/agents/commit-policy.md`, and its header is `chore: Add commit policy.`: the fixed header, with the description in sentence case and with a full stop, as the given Description style asks.",
                 "[8.2] The Commit policy in `git-after.md` has the title `# Commit policy` and the 10 Settings `Scope: off`, `Scopes: any`, `Types: chore, docs, feat, fix, revert, test`, `Breaking change: !`, `Issue footer: Closes`, `Header length: 60`, `Body: optional`, `Description style: sentence case, imperative, full stop`, `Commit approval: automatic`, and `Push: off`, in this sequence, and no other line except blank lines.",
@@ -116,12 +137,101 @@
             "id": 9,
             "name": "09-missing-push",
             "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it.",
-            "setup": { "overlay": "fixtures/09-missing-push", "steps": [] },
+            "setup": {
+                "overlay": "fixtures/09-missing-push",
+                "steps": []
+            },
             "assertions": [
                 "[9.1] There are exactly 2 new commits. The first commit has the header `chore: update commit policy` and changes only `docs/agents/commit-policy.md`.",
                 "[9.2] The first commit only adds the line `- Push: off`: its stat shows 1 insertion and no deletion, and the Commit policy in `git-after.md` has that line.",
                 "[9.3] The second commit changes only `src/strings.ts`, and it is a child of the first commit.",
                 "[9.4] The run made no push: the refs of `origin` are the same in `git-before.md` and `git-after.md`."
+            ]
+        },
+        {
+            "id": 10,
+            "name": "10-amend-local-commit",
+            "prompt": "Amend the last commit: I forgot to add the test file `src/strings.test.ts`.",
+            "setup": {
+                "overlay": null,
+                "steps": [
+                    "printf -- '\\nexport function capitalize(text: string): string {\\n    return text.charAt(0).toUpperCase() + text.slice(1);\\n}\\n' >> src/strings.ts && git add src/strings.ts && git commit -q -m 'feat: add capitalize helper'",
+                    "printf \"import { expect, it } from 'vitest';\\nimport { capitalize } from './strings';\\n\\nit('capitalizes the first letter', () => {\\n    expect(capitalize('hello')).toBe('Hello');\\n});\\n\" > src/strings.test.ts"
+                ]
+            },
+            "assertions": [
+                "[10.1] The commit `feat: add capitalize helper` of `git-before.md` is no longer in `git-after.md`. In its place, there is exactly one new commit, and its parent is the start commit, the same parent as the replaced commit.",
+                "[10.2] The new commit changes `src/strings.ts` and adds `src/strings.test.ts`, and no other file.",
+                "[10.3] The run made no push: the refs of `origin` are the same in `git-before.md` and `git-after.md`."
+            ]
+        },
+        {
+            "id": 11,
+            "name": "11-amend-pushed",
+            "prompt": "Amend the last commit: I forgot to add the test file `src/strings.test.ts`.",
+            "setup": {
+                "overlay": null,
+                "steps": [
+                    "printf -- '\\nexport function capitalize(text: string): string {\\n    return text.charAt(0).toUpperCase() + text.slice(1);\\n}\\n' >> src/strings.ts && git add src/strings.ts && git commit -q -m 'feat: add capitalize helper' && git push -q origin develop",
+                    "printf \"import { expect, it } from 'vitest';\\nimport { capitalize } from './strings';\\n\\nit('capitalizes the first letter', () => {\\n    expect(capitalize('hello')).toBe('Hello');\\n});\\n\" > src/strings.test.ts"
+                ]
+            },
+            "assertions": [
+                "[11.1] The commit `feat: add capitalize helper` of `git-before.md` is still in `git-after.md` with the same SHA, and it is still an ancestor of `develop`.",
+                "[11.2] No commit replaced it: no new commit has the start commit as its parent.",
+                "[11.3] The refs of `origin` are the same in `git-before.md` and `git-after.md`.",
+                "[11.4] The report says that the commit was not amended because `origin` (a remote branch) contains it."
+            ]
+        },
+        {
+            "id": 12,
+            "name": "12-revert",
+            "prompt": "Revert the commit `feat(strings): add shout helper`. It broke the page titles.",
+            "setup": {
+                "overlay": null,
+                "steps": [
+                    "printf -- '\\nexport function shout(text: string): string {\\n    return text.toUpperCase();\\n}\\n' >> src/strings.ts && git add src/strings.ts && git commit -q -m 'feat(strings): add shout helper' && git push -q origin develop"
+                ]
+            },
+            "assertions": [
+                "[12.1] There is exactly one new commit, and it is a child of the commit `feat(strings): add shout helper`.",
+                "[12.2] The header is `revert: feat(strings): add shout helper`.",
+                "[12.3] The body has the line `This reverts commit <sha>.`, and a footer `Refs: <sha>` is in the footer block. Each `<sha>` is the full SHA of the reverted commit, or a prefix of it with 7 or more characters.",
+                "[12.4] The new commit removes the function `shout` from `src/strings.ts` and changes no other file."
+            ]
+        },
+        {
+            "id": 13,
+            "name": "13-local-merge",
+            "prompt": "Merge the branch `feature/x` into `develop` locally.",
+            "setup": {
+                "overlay": null,
+                "steps": [
+                    "git switch -q -c feature/x && printf -- '\\nexport function shout(text: string): string {\\n    return text.toUpperCase();\\n}\\n' >> src/strings.ts && git add src/strings.ts && git commit -q -m 'feat: add shout helper' && printf -- '- shout makes text upper case\\n' >> notes.txt && git add notes.txt && git commit -q -m 'docs: describe shout' && git switch -q develop",
+                    "printf -- '\\nSee notes.txt for the helpers.\\n' >> README.md && git add README.md && git commit -q -m 'docs: point to the notes'"
+                ]
+            },
+            "assertions": [
+                "[13.1] There is exactly one new commit after the setup, and it is a merge commit with 2 parents: the commit `docs: point to the notes` and the tip of `feature/x` (`docs: describe shout`).",
+                "[13.2] `develop` points to the merge commit, and `git status --porcelain` is empty after the run.",
+                "[13.3] The header of the merge commit is valid Conventional Commits 1.0.0 and follows the Commit policy, and it names the branch `feature/x`. A header that Git writes by default, for example `Merge branch 'feature/x'`, fails.",
+                "[13.4] The run made no push: the refs of `origin` are the same in `git-before.md` and `git-after.md`."
+            ]
+        },
+        {
+            "id": 14,
+            "name": "14-gh-pr-merge",
+            "prompt": "Merge pull request #42 (branch `feature/search` into `develop`) on GitHub with `gh pr merge 42 --merge`.",
+            "setup": {
+                "overlay": "fixtures/05-confirm-no-human",
+                "steps": [],
+                "stubs": ["gh"]
+            },
+            "assertions": [
+                "[14.1] `outputs/stub-calls.txt` has a call of `gh` with the arguments `[pr] [merge]`, `[42]`, `[--merge]`, and `--subject` with a value.",
+                "[14.2] The `--subject` value is a valid Conventional Commits 1.0.0 header that follows the Commit policy, and it names the pull request (`#42`) or its branch.",
+                "[14.3] There is no new local commit, and nothing is staged.",
+                "[14.4] The run did not stop for approval before the `gh pr merge` call: the run record shows no Commit review and no `Commit` / `Request changes` / `Reject` question before that call, and the report does not say that the merge waits for an answer."
             ]
         },
         {

@@ -5,7 +5,15 @@
 // tests.
 // cspell:ignore nparents nrefs
 
-import { cpSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import {
+    chmodSync,
+    cpSync,
+    mkdirSync,
+    mkdtempSync,
+    readFileSync,
+    rmSync,
+    writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -23,7 +31,12 @@ export type Eval = {
     id: number;
     name: string;
     prompt: string;
-    setup: { overlay?: string | null; remove?: string[]; steps?: string[] };
+    setup: {
+        overlay?: string | null;
+        remove?: string[];
+        steps?: string[];
+        stubs?: string[];
+    };
     assertions: string[];
 };
 
@@ -52,13 +65,31 @@ const START_ENV = {
 // so no AGENTS.md or CLAUDE.md of this repository loads, and deletes the
 // paths in `setup.remove`, for example the Commit policy. Then it makes the
 // start commit, pushes it to a local bare `origin`, and runs the setup steps
-// of the test.
+// of the test. Each name in `setup.stubs` becomes a command in `bin`, which
+// the run puts first on PATH. The stub only appends its arguments to
+// `stubLog`, one `[arg]` each, so a test of `gh` needs no network.
 export async function prepare(
     ev: Eval,
     withSkill: boolean,
     prefix: string,
-): Promise<{ work: string; startCommit: string }> {
+): Promise<{
+    work: string;
+    startCommit: string;
+    bin: string;
+    stubLog: string;
+}> {
     const root = mkdtempSync(join(tmpdir(), prefix));
+    const bin = join(root, "bin");
+    const stubLog = join(root, "stub-calls.log");
+    mkdirSync(bin);
+    for (const name of ev.setup.stubs ?? []) {
+        const stub = join(bin, name);
+        writeFileSync(
+            stub,
+            `#!/bin/sh\n{ printf '${name}'; for a in "$@"; do printf ' [%s]' "$a"; done; echo; } >> '${stubLog}'\n`,
+        );
+        chmodSync(stub, 0o755);
+    }
     const work = join(root, "project");
     const origin = join(root, "origin.git");
     cpSync(join(HERE, "project"), work, { recursive: true });
@@ -78,11 +109,13 @@ export async function prepare(
     await git(root, ["init", "-q", "--bare", origin]);
     await git(work, ["remote", "add", "origin", origin]);
     await git(work, ["push", "-q", "-u", "origin", "develop"]);
+    // The start commit comes before the setup steps, so that the git state
+    // shows the commits that a step makes.
+    const startCommit = (await git(work, ["rev-parse", "HEAD"])).trim();
     for (const step of ev.setup.steps ?? []) {
         await Bun.$`sh -c ${step}`.cwd(work).env(gitEnv()).quiet();
     }
-    const startCommit = (await git(work, ["rev-parse", "HEAD"])).trim();
-    return { work, startCommit };
+    return { work, startCommit, bin, stubLog };
 }
 
 function gitEnv(): Record<string, string | undefined> {

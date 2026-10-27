@@ -9,8 +9,9 @@ You grade the runs of one output test. This is a read-only task, except for the 
   - `transcript.md`: the run record. Lines that start with `[subagent <description>]` come from a subagent.
   - `outputs/report.md`: the final message of the run.
   - `outputs/git-before.md` and `outputs/git-after.md`: the git state after the setup and after the run. Each has the commits after the start commit with their full messages and stats, `git status --porcelain`, the staged stat, the refs of `origin`, and the Commit policy.
+  - `outputs/stub-calls.txt`: only in a test with `setup.stubs`. One line for each call of a stub command, for example `gh`: the command name, then each argument in square brackets.
   - `outputs/audit.json`: what the runner found in the git commands of the main agent. `firstSkillLoad` and `firstGitWrite` are tool-call indexes from 0, or `null`. `forbidden` lists each command that S2 or S5 forbids.
-- The starting project is `tests/skills/engineering/git-commit/project/` with the overlay that `eval_metadata.json` gives. Its `setup.steps` ran after the start commit.
+- The starting project is `tests/skills/engineering/git-commit/project/` with the overlay that `eval_metadata.json` gives. Its `setup.steps` ran after the start commit. The commits that these steps made are in `git-before.md`.
 
 ## Grading
 

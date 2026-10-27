@@ -5,7 +5,7 @@
 // this repository loads and no test needs the network.
 // `--setting-sources project,local` keeps user skills and user memory out.
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
     type ClaudeEvent,
@@ -45,7 +45,7 @@ async function run(ev: Eval, config: string, options: Options) {
     const outputs = join(runDir, "outputs");
     mkdirSync(outputs, { recursive: true });
     const withSkill = config === "with_skill";
-    const { work, startCommit } = await prepare(
+    const { work, startCommit, bin, stubLog } = await prepare(
         ev,
         withSkill,
         `gc-eval-${String(ev.id).padStart(2, "0")}-${config}-`,
@@ -71,7 +71,12 @@ async function run(ev: Eval, config: string, options: Options) {
     if (withSkill) cmd.push("--append-system-prompt", FORCE_SKILL);
     const { proc, exited } = spawnTimed(
         cmd,
-        { cwd: work, env: claudeEnv(), stdout: "pipe", stderr: "pipe" },
+        {
+            cwd: work,
+            env: { ...claudeEnv(), PATH: `${bin}:${process.env.PATH}` },
+            stdout: "pipe",
+            stderr: "pipe",
+        },
         options.timeout,
     );
     const [raw, stderr] = await Promise.all([
@@ -91,6 +96,14 @@ async function run(ev: Eval, config: string, options: Options) {
         join(outputs, "git-after.md"),
         await gitState(work, startCommit),
     );
+    if (ev.setup.stubs?.length) {
+        writeFileSync(
+            join(outputs, "stub-calls.txt"),
+            existsSync(stubLog)
+                ? readFileSync(stubLog, "utf8")
+                : "(no calls)\n",
+        );
+    }
     writeJson(
         join(outputs, "audit.json"),
         auditGit(
