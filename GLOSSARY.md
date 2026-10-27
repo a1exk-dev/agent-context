@@ -24,7 +24,7 @@ The operator is the human who controls a project and the agents that work in it.
 _Avoid_: user, owner, maintainer
 
 **Commit policy**:
-A Commit policy is the file `docs/agents/commit-policy.md` of a project. It holds the Settings that each commit by the git-commit Skill obeys, and no other text.
+A Commit policy is the file `docs/agents/commit-policy.md` of a project. It holds the title `# Commit policy` and the Settings that each commit by the git-commit Skill obeys, and no other text.
 _Avoid_: commit rules, commit conventions, commit config
 
 **Setting**:
@@ -32,5 +32,5 @@ A Setting is one line `- <name>: <value>` of a Commit policy. The git-commit Ski
 _Avoid_: option, rule
 
 **Commit review**:
-A Commit review is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message. The commit occurs only after the Operator approves that review.
+A Commit review is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message. But for a diff of more than 500 lines, the Commit review gives the command that shows the diff, not the full diff. The commit occurs only after the Operator approves that review.
 _Avoid_: commit preview, approval request
