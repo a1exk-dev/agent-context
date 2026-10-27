@@ -1,0 +1,76 @@
+[
+    { "query": "commit this", "should_trigger": true },
+    {
+        "query": "write the commit message for these staged changes",
+        "should_trigger": true
+    },
+    {
+        "query": "amend the last commit, I forgot to add the test",
+        "should_trigger": true
+    },
+    {
+        "query": "revert the commit that broke the login page",
+        "should_trigger": true
+    },
+    {
+        "query": "fix the typo in README.md and commit it",
+        "should_trigger": true
+    },
+    {
+        "query": "merge feature/search into develop locally",
+        "should_trigger": true
+    },
+    {
+        "query": "set up a commit policy for this repo",
+        "should_trigger": true
+    },
+    {
+        "query": "save my work in git with a good message",
+        "should_trigger": true
+    },
+    {
+        "query": "the last commit message is wrong, reword it",
+        "should_trigger": true
+    },
+    {
+        "query": "add the new config file to git and commit",
+        "should_trigger": true
+    },
+    { "query": "merge PR #42 with gh pr merge", "should_trigger": true },
+    {
+        "query": "write the PR description for this branch",
+        "should_trigger": false
+    },
+    {
+        "query": "show me what changed in the last 3 commits",
+        "should_trigger": false
+    },
+    {
+        "query": "rebase feature/search onto develop",
+        "should_trigger": false
+    },
+    {
+        "query": "create a branch bugfix/login from develop",
+        "should_trigger": false
+    },
+    {
+        "query": "set up commitlint and a commit-msg hook",
+        "should_trigger": false
+    },
+    {
+        "query": "generate CHANGELOG.md from the git history",
+        "should_trigger": false
+    },
+    {
+        "query": "stash my changes and switch to main",
+        "should_trigger": false
+    },
+    {
+        "query": "review the code in the last commit for bugs",
+        "should_trigger": false
+    },
+    {
+        "query": "explain what Conventional Commits is",
+        "should_trigger": false
+    }
+]

@@ -1,0 +1,9 @@
+{
+    "name": "shop-utils",
+    "version": "1.4.0",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "left-pad": "1.2.0"
+    }
+}
