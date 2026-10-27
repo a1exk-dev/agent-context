@@ -8,5 +8,5 @@
 - Header length: 72
 - Body: optional
 - Description style: lower case, imperative, no full stop
-- Commit approval: confirm
-- Push: off
+- Commit approval: automatic
+- Push: automatic
