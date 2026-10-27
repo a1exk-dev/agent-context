@@ -206,6 +206,23 @@ export function auditGit(calls: ToolCall[]): GitAudit {
     return audit;
 }
 
+const MAX_LOAD_CALLS = 8;
+
+// The load-test decision for the tool calls of a run so far: true when the
+// Skill loaded before the first git write and within the first 8 calls,
+// false when a git write or the 8th call came first, and null when the run
+// must continue.
+export function loadDecision(calls: ToolCall[]): boolean | null {
+    const { firstSkillLoad, firstGitWrite } = auditGit(
+        calls.slice(0, MAX_LOAD_CALLS),
+    );
+    if (firstSkillLoad !== null) {
+        return firstGitWrite === null || firstSkillLoad < firstGitWrite;
+    }
+    if (firstGitWrite !== null || calls.length >= MAX_LOAD_CALLS) return false;
+    return null;
+}
+
 type GitCommand = { text: string; sub: string; args: string[] };
 
 // Splits a shell command into its git commands. Quoted text becomes one

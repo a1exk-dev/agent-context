@@ -10,6 +10,8 @@ The eval plan is in the "Testing Decisions" section of issue #67. These files ru
 | `run-evals.ts` | Runs the output tests with `claude -p`, with and without the skill. |
 | `eval-lib.ts` | The test repository, the git state, and the git-command audit. `eval-lib.test.ts` tests the audit. The general runner code comes from `tests/skills/writing/agent-instructions/eval-lib.ts`. |
 | `grader.md` | Instructions for the grader subagent that checks each statement. |
+| `load-requests.json` | The 20 load requests of the description test, each with the expected result. |
+| `run-load-test.ts` | Runs the load test with `claude -p`. `eval-lib.ts` gives the load decision, and `eval-lib.test.ts` tests it. |
 
 ## Run
 
@@ -22,6 +24,14 @@ bun tests/skills/engineering/git-commit/run-evals.ts --out /tmp/gc-evals/iterati
 It runs a maximum of 5 runs at the same time (`--jobs 5`), and refuses a `--jobs` value above 5. A run that hits the usage limit gets a `LIMIT_HIT` file in its folder. Run it again later.
 
 Then give `grader.md` and one eval folder to a fresh grader subagent, one grader for each run.
+
+## Load test
+
+```sh
+bun tests/skills/engineering/git-commit/run-load-test.ts --out /tmp/gc-load/round-1.json
+```
+
+The load test runs each request 3 times (`--runs 3`), a maximum of 5 runs at the same time. Each run starts from a test repository with the Skill in `.claude/skills/git-commit/`, but with no system prompt that names the Skill. Before the run, the repository gets the branch `feature/search`, 2 commits that are not pushed, one staged change, one unstaged change, one new file, and a stub `gh`, so that each request fits the repository. A run counts as a load when the agent calls the Skill or reads its `SKILL.md` before its first `git add`, `git commit`, `git merge`, or `git revert`, and within its first 8 tool calls. Then the runner stops the run. A request is correct when its load rate is on the correct side of 0.5. `--ids 1,11` runs only the requests at these positions in `load-requests.json`, for example the requests that failed.
 
 ## The test repository
 

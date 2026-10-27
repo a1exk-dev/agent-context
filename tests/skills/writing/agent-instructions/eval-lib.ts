@@ -290,6 +290,18 @@ export function claudeEnv(): Record<string, string | undefined> {
     return env;
 }
 
+// Gives each line of a stream as soon as the line is complete.
+export async function* lines(stream: ReadableStream<Uint8Array>) {
+    let buffer = "";
+    for await (const chunk of stream.pipeThrough(new TextDecoderStream())) {
+        buffer += chunk;
+        const parts = buffer.split("\n");
+        buffer = parts.pop() ?? "";
+        yield* parts;
+    }
+    if (buffer) yield buffer;
+}
+
 // Parses the JSON lines of a transcript and skips any other line.
 export function parseJsonLines<T>(raw: string): T[] {
     return raw.split("\n").flatMap((line) => {

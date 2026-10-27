@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { auditGit, gitCommands, isSkillLoad, readEvals } from "./eval-lib.ts";
+import {
+    auditGit,
+    gitCommands,
+    isSkillLoad,
+    loadDecision,
+    readEvals,
+} from "./eval-lib.ts";
 
 const bash = (command: string) => ({ name: "Bash", input: { command } });
 
@@ -85,5 +91,26 @@ describe("auditGit", () => {
         "git commit -m \"$(cat <<'EOF'\nfeat: add -A support\nEOF\n)\"",
     ])("permits %s", (command) => {
         expect(auditGit([bash(command)]).forbidden).toEqual([]);
+    });
+});
+
+describe("loadDecision", () => {
+    const load = { name: "Skill", input: { skill: "git-commit" } };
+    const status = bash("git status");
+
+    it("counts a load before the first git write", () => {
+        expect(loadDecision([status, load, bash("git add a.ts")])).toBe(true);
+    });
+
+    it("counts no load after the first git write", () => {
+        expect(loadDecision([bash("git add a.ts"), load])).toBe(false);
+    });
+
+    it("counts no load after the 8th tool call", () => {
+        expect(loadDecision([...Array(8).fill(status), load])).toBe(false);
+    });
+
+    it("waits while no load and no git write occurred", () => {
+        expect(loadDecision(Array(7).fill(status))).toBeNull();
     });
 });
