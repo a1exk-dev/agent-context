@@ -235,6 +235,36 @@
             ]
         },
         {
+            "id": 15,
+            "name": "15-push-automatic",
+            "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it.",
+            "setup": {
+                "overlay": "fixtures/15-push-automatic",
+                "steps": []
+            },
+            "assertions": [
+                "[15.1] There is exactly one new commit, and it changes only `src/strings.ts`.",
+                "[15.2] The run pushed: in `git-after.md`, the `origin` ref `refs/heads/develop` has the SHA of `HEAD`.",
+                "[15.3] The push was not a force push: the run record shows a `git push` with no `--force`, `--force-with-lease`, `-f`, or `+` before the branch, and the start commit is still an ancestor of the `origin` branch.",
+                "[15.4] The report says that the commit was pushed and names the branch."
+            ]
+        },
+        {
+            "id": 16,
+            "name": "16-push-confirm-no-human",
+            "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it.",
+            "setup": {
+                "overlay": "fixtures/16-push-confirm-no-human",
+                "steps": []
+            },
+            "assertions": [
+                "[16.1] There is exactly one new commit, and it changes only `src/strings.ts`.",
+                "[16.2] The run made no push: the refs of `origin` are the same in `git-before.md` and `git-after.md`, and the run record shows no `git push`.",
+                "[16.3] The report says that the push waits for the answer of the Operator (`Push` or `Don't push`).",
+                "[16.4] The agent names the branch `develop` and the new commit that the push would send, in a message or in the report."
+            ]
+        },
+        {
             "id": 17,
             "name": "17-failing-hook",
             "prompt": "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it.",

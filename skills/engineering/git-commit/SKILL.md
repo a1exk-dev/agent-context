@@ -147,10 +147,10 @@ Obey these instructions for the approval:
 
 ## After a commit
 
-- CAUTION: Never push with `--force` or `--force-with-lease`. When you push with these options, you can delete commits that other persons pushed.
-- When `Push` is `off`, do not push.
-- When `Push` is `confirm`, ask the Operator before you push. Push only after the Operator approves.
-- When `Push` is `automatic`, push with no question.
+- After the commit of a Commit review from a subagent, run `cat -n docs/agents/commit-policy.md`. Then use the `Push` Setting of the Commit policy. The subagent read the Commit policy, but you did not read it.
+- When `Push` is `off`, do not push the commits of the task.
+- The `Push` Setting is applicable only after a commit that this skill makes in the task. When the task makes no commit, this skill does not control whether you push.
+- After the last commit of the task, if `Push` is `confirm` or `automatic`, read `references/push.md`. Then do the steps in that file.
 
 ## When you write the report
 
