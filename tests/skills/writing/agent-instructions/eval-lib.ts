@@ -412,7 +412,7 @@ export function loadVerdict(
 
 // A run that hits the usage limit stops early, so its result does not count.
 export function hitUsageLimit(output: string): boolean {
-    return output.includes("hit your session limit");
+    return /hit your [\w -]*limit/.test(output);
 }
 
 export type OpenCodeEvent = {
