@@ -56,9 +56,9 @@ When two sources do not agree, obey the higher tier. The tiers are in this seque
 1. **Loading rules:** These are the MUST items of the Agent Skills specification for a Skill, and the platform loading rules for each Agent instruction. The MUST items include all items that `skills-ref validate` examines.
 2. **ASD-STE100:** This tier contains the STE rules of this skill.
 3. **ISO 24495-1 checks:** This tier contains the plain-language checks of this skill.
-4. **Recommendations:** This tier contains the recommendations of the Agent Skills specification. Text that does not obey a recommendation can obey all rules of the specification.
+4. **Recommendations:** This tier contains the recommendations of the Agent Skills specification and steps 1 to 6 of "When you write a new SKILL.md or new entry-file text" in `references/loading-rules.md`. Text that does not obey a recommendation can obey all rules of the specification.
 
-For an Agent instruction that is not a Skill, the Agent Skills specification is not applicable. Tier 1 then contains only the loading rules for that file, and tier 4 is empty.
+For an Agent instruction that is not a Skill, the Agent Skills specification is not applicable. Then tier 1 contains only the loading rules for that file. Tier 4 contains only steps 1 to 6 of "When you write a new SKILL.md or new entry-file text" in `references/loading-rules.md`.
 
 This table gives the known cases where two sources do not agree, and the decision for each case:
 
@@ -87,6 +87,7 @@ Do these steps in the write job and in the edit job.
      - For text that is applicable in each session, write entry-file text in the file that `references/loading-rules.md` gives. If the project keeps Rules, write a Rule.
      - For text that is applicable only to some tasks, write a Skill.
      - For long text, write a reference file.
+   - When the selected file type is a Skill or entry-file text, obey "When you write a new SKILL.md or new entry-file text" in `references/loading-rules.md`.
 5. In the edit job, change only the part that the user wants to change. In the other parts, do not write lines again, change the numbers of lines, or move lines. Do not put two lines into one line. A line that the change moves to a different section is in the changed part. This rule is also applicable when a finding tells you to make a change. The user gives approval only for the change that they wanted. If you find a type that is not correct, add a warning.
 6. In the edit job, the user can tell you that an agent did not obey an instruction. For that edit job, record the condition of the previous instruction in quotation marks. The condition can be in the heading of the section or in the sentence. The Summary part of the end-of-run report gives this condition. If the previous instruction has no condition, record "no condition".
 7. Before you write text, read `references/ste-rules.md`, `references/plain-language-checks.md`, and `references/technical-terms.md`. If the file that you write or edit is a Skill, also read `references/agent-skills-spec.md`. In the edit job, first use these rules to examine each section that you will change. A new section has no previous text to examine. The Summary part then gives no problem for that section. Record each problem before you correct it. Keep the list of these problems for the Summary part. Then write the text by these rules.
