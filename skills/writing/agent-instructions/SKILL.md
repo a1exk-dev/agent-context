@@ -28,7 +28,8 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - The **loading reviewer**, the **ASD-STE100 reviewer**, and the **ISO 24495-1 reviewer** are the 3 reviewer subagents.
 - The **self-check** is the review by the 3 reviewer subagents, in a maximum of 3 rounds.
 - The **reader test** is a dry run of 3 tasks by new reader subagents after the self-check.
-- An **extraction candidate** is a section of an unchanged part in the edit job. In the edit job, "When you recommend text to move" in `references/loading-rules.md` gives these sections. The report gives each of these sections to the user. The author keeps the section in its file until the user gives approval.
+- In the edit job, the **changed part** is the text that the user wants to change. It also includes each line that you add. When you move a line of that text to a different section, the line stays in the changed part. Each other part of the file is an **unchanged part**.
+- An **extraction candidate** is a whole section of an unchanged part that the author recommends to move in the edit job. In the edit job, "When you recommend text to move" in `references/loading-rules.md` gives these sections.
 
 ## Files that are not Agent instructions
 
@@ -70,7 +71,7 @@ This table gives the known cases where two sources do not agree, and the decisio
 | ISO neutral tone and CAUTION | You can use CAUTION. Use no other emphasis. |
 | The rule "Write each pointer as a sentence that gives the file" and the rule "Make no sequences of pointers" | When a reference file refers to a different reference file that `SKILL.md` also points to, give the file name. This text is not a sequence of pointers. |
 | File size | When you examine the file size, use only the limits in `references/loading-rules.md` and `references/agent-skills-spec.md`. |
-| File-size limit and the edit-job rule "change only the changed part" (step 5) | Move whole sections without changes. |
+| File-size limit and the edit-job rule 'change only the changed part' | Move whole sections without changes. |
 | The rule "Copy the format of the entries" for the glossary and `MEMORY.md`, and the STE rule "Do not omit words" | Copy the format of the entries. If the entries start the definition without the term, start the new definition without the term. |
 
 If two sources do not agree in a case that is not in this table, use the tier sequence. Write a warning that gives the case and the tier that you obeyed.
@@ -88,7 +89,7 @@ Do these steps in the write job and in the edit job.
      - For text that is applicable in each session, write entry-file text in the file that `references/loading-rules.md` gives. If the project keeps Rules, write a Rule.
      - For text that is applicable only to some tasks, write a Skill.
      - For long text, write a reference file.
-5. In the edit job, change only the part that the user wants to change. In the other parts, do not write lines again, change the numbers of lines, or move lines. Do not put two lines into one line. A line that the change moves to a different section is in the changed part. This rule is also applicable when a finding tells you to make a change. The user gives approval only for the change that they wanted. The file-size limit is the only exception, as the table in "Sequence of the sources" gives. If you find a type that is not correct, add a warning.
+5. In the edit job, change only the changed part. In the unchanged parts, do not write lines again. Do not move lines in the unchanged parts. In the unchanged parts, do not put two lines into one line or one line into two lines. This rule is also applicable when a finding tells you to make a change. The user gives approval only for the change that they wanted. The file-size limit is one exception, as the table in "Sequence of the sources" gives. An extraction candidate that the user gives approval for is the other exception. If you find a file type that is not correct for the text, add a warning.
 6. In the edit job, the user can tell you that an agent did not obey an instruction. For that edit job, record the condition of the previous instruction in quotation marks. The condition can be in the heading of the section or in the sentence. The Summary part of the end-of-run report gives this condition. If the previous instruction has no condition, record "no condition".
 7. Before you write text, read `references/ste-rules.md`, `references/plain-language-checks.md`, and `references/technical-terms.md`. If the file that you write or edit is a Skill, also read `references/agent-skills-spec.md`. In the edit job, first use these rules to examine each section that you will change. A new section has no previous text to examine. The Summary part then gives no problem for that section. Record each problem before you correct it. Keep the list of these problems for the Summary part. Then write the text by these rules. In the write job, also move text to reference files as "When the write job makes a SKILL.md or entry-file text" in `references/loading-rules.md` tells you. In the edit job, move text as "When the edit job changes a SKILL.md or an entry file" in that file tells you.
 8. Before the self-check, read `references/review.md`. Then do the self-check that it gives.
@@ -106,7 +107,7 @@ Do these steps in the write job and in the edit job.
 The job stops with one report. Use this structure. Do not write a part that has no items.
 
 1. Write the report in the structure below. Obey the rules for each part. These rules are below the template.
-2. Compare the report with each reviewer report. Include each warning. In the edit job, also include each extraction candidate. For each finding in a warning, give its rule, its text in quotation marks, and its problem. For a file-size warning, give the measured file size and its limit.
+2. When you write the report, compare it with each reviewer report. Include each warning that this skill or its reference files tell you to add. In the edit job, also include each extraction candidate. For each finding in a warning, give its rule, its text in quotation marks, and its problem.
 3. Save the full report to a file in a temporary folder that is not in the project.
 4. After you save the report file, read it. Then your last message gives the full lists, not a short summary.
 5. Send the full text of the file as your last message. Copy the text without changes. Do not write the report again in different words. Then the user can see the full lists and select the changes that they want.
@@ -136,17 +137,25 @@ The Warnings part always starts with the word-selection warning. Copy it with th
 - In the edit job, each finding about text that is not in the changed part.
 - Each problem from the reader test that you cannot correct.
 - Each part that a round 3 correction changed. Also each part that changed after the reader test when you did all 3 review rounds. Write that no reviewer examined it.
-- The same agent did all checks, and the readers knew the previous text. Give the path of the report folder. This item is applicable when no subagent was available.
+- Each check that you did yourself because no subagent was available or because a new subagent also failed. Give the path of the report folder. If you did a reader task yourself, write that you were not a new reader for that task.
 - Each finding that you cannot correct without help from the user.
 - Each case where two sources do not agree and that the table does not give, with the obeyed tier.
 - A feature that only one platform reads, if you wrote it because the user told you to write it.
 - A file type that is not correct for the text, also when you found it during the edit job.
 - An entry-file layout that gives no copy of the text to a target platform.
 - An Agent instruction that does not load in each session and that no pointer identifies.
-- A file size that is more than its limit after you moved text. Give the measured file size and the limit.
+- A file size that is more than its limit after you moved text, or after a new Rule. Give the measured file size and the limit.
 - A word that is not approved, not in the base list, and not in the glossary. Give the recommended STE word or glossary entry.
 - A Skill folder that a target platform does not load, with that platform.
 
-In the write job and in the edit job, give each text that you moved in the Summary part. The write job has no Extraction candidates part. In the edit job, copy the full candidate list of the round-1 loading reviewer into the Extraction candidates part. Use the corrected items from the reviews after round 1. A finding of a different reviewer can tell you to move unchanged text. If the section of that text is an extraction candidate, add that section. Do not include a section that you moved. Use the heading of each section as the name of its candidate.
+Obey these rules for the moved text and the extraction candidates:
+
+- In the Summary part of the write job and of the edit job, give each text that you moved. For each text, give its new file and the reason.
+- When the file size was the reason, give the file size before you moved the text, and the limit.
+- In the write job, write no Extraction candidates part.
+- In the edit job, copy the full candidate list of the round-1 loading reviewer into the Extraction candidates part. Only round 1 reviews the full file.
+- If a loading reviewer after round 1 gives a different item for a section, use the last item.
+- A reviewer other than the loading reviewer can tell you to move text in an unchanged part. Then find the section of that text. If "When you recommend text to move" in `references/loading-rules.md` gives that section, add it to the Extraction candidates part.
+- Use the heading of each section as the name of its candidate.
 
 The last part gives each base-list word that has a different meaning in the glossary.

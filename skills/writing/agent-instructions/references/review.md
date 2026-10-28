@@ -27,8 +27,13 @@ Each review round and each reader-test round has these steps:
    - Codex: Call `wait_agent` again until each subagent gives its report. Before you get all reports, do not stop, because a stopped main agent gets no report. If the `close_agent` tool is available, close each subagent after its report. The maximum of 3 subagents includes each open subagent.
    - OpenCode: Wait for the message that gives the reports of all `task` tool calls.
 4. Before you get all reports of the round, do not change a file that the round examines. This makes sure that all subagents of the round read the same text.
-5. A subagent fails when the tool call that starts it gives an error. A subagent also fails when it stops without a report. If a subagent fails, first wait for the other reports of its group. Then start one new subagent for that check. Before you start the next group, get the report of this new subagent.
-6. If the new subagent also fails, go to the section "When no subagent is available" for that check and for all checks after it. Do not do a check again when a subagent gave the report for that check.
+5. A subagent fails when the tool call that starts it gives an error. A subagent also fails when it stops without a report. If a subagent fails, do not wait for a report from it. Its group is complete without that report. Start the other groups of the round as item 2 tells you. Then get all other reports of the round. On Codex, if the `close_agent` tool is available, close each failed subagent. Then start one new subagent for each failed check, as items 1 to 3 tell you. With this sequence, a maximum of 3 subagents operate at the same time.
+6. If a new subagent also fails, do these checks as "When no subagent is available" tells you:
+   - Each check whose new subagent failed.
+   - Each check of the round that you did not start.
+   - All checks of the later review rounds and reader-test rounds. The tool that starts subagents failed 2 times for the same check.
+
+   When a subagent gave the report for a check, do not do that check again.
 7. After the last report of the round, correct the file. The last report can come from a new subagent or from "When no subagent is available".
 
 ## When you start the reviewers
@@ -52,7 +57,7 @@ Do not run commands that change files, Git data, or external services.
 
 File under review: <absolute path>
 Sections to review: <"the full file" in round 1, or the changed sections in rounds 2 and 3>
-Sections that the author can edit: <the part that the user wants to change, for example a new section, or "the full file" for a new file. In the edit job, include the pointer of each section that you moved, but not the text of that section>
+Sections that the author can edit: <the changed part, for example a new section, or "the full file" for a new file. In the edit job, include the pointer of each section that you moved, but not the text of that section>
 Job: <"the write job" or "the edit job">
 Project folder: <absolute path>
 Target platforms: <the target platforms that you found with loading-rules.md, for example "Claude Code, Codex, and OpenCode">
@@ -118,7 +123,7 @@ Do this check on each round 3 correction. Also do it on each correction after th
 2. For each sentence of 18 words or more, write a number after each word, for example "If(1) no(2) commit(3)". The numbers prevent errors in the count near the limit.
 3. For each changed pointer, also write the condition from that sentence in quotation marks. If a pointer has no condition, add the condition to that sentence.
 4. Correct each sentence that is longer than its limit: 20 words for procedural text, 25 words for descriptive text and notes. After each correction, do these checks again.
-5. Add a warning that tells that no reviewer examined the changed part.
+5. Add a warning that tells that no reviewer examined the text that these corrections changed.
 
 ## After the self-check: the reader test
 
@@ -136,7 +141,7 @@ Start the reader test only after the self-check stops. Do not start a reader sub
    - When a part is not clear to a reader, that part has a problem.
 6. Do not change the instruction until all readers of the round give their reports. Then all readers of a round read the same text. Then, if a task has a problem, correct your text. After the correction, do the test again. Do a maximum of 3 reader-test rounds.
 7. If you cannot correct a problem without help from the user, put it in a warning.
-8. When a correction after the reader test changes text, start the reviewers again for the changed part. This check is one of the 3 review rounds.
+8. After a reader-test round, a correction can change text. If you did fewer than 3 review rounds, start the reviewers again for that text before the next reader-test round. This review round is one of the 3 review rounds.
 9. If you did all 3 review rounds, do the check in "After the last review round". Then do the next reader-test round, if the limit permits it.
 
 Use this prompt for each reader:
@@ -160,7 +165,7 @@ Give only these 3 parts. Write each step on one line. Put long text, for example
 
 ## When no subagent is available
 
-This section is applicable when no tool starts a subagent. It is also applicable to a check when the new subagent for that check also fails, and to all checks after it. In this case, give in the warning of this section only the checks that you did yourself.
+This section is applicable when no tool starts a subagent. It is also applicable to the checks that item 6 of "When you do a round" gives.
 
 Do each review and each reader task as a different check. Use the same reviewer prompt, reader prompt, and round limits. Each check has a different report file. With these files, the user can examine each finding and the sequence of the checks.
 
@@ -183,17 +188,17 @@ Do not save 2 reports in one tool call or in one message. Do not send 2 tool cal
 
 Write each report in full. In each finding, write the full rule. Do not refer to a different finding or a different report.
 
-The end-of-run report cannot replace these files. Give the path of the report folder in the Warnings part of the end-of-run report. Put this path in the warning that tells that the same agent did all checks.
+The end-of-run report cannot replace these files. Give the path of the report folder in the warning about the checks that you did yourself.
 
 Do the checks in this sequence:
 
-1. In each review round, do the 3 reviews in the sequence of the reviewer table.
+1. In each review round, do each review that no subagent did, in the sequence of the reviewer table.
 2. Start each review report with its title, for example "Round 2: ASD-STE100 review". Give each finding in the form of the reviewer prompt. Keep the necessary lists apart from the findings. Give no other items.
 3. In each ASD-STE100 review report, write each sentence, its text type, and its word count on one line. These lines replace the list file of the reviewer prompt.
 4. Correct your text after each round. Then do the next round, or write that the self-check stopped.
-5. After the self-check stops, do the 3 reader tasks, one after the other. Use these titles:
-   - "Reader task 1 (typical): <task>"
-   - "Reader task 2 (typical): <task>"
-   - "Reader task 3 (out-of-scope): <task>"
+5. After the self-check stops, do each reader task that no subagent did, one after the other. Use these titles, with the number of the reader-test round and the file name:
+   - "Reader-test round <n>, <file>, reader task 1 (typical): <task>"
+   - "Reader-test round <n>, <file>, reader task 2 (typical): <task>"
+   - "Reader-test round <n>, <file>, reader task 3 (out-of-scope): <task>"
 6. In each reader report, give the 3 parts of the reader prompt. For each step, write the part of the instruction that you used in quotation marks.
-7. Add a warning that tells that the same agent did all checks and that the readers knew the previous text.
+7. When you write the end-of-run report, add the warning about the checks that you did yourself. Write it as the Warnings part in `SKILL.md` tells you.
