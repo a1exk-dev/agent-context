@@ -12,13 +12,28 @@ No check is a script. New subagents do the self-check, because they can examine 
 3. Put the full task and its limits in the prompt. No platform can make a subagent read-only from a `SKILL.md` file. Let the subagent use the shell, because Codex uses the shell to read files.
 4. Give each subagent the absolute paths of the reference files that it uses and of the file that it examines. The reference files are in the `references/` folder next to the `SKILL.md` file of this skill.
 5. Start a new subagent for each check: each reviewer in each round, and each reader task. Do not give a second check to a subagent, because that subagent knows the previous text and findings.
-6. Start one subagent at a time, also in round 2 and round 3. Subagents that operate at the same time can stop at a usage limit. Wait for the report of each subagent before you start the next subagent.
+6. Start the subagents of each round as "When you do a round" tells you.
 
-If no tool starts a subagent, go to the section "When no subagent is available". When the tool call that starts a subagent gives an error, also go to that section.
+If no tool starts a subagent, go to the section "When no subagent is available".
+
+## When you do a round
+
+Each review round and each reader-test round has these steps:
+
+1. If the round has 3 checks or fewer, start all subagents of the round in one message.
+2. If the round has more than 3 checks, start the subagents in groups of 3. Put the 3 checks of one file in one group. Start each group in one message. After you get all reports of a group, start the next group. Codex permits a maximum of 3 subagents at the same time.
+3. Wait for the reports of all subagents of the round:
+   - Claude Code: Wait for one message for each subagent.
+   - Codex: Call `wait_agent` again until each subagent gives its report. Before you get all reports, do not stop, because a stopped main agent gets no report. If the `close_agent` tool is available, close each subagent after its report. The maximum of 3 subagents includes each open subagent.
+   - OpenCode: Wait for the message that gives the reports of all `task` tool calls.
+4. Before you get all reports of the round, do not change a file that the round examines. This makes sure that all subagents of the round read the same text.
+5. A subagent fails when the tool call that starts it gives an error. A subagent also fails when it stops without a report. If a subagent fails, first wait for the other reports of its group. Then start one new subagent for that check. Before you start the next group, get the report of this new subagent.
+6. If the new subagent also fails, go to the section "When no subagent is available" for that check and for all checks after it. Do not do a check again when a subagent gave the report for that check.
+7. After the last report of the round, correct the file. The last report can come from a new subagent or from "When no subagent is available".
 
 ## When you start the reviewers
 
-In each round, start 3 new, read-only reviewer subagents, one after the other:
+In each round, start 3 new, read-only reviewer subagents at the same time:
 
 | Reviewer | Checks | Reference files |
 |---|---|---|
@@ -110,7 +125,7 @@ Start the reader test only after the self-check stops. Do not start a reader sub
 1. For each new or changed file, write 3 tasks, also when the file has many changes. Each task tests the new or changed rules of its file:
    - Write 2 typical tasks with different inputs. If the user told you that an agent did not obey an instruction, make one task from that problem.
    - Write 1 out-of-scope task. It looks almost the same as a typical task, but the new or changed instruction does not change it. It uses the same file, words, or condition as the instruction, but the instruction is not applicable to it. An example for a rule about release branches is a task that makes a feature branch. If the instruction is applicable to all project tasks, use a different project or platform for this task.
-2. Each reader-test round has the 3 tasks of each file. Give each task to a different new subagent, with the path of the new or changed file. Start the subagents one after the other.
+2. Each reader-test round has the 3 tasks of each file. Give each task and the path of its new or changed file to a different new subagent. Start the subagents as "When you do a round" tells you.
 3. Make sure that each subagent does a dry run. The first line of the reader prompt tells the subagent to do a dry run.
 4. Make sure that each subagent gives its steps for the task and the parts of the instruction that it used.
 5. Compare each report with the instruction:
@@ -143,7 +158,7 @@ Give only these 3 parts. Write each step on one line. Put long text, for example
 
 ## When no subagent is available
 
-This section is applicable when no tool starts a subagent, or when the tool call that starts a subagent gives an error.
+This section is applicable when no tool starts a subagent. It is also applicable to a check when the new subagent for that check also fails, and to all checks after it. In this case, give in the warning of this section only the checks that you did yourself.
 
 Do each review and each reader task as a different check. Use the same reviewer prompt, reader prompt, and round limits. Each check has a different report file. With these files, the user can examine each finding and the sequence of the checks.
 
