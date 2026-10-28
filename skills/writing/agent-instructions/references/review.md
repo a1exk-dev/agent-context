@@ -43,7 +43,7 @@ In each round, start 3 new, read-only reviewer subagents at the same time:
 
 Each reviewer reads the prompt in this file to know the requirements for its report. A reviewer does only the review that the author gave to it.
 
-Copy this prompt for each reviewer. Replace only the placeholders. Do not change the report requirements. Keep the lines for the reviewer that you start. Remove the label in angle brackets from these lines. Remove the lines for the other reviewers. Give the same pointer targets to each reviewer.
+Copy this prompt for each reviewer. Replace only the placeholders. Do not change the report requirements. Keep the lines for the reviewer that you start. Remove the label in angle brackets from these lines. Remove the lines for the other reviewers. In the write job, also remove the lines for the loading reviewer in the edit job. Give the same pointer targets to each reviewer.
 
 ```text
 You are the <name> reviewer for an Agent instruction: a file that an agent reads as instructions.
@@ -52,7 +52,7 @@ Do not run commands that change files, Git data, or external services.
 
 File under review: <absolute path>
 Sections to review: <"the full file" in round 1, or the changed sections in rounds 2 and 3>
-Sections that the author can edit: <the part that the user wants to change, for example a new section, or "the full file" for a new file>
+Sections that the author can edit: <the part that the user wants to change, for example a new section, or "the full file" for a new file. In the edit job, include the pointer of each section that you moved, but not the text of that section>
 Job: <"the write job" or "the edit job">
 Project folder: <absolute path>
 Target platforms: <the target platforms that you found with loading-rules.md, for example "Claude Code, Codex, and OpenCode">
@@ -71,9 +71,9 @@ The author does not change the text of that section.
 Copy the condition from that sentence. If it has no condition, give a finding.
 Include each instruction that tells the reader to read, examine, or obey a different file.
 Then write the file size of each file and its limit.
-In the edit job, write the extraction candidates in a different list: section heading, recommended file, and pointer sentence.
-In the edit job, include the candidates in all sections under review.
-In the write job, give a finding for each text to move in a section that the author can edit.
+Give a finding for each text to move in a section that the author can edit.
+Also give a finding for each text that the author moved and that does not obey loading-rules.md. In the Text field, write the pointer of that text in quotation marks. If that text has no pointer, copy the heading of the moved section.
+<For the loading reviewer in the edit job only:> Write the extraction candidates in a different list: section heading, recommended file, and pointer sentence. Put in this list only sections under review that the author cannot edit. Use only the candidates that "When you recommend text to move" in loading-rules.md gives.
 <For the ASD-STE100 reviewer only:> First, write each sentence with its text type
 (procedural, descriptive, or note) and its word count.
 For each sentence of 18 words or more, write a number after each word,
