@@ -12,9 +12,9 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
@@ -38,9 +38,9 @@
                 "remove": ["AGENTS.md", "CLAUDE.md"]
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
@@ -63,9 +63,9 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
@@ -92,9 +92,9 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
@@ -120,9 +120,9 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
@@ -148,9 +148,9 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
@@ -172,9 +172,9 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
@@ -198,9 +198,9 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
@@ -226,9 +226,9 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
