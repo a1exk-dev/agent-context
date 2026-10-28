@@ -18,6 +18,8 @@ If no tool starts a subagent, go to the section "When no subagent is available".
 
 ## When you do a round
 
+Each round contains the checks of all files that it examines. Do not do a different series of rounds for each file. For the round limits, count the rounds of all files together, because the limits are for the full task. For example, a review round for 2 files has 6 checks: 3 reviewers for each file.
+
 Each review round and each reader-test round has these steps:
 
 1. If the round has 3 checks or fewer, start all subagents of the round in one message.
@@ -34,11 +36,11 @@ Each review round and each reader-test round has these steps:
    - All checks of the later review rounds and reader-test rounds. The tool that starts subagents failed 2 times for the same check.
 
    When a subagent gave the report for a check, do not do that check again.
-7. After the last report of the round, correct the file. The last report can come from a new subagent or from "When no subagent is available".
+7. After the last report of the round, correct the files. Do not correct a file between 2 groups of the round. The last report can come from a new subagent or from "When no subagent is available".
 
 ## When you start the reviewers
 
-In each round, start 3 new, read-only reviewer subagents at the same time:
+In each round, start 3 new, read-only reviewer subagents for each file, as "When you do a round" tells you:
 
 | Reviewer | Checks | Reference files |
 |---|---|---|
@@ -111,7 +113,7 @@ Do not add other notes or questions.
 
 1. Round 1 examines the full file, also in the edit job. In each prompt, give the parts to review and, in a different line, the parts that the author can edit. In the edit job, put each finding about text that is not in the changed part in a warning.
 2. For each finding, correct your text, or reject the finding. To reject a finding, give the rule or the text type that permits the text. Examples are an "-ing" technical noun and quoted text. Write each finding that you reject in a warning.
-3. Before you correct your text after a round, save a copy of the file. Do not make the copy in a tool call that saves a report. Put the copy in a temporary folder that is not in the project. In rounds 2 and 3, start all 3 reviewers again, but only for the sections that the previous round changed. To find these sections, compare the file with the copy, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
+3. Before you correct your text after a round, save a copy of each file that the round examines. Do not make the copy in a tool call that saves a report. Put the copy in a temporary folder that is not in the project. In rounds 2 and 3, start all 3 reviewers again, but only for the sections that the previous round changed. To find these sections, compare each file and its copy, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
 4. The self-check stops when a round gives no finding in your text that you accept, or after round 3.
 5. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
 
