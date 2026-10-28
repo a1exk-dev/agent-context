@@ -47,7 +47,7 @@ When the user tells you clearly to write a feature that only one platform reads,
 wc -c SKILL.md
 ```
 
-In the write job, use "When the write job makes a SKILL.md or entry-file text" for a file size that is more than the limit. In the edit job, if the file size is more than the limit, add a warning with the recommended extraction.
+In the write job, use "When the write job makes a SKILL.md or entry-file text" for a file size that is more than the limit. In the edit job, use "When the edit job changes a SKILL.md or an entry file".
 
 ## When the write job makes a SKILL.md or entry-file text
 
@@ -72,14 +72,30 @@ After you move the text, examine the file size. If the file is more than its lim
 
 In the Summary part of the report, give each text that you moved, its new file, and the reason.
 
+## When the edit job changes a SKILL.md or an entry file
+
+Do not move text from a Rule. Items 3 and 4 in this section are tier 1. The other items that tell you to move text are tier 4.
+
+1. Use items 1 to 6 of "When the write job makes a SKILL.md or entry-file text" only on the text that you add or change. When you add a line to a section, the other lines of that section stay in their place. These lines are in an unchanged part.
+2. If a reference file has the same condition as the new text, add the new text to that file. The text that you add to that file is in the changed part.
+3. After you do items 1 and 2 of this section, examine the file size. If the file is more than its limit, move sections from the unchanged parts:
+   - Move only whole sections that have a specified condition. A whole section includes its subsections. When you move these sections, item 2 of "When the write job makes a SKILL.md or entry-file text" is not applicable.
+   - Move the largest section first. When the file size is not more than the limit, stop.
+   - Select the reference file as items 3 to 5 of "When the write job makes a SKILL.md or entry-file text" tell you.
+   - In the old place of the section, write the pointer as item 6 of "When the write job makes a SKILL.md or entry-file text" tells you.
+   - Do not change the text of a moved section. Its new pointer is in the changed part. Its text is not in the changed part.
+   - Put each finding about the text of a moved section in a warning.
+4. If the file is still more than its limit, add a warning with the measured file size and the limit.
+5. In the Summary part of the report, give each text that you moved, its new file, and the reason. If you moved a section because of the file size, its reason is the measured file size and the limit.
+
 ## When you recommend text to move
 
-This recommendation is applicable only in the edit job. It is applicable to entry files and Skills, also when the file size is less than the limit.
+This recommendation is applicable only to the unchanged parts in the edit job. It is applicable to entry files and Skills, also when the file size is less than the limit.
 
-1. Find each section that has a specified condition, for example "before a release". A section that contains only a pointer is not a candidate. A section with only 1 or 2 rules is also not a candidate.
+1. Find each section of an unchanged part that items 1 and 2 of "When the write job makes a SKILL.md or entry-file text" tell you to move. A section that contains only a pointer is not a candidate. A section with only 1 or 2 rules is also not a candidate. A section that you moved because of the file size is not a candidate.
 2. For each section, recommend a reference file and a pointer sentence that gives the condition.
 3. Write each candidate in the Extraction candidates part of the report.
-4. Move no text until the user gives approval.
+4. Move an extraction candidate only after the user gives approval.
 
 ## When the file is the glossary, MEMORY.md, or a Rule
 

@@ -75,8 +75,9 @@
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
-                "[3.1] The new rule is under a heading that names its situation."
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
+                "[3.1] The new rule is under a heading that names its situation.",
+                "[3.2] The report lists Before a release as an extraction candidate, with the recommended file in `docs/agents/` and the pointer sentence. The run does not move it."
             ],
             "known_mistakes": [
                 "\"You should run the tests before a commit.\"",
@@ -104,7 +105,7 @@
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
                 "[4.1] The new entry uses the same format as the other entries in the file."
             ],
             "known_mistakes": [
@@ -132,7 +133,7 @@
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
                 "[5.1] The new entry has an \"Applies when\" line, a \"Guidance\" line that gives an action, and a \"Reason\" line, in that sequence."
             ],
             "known_mistakes": [
@@ -184,7 +185,7 @@
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`. (Test 7 has an exception: the `@docs/agents/testing.md` line that the user asked for.)",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
                 "[7.1] `CLAUDE.md` has the `@docs/agents/testing.md` line.",
                 "[7.2] The report warns that Codex and OpenCode do not read it, and gives the portable alternative: a prose pointer in `AGENTS.md`."
             ],
@@ -210,7 +211,7 @@
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
                 "[8.1] The reported misbehavior is one of the 2 typical reader-test tasks.",
                 "[8.2] The fixed rule states when it applies."
             ],
@@ -238,9 +239,9 @@
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
-                "[9.1] The report warns that the file is over 200 lines.",
-                "[9.2] The report lists each section to move, with the proposed file and pointer. The run moves nothing."
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
+                "[9.1] `AGENTS.md` has 200 lines or less after the run, and the Summary lists each moved section with the size reason.",
+                "[9.2] Each moved section is a whole section, largest first, in a file in `docs/agents/`. Its text is the same as in the starting file. Its old place holds only a pointer that states when to read the file."
             ],
             "known_mistakes": [
                 "the file is about 260 lines, over the 200-line limit for entry files"
