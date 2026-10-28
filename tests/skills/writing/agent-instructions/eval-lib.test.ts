@@ -191,6 +191,12 @@ describe("hitUsageLimit", () => {
         expect(hitUsageLimit(raw)).toBe(true);
     });
 
+    it("detects the 5-hour limit message", () => {
+        const raw =
+            '{"type":"result","is_error":true,"result":"You\'ve hit your 5-hour limit · resets 2:40pm (Europe/Warsaw)"}';
+        expect(hitUsageLimit(raw)).toBe(true);
+    });
+
     it("passes a run without the message", () => {
         expect(hitUsageLimit('{"type":"result","result":"Done."}')).toBe(false);
     });
