@@ -1,6 +1,5 @@
 // Runs the same output tests on OpenCode and exports all reviewer and reader
-// sessions. Each eval runs its reviewers and readers sequentially. Run graders
-// separately.
+// sessions. Run graders separately.
 
 import { mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
