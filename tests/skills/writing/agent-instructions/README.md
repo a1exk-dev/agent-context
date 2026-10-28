@@ -38,7 +38,7 @@ bun tests/skills/writing/agent-instructions/run-opencode-evals.ts --out /tmp/ai-
 bun tests/skills/writing/agent-instructions/run-load-test.ts --out /tmp/ai-evals/iteration-6/load-test.json --platform opencode --jobs 5
 ```
 
-OpenCode uses `openai/gpt-6-astra` by default. It uses the same sample project, requests, and statements. The output runner forces the Skill through the author prompt. The load test does not. External skills and plugins are disabled. Test 10 denies the `task` tool. At most five evals run at once. Each eval runs its reviewers and readers sequentially. Run grader batches separately, with at most five fresh graders at once.
+OpenCode uses `openai/gpt-6-astra` by default. It uses the same sample project, requests, and statements. The output runner forces the Skill through the author prompt. The load test does not. External skills and plugins are disabled. Test 10 denies the `task` tool. At most five evals run at once. Run grader batches separately, with at most five fresh graders at once.
 
 The output runner saves complete session exports under `sessions/` and renders each child's tool calls in `transcript.md`. An `INCOMPLETE` run must be rerun before grading. Use a new output folder for a rerun, so old records cannot count as new evidence.
 

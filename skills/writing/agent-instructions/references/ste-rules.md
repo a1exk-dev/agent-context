@@ -169,7 +169,7 @@ This table gives examples. In each example, the sentence and its word count obey
 
 - A step has a risk when it can cause data loss or makes a change that you cannot undo. Examples are a step that pushes with `--force` and a step that deletes a branch.
 - A rule bullet with a risk is also a step for this section.
-- A step that other persons can see, but that you can undo, has no risk of this type. Examples are a pull request and a pushed tag. Write a condition at the start of that step, for example "When the user gives approval, ...".
+- A step that other persons can see, but that you can undo, has no risk of this type. Examples are a pull request and a pushed tag. Write a condition at the start of that step, for example "When the user gives approval, ...". Also write it when a heading above the step gives a condition.
 - Put a safety instruction directly before each step with a risk (rule 7.1). In a list, the safety instruction is a different item.
 - A CAUTION does not replace a condition. A task or a project file can make approval of the user necessary for a step. Then start that step with the condition.
 - Start the safety instruction with the signal word CAUTION. A caution is for a risk of damage.

@@ -14,3 +14,9 @@ You should run the tests before a commit. Use `make test`.
 See docs/agents/style.md.
 
 Use pnpm to install and run packages. Do not use npm or yarn.
+
+## Before a release
+
+- Run `make test`.
+- Update `CHANGELOG.md`.
+- Tag the merge as `v<version>`.
