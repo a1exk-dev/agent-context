@@ -47,11 +47,32 @@ When the user tells you clearly to write a feature that only one platform reads,
 wc -c SKILL.md
 ```
 
-If the file size is more than the limit, add a warning with the recommended extraction.
+In the write job, use "When the write job makes a SKILL.md or entry-file text" for a file size that is more than the limit. In the edit job, if the file size is more than the limit, add a warning with the recommended extraction.
+
+## When the write job makes a SKILL.md or entry-file text
+
+Move text to reference files from a new `SKILL.md` and from new entry-file text. The agent reads a reference file only when a task makes it necessary. Before you write, plan the file layout. Before the self-check, write the reference files and their pointers. The file-size paragraph after the numbered list is tier 1. The other rules in this section that tell you to move text are tier 4. Do not move text from a Rule. If a new Rule makes the entry file more than its limit, add a warning. Give the measured file size and the limit in the warning.
+
+1. Move this text to a reference file:
+   - Each template, each prompt in a code block, and each example of a full task, also when they are short.
+   - Long policy text and long background text. You decide which text is long.
+   - Each section that has a specified condition, for example "Before a release", and 3 or more rules.
+2. Keep this text in its file:
+   - The steps that the agent must do each time.
+   - The terms and the pointers.
+   - Each section with only 1 or 2 rules.
+3. Put a reference file of a Skill in `<skill>/references/<name>.md`, one level below the Skill folder. Put a reference file of an entry file in `docs/agents/<name>.md`. If the project keeps these files in a different folder, use that folder.
+4. Write each file name in lowercase words with hyphens. The words give the subject of the file.
+5. Make one reference file for each condition that tells the agent to read a file. Put the text that the agent reads under the same condition in one file. When the user gives rules under one condition, keep all these rules in one file. If the project has a reference file for that condition, add the text to that file.
+6. Write one pointer sentence for each reference file, as "When you select a feature" tells you. The sentence gives the condition to read the file.
+
+After you move the text, examine the file size. If the file is more than its limit, move more sections that have a specified condition. Move the largest section first. When the file size is not more than the limit, stop. If the file is still more than its limit, add a warning with the measured file size and the limit.
+
+In the Summary part of the report, give each text that you moved, its new file, and the reason.
 
 ## When you recommend text to move
 
-This recommendation is applicable to entry files and Skills, also when the file size is less than the limit.
+This recommendation is applicable only in the edit job. It is applicable to entry files and Skills, also when the file size is less than the limit.
 
 1. Find each section that has a specified condition, for example "before a release". A section that contains only a pointer is not a candidate. A section with only 1 or 2 rules is also not a candidate.
 2. For each section, recommend a reference file and a pointer sentence that gives the condition.
