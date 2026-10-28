@@ -53,6 +53,7 @@ Do not run commands that change files, Git data, or external services.
 File under review: <absolute path>
 Sections to review: <"the full file" in round 1, or the changed sections in rounds 2 and 3>
 Sections that the author can edit: <the part that the user wants to change, for example a new section, or "the full file" for a new file>
+Job: <"the write job" or "the edit job">
 Project folder: <absolute path>
 Target platforms: <the target platforms that you found with loading-rules.md, for example "Claude Code, Codex, and OpenCode">
 Rules: <absolute paths of all reference files for this reviewer in the table>
@@ -70,8 +71,9 @@ The author does not change the text of that section.
 Copy the condition from that sentence. If it has no condition, give a finding.
 Include each instruction that tells the reader to read, examine, or obey a different file.
 Then write the file size of each file and its limit.
-Write the extraction candidates in a different list: section heading, recommended file, and pointer sentence.
-Include the candidates in sections that the author cannot edit.
+In the edit job, write the extraction candidates in a different list: section heading, recommended file, and pointer sentence.
+In the edit job, include the candidates in all sections under review.
+In the write job, give a finding for each text to move in a section that the author can edit.
 <For the ASD-STE100 reviewer only:> First, write each sentence with its text type
 (procedural, descriptive, or note) and its word count.
 For each sentence of 18 words or more, write a number after each word,

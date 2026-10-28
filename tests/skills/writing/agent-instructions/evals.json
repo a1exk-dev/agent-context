@@ -4,7 +4,7 @@
         {
             "id": 1,
             "name": "01-write-skill",
-            "prompt": "Write a skill for this repo that walks the agent through a release: bump the version, update CHANGELOG.md, tag the merge, and open the pull request into main. Put it in `.claude/skills/release/`. The user gives the new version, for example 1.5.0. The release branch is `release/<version>`, made from `develop`. Write the CHANGELOG entries from the commit messages since the last tag. Open the pull request with `gh pr create` against `origin`. After the pull request merges, tag the merge commit on `main` as `v<version>` and push the tag. Do not merge `main` back into `develop`.",
+            "prompt": "Write a skill for this repo that walks the agent through a release: bump the version, update CHANGELOG.md, tag the merge, and open the pull request into main. Put it in `.claude/skills/release/`. The user gives the new version, for example 1.5.0. The release branch is `release/<version>`, made from `develop`. Write the CHANGELOG entries from the commit messages since the last tag. Open the pull request with `gh pr create` against `origin`. After the pull request merges, tag the merge commit on `main` as `v<version>` and push the tag. Do not merge `main` back into `develop`. Use this pull request body:\n\n```markdown\n## Summary\n<one sentence about the release>\n\n## Changes\n<the CHANGELOG entries of this version>\n\n## Version\nv<version>\n```\n\nIf the release fails: stop, keep the release branch, and tell the user the failed step.",
             "expected_output": "See assertions.",
             "files": [],
             "setup": {
@@ -24,13 +24,14 @@
                 "[1.1] The frontmatter has only `name` and `description`, and `name` matches the folder name.",
                 "[1.2] The description starts with the condition (\"When ...\") and quotes words that users type.",
                 "[1.3] The steps are a numbered list in task order. The pull request step starts with a condition and has no CAUTION. A CAUTION comes only before a step that can cause data loss or a change that cannot be undone.",
-                "[1.4] `SKILL.md` has a maximum of 500 lines and no \"Gotchas\" section."
+                "[1.4] `SKILL.md` has a maximum of 500 lines and no \"Gotchas\" section.",
+                "[1.5] The pull request template and the If-the-release-fails rules are in files in `.claude/skills/release/references/`. `SKILL.md` has one pointer for each file that states when to read it. The steps stay in `SKILL.md`."
             ]
         },
         {
             "id": 2,
             "name": "02-write-entry-file-pair",
-            "prompt": "Set up agent instructions for this repo: run tests with `make test`, never push to main, and use pnpm, not npm.",
+            "prompt": "Set up agent instructions for this repo: run tests with `make test`, never push to main, and use pnpm, not npm. Before a release: run make test, update CHANGELOG.md, and tag the merge as v<version>.",
             "expected_output": "See assertions.",
             "files": [],
             "setup": {
@@ -49,7 +50,9 @@
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
                 "[2.1] The shared rules are in `AGENTS.md`.",
                 "[2.2] `CLAUDE.md` holds `@AGENTS.md` and only lines that apply to Claude Code alone.",
-                "[2.3] Each file has a maximum of 200 lines."
+                "[2.3] Each file has a maximum of 200 lines.",
+                "[2.4] The 3 short rules stay in `AGENTS.md`.",
+                "[2.5] The Before-a-release rules are in one new file in `docs/agents/`, `AGENTS.md` has one pointer that states when to read it, and the run made no other new file."
             ]
         },
         {

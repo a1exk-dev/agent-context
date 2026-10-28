@@ -56,9 +56,9 @@ When two sources do not agree, obey the higher tier. The tiers are in this seque
 1. **Loading rules:** These are the MUST items of the Agent Skills specification for a Skill, and the platform loading rules for each Agent instruction. The MUST items include all items that `skills-ref validate` examines.
 2. **ASD-STE100:** This tier contains the STE rules of this skill.
 3. **ISO 24495-1 checks:** This tier contains the plain-language checks of this skill.
-4. **Recommendations:** This tier contains the recommendations of the Agent Skills specification. Text that does not obey a recommendation can obey all rules of the specification.
+4. **Recommendations:** This tier contains the recommendations of the Agent Skills specification. It also contains the rules in `references/loading-rules.md` that tell you to move text and that are not tier 1. Text that does not obey a recommendation can obey all rules of the specification.
 
-For an Agent instruction that is not a Skill, the Agent Skills specification is not applicable. Tier 1 then contains only the loading rules for that file, and tier 4 is empty.
+For an Agent instruction that is not a Skill, the Agent Skills specification is not applicable. Tier 1 then contains only the loading rules for that file. Tier 4 contains only the rules that tell you to move text and that are not tier 1.
 
 This table gives the known cases where two sources do not agree, and the decision for each case:
 
@@ -89,7 +89,7 @@ Do these steps in the write job and in the edit job.
      - For long text, write a reference file.
 5. In the edit job, change only the part that the user wants to change. In the other parts, do not write lines again, change the numbers of lines, or move lines. Do not put two lines into one line. A line that the change moves to a different section is in the changed part. This rule is also applicable when a finding tells you to make a change. The user gives approval only for the change that they wanted. If you find a type that is not correct, add a warning.
 6. In the edit job, the user can tell you that an agent did not obey an instruction. For that edit job, record the condition of the previous instruction in quotation marks. The condition can be in the heading of the section or in the sentence. The Summary part of the end-of-run report gives this condition. If the previous instruction has no condition, record "no condition".
-7. Before you write text, read `references/ste-rules.md`, `references/plain-language-checks.md`, and `references/technical-terms.md`. If the file that you write or edit is a Skill, also read `references/agent-skills-spec.md`. In the edit job, first use these rules to examine each section that you will change. A new section has no previous text to examine. The Summary part then gives no problem for that section. Record each problem before you correct it. Keep the list of these problems for the Summary part. Then write the text by these rules.
+7. Before you write text, read `references/ste-rules.md`, `references/plain-language-checks.md`, and `references/technical-terms.md`. If the file that you write or edit is a Skill, also read `references/agent-skills-spec.md`. In the edit job, first use these rules to examine each section that you will change. A new section has no previous text to examine. The Summary part then gives no problem for that section. Record each problem before you correct it. Keep the list of these problems for the Summary part. Then write the text by these rules. In the write job, also move text to reference files as "When the write job makes a SKILL.md or entry-file text" in `references/loading-rules.md` tells you.
 8. Before the self-check, read `references/review.md`. Then do the self-check that it gives.
 9. After the self-check, do the reader test that `references/review.md` gives.
 10. Write the end-of-run report.
@@ -105,7 +105,7 @@ Do these steps in the write job and in the edit job.
 The job stops with one report. Use this structure. Do not write a part that has no items.
 
 1. Write the report in the structure below. Obey the rules for each part. These rules are below the template.
-2. Compare the report with each reviewer report. Include each warning and each extraction candidate. For each finding in a warning, give its rule, its text in quotation marks, and its problem. For a file-size warning, give the measured file size and its limit.
+2. Compare the report with each reviewer report. Include each warning. In the edit job, also include each extraction candidate. For each finding in a warning, give its rule, its text in quotation marks, and its problem. For a file-size warning, give the measured file size and its limit.
 3. Save the full report to a file in a temporary folder that is not in the project.
 4. After you save the report file, read it. Then your last message gives the full lists, not a short summary.
 5. Send the full text of the file as your last message. Copy the text without changes. Do not write the report again in different words. Then the user can see the full lists and select the changes that they want.
@@ -142,10 +142,10 @@ The Warnings part always starts with the word-selection warning. Copy it with th
 - A file type that is not correct for the text, also when you found it during the edit job.
 - An entry-file layout that gives no copy of the text to a target platform.
 - An Agent instruction that does not load in each session and that no pointer identifies.
-- A file size that is more than its limit, and the recommended extraction.
+- A file size that is more than its limit. Give the measured file size and the limit. In the edit job, also give the recommended extraction.
 - A word that is not approved, not in the base list, and not in the glossary. Give the recommended STE word or glossary entry.
 - A Skill folder that a target platform does not load, with that platform.
 
-Copy the full candidate list of the loading reviewer from the round-1 review into the Extraction candidates part. Use the corrected items from the reviews after round 1. Add each finding of the other reviewers that recommends that you move text to a different file. When one extraction corrects a file-size problem, keep the other candidates also. Use the heading of each section as the name of its candidate.
+The write job has no Extraction candidates part. In the edit job, copy the full candidate list of the round-1 loading reviewer into the Extraction candidates part. Use the corrected items from the reviews after round 1. Add each finding of the other reviewers that recommends that you move text to a different file. When one extraction corrects a file-size problem, keep the other candidates also. Use the heading of each section as the name of its candidate.
 
 The last part gives each base-list word that has a different meaning in the glossary.
