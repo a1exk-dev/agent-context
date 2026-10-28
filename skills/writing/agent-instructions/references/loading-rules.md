@@ -51,48 +51,42 @@ In the write job, use "When the write job makes a SKILL.md or entry-file text" f
 
 ## When the write job makes a SKILL.md or entry-file text
 
-Move text to reference files from a new `SKILL.md` and from new entry-file text. The agent reads a reference file only when a task makes it necessary. Before you write, plan the file layout. Before the self-check, write the reference files and their pointers. The file-size paragraph after the numbered list is tier 1. The other rules in this section that tell you to move text are tier 4. Do not move text from a Rule. If a new Rule makes the entry file more than its limit, add a warning. Give the measured file size and the limit in the warning.
+Move text to reference files from a new `SKILL.md` and from new entry-file text. The agent reads a reference file only when a task makes it necessary. Before you write, plan the file layout. Before the self-check, write the reference files and their pointers. The file-size paragraph after the numbered list is tier 1. The other rules in this section that tell you to move text are tier 4. Do not move text from a Rule. If a new Rule makes the entry files more than a limit in "When you examine the file size", add a warning.
 
 1. Move this text to a reference file:
    - Each template, each prompt in a code block, and each example of a full task, also when they are short.
    - Long policy text and long background text. You decide which text is long.
-   - Each section that has a specified condition, for example "Before a release", and 3 or more rules.
-2. Keep this text in its file:
-   - The numbered steps of the task, also under a heading that gives a condition.
+   - Each section that has a specified condition and 3 or more rules. Move such a section also when the condition can occur at each step. The agent then reads its rules only when the condition occurs. A section has a specified condition when its heading or a sentence at its start gives the condition. Examples are the heading "Before a release" and the sentence "Obey the rules in this section only when the user asks for a deploy."
+2. Keep this text in its file, also when item 1 tells you to move it. The agent uses the steps, the terms, and the pointers in each task. A pointer to a section with only 1 or 2 rules makes the file almost no shorter. Move this text only when a file-size rule in this file or the user tells you to move it. This text is:
+   - The numbered steps of the main task of a Skill, also under a heading that gives a condition.
    - The terms and the pointers.
    - Each section with only 1 or 2 rules.
-
-   Move a section of rules that has a condition, also when the condition can occur at each step.
 3. Put a reference file of a Skill in `<skill>/references/<name>.md`, one level below the Skill folder. Put a reference file of an entry file in `docs/agents/<name>.md`. If the project keeps these files in a different folder, use that folder.
 4. Write each file name in lowercase words with hyphens. The words give the subject of the file.
 5. Make one reference file for each condition that tells the agent to read a file. Put the text that the agent reads under the same condition in one file. When the user gives rules under one condition, keep all these rules in one file. If the project has a reference file for that condition, add the text to that file.
 6. Write one pointer sentence for each reference file, as "When you select a feature" tells you. The sentence gives the condition to read the file.
 
-After you move the text, examine the file size. If the file is more than its limit, move more sections that have a specified condition. Move the largest section first. When the file size is not more than the limit, stop. If the file is still more than its limit, add a warning with the measured file size and the limit.
-
-In the Summary part of the report, give each text that you moved, its new file, and the reason.
+After you move the text, examine the file size. If the file is more than a limit in "When you examine the file size", move more sections that have a specified condition. Move the largest section first. When the file is not more than each limit, stop. If the file is still more than a limit, add a warning.
 
 ## When the edit job changes a SKILL.md or an entry file
 
-Do not move text from a Rule. Items 3 and 4 in this section are tier 1. The other items that tell you to move text are tier 4.
+Do not move text from a Rule. Items 2 and 3 in this section are tier 1. The other items that tell you to move text are tier 4.
 
-1. Use items 1 to 6 of "When the write job makes a SKILL.md or entry-file text" only on the text that you add or change. When you add a line to a section, the other lines of that section stay in their place. These lines are in an unchanged part.
-2. If a reference file has the same condition as the new text, add the new text to that file. The text that you add to that file is in the changed part.
-3. After you do items 1 and 2 of this section, examine the file size. If the file is more than its limit, move sections from the unchanged parts:
-   - Move only whole sections that have a specified condition. A whole section includes its subsections. When you move these sections, item 2 of "When the write job makes a SKILL.md or entry-file text" is not applicable.
-   - Move the largest section first. When the file size is not more than the limit, stop.
-   - Select the reference file as items 3 to 5 of "When the write job makes a SKILL.md or entry-file text" tell you.
-   - In the old place of the section, write the pointer as item 6 of "When the write job makes a SKILL.md or entry-file text" tells you.
+1. Use each item of the numbered list in "When the write job makes a SKILL.md or entry-file text" only on the changed part. When you add a line to a section, the other lines of that section stay in their place. These lines are in an unchanged part. Text that you add to a reference file that the project has is in the changed part.
+2. After you do item 1 of this section, examine the file size. If the file is more than a limit in "When you examine the file size", move sections from the unchanged parts:
+   - Move only whole sections that have a specified condition. A whole section includes the sections under its heading.
+   - Move the largest section first. When the file is not more than each limit, stop.
+   - Select the reference file and its name as "When the write job makes a SKILL.md or entry-file text" tells you.
+   - The heading of the section moves with the section. In its old place, write a heading that gives the condition. Under that heading, write the pointer sentence as "When you select a feature" tells you.
    - Do not change the text of a moved section. Its new pointer is in the changed part. Its text is not in the changed part.
    - Put each finding about the text of a moved section in a warning.
-4. If the file is still more than its limit, add a warning with the measured file size and the limit.
-5. In the Summary part of the report, give each text that you moved, its new file, and the reason. If you moved a section because of the file size, its reason is the measured file size and the limit.
+3. If the file is still more than a limit, add a warning.
 
 ## When you recommend text to move
 
 This recommendation is applicable only to the unchanged parts in the edit job. It is applicable to entry files and Skills, also when the file size is less than the limit.
 
-1. Find each section of an unchanged part that items 1 and 2 of "When the write job makes a SKILL.md or entry-file text" tell you to move. A section that contains only a pointer is not a candidate. A section with only 1 or 2 rules is also not a candidate. A section that you moved because of the file size is not a candidate.
+1. Find each section of an unchanged part that contains text that the numbered list in "When the write job makes a SKILL.md or entry-file text" tells you to move. Each section that you find is an extraction candidate: the whole section, not only the text to move. A section that contains only a pointer is not an extraction candidate. A section with only 1 or 2 rules is also not an extraction candidate. A section that you moved because of the file size is not an extraction candidate.
 2. For each section, recommend a reference file and a pointer sentence that gives the condition.
 3. Write each candidate in the Extraction candidates part of the report.
 4. Move an extraction candidate only after the user gives approval.
