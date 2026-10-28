@@ -56,7 +56,7 @@ Move text to reference files from a new `SKILL.md` and from new entry-file text.
 1. Move this text to a reference file:
    - Each template, each prompt in a code block, and each example of a full task, also when they are short.
    - Long policy text and long background text. You decide which text is long.
-   - Each section that has a specified condition and 3 or more rules. Move such a section also when the condition can occur at each step. The agent then reads its rules only when the condition occurs. A section has a specified condition when its heading or a sentence at its start gives the condition. Examples are the heading "Before a release" and the sentence "Obey the rules in this section only when the user asks for a deploy."
+   - Each section that has a specified condition and 3 or more rules. Move such a section also when the condition can occur at each step. The agent then reads its rules only when the condition occurs. A section has a specified condition when its heading or a sentence at its start gives the condition. Examples are the heading "Before a release" and the sentence "Obey the rules in this section only when the user asks for a deploy." Count each instruction as one rule, also when one sentence or one list item gives 2 or more instructions. The number of rules does not change when you write them in fewer sentences. For example, "stop, keep the branch, and tell the user" gives 3 rules.
 2. Keep this text in its file, also when item 1 tells you to move it. The agent uses the steps, the terms, and the pointers in each task. A pointer to a section with only 1 or 2 rules makes the file almost no shorter. Move this text only when a file-size rule in this file or the user tells you to move it. This text is:
    - The numbered steps of the main task of a Skill, also under a heading that gives a condition.
    - The terms and the pointers.
@@ -77,7 +77,7 @@ Do not move text from a Rule. Items 2 and 3 in this section are tier 1. The othe
    - Move only whole sections that have a specified condition. A whole section includes the sections under its heading.
    - Move the largest section first. When the file is not more than each limit, stop.
    - Select the reference file and its name as "When the write job makes a SKILL.md or entry-file text" tells you.
-   - The heading of the section moves with the section. In its old place, write a heading that gives the condition. Under that heading, write the pointer sentence as "When you select a feature" tells you.
+   - The heading of the section moves with the section. In its old place, write a heading that gives the condition. Under that heading, write the pointer sentence as "When you select a feature" tells you. Write no other text in the old place, also when a finding is about the moved section.
    - Do not change the text of a moved section. Its new pointer is in the changed part. Its text is not in the changed part.
    - Put each finding about the text of a moved section in a warning.
 3. If the file is still more than a limit, add a warning.
