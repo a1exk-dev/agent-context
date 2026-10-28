@@ -290,6 +290,18 @@ export function claudeEnv(): Record<string, string | undefined> {
     return env;
 }
 
+// Gives each line of a stream as soon as the line is complete.
+export async function* lines(stream: ReadableStream<Uint8Array>) {
+    let buffer = "";
+    for await (const chunk of stream.pipeThrough(new TextDecoderStream())) {
+        buffer += chunk;
+        const parts = buffer.split("\n");
+        buffer = parts.pop() ?? "";
+        yield* parts;
+    }
+    if (buffer) yield buffer;
+}
+
 // Parses the JSON lines of a transcript and skips any other line.
 export function parseJsonLines<T>(raw: string): T[] {
     return raw.split("\n").flatMap((line) => {
@@ -400,7 +412,7 @@ export function loadVerdict(
 
 // A run that hits the usage limit stops early, so its result does not count.
 export function hitUsageLimit(output: string): boolean {
-    return output.includes("hit your session limit");
+    return /hit your [\w -]*limit/.test(output);
 }
 
 export type OpenCodeEvent = {
@@ -486,4 +498,16 @@ export function toolCalls(event: ClaudeEvent & OpenCodeEvent): ToolCall[] {
         ];
     }
     return [];
+}
+
+// Counts one sentence by "When you count words" in the skill's ste-rules.md.
+// A code span, quoted text, and text in parentheses each count as 1 word.
+export function countWords(sentence: string): number {
+    return sentence
+        .replace(/^\s*(?:\d+\.|[-*])\s+/, "")
+        .replace(/`[^`]*`/g, " x ")
+        .replace(/"[^"]*"|“[^”]*”/g, " x ")
+        .replace(/\([^)]*\)/g, " x ")
+        .split(/\s+/)
+        .filter((word) => /[\p{L}\p{N}]/u.test(word)).length;
 }

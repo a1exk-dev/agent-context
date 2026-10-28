@@ -51,14 +51,14 @@ At the completion of every task, classify each useful discovery and important de
 
 Write each qualifying item automatically as soon as it is resolved, without an approval gate. For an ADR, obey the section "When a task makes an architecture decision". Keep each meaning in one authoritative file and update an existing entry instead of duplicating it. At task completion, run the classification once more to catch anything missed. Tasks with no qualifying durable knowledge finish without a knowledge-file edit.
 
-Commit every knowledge-file edit on the branch whose work produced it, before that branch is pushed, through the [commit policy](commit-policy.md)'s review. Preservation is complete when every qualifying item appears in exactly one authoritative location. In the final response, give the human a concise review list containing each changed knowledge file, what was added or updated, and why it qualified.
+Commit every knowledge-file edit on the branch whose work produced it, before that branch is pushed. Preservation is complete when every qualifying item appears in exactly one authoritative location. In the final response, give the human a concise review list containing each changed knowledge file, what was added or updated, and why it qualified.
 
 ## When a task makes an architecture decision
 
 1. When a task makes an architecture decision, use the `domain-modeling` skill to examine the decision.
-2. If all 3 conditions in the section "Offer ADRs sparingly" of the `domain-modeling` skill are true, recommend an ADR to the user. If not, write the decision in `MEMORY.md`.
-3. Before you write the ADR in `docs/adr/`, get approval from the user, because the user controls each ADR.
+2. If all 3 conditions in the section "Offer ADRs sparingly" of the `domain-modeling` skill are true, recommend an ADR to the operator. If not, write the decision in `MEMORY.md`.
+3. Before you write the ADR in `docs/adr/`, get approval from the operator, because the operator controls each ADR.
 
 ## Before you change an ADR
 
-- Get approval from the user, because the user controls each ADR.
+- Get approval from the operator, because the operator controls each ADR.

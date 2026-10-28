@@ -16,6 +16,7 @@ import {
     integerOption,
     isSkillLoad,
     jobsOption,
+    lines,
     loadVerdict,
     type OpenCodeEvent,
     openCodeEnv,
@@ -39,17 +40,6 @@ const MAX_TOOL_CALLS = 8;
 
 type Request = { query: string; should_trigger: boolean };
 type Options = { model: string; timeout: number; platform: string };
-
-async function* lines(stream: ReadableStream<Uint8Array>) {
-    let buffer = "";
-    for await (const chunk of stream.pipeThrough(new TextDecoderStream())) {
-        buffer += chunk;
-        const parts = buffer.split("\n");
-        buffer = parts.pop() ?? "";
-        yield* parts;
-    }
-    if (buffer) yield buffer;
-}
 
 async function runOnce(
     query: string,

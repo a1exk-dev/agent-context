@@ -18,6 +18,8 @@ Select the folder first, as the section "When you select the folder for the Skil
 
 ## When you write the description
 
+When the description gives an instruction, for example "use this skill", it is procedural text. Each sentence in it then has a maximum of 20 words.
+
 An agent reads the description to know when to load the Skill. When the user gives text for the description, keep its meaning and write it by these rules.
 
 - Tier 2: Write the condition first: "When ..., use this skill." Do not write "Use this skill when ...". STE rule 5.4 puts the condition at the start of the sentence.

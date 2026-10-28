@@ -7,6 +7,7 @@ ASD-STE100 is tier 2. If `SKILL.md` of this skill is not in your context window,
 - These rules are applicable only to Agent instructions. They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.
 - STE is applicable to all text in natural language: body text, headings, list items, table cells, and the frontmatter `description`.
 - The word rules are not applicable to text that the author cannot change (rule 8.6). This text is user phrases in quotation marks, names, code spans, file paths, commands, URLs, and code in code blocks.
+- The punctuation rules are also not applicable to code in code blocks.
 - A prompt that an agent reads as an instruction is not in this group. A prompt in a code block is also not in this group. Write it by all STE rules. An example is the text that a Skill gives to a subagent.
 - The general recommendations GR-1 to GR-8 are not STE rules. This Skill makes them rules.
 
@@ -82,7 +83,7 @@ Always replace these words. This list gives no replacement words, because a tabl
 
 ## When you write a procedure or a rule
 
-These rules are applicable to procedural text: numbered steps, rule bullets, and safety instructions. The type of text sets the limit, not the mood of each sentence.
+These rules are applicable to procedural text: numbered steps, rule bullets, and safety instructions. The type of text sets the limit, not the mood of each sentence. A rule bullet is a bullet that gives an instruction or a rule.
 
 - Each sentence in procedural text has a maximum of 20 words (rule 5.1). This limit is also applicable to a sentence that is not an instruction.
 - Write each instruction in the imperative (rule 5.3). Do not write "must" before an imperative. Use "must" only for a condition or for a safety instruction.
@@ -124,6 +125,7 @@ Descriptive text gives information. It has no imperative. A paragraph that gives
 ## When you count words
 
 - In a vertical list, the colon stops a sentence (rule 8.4). The sentence before the colon and each list item are each one sentence. Each one has the limit of its text type.
+- A colon also stops a sentence when a table or a code block follows it. A colon in the middle of a line does not stop a sentence.
 - Text in parentheses counts as 1 word in its sentence (rule 8.5). It is also a sentence with its own word count.
 - Each of these items counts as 1 word (rule 8.6):
   - A number, or a number with its unit.
@@ -132,7 +134,24 @@ Descriptive text gives information. It has no imperative. A paragraph that gives
   - A title, a heading, or a label.
   - The name of a person, a group, an organization, or a country.
 - A hyphenated word counts as 1 word (rule 8.7).
+- Each word of a multi-word noun counts as 1 word. For example, "pull request" counts as 2 words.
 - Step numbers are not words.
+- A heading is a title, not a sentence. Do not count the words of a heading.
+
+This table gives examples. In each example, the sentence and its word count obey the rules in this section.
+
+| Sentence | Words |
+|---|---|
+| If the pull request is not merged, stop. | 8 |
+| 1. Open the pull request. | 4 |
+| Write the end-of-run report. | 4 |
+| Run `git status --porcelain` before you commit. | 5 |
+| When the user says "cut a release", use this skill. | 8 |
+| Run the check (in the container) again. | 5 |
+| CAUTION: Do not push with `--force`. | 6 |
+| Make sure that the branch has no changes: `git status` gives no output. | 12 |
+| Read references/review.md first. | 3 |
+| Do a maximum of 3 review rounds. | 7 |
 
 ## When you write punctuation
 
@@ -150,7 +169,7 @@ Descriptive text gives information. It has no imperative. A paragraph that gives
 
 - A step has a risk when it can cause data loss or makes a change that you cannot undo. Examples are a step that pushes with `--force` and a step that deletes a branch.
 - A rule bullet with a risk is also a step for this section.
-- A step that other persons can see, but that you can undo, has no risk of this type. Examples are a pull request and a pushed tag. Write a condition at the start of that step, for example "When the user gives approval, ...".
+- A step that other persons can see, but that you can undo, has no risk of this type. Examples are a pull request and a pushed tag. Write a condition at the start of that step, for example "When the user gives approval, ...". Also write it when a heading above the step gives a condition.
 - Put a safety instruction directly before each step with a risk (rule 7.1). In a list, the safety instruction is a different item.
 - A CAUTION does not replace a condition. A task or a project file can make approval of the user necessary for a step. Then start that step with the condition.
 - Start the safety instruction with the signal word CAUTION. A caution is for a risk of damage.

@@ -4,7 +4,7 @@
         {
             "id": 1,
             "name": "01-write-skill",
-            "prompt": "Write a skill for this repo that walks the agent through a release: bump the version, update CHANGELOG.md, tag the merge, and open the pull request into main. Put it in `.claude/skills/release/`. The user gives the new version, for example 1.5.0. The release branch is `release/<version>`, made from `develop`. Write the CHANGELOG entries from the commit messages since the last tag. Open the pull request with `gh pr create` against `origin`. After the pull request merges, tag the merge commit on `main` as `v<version>` and push the tag. Do not merge `main` back into `develop`.",
+            "prompt": "Write a skill for this repo that walks the agent through a release: bump the version, update CHANGELOG.md, tag the merge, and open the pull request into main. Put it in `.claude/skills/release/`. The user gives the new version, for example 1.5.0. The release branch is `release/<version>`, made from `develop`. Write the CHANGELOG entries from the commit messages since the last tag. Open the pull request with `gh pr create` against `origin`. After the pull request merges, tag the merge commit on `main` as `v<version>` and push the tag. Do not merge `main` back into `develop`. Use this pull request body:\n\n```markdown\n## Summary\n<one sentence about the release>\n\n## Changes\n<the CHANGELOG entries of this version>\n\n## Version\nv<version>\n```\n\nIf the release fails: stop, keep the release branch, and tell the user the failed step.",
             "expected_output": "See assertions.",
             "files": [],
             "setup": {
@@ -12,9 +12,9 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
@@ -24,13 +24,14 @@
                 "[1.1] The frontmatter has only `name` and `description`, and `name` matches the folder name.",
                 "[1.2] The description starts with the condition (\"When ...\") and quotes words that users type.",
                 "[1.3] The steps are a numbered list in task order. The pull request step starts with a condition and has no CAUTION. A CAUTION comes only before a step that can cause data loss or a change that cannot be undone.",
-                "[1.4] `SKILL.md` has a maximum of 500 lines and no \"Gotchas\" section."
+                "[1.4] `SKILL.md` has a maximum of 500 lines and no \"Gotchas\" section.",
+                "[1.5] The pull request template and the If-the-release-fails rules are in files in `.claude/skills/release/references/`. `SKILL.md` has one pointer for each file that states when to read it. The steps stay in `SKILL.md`."
             ]
         },
         {
             "id": 2,
             "name": "02-write-entry-file-pair",
-            "prompt": "Set up agent instructions for this repo: run tests with `make test`, never push to main, and use pnpm, not npm.",
+            "prompt": "Set up agent instructions for this repo: run tests with `make test`, never push to main, and use pnpm, not npm. Before a release: run make test, update CHANGELOG.md, and tag the merge as v<version>.",
             "expected_output": "See assertions.",
             "files": [],
             "setup": {
@@ -38,9 +39,9 @@
                 "remove": ["AGENTS.md", "CLAUDE.md"]
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
@@ -49,7 +50,9 @@
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
                 "[2.1] The shared rules are in `AGENTS.md`.",
                 "[2.2] `CLAUDE.md` holds `@AGENTS.md` and only lines that apply to Claude Code alone.",
-                "[2.3] Each file has a maximum of 200 lines."
+                "[2.3] Each file has a maximum of 200 lines.",
+                "[2.4] The 3 short rules stay in `AGENTS.md`.",
+                "[2.5] The Before-a-release rules are in one new file in `docs/agents/`, `AGENTS.md` has one pointer that states when to read it, and the run made no other new file."
             ]
         },
         {
@@ -63,17 +66,18 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
-                "[3.1] The new rule is under a heading that names its situation."
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
+                "[3.1] The new rule is under a heading that names its situation.",
+                "[3.2] The report lists Before a release as an extraction candidate, with the recommended file in `docs/agents/` and the pointer sentence. The run does not move it."
             ],
             "known_mistakes": [
                 "\"You should run the tests before a commit.\"",
@@ -92,16 +96,16 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
                 "[4.1] The new entry uses the same format as the other entries in the file."
             ],
             "known_mistakes": [
@@ -112,7 +116,7 @@
         {
             "id": 5,
             "name": "05-edit-memory-md",
-            "prompt": "Record in MEMORY.md that the CI runner has no network access, so tests that call outside services fail there.",
+            "prompt": "Record in MEMORY.md that the CI runner has no network access, so tests that call outside services fail there. Tests must use a mock for each outside service.",
             "expected_output": "See assertions.",
             "files": [],
             "setup": {
@@ -120,17 +124,17 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
-                "[5.1] The new entry uses the file's \"Applies when / Guidance / Reason\" format."
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
+                "[5.1] The new entry has an \"Applies when\" line, a \"Guidance\" line that gives an action, and a \"Reason\" line, in that sequence."
             ],
             "known_mistakes": [
                 "the entry \"The payment sandbox resets at midnight UTC\" has no \"Applies when\" line",
@@ -148,9 +152,9 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
@@ -172,16 +176,16 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`. (Test 7 has an exception: the `@docs/agents/testing.md` line that the user asked for.)",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
                 "[7.1] `CLAUDE.md` has the `@docs/agents/testing.md` line.",
                 "[7.2] The report warns that Codex and OpenCode do not read it, and gives the portable alternative: a prose pointer in `AGENTS.md`."
             ],
@@ -198,16 +202,16 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
                 "[8.1] The reported misbehavior is one of the 2 typical reader-test tasks.",
                 "[8.2] The fixed rule states when it applies."
             ],
@@ -226,18 +230,18 @@
                 "remove": []
             },
             "assertions": [
-                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1.",
+                "[1] The run started 3 fresh reviewer subagents: loading, ASD-STE100, and ISO 24495-1. In each review round, the run started all reviewers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no reviewed file before the last report of the round.",
                 "[2] Each reviewer finding names its rule and quotes the text.",
-                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. No reader subagent wrote a file.",
+                "[3] After the reviews, the run did a reader test with 3 dry-run subagents: 2 typical tasks and 1 out-of-scope task. In each reader-test round, the run started all readers of the round before it got the first report of the round, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file.",
                 "[4] The run did a maximum of 3 review rounds and a maximum of 3 reader-test rounds.",
                 "[5] The report says that the author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.",
                 "[6] The new or changed text has no \"should\", \"may\", \"ensure\", or \"begin\". It has no semicolons, contractions, Latin abbreviations, or emphasis words such as \"IMPORTANT\" or \"CRITICAL\".",
                 "[7] In the new or changed text, each sentence in a numbered step, a rule bullet, or a CAUTION has a maximum of 20 words. Each descriptive sentence and each note sentence has a maximum of 25 words.",
                 "[8] Each new pointer is a prose sentence that states when to read its target. The new text has no `@path`, except `@AGENTS.md` in `CLAUDE.md`.",
                 "[9] The new text uses each `CONTEXT.md` term with its glossary meaning and uses no synonym for it.",
-                "[10] Edit tests only: the text outside the asked change is the same as before, and the report names each known mistake in the starting file.",
-                "[9.1] The report warns that the file is over 200 lines.",
-                "[9.2] The report lists each section to move, with the proposed file and pointer. The run moves nothing."
+                "[10] Edit tests only: the text outside the asked change is the same as before, except whole sections that the size limit moved, and the report names each known mistake in the starting file.",
+                "[9.1] `AGENTS.md` has 200 lines or less after the run, and the Summary lists each moved section with the size reason.",
+                "[9.2] Each moved section is a whole section, largest first, in a file in `docs/agents/`. Its text is the same as in the starting file. Its old place holds only a pointer that states when to read the file."
             ],
             "known_mistakes": [
                 "the file is about 260 lines, over the 200-line limit for entry files"

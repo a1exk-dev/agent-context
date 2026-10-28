@@ -5,11 +5,13 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
     completedSession,
+    countWords,
     hitUsageLimit,
     isSkillLoad,
     loadVerdict,
     openCodeEnv,
     renderTranscript,
+    SKILL,
     sessionProblem,
     toolCalls,
     writeTiming,
@@ -189,6 +191,12 @@ describe("hitUsageLimit", () => {
         expect(hitUsageLimit(raw)).toBe(true);
     });
 
+    it("detects the 5-hour limit message", () => {
+        const raw =
+            '{"type":"result","is_error":true,"result":"You\'ve hit your 5-hour limit · resets 2:40pm (Europe/Warsaw)"}';
+        expect(hitUsageLimit(raw)).toBe(true);
+    });
+
     it("passes a run without the message", () => {
         expect(hitUsageLimit('{"type":"result","result":"Done."}')).toBe(false);
     });
@@ -344,5 +352,20 @@ describe("writeTiming", () => {
             total_duration_seconds: 12.3,
             work_dir: "/work",
         });
+    });
+});
+
+describe("countWords", () => {
+    const rules = readFileSync(join(SKILL, "references/ste-rules.md"), "utf8");
+    const examples = [...rules.matchAll(/^\| (.+) \| (\d+) \|$/gm)].map(
+        ([, sentence, words]) => [sentence, Number(words)] as const,
+    );
+
+    it("finds the word-count examples in ste-rules.md", () => {
+        expect(examples.length).toBeGreaterThanOrEqual(10);
+    });
+
+    it.each(examples)("counts %s as %i words", (sentence, words) => {
+        expect(countWords(sentence)).toBe(words);
     });
 });

@@ -13,7 +13,7 @@ The checks are in four groups. Each group agrees with one of the four principles
 - Use the condition that is applicable to the smallest number of tasks. A rule with no condition is permitted only when it is applicable to all tasks for its file.
 - Files that load in each session contain only short rules and pointers with a condition. Move long text to files that load only when a task makes them necessary.
 - Keep only the text that the agent cannot find without help. Examples are project facts, decisions, special instructions of the user, and corrections of incorrect agent work.
-- In the edit job, remove text only in the part that the user wants to change. When the user tells you that an agent did not obey a rule, do not remove that rule. You can correct its text and move it.
+- In the edit job, remove text only in the changed part. When the user tells you that an agent did not obey a rule, do not remove that rule. The user wants agents to obey that rule. You can correct the text of that rule. You can also move that rule.
 - Remove each instruction that tells the agent to do an action that it does without an instruction. Remove text that the agent can read in the code or in the Git history. Also remove text that the agent can read in a pointer target.
 - Add one short cause to a rule in each of these conditions:
   - The rule changes the usual work of the agent.
@@ -41,6 +41,7 @@ The checks are in four groups. Each group agrees with one of the four principles
 
 - For words that the reader knows, and for clear, short sentences and paragraphs, obey the rules in `ste-rules.md`.
 - When the project has a glossary, use each project term with its meaning in that file.
+- Do not use the word of a glossary term with a different meaning. This rule is also applicable when you write the word in lowercase letters.
 - Use one term for each item: the project term, not a different word with the same meaning.
 - Make sure that all parts of the file agree. When the file has a pointer, also make sure that the file agrees with the pointer target. When the project has a glossary, also make sure that the file agrees with the glossary.
 - Use no images and no Mermaid diagrams. Show a sequence or a structure as a numbered list or a table. You can also use a tree with indents in a code block.
