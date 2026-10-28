@@ -30,7 +30,8 @@ You grade the runs of one output test. This is a read-only task, except for the 
    - Statement 4: count review rounds and reader-test rounds from the subagent starts. A round is all subagent starts between two corrections by the author.
    - Failed subagent: if a run shows a subagent that failed, the run passes statements 1, 3, and 4 only when it started one new subagent for that check, and after a second failure used "When no subagent is available" in `skills/writing/agent-instructions/references/review.md` for that check and all remaining checks.
    - Test 10 has no subagents. Claude Code disables `Agent`; OpenCode denies `task`. Each review and reader report must be in the run record as its own tool call that saves that one report, in its own assistant message, in sequence. A tool call or an assistant message that saves 2 or more reports fails statement 10.2. A tool call that changes a saved report also fails statement 10.2, because "When no subagent is available" in `skills/writing/agent-instructions/references/review.md` forbids it. A claim in the report alone is not evidence.
-   - Statement 10: compare the lines outside the asked change with the starting file. Check the report for each item in `known_mistakes`.
+   - Statement 10: compare the lines outside the asked change with the starting file. A whole section that the size limit moved counts as the same when the new file has its lines without changes. Check the report for each item in `known_mistakes`.
+   - Statement 9.2: measure the line count of each `##` section of the starting `AGENTS.md`, with its `###` subsections, and check that the run moved the largest first. In the test 9 fixture, the expected move is "Deploy", about 158 of 265 lines.
 5. Write `<configuration>/run-1/grading.json` in this form:
 
 ```json
