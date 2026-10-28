@@ -58,9 +58,11 @@ Move text to reference files from a new `SKILL.md` and from new entry-file text.
    - Long policy text and long background text. You decide which text is long.
    - Each section that has a specified condition, for example "Before a release", and 3 or more rules.
 2. Keep this text in its file:
-   - The steps that the agent must do each time.
+   - The numbered steps of the task, also under a heading that gives a condition.
    - The terms and the pointers.
    - Each section with only 1 or 2 rules.
+
+   Move a section of rules that has a condition, also when the condition can occur at each step.
 3. Put a reference file of a Skill in `<skill>/references/<name>.md`, one level below the Skill folder. Put a reference file of an entry file in `docs/agents/<name>.md`. If the project keeps these files in a different folder, use that folder.
 4. Write each file name in lowercase words with hyphens. The words give the subject of the file.
 5. Make one reference file for each condition that tells the agent to read a file. Put the text that the agent reads under the same condition in one file. When the user gives rules under one condition, keep all these rules in one file. If the project has a reference file for that condition, add the text to that file.
