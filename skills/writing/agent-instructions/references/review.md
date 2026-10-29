@@ -1,6 +1,6 @@
 # Self-check and reader test
 
-No check is a script. New subagents do the self-check, because they can examine items that a script cannot examine. Examples are the mood of a sentence, the passive voice, and the meanings of words.
+The check script of this skill examines each rule that ends with "(script check)". These rules are countable. New subagents do the other checks, because they can examine items that a script cannot examine. Examples are the mood of a sentence, the passive voice, and the meanings of words.
 
 ## When you start a subagent
 
@@ -38,6 +38,13 @@ Each review round and each reader-test round has these steps:
    When a subagent gave the report for a check, do not do that check again.
 7. After the last report of the round, correct the files. Do not correct a file between 2 groups of the round. The last report can come from a new subagent or from "When no subagent is available".
 
+## Before each review round
+
+1. Run the check script on the full file of each file in the round, as "When you run the check script" in `SKILL.md` tells you. Save the output of each round to a new JSON file.
+2. Give the path of the JSON file to each reviewer of the round.
+3. After the last report of the round, correct each finding of the script, or reject it, as for a reviewer finding.
+4. Put each script finding about text that you cannot edit in a warning.
+
 ## When you start the reviewers
 
 In each round, start 3 new, read-only reviewer subagents for each file, as "When you do a round" tells you:
@@ -54,7 +61,7 @@ Copy this prompt for each reviewer. Replace only the placeholders. Do not change
 
 ```text
 You are the <name> reviewer for an Agent instruction: a file that an agent reads as instructions.
-This task is read-only. Only read files. Do not edit, make, move, or delete files, except the one file that this prompt tells you to save.
+This task is read-only. Only read files. Do not edit, make, move, or delete files.
 Do not run commands that change files, Git data, or external services.
 
 File under review: <absolute path>
@@ -67,10 +74,12 @@ Rules: <absolute paths of all reference files for this reviewer in the table>
 Report requirements: <absolute path of this review.md file>
 Glossary: <absolute path of GLOSSARY.md or CONTEXT.md, or "none">
 Pointer targets: <absolute paths of the files that the pointers in the file identify, or "none">
+Check script findings: <absolute path of the JSON file of the check script for this round>
 
 Before the review, read the report requirements from their file.
 Do only this review. Do not give it to a subagent.
 Use each rule in the rule files for the sections under review.
+Skip each rule that ends with "(script check)". The check script findings give the problems for these rules.
 Give the problems in all sections under review, also in sections that the author cannot edit.
 The author puts each finding about a section that the author cannot edit in a warning.
 The author does not change the text of that section.
@@ -81,13 +90,6 @@ Then write the file size of each file and its limit.
 Give a finding for each text to move in a section that the author can edit.
 Also give a finding for each text that the author moved and that does not obey loading-rules.md. In the Text field, write the pointer of that text in quotation marks. If that text has no pointer, copy the heading of the moved section.
 <For the loading reviewer in the edit job only:> Write the extraction candidates in a different list: section heading, recommended file, and pointer sentence. Put in this list only sections under review that the author cannot edit. Use only the candidates that "When you recommend text to move" in loading-rules.md gives.
-<For the ASD-STE100 reviewer only:> First, write each sentence with its word count.
-For each sentence of 18 words or more, write a number after each word,
-for example "If(1) no(2) commit(3)". The numbers prevent errors in the count near the limit.
-Save this list to a new file in a temporary folder that is not in the project folder.
-You can write only this file.
-In your report, give the path of the list, not the list.
-Then examine each sentence.
 
 Give each finding in this form:
 - Rule: <the rule number, if the rule has one, and the full text of the rule in quotation marks from the rule files>
@@ -118,11 +120,10 @@ Do not add other notes or questions.
 
 Do this check on each round 3 correction. Also do it on each correction after the reader test when you did all 3 review rounds.
 
-1. Send a message that shows each changed sentence with its word count.
-2. For each sentence of 18 words or more, write a number after each word, for example "If(1) no(2) commit(3)". The numbers prevent errors in the count near the limit.
-3. For each changed pointer, also write the condition from that sentence in quotation marks. If a pointer has no condition, add the condition to that sentence.
-4. Correct each sentence that is longer than 25 words. After each correction, do these checks again.
-5. Add a warning that tells that no reviewer examined the text that these corrections changed.
+1. Run the check script on the full file of each changed file, as "When you run the check script" in `SKILL.md` tells you.
+2. Correct each script finding in the text that the corrections changed. After each correction, do these checks again.
+3. Send a message that gives the condition of each changed pointer in quotation marks. If a pointer has no condition, add the condition to that sentence.
+4. Add a warning that tells that no reviewer examined the text that these corrections changed.
 
 ## After the self-check: the reader test
 
@@ -193,11 +194,10 @@ Do the checks in this sequence:
 
 1. In each review round, do each review that no subagent did, in the sequence of the reviewer table.
 2. Start each review report with its title, for example "Round 2: ASD-STE100 review". Give each finding in the form of the reviewer prompt. Keep the necessary lists apart from the findings. Give no other items.
-3. In each ASD-STE100 review report, write each sentence and its word count on one line. These lines replace the list file of the reviewer prompt.
-4. Correct your text after each round. Then do the next round, or write that the self-check stopped.
-5. After the self-check stops, do each reader task that no subagent did, one after the other. Use these titles, with the number of the reader-test round and the file name:
+3. Correct your text after each round. Then do the next round, or write that the self-check stopped.
+4. After the self-check stops, do each reader task that no subagent did, one after the other. Use these titles, with the number of the reader-test round and the file name:
    - "Reader-test round <n>, <file>, reader task 1 (typical): <task>"
    - "Reader-test round <n>, <file>, reader task 2 (typical): <task>"
    - "Reader-test round <n>, <file>, reader task 3 (out-of-scope): <task>"
-6. In each reader report, give the 3 parts of the reader prompt. For each step, write the part of the instruction that you used in quotation marks.
-7. When you write the end-of-run report, add the warning about the checks that you did yourself. Write it as the Warnings part in `SKILL.md` tells you.
+5. In each reader report, give the 3 parts of the reader prompt. For each step, write the part of the instruction that you used in quotation marks.
+6. When you write the end-of-run report, add the warning about the checks that you did yourself. Write it as the Warnings part in `SKILL.md` tells you.

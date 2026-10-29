@@ -96,13 +96,13 @@ Guidance: Keep each file that a Skill uses in the folder of that Skill. Tell a p
 
 Reason: The `skills` CLI installs and tracks updates for each Skill folder alone. No installer for Rules exists yet.
 
-## Skills and Rules use no script to do their work
+## A Skill can ship a script for countable checks
 
-Applies when: adding a file to a Skill or Rule.
+Applies when: adding a file to a Skill or Rule, or making a Skill run a script to do its own work.
 
-Guidance: A Skill can contain code files in any language, and a Rule can contain code blocks. A code file can be an example or a file that the agent copies into the user's project. Do not make a Skill or a Rule run a script to do its own work. When a prompt tells you to write a script for a Skill and gives the reason, you can write it. Then read "How does a TypeScript script that a Skill ships run on the user's machine?" (#21). Then, in the specification issue of that Skill, select the program that runs the script.
+Guidance: A Skill can contain code files in any language, and a Rule can contain code blocks. A code file can be an example or a file that the agent copies into the user's project. A Skill can also ship a script that does the countable checks of its own work. An example is `scripts/check.ts` of the agent-instructions Skill. Write the script as erasable TypeScript that runs with `node`. Import only `node:` built-ins and files inside the Skill folder. In `SKILL.md`, state "Requires Node.js 22.18 or later" and call the script with `node`, not a shebang. Leave each check that needs judgment to the agent. A Rule runs no script.
 
-Reason: The operator wants each Skill to operate in the same way on Codex, OpenCode, and Claude Code. Also, an example file gets its TypeScript settings from the project of the user, so the TypeScript check of this repository skips Skills and Rules. See "What is the rule for scripts a Skill ships, and where does it live?" (#27).
+Reason: An LLM reviewer gives different verdicts for the same countable rule in different runs, and a script gives the same verdict each time. See "Spec: deterministic agent-instructions reviewers and evals" (#130). No platform puts `bun` on the PATH, and the `skills` CLI runs no install step. See "How does a TypeScript script that a Skill ships run on the user's machine?" (#21). An example file gets its TypeScript settings from the user's project, so the TypeScript check of this repository skips Skills and Rules. It examines only the `scripts/` folders of Skills.
 
 ## The check and source-branch job names stay
 

@@ -20,7 +20,7 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - The **write job** makes a new Agent instruction. The **edit job** changes an Agent instruction that the project has.
 - The **glossary** is the file that gives the terms of the project. Its name is `GLOSSARY.md` or `CONTEXT.md`. If the project has the two files, use `GLOSSARY.md`.
 - A **Rule** is a short Markdown file. A project adds the text of a Rule to `AGENTS.md` or `CLAUDE.md`.
-- A **finding** is one problem that a reviewer subagent gives in its report.
+- A **finding** is one problem that a reviewer subagent gives in its report. The check script also gives findings.
 - A **warning** is one item in the Warnings part of the end-of-run report. It is not the STE signal word WARNING, which this skill does not use.
 - A **tier** is one position in the sequence of the sources.
 - An **ADR** is an architecture decision record: a file that records one design decision and its cause.
@@ -99,7 +99,23 @@ Do these steps in the write job and in the edit job.
 
 - When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.
 - If you cannot correct a finding without help from the user, put it in a warning. An example is a word that makes a new technical noun in the project necessary.
-- A finding comes only from a reviewer report. When you find a problem yourself, give it in a warning, not as a finding. In that warning, give the text in quotation marks and the problem.
+- A finding comes only from a reviewer report or from the check script. When you find a problem yourself, give it in a warning, not as a finding. In that warning, give the text in quotation marks and the problem.
+
+## When you run the check script
+
+Requires Node.js 22.18 or later.
+
+The check script `scripts/check.ts` is in the folder of this `SKILL.md` file. It examines each rule that ends with "(script check)". When you do the self-check, `references/review.md` tells you when to run it. Run it with `node`, as this command shows:
+
+```sh
+node <skill folder>/scripts/check.ts <file>... --project <project folder> --glossary <glossary path or none> > <JSON file>
+```
+
+- Replace `<skill folder>` with the absolute path of the folder of this `SKILL.md` file.
+- Give the absolute path of each file to examine. Save the output to a new file in a temporary folder that is not in the project.
+- The script gives JSON with a list of findings. Exit code 0 shows no findings. Exit code 1 shows one or more findings.
+- Exit code 2 shows that the check did not run, for example because of a missing file. Then the script gives no JSON.
+- If the script gives no JSON, stop the self-check. Tell the user the error and that the check script requires Node.js 22.18 or later.
 
 ## End-of-run report
 
