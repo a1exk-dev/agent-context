@@ -8,13 +8,13 @@ The check script of this skill examines each rule that ends with "(script check)
    - Claude Code: The tool is the `Agent` tool. Its previous name is `Task`. Do not use a `fork` type, because a subagent of this type gets the session history of the main agent.
    - Codex: The tool is `spawn_agent` with `fork_turns="none"`. Without `fork_turns="none"`, `spawn_agent` copies the full session history. If you do not find `spawn_agent`, search for it with `tool_search`. Codex can show some subagent tools only after you search.
    - OpenCode: The tool is the `task` tool.
+
+   If you do not find the tool, also after the search with `tool_search` on Codex, go to the section "When no subagent is available".
 2. Tell the platform clearly to start a new subagent with an empty context window. Start each subagent from the main agent, because a subagent on Codex or OpenCode cannot start subagents.
 3. Put the full task and its limits in the prompt. No platform can make a subagent read-only from a `SKILL.md` file. Let the subagent use the shell, because Codex uses the shell to read files.
 4. Give each subagent the absolute paths of the reference files that it uses and of the file that it examines. The reference files are in the `references/` folder next to the `SKILL.md` file of this skill.
 5. Start a new subagent for each check: each reviewer and each confirmer in each round, and each reader task. Do not give a second check to a subagent, because that subagent knows the previous text and findings.
 6. Start the subagents of each round as "When you do a round" tells you.
-
-If no tool starts a subagent, go to the section "When no subagent is available".
 
 ## When you do a round
 
@@ -42,7 +42,7 @@ Each review round and each reader-test round has these steps:
 
 1. Before review round 1, make one new round folder that is not in the project, with the command `mktemp -d`. Use this folder for the self-check and the reader test. Do not use a specified path, because a different session can use the same path.
 2. At the start of each review round, save a copy of each file that the round examines as `<round folder>/round-<n>/<file path>`. `<n>` is the number of the round. `<file path>` is the path of the file in the project folder. Do not make the copy in a tool call that saves a report.
-3. Run the check script on the full file of each file in the round, as "When you run the check script" in `SKILL.md` tells you. Save the output of each round to a new JSON file.
+3. Run the check script on the full file of each file in the round, as "When you run the check script" in `SKILL.md` tells you. Save the output of each round to a new JSON file in `<round folder>/round-<n>/`.
 4. Give the path of the JSON file to each reviewer of the round.
 
 ## When you start the reviewers
@@ -69,7 +69,7 @@ Do not run commands that change files, Git data, or external services.
 
 File under review: <absolute path>
 Sections to review: <"the full file" in round 1, or the changed sections in rounds 2 and 3>
-Sections that the author can edit: <the changed part, for example a new section, or "the full file" for a new file. In the edit job, include the pointer of each section that you moved, but not the text of that section>
+Sections that the author can edit: <in round 1, the changed part, for example a new section, or "the full file" for a new file. In rounds 2 and 3, each section to review that is in the changed part. In the edit job, include the pointer of each section that you moved, but not the text of that section>
 Job: <"the write job" or "the edit job">
 Project folder: <absolute path>
 Target platforms: <the target platforms that you found with loading-rules.md, for example "Claude Code, Codex, and OpenCode">
@@ -126,11 +126,11 @@ Do not add other notes or questions.
 ### During and after a review round
 
 1. Round 1 examines the full file, also in the edit job. In each prompt, give the parts to review and, in a different line, the parts that the author can edit. In the edit job, put each finding about text that is not in the changed part in a warning.
-2. After the last report of the round, save each reviewer report to a new file in `<round folder>/round-<n>/`. Then run the report form of the check script for each file of the round, as "When you run the check script" in `SKILL.md` tells you. In that command, write the full path of the file under review and of each report file. Do not use shell variables or `*`, because the command must show which reports the script examined. Use only the findings in the blocking list and the advisory list. Do not use the findings in the dropped list.
+2. After the last report of the round, save each reviewer report to a new file in `<round folder>/round-<n>/`. Use the file name `<file name>-<reviewer>.md`. `<file name>` is the name of the file under review, with its extension. `<reviewer>` is `loading`, `ste`, or `iso`. Then run the report form of the check script for each file of the round, as "When you run the check script" in `SKILL.md` tells you. In that command, write the full path of the file under review and of each report file. Do not use shell variables or `*`, because the command must show which reports the script examined. Use only the findings in the blocking list and the advisory list. Do not use the findings in the dropped list.
 3. If a report has one or more findings in the blocking list, do the vote in "When a report has blocking findings". Before you get all confirmer reports of the round, do not correct a file.
 4. The findings to use are the script findings, the confirmed blocking findings, and the findings in the advisory list. For each of these findings, correct your text, or reject the finding. Put each script finding about text that you cannot edit in a warning. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
 5. A round passes when you accept no script finding and no confirmed blocking finding of the round. A finding that you reject with a warning does not make the round fail. A finding in the advisory list never starts a new round. The self-check stops when a round passes, or after round 3.
-6. If the round does not pass, start all 3 reviewers again in the next round, but only for the sections that the previous round changed. To find these sections, compare each file and its copy in the folder of the previous round, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
+6. If the round does not pass, start all 3 reviewers again in the next round, but only for the sections that the previous round changed. A section is changed when one or more of its lines changed. To find these sections, compare each file and its copy in the folder of the previous round, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
 7. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
 8. If the round passes and you correct a finding in the advisory list, do the check in "After the last review round" on the text that this correction changed.
 
@@ -294,4 +294,10 @@ Do the checks in this sequence:
    - "Reader-test round <n>, <file>, reader task 2 (typical): <task>"
    - "Reader-test round <n>, <file>, reader task 3 (out-of-scope): <task>"
 6. In each reader report, give the 3 parts in the form of the reader prompt. For each step, write the part of the instruction that you used in quotation marks.
-7. When you write the end-of-run report, add the warning about the checks that you did yourself. Write it as the Warnings part in `SKILL.md` tells you. In this warning, also write that no vote occurred for the blocking findings and the wrong steps.
+7. When you write the end-of-run report, add the warning about the checks that you did yourself. Write it as the Warnings part in `end-of-run-report.md` tells you. In this warning, also write that no vote occurred for the blocking findings and the wrong steps.
+
+## When a reviewer gives a finding
+
+- When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.
+- If you cannot correct a finding without help from the user, put it in a warning. An example is a word that makes a new technical noun in the project necessary.
+- A finding comes only from a reviewer report or from the check script. When you find a problem yourself, give it in a warning, not as a finding. In that warning, give the text in quotation marks and the problem.
