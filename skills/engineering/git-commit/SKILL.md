@@ -88,13 +88,13 @@ Obey these requirements of Conventional Commits 1.0.0:
 
 When you write the commit message, obey each Setting of the Commit policy:
 
-- **Types:** Use only a type from the `Types` Setting.
-- **Scope and Scopes:** When `Scope` is `off`, write no scope. When `Scope` is `required`, always write a scope. When `Scopes` is a list, use only a scope from that list.
-- **Breaking change:** When code that uses an interface must change because of the commit, the commit is a breaking change. Mark the commit as a breaking change. When the value is `!`, write `!` before the colon of the header. When the value is `footer`, write a footer `BREAKING CHANGE: <what callers must change>`. When the value is `both`, write the `!` and the footer.
-- **Issue footer:** When the value is `off`, write no issue footer. When the value is a footer token, find the issue number in the prompt or the task. If you find an issue number, write a footer with that token. An example is `Refs: #12`. If you find no issue number, write no issue footer.
-- **Header length:** When the value is a number, count the characters of the full header. Make sure that the header has no more characters than that number. When the value is `none`, the header has no length limit.
-- **Body:** When the value is `required`, always write a body. In the body, tell why the change is necessary.
-- **Description style:** When the case part is `lower case`, start the description with a small letter. When the case part is `sentence case`, start the description with a capital letter. When the mood part is `imperative`, start the description with a verb in the imperative, for example "add". When the period part is `full stop`, end the description with a period. When the period part is `no full stop`, end the description with no period.
+- Types: Use only a type from the `Types` Setting.
+- Scope and Scopes: When `Scope` is `off`, write no scope. When `Scope` is `required`, always write a scope. When `Scopes` is a list, use only a scope from that list.
+- Breaking change: When code that uses an interface must change because of the commit, the commit is a breaking change. Mark the commit as a breaking change. When the value is `!`, write `!` before the colon of the header. When the value is `footer`, write a footer `BREAKING CHANGE: <what callers must change>`. When the value is `both`, write the `!` and the footer.
+- Issue footer: When the value is `off`, write no issue footer. When the value is a footer token, find the issue number in the prompt or the task. If you find an issue number, write a footer with that token. An example is `Refs: #12`. If you find no issue number, write no issue footer.
+- Header length: When the value is a number, count the characters of the full header. Make sure that the header has no more characters than that number. When the value is `none`, the header has no length limit.
+- Body: When the value is `required`, always write a body. In the body, tell why the change is necessary.
+- Description style: When the case part is `lower case`, start the description with a small letter. When the case part is `sentence case`, start the description with a capital letter. When the mood part is `imperative`, start the description with a verb in the imperative, for example "add". When the period part is `full stop`, end the description with a period. When the period part is `no full stop`, end the description with no period.
 
 Before you commit, read the full message again. Compare the message with each instruction in this section.
 

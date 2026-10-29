@@ -10,6 +10,7 @@ import {
     type ClaudeEvent,
     claudeEnv,
     collectChanges,
+    collectTmp,
     type Eval,
     FORCE_SKILL,
     hitUsageLimit,
@@ -39,7 +40,7 @@ async function run(ev: Eval, config: string, options: Options) {
     const outputs = join(runDir, "outputs");
     mkdirSync(outputs, { recursive: true });
     const withSkill = config === "with_skill";
-    const { work, startCommit } = await prepare(
+    const { work, startCommit, tmp } = await prepare(
         ev,
         withSkill,
         `ai-eval-${String(ev.id).padStart(2, "0")}-${config}-`,
@@ -64,7 +65,12 @@ async function run(ev: Eval, config: string, options: Options) {
     }
     const { proc, exited } = spawnTimed(
         cmd,
-        { cwd: work, env: claudeEnv(), stdout: "pipe", stderr: "pipe" },
+        {
+            cwd: work,
+            env: { ...claudeEnv(), TMPDIR: tmp },
+            stdout: "pipe",
+            stderr: "pipe",
+        },
         options.timeout,
     );
     const [raw, stderr] = await Promise.all([
@@ -81,6 +87,7 @@ async function run(ev: Eval, config: string, options: Options) {
     const result = events.findLast((event) => event.type === "result");
     writeFileSync(join(outputs, "report.md"), result?.result ?? "");
     await collectChanges(work, startCommit, outputs);
+    collectTmp(tmp, outputs);
     const usage = result?.usage ?? {};
     const tokens = [
         "input_tokens",
@@ -91,6 +98,7 @@ async function run(ev: Eval, config: string, options: Options) {
     writeTiming(runDir, tokens, duration, {
         cost_usd: result?.total_cost_usd ?? null,
         work_dir: work,
+        tmp_dir: tmp,
     });
     writeMetadata(join(options.out, `eval-${ev.name}`), ev);
     const limit = hitUsageLimit(raw);

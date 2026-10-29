@@ -6,13 +6,16 @@ The eval plan is in issue #17, section 12. These files run it.
 |---|---|
 | `project/` | Sample project. Each output test starts from a copy. |
 | `fixtures/<test>/` | Files that replace project files for one test. |
-| `evals.json` | The 10 output tests: request, setup, statements, and known mistakes. |
+| `evals.json` | The 10 output tests: request, setup, statements, and known mistakes. Each statement is `{id, text, grader}`, and `grader` is `script`, `llm`, or `advisory`. |
+| `grade.ts` | The grade script: it grades the `script` statements of one run and merges the LLM results into `grading.json`. |
+| `assertions.ts` | The `script` statement checks keyed by id, and the lists that the LLM grader examines. |
+| `process.ts` | The process statements [1], [2], [3a], [3c], and [4]. They sort each subagent by the `Check class:` line of its prompt and read `transcript.jsonl` or `sessions/`. |
 | `load-requests.json` | The 20 load-test requests. |
 | `run-evals.ts` | Runs the output tests with `claude -p`, with and without the skill. |
 | `run-opencode-evals.ts` | Runs the output tests with OpenCode and exports every parent and child session. |
 | `run-load-test.ts` | Runs the load test with Claude Code or OpenCode. |
 | `eval-lib.ts` | Code that the three runners share. `eval-lib.test.ts` tests its parsers. |
-| `grader.md` | Instructions for the grader subagent that checks each statement. |
+| `grader.md` | Instructions for the grader subagent that checks the `llm` and `advisory` statements, and the confirmer prompt. |
 
 ## Run
 
@@ -25,9 +28,14 @@ bun tests/skills/writing/agent-instructions/run-load-test.ts --out /tmp/ai-evals
 
 Both scripts run a maximum of 5 runs at the same time (`--jobs 5`). They refuse a `--jobs` value above 5. A run that hits the usage limit gets a `LIMIT_HIT` file in its folder, and the load test stops with an error. Run it again later.
 
-Then give `grader.md` and one run to a fresh grader subagent, one grader for each run.
+Then grade each run folder (`<iteration>/eval-<name>/<configuration>/run-1`) in 4 steps:
 
-Each run uses a copy of `project/` in a temporary folder outside the repository, so this repository's `AGENTS.md` and `CLAUDE.md` do not load. `--setting-sources project,local` keeps user skills and user memory out of the run. Runs with the skill install it in `.claude/skills/` and add "Use the agent-instructions skill for this task." to the system prompt. The output tests then check the skill's behavior, and the load test checks the description on its own.
+1. `bun tests/skills/writing/agent-instructions/grade.ts script <run-dir>` grades the `script` statements and writes `script-grading.json` with the lists for the LLM grader. It exits 1 and grades nothing when the run has `LIMIT_HIT` or `INCOMPLETE`. Run it again later.
+2. Give `grader.md` and the run folder to a fresh grader subagent, one grader for each run. It writes `llm-grading.json`.
+3. For each `llm` statement with a "no", start 2 confirmers with the prompt in `grader.md`, and write `confirmers.json`. A failed statement counts only when at least 1 confirmer agrees.
+4. `bun tests/skills/writing/agent-instructions/grade.ts merge <run-dir>` writes `grading.json`. Its summary counts the `script` and `llm` statements. It shows the `advisory` statements but leaves them out of the count.
+
+Each run uses a copy of `project/` in a temporary folder outside the repository, so this repository's `AGENTS.md` and `CLAUDE.md` do not load. Each run also gets its own empty `TMPDIR` next to that copy. There the run makes its round folder with `mktemp -d`: the copy of each file at the start of each round, the saved reviewer reports, and the closed lists. The runner copies this `TMPDIR` to `outputs/tmp/`, and `grade.ts` uses it to check the vote of each round for [1] and [3a]. `--setting-sources project,local` keeps user skills and user memory out of the run. Runs with the skill install it in `.claude/skills/` and add "Use the agent-instructions skill for this task." to the system prompt. The output tests then check the skill's behavior, and the load test checks the description on its own.
 
 A load-test run counts as a load when the agent calls the skill or reads its `SKILL.md` within its first 8 tool calls. Each request runs 3 times. A request is correct when its load rate is on the correct side of 0.5.
 
