@@ -34,3 +34,11 @@ _Avoid_: option, rule
 **Commit review**:
 A Commit review is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message. But for a diff of more than 500 lines, the Commit review gives the command that shows the diff, not the full diff. The commit occurs only after the Operator approves that review.
 _Avoid_: commit preview, approval request
+
+**Blocking rule**:
+A Blocking rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark "(blocking)" at its end. A confirmed finding for a Blocking rule makes its review round fail. A breach of a Blocking rule makes an agent do a wrong action or miss an instruction. One or two quotations from the files let a new subagent answer yes or no.
+_Avoid_: hard rule, error rule
+
+**Advisory rule**:
+An Advisory rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark "(advisory)" at its end. A finding for an Advisory rule never makes a review round fail.
+_Avoid_: soft rule, warning rule

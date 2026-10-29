@@ -83,15 +83,16 @@ Skip each rule that ends with "(script check)". The check script findings give t
 Give the problems in all sections under review, also in sections that the author cannot edit.
 The author puts each finding about a section that the author cannot edit in a warning.
 The author does not change the text of that section.
-<For the loading reviewer only:> First, write each pointer sentence and its condition.
-Copy the condition from that sentence. If it has no condition, give a finding.
-Include each instruction that tells the reader to read, examine, or obey a different file.
-Then write the file size of each file and its limit.
+<For the loading reviewer only:> Skip the rules about pointers and headings in "When you select a feature" in loading-rules.md.
+The ISO 24495-1 reviewer examines the conditions of the pointers and the headings.
+Write the file size of each file and its limit.
 Give a finding for each text to move in a section that the author can edit.
 Also give a finding for each text that the author moved and that does not obey loading-rules.md. In the Text field, write the pointer of that text in quotation marks. If that text has no pointer, copy the heading of the moved section.
 <For the ISO 24495-1 reviewer only:> The check script findings also give the pointer list: each sentence that names a file path, with its line and heading.
 For each sentence in the pointer list that is a pointer, decide whether the heading and the sentence give the condition to read the target.
 Also find each pointer that names no file, for example "that file".
+In "When you select the text" in plain-language-checks.md, skip the rule about long text. The loading reviewer examines it.
+In "When you select the words and the tone", skip the rule about one term for each item. The ASD-STE100 reviewer examines it.
 <For the loading reviewer in the edit job only:> Write the extraction candidates in a different list: section heading, recommended file, and pointer sentence. Put in this list only sections under review that the author cannot edit. Use only the candidates that "When you recommend text to move" in loading-rules.md gives.
 
 Give each finding in this form:
@@ -101,6 +102,7 @@ Give each finding in this form:
 - Correction: <recommended new text>
 Each finding gives one rule from the rule files and the text from the file in quotation marks.
 Write the full rule in each finding. Do not refer to a different finding.
+Copy the rule and the text word for word. A script compares each quotation with the files and removes each finding with a different quotation.
 Write each finding so that the author can examine it without the other findings.
 Do not make a new rule. A group heading is not a rule.
 The Text field contains only words from the file under review.
@@ -114,10 +116,11 @@ Do not add other notes or questions.
 ### During and after a review round
 
 1. Round 1 examines the full file, also in the edit job. In each prompt, give the parts to review and, in a different line, the parts that the author can edit. In the edit job, put each finding about text that is not in the changed part in a warning.
-2. For each finding, correct your text, or reject the finding. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
-3. Before you correct your text after a round, save a copy of each file that the round examines. Do not make the copy in a tool call that saves a report. Put the copy in a temporary folder that is not in the project. In rounds 2 and 3, start all 3 reviewers again, but only for the sections that the previous round changed. To find these sections, compare each file and its copy, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
-4. The self-check stops when a round gives no finding in your text that you accept, or after round 3.
-5. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
+2. After the last report of the round, save each reviewer report to a new file in a temporary folder that is not in the project. Then run the report form of the check script for each file of the round, as "When you run the check script" in `SKILL.md` tells you. Use only the findings in the blocking list and the advisory list. Do not use the findings in the dropped list.
+3. For each finding, correct your text, or reject the finding. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
+4. Before you correct your text after a round, save a copy of each file that the round examines. Do not make the copy in a tool call that saves a report. Put the copy in a temporary folder that is not in the project. In rounds 2 and 3, start all 3 reviewers again, but only for the sections that the previous round changed. To find these sections, compare each file and its copy, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
+5. The self-check stops when a round gives no finding in your text that you accept, or after round 3.
+6. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
 
 ### After the last review round
 

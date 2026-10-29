@@ -771,3 +771,183 @@ describe("check script, ISO 24495-1 rules", () => {
         expect(result.findings).toEqual([]);
     });
 });
+
+// Runs the report form on the given reviewer reports for one file under
+// review with the given text.
+function checkReports(text: string, reports: string[]) {
+    const folder = project({
+        "AGENTS.md": text,
+        ...Object.fromEntries(
+            reports.map((report, i) => [`report-${i + 1}.md`, report]),
+        ),
+    });
+    const result = run([
+        "--reports",
+        "--file",
+        join(folder, "AGENTS.md"),
+        ...reports.map((_, i) => join(folder, `report-${i + 1}.md`)),
+    ]);
+    return { ...result, ...JSON.parse(result.stdout || "{}") };
+}
+
+// A finding in the form of the reviewer prompt. An empty field is left out.
+const finding = (fields: {
+    rule: string;
+    text: string;
+    problem?: string;
+    correction?: string;
+}) =>
+    [
+        `- Rule: ${fields.rule}`,
+        `- Text: "${fields.text}"`,
+        fields.problem === ""
+            ? ""
+            : `- Problem: ${fields.problem ?? "A problem."}`,
+        `- Correction: ${fields.correction ?? "New text."}`,
+        "",
+    ]
+        .filter((line, i, lines) => line !== "" || i === lines.length - 1)
+        .join("\n");
+
+const passive = '3.6 "Use the active voice (rule 3.6)."';
+
+describe("check script, report form", () => {
+    it("drops a finding whose Text quote is not in the file", () => {
+        const result = checkReports("The file is read by the agent.\n", [
+            finding({
+                rule: passive,
+                text: "The file is written by the agent.",
+            }),
+        ]);
+        expect(result.code).toBe(0);
+        expect(result.blocking).toEqual([]);
+        expect(result.dropped).toEqual([
+            expect.objectContaining({
+                text: '"The file is written by the agent."',
+                reason: "The Text quote is not in the file under review.",
+            }),
+        ]);
+    });
+
+    it("drops a finding with a missing field", () => {
+        const result = checkReports("The file is read by the agent.\n", [
+            finding({
+                rule: passive,
+                text: "The file is read by the agent.",
+                problem: "",
+            }),
+        ]);
+        expect(result.code).toBe(0);
+        expect(result.dropped).toEqual([
+            expect.objectContaining({
+                reason: "The finding has no Problem field.",
+            }),
+        ]);
+    });
+
+    it("drops a finding whose Rule quote is in no rule file", () => {
+        const result = checkReports("The file is read by the agent.\n", [
+            finding({
+                rule: '"Write each sentence in the future tense."',
+                text: "The file is read by the agent.",
+            }),
+        ]);
+        expect(result.dropped).toEqual([
+            expect.objectContaining({
+                reason: "The Rule quote is in no rule file.",
+            }),
+        ]);
+    });
+
+    it("drops a finding for a rule that the check script examines", () => {
+        const result = checkReports("You can use the file; read it.\n", [
+            finding({
+                rule: '8.1 "You can use all English punctuation marks, but not the semicolon (rule 8.1)."',
+                text: "You can use the file; read it.",
+            }),
+        ]);
+        expect(result.dropped).toEqual([
+            expect.objectContaining({
+                reason: 'The rule ends with "(script check)". The check script examines it.',
+            }),
+        ]);
+    });
+
+    it("sorts a blocking and an advisory finding into their lists", () => {
+        const text = "# Title\n\nWork well.\nThe file is read\nby the agent.\n";
+        const result = checkReports(text, [
+            [
+                "Round 1: ASD-STE100 review",
+                "",
+                finding({
+                    rule: passive,
+                    text: "The file is read by the agent.",
+                    problem: "The sentence is in the passive voice.",
+                    correction: "The agent reads the file.",
+                }),
+                finding({
+                    rule: '4.1 "Write short and clear sentences (rule 4.1). Give the action or the fact, not a general statement."',
+                    text: "Work well.",
+                    problem: "The sentence is a general statement.",
+                    correction: "Run the tests.",
+                }),
+            ].join("\n"),
+        ]);
+        expect(result.code).toBe(1);
+        expect(result.dropped).toEqual([]);
+        const report = expect.stringMatching(/report-1\.md$/);
+        expect(result.blocking).toEqual([
+            {
+                reviewer: "ASD-STE100",
+                rule: "3.6",
+                ruleFile: "references/ste-rules.md",
+                heading: "When you write a verb",
+                text: "The file is read by the agent.",
+                path: expect.stringMatching(/AGENTS\.md$/),
+                line: 4,
+                problem: "The sentence is in the passive voice.",
+                correction: "The agent reads the file.",
+                report,
+                reportLine: 3,
+            },
+        ]);
+        expect(result.advisory).toEqual([
+            expect.objectContaining({
+                rule: "4.1",
+                heading: "When you write a sentence",
+                text: "Work well.",
+                line: 3,
+                reportLine: 8,
+            }),
+        ]);
+    });
+
+    it("gives a rule with a nested list the mark of its list items", () => {
+        const result = checkReports("Run the tests in the container.\n", [
+            finding({
+                rule: '"Add one short cause to a rule in each of these conditions:"',
+                text: "Run the tests in the container.",
+            }),
+        ]);
+        expect(result.advisory).toEqual([
+            expect.objectContaining({
+                reviewer: "ISO 24495-1",
+                ruleFile: "references/plain-language-checks.md",
+                heading: "When you select the text",
+            }),
+        ]);
+    });
+
+    it("gives exit code 2 and no JSON for an unreadable report", () => {
+        const folder = project({ "AGENTS.md": "Read the file.\n" });
+        const result = run([
+            "--reports",
+            "--file",
+            join(folder, "AGENTS.md"),
+            join(folder, "missing-report.md"),
+        ]);
+        expect(result.code).toBe(2);
+        expect(result.stdout).toBe("");
+        expect(result.stderr).toMatch(/missing-report\.md/);
+    });
+});

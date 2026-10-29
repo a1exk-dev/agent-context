@@ -21,6 +21,8 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - The **glossary** is the file that gives the terms of the project. Its name is `GLOSSARY.md` or `CONTEXT.md`. If the project has the two files, use `GLOSSARY.md`.
 - A **Rule** is a short Markdown file. A project adds the text of a Rule to `AGENTS.md` or `CLAUDE.md`.
 - A **finding** is one problem that a reviewer subagent gives in its report. The check script also gives findings.
+- A **blocking rule** is a rule that ends with "(blocking)". A finding for a blocking rule can make a review round fail.
+- An **advisory rule** is a rule that ends with "(advisory)". A review round cannot fail because of a finding for an advisory rule.
 - A **warning** is one item in the Warnings part of the end-of-run report. It is not the STE signal word WARNING, which this skill does not use.
 - A **tier** is one position in the sequence of the sources.
 - An **ADR** is an architecture decision record: a file that records one design decision and its cause.
@@ -116,6 +118,15 @@ node <skill folder>/scripts/check.ts <file>... --project <project folder> --glos
 - The script gives JSON with a list of findings and a list of the sentences that name a file path. Exit code 0 shows no findings. Exit code 1 shows one or more findings.
 - Exit code 2 shows that the check did not run, for example because of a missing file. Then the script gives no JSON.
 - If the script gives no JSON, stop the self-check. Tell the user the error and that the check script requires Node.js 22.18 or later.
+
+The report form of the script examines the reviewer reports of one file. Run it once for each file of the round:
+
+```sh
+node <skill folder>/scripts/check.ts --reports --file <file under review> <report file>... > <JSON file>
+```
+
+- The script gives JSON with 3 lists of findings: blocking, advisory, and dropped. It drops each finding that has a missing field, a quotation that is not in the files, or no rule with a mark.
+- The exit codes are the same as in the first form. Exit code 1 shows one or more findings in the blocking list or the advisory list.
 
 ## End-of-run report
 
