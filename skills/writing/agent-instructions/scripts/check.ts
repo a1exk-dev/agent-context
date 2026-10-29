@@ -16,17 +16,29 @@ import {
 import { parseArgs } from "node:util";
 
 const usage = `Usage: node check.ts <file>... --project <folder> --glossary <path|none>
+       node check.ts --reports --file <file under review> <report>...
 
-Checks each file for the rules that end with "(script check)" in the rule
-files of the agent-instructions Skill. Writes JSON to stdout:
+File form: checks each file for the rules that end with "(script check)" in
+the rule files of the agent-instructions Skill. Writes JSON to stdout:
 { "findings": [ { reviewer, rule, ruleFile, heading, text, path, line, problem } ],
   "pointers": [ { path, line, heading, text, targets } ] }
 The pointers list gives each sentence that names a file path. The glossary
 gives the terms and their _Avoid_ words. The base list of technical terms
 comes from references/technical-terms.md of the Skill.
 
-Exit code: 0 for no findings, 1 for one or more findings, 2 when the check
-could not run (missing file, bad argument).`;
+Report form: checks the findings (Rule, Text, Problem, Correction) of the
+reviewer reports of one file under review. Writes JSON to stdout:
+{ "blocking": [ { reviewer, rule, ruleFile, heading, text, path, line,
+                  problem, correction, report, reportLine } ],
+  "advisory": [ ...the same fields ],
+  "dropped": [ { report, reportLine, rule, text, problem, correction, reason } ] }
+It drops each finding with a missing field, a Text quote that is not in the
+file, or a Rule quote that is in no rule that ends with "(blocking)" or
+"(advisory)". It sorts the other findings by the mark of their rule.
+
+Exit code: 0 for no findings, 1 for one or more findings (in the report form:
+blocking or advisory), 2 when the check could not run (missing file, bad
+argument, unreadable report).`;
 
 type Finding = {
     reviewer: string;
@@ -84,6 +96,7 @@ const technicalTerms = join(
 class UsageError extends Error {}
 
 function main(argv: string[]): number {
+    if (argv.includes("--reports")) return reportForm(argv);
     let args: ReturnType<typeof parseArguments>;
     try {
         args = parseArguments(argv);
@@ -986,6 +999,284 @@ function lineAt(segment: Segment, offset: number) {
     )
         index++;
     return segment.lines[index];
+}
+
+// The rule files of the reviewers, relative to the Skill folder, with the
+// reviewer that uses each file.
+const ruleFiles: [string, string][] = [
+    ["references/ste-rules.md", "ASD-STE100"],
+    ["references/technical-terms.md", "ASD-STE100"],
+    ["references/plain-language-checks.md", "ISO 24495-1"],
+    ["references/loading-rules.md", "loading"],
+    ["references/agent-skills-spec.md", "loading"],
+];
+const fields = ["rule", "text", "problem", "correction"] as const;
+
+type ReportFinding = Record<(typeof fields)[number], string> & {
+    report: string;
+    reportLine: number;
+};
+
+// One rule of a rule file: a paragraph, a list item, or a table cell, with
+// the mark at its end, or null.
+type RuleUnit = {
+    ruleFile: string;
+    reviewer: string;
+    heading: string;
+    text: string;
+    indent: number;
+    mark: string | null;
+};
+
+// The report form: checks the findings of the reviewer reports of one file.
+function reportForm(argv: string[]): number {
+    let file: string;
+    let reports: string[];
+    try {
+        const { values, positionals } = parseArgs({
+            args: argv,
+            allowPositionals: true,
+            options: {
+                reports: { type: "boolean" },
+                file: { type: "string" },
+            },
+        });
+        if (values.file === undefined)
+            throw new UsageError("Missing --file <file under review>.");
+        if (positionals.length === 0)
+            throw new UsageError("No report to check.");
+        file = values.file;
+        reports = positionals;
+    } catch (error) {
+        process.stderr.write(`${(error as Error).message}\n\n${usage}\n`);
+        return 2;
+    }
+    let source: string;
+    let units: RuleUnit[];
+    const sources: [string, string][] = [];
+    try {
+        source = readFileSync(file, "utf8");
+        units = ruleFiles.flatMap(([ruleFile, reviewer]) =>
+            ruleUnits(
+                ruleFile,
+                reviewer,
+                readFileSync(join(import.meta.dirname, "..", ruleFile), "utf8"),
+            ),
+        );
+        for (const report of reports)
+            sources.push([report, readFileSync(report, "utf8")]);
+    } catch (error) {
+        process.stderr.write(`Cannot read a file: ${error}\n`);
+        return 2;
+    }
+    const target = normalized(source);
+    const blocking: object[] = [];
+    const advisory: object[] = [];
+    const dropped: object[] = [];
+    for (const [report, text] of sources) {
+        for (const found of reportFindings(report, text)) {
+            const drop = (reason: string) => dropped.push({ ...found, reason });
+            const missing = fields.find((field) => found[field] === "");
+            if (missing) {
+                drop(
+                    `The finding has no ${missing[0].toUpperCase()}${missing.slice(1)} field.`,
+                );
+                continue;
+            }
+            const quote = quoted(found.text);
+            const at = quote === null ? -1 : target.text.indexOf(normal(quote));
+            if (quote === null || quote.trim() === "" || at < 0) {
+                drop("The Text quote is not in the file under review.");
+                continue;
+            }
+            const ruleQuote = quoted(found.rule);
+            const unit = ruleQuote === null ? null : findRule(units, ruleQuote);
+            if (unit === null) {
+                drop("The Rule quote is in no rule file.");
+                continue;
+            }
+            if (unit.mark !== "blocking" && unit.mark !== "advisory") {
+                drop(
+                    unit.mark === "script check"
+                        ? 'The rule ends with "(script check)". The check script examines it.'
+                        : 'The rule does not end with "(blocking)" or "(advisory)".',
+                );
+                continue;
+            }
+            const line = source.slice(0, target.offsets[at]).split("\n").length;
+            (unit.mark === "blocking" ? blocking : advisory).push({
+                reviewer: unit.reviewer,
+                rule: ruleNumber(unit.text),
+                ruleFile: unit.ruleFile,
+                heading: unit.heading,
+                text: quote,
+                path: file,
+                line,
+                problem: found.problem,
+                correction: found.correction,
+                report: found.report,
+                reportLine: found.reportLine,
+            });
+        }
+    }
+    process.stdout.write(
+        `${JSON.stringify({ blocking, advisory, dropped }, null, 2)}\n`,
+    );
+    return blocking.length + advisory.length === 0 ? 0 : 1;
+}
+
+// Gives each finding of a report. A finding is a group of field lines
+// (Rule, Text, Problem, Correction). A Rule line or a field that the group
+// already has starts a new finding. The lines after a field line, up to a
+// blank line, a heading, or the next field line, continue its value.
+function reportFindings(report: string, text: string): ReportFinding[] {
+    const result: ReportFinding[] = [];
+    let current: ReportFinding | null = null;
+    let last: (typeof fields)[number] | null = null;
+    const lines = text.split(/\r?\n/);
+    lines.forEach((line, i) => {
+        const match =
+            /^\s*(?:[-*+]\s+|\d+[.)]\s+)?(?:\*\*)?(rule|text|problem|correction)(?:\*\*)?\s*:(?:\*\*)?\s*(.*)$/i.exec(
+                line,
+            );
+        if (match) {
+            const field = match[1].toLowerCase() as (typeof fields)[number];
+            if (current === null || field === "rule" || current[field] !== "") {
+                current = {
+                    rule: "",
+                    text: "",
+                    problem: "",
+                    correction: "",
+                    report,
+                    reportLine: i + 1,
+                };
+                result.push(current);
+            }
+            current[field] = match[2].trim();
+            last = field;
+            return;
+        }
+        if (current === null || last === null) return;
+        if (/^#{1,6}\s/.test(line)) {
+            last = null;
+        } else if (line.trim() === "") {
+            if (current[last] !== "") last = null;
+        } else {
+            current[last] = `${current[last]}\n${line}`.trim();
+        }
+    });
+    return result;
+}
+
+// Gives the text between the first and the last quotation mark, or null.
+function quoted(value: string): string | null {
+    const start = value.search(/["“]/);
+    const end = Math.max(value.lastIndexOf('"'), value.lastIndexOf("”"));
+    if (start < 0 || end <= start) return null;
+    return value.slice(start + 1, end);
+}
+
+// Makes text comparable: no code-span or emphasis marks, straight quotation
+// marks, and one space for each run of white space.
+function normal(text: string) {
+    return normalized(text).text;
+}
+
+// Gives the normal text and, for each of its characters, the offset in the
+// source.
+function normalized(source: string) {
+    let text = "";
+    const offsets: number[] = [];
+    for (let i = 0; i < source.length; i++) {
+        let char = source[i];
+        if (char === "`" || char === "*") continue;
+        if (char === "\\" && source[i + 1] === '"') continue;
+        if (char === "“" || char === "”") char = '"';
+        if (char === "‘" || char === "’") char = "'";
+        if (/\s/.test(char)) {
+            if (text === "" || text.endsWith(" ")) continue;
+            char = " ";
+        }
+        text += char;
+        offsets.push(i);
+    }
+    if (text.endsWith(" ")) {
+        text = text.slice(0, -1);
+        offsets.pop();
+    }
+    return { text, offsets };
+}
+
+// Gives the rules of a rule file: each paragraph, list item, and table cell,
+// with the last heading before it.
+function ruleUnits(ruleFile: string, reviewer: string, source: string) {
+    const units: RuleUnit[] = [];
+    let heading = "";
+    for (const segment of segments(source)) {
+        const text = segment.visible.trim();
+        if (segment.heading) {
+            heading = text;
+            continue;
+        }
+        const mark = /\((blocking|advisory|script check)\)$/.exec(text);
+        units.push({
+            ruleFile,
+            reviewer,
+            heading,
+            text,
+            indent: segment.visible.search(/\S/),
+            mark: mark ? mark[1] : null,
+        });
+    }
+    return units;
+}
+
+// Finds the rule that contains the quote, in the sequence of the rule files.
+// The quote can continue into the rules after it under the same heading. A
+// rule with no mark of its own gets the first mark of its nested list items.
+function findRule(units: RuleUnit[], quote: string): RuleUnit | null {
+    const wanted = normal(quote).toLowerCase();
+    if (wanted === "") return null;
+    let first = 0;
+    while (first < units.length) {
+        let last = first;
+        let joined = "";
+        const ends: number[] = [];
+        for (
+            ;
+            last < units.length &&
+            units[last].ruleFile === units[first].ruleFile &&
+            units[last].heading === units[first].heading;
+            last++
+        ) {
+            joined += `${joined === "" ? "" : " "}${normal(units[last].text).toLowerCase()}`;
+            ends.push(joined.length);
+        }
+        const at = joined.indexOf(wanted);
+        if (at >= 0) {
+            const end = at + wanted.length;
+            return withMark(units, first + ends.findIndex((e) => e >= end));
+        }
+        first = last;
+    }
+    return null;
+}
+
+function withMark(units: RuleUnit[], index: number): RuleUnit {
+    const unit = units[index];
+    if (unit.mark !== null) return unit;
+    for (let k = index + 1; k < units.length; k++) {
+        const next = units[k];
+        if (next.heading !== unit.heading || next.indent <= unit.indent) break;
+        if (next.mark !== null) return { ...unit, mark: next.mark };
+    }
+    return unit;
+}
+
+// Gives the rule number of a rule, for example "3.6" from "(rule 3.6)".
+function ruleNumber(text: string): string | null {
+    const match = /\((?:rules?\s+)?((?:\d+\.\d+|GR-\d+)[^()]*)\)/.exec(text);
+    return match ? match[1] : null;
 }
 
 process.exitCode = main(process.argv.slice(2));
