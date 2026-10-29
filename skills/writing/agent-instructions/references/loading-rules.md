@@ -1,6 +1,6 @@
 # Loading rules
 
-This file gives the loading rules, which are tier 1, and the steps that use them. When a file does not obey a loading rule, one of 3 results occurs. A platform does not load the file, a check gives an error, or the platform does not read all of the file. The loading rules are applicable to each Agent instruction. They are not applicable to other files, for example `README.md` or `.claude/settings.json`. If `SKILL.md` of this skill is not in your context window, read it before you use this file. It defines the terms, the tiers, and the end-of-run report.
+This file gives the loading rules, which are tier 1, and the steps that use them. The loading rules are applicable to each Agent instruction. They are not applicable to other files, for example `README.md` or `.claude/settings.json`. If `SKILL.md` of this skill is not in your context window, read it before you use this file. It defines the terms, the tiers, and the end-of-run report.
 
 ## When you find the target platforms
 
