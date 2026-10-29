@@ -141,6 +141,19 @@ describe("check script, file form", () => {
         ]);
     });
 
+    // The starting MEMORY.md of test 05 has this sentence. No reviewer of
+    // run 05 of #145 found it.
+    it("finds the non-approved word ensure in each form", () => {
+        const result = check(
+            "Ensure that each total is also in cents.\n\nIt ensures a total and ensured a price.\n",
+        );
+        expect(result.findings).toEqual([
+            modal("Ensure that each total is also in cents.", 1, "Ensure"),
+            modal("It ensures a total and ensured a price.", 3, "ensures"),
+            modal("It ensures a total and ensured a price.", 3, "ensured"),
+        ]);
+    });
+
     it("finds each emphasis word in capital letters, but not CAUTION", () => {
         const emphasis = [
             "IMPORTANT",
@@ -554,6 +567,11 @@ describe("check script, glossary rules", () => {
         ]);
     });
 
+    // The case problem tells the author to keep the case of a word with a
+    // different meaning. Run 04 of #145 wrote "Release branch" for a branch.
+    const caseProblem = (word: string, term: string, fixed: string) =>
+        `The sentence has "${word}", but the glossary term is "${term}". If "${word}" has the meaning of the glossary term, write "${fixed}". If not, do not change the case: write a different word.`;
+
     it("finds a glossary term in a different case", () => {
         const folder = project({
             "GLOSSARY.md": glossary,
@@ -567,13 +585,13 @@ describe("check script, glossary rules", () => {
                 "6.2",
                 "The operators approve.",
                 1,
-                'The sentence has "operators", but the glossary term is "Operator".',
+                caseProblem("operators", "Operator", "Operators"),
             ),
             term(
                 "6.2",
                 "Do a Dry run.",
                 1,
-                'The sentence has "Dry run", but the glossary term is "dry run".',
+                caseProblem("Dry run", "dry run", "dry run"),
             ),
         ]);
     });
@@ -602,13 +620,13 @@ describe("check script, glossary rules", () => {
                 "6.2",
                 "Each blocking rule fails.",
                 1,
-                'The sentence has "blocking rule", but the glossary term is "Blocking rule".',
+                caseProblem("blocking rule", "Blocking rule", "Blocking rule"),
             ),
             term(
                 "6.2",
                 "The rule applies.",
                 1,
-                'The sentence has "rule", but the glossary term is "Rule".',
+                caseProblem("rule", "Rule", "Rule"),
             ),
         ]);
     });
@@ -978,6 +996,32 @@ describe("check script, report form", () => {
                 heading: "When you select the text",
             }),
         ]);
+    });
+
+    // Runs 03, 05, 06, 07, and 09 of #145 gave the paths with shell
+    // variables, so the command did not show which reports the script read.
+    it.each(["$R/round-1/AGENTS.md-ste.md", "/tmp/round-1/*.md"])(
+        "gives exit code 2 for the report path %s",
+        (report) => {
+            const folder = project({ "AGENTS.md": "Read the file.\n" });
+            const result = run([
+                "--reports",
+                "--file",
+                join(folder, "AGENTS.md"),
+                report,
+            ]);
+            expect(result.code).toBe(2);
+            expect(result.stdout).toBe("");
+            expect(result.stderr).toContain(
+                `The path "${report}" has "$" or "*". Write the full path of each file without shell variables or "*".`,
+            );
+        },
+    );
+
+    it("gives exit code 2 for a --file path with a shell variable", () => {
+        const result = run(["--reports", "--file", "$P/AGENTS.md", "x.md"]);
+        expect(result.code).toBe(2);
+        expect(result.stderr).toContain('The path "$P/AGENTS.md" has "$"');
     });
 
     it("gives exit code 2 and no JSON for an unreadable report", () => {

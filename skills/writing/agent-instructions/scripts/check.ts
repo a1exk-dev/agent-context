@@ -53,7 +53,8 @@ tested quote. A tested quote that is not in the file gives exit code 2.
 
 Exit code: 0 for no findings, 1 for one or more findings (in the report form:
 blocking or advisory; for reader reports: problems or unclear parts), 2 when
-the check could not run (missing file, bad argument, unreadable report).`;
+the check could not run (missing file, bad argument, unreadable report, or a
+report-form path with "$" or "*").`;
 
 type Finding = {
     reviewer: string;
@@ -218,7 +219,7 @@ const wordRules: WordRule[] = [
     {
         rule: null,
         heading: "When you select a word",
-        pattern: /\b(?:should|may|might|would|shall|could)\b/gi,
+        pattern: /\b(?:should|may|might|would|shall|could|ensure[sd]?)\b/gi,
         problem: (word) => `The sentence has the non-approved word "${word}".`,
     },
     {
@@ -304,7 +305,8 @@ function glossaryRules(glossary: Glossary, base: string[]): WordRule[] {
                 if (stem === term) return null;
                 const capital = term[0].toUpperCase() + term.slice(1);
                 if (atStart && stem === capital) return null;
-                return `The sentence has "${word}", but the glossary term is "${term}".`;
+                const fixed = term + word.slice(term.length);
+                return `The sentence has "${word}", but the glossary term is "${term}". If "${word}" has the meaning of the glossary term, write "${fixed}". If not, do not change the case: write a different word.`;
             },
         });
     rules.push({
@@ -1102,6 +1104,12 @@ function reportForm(argv: string[]): number {
             throw new UsageError(
                 "Give --copy <path|none> and --tasks <path> together.",
             );
+        const paths = [values.file, values.copy, values.tasks, ...positionals];
+        for (const path of paths)
+            if (path !== undefined && /[$*]/.test(path))
+                throw new UsageError(
+                    `The path "${path}" has "$" or "*". Write the full path of each file without shell variables or "*".`,
+                );
         file = values.file;
         reports = positionals;
         if (values.copy !== undefined && values.tasks !== undefined)
