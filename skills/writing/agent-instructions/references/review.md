@@ -44,8 +44,6 @@ Each review round and each reader-test round has these steps:
 2. At the start of each review round, save a copy of each file that the round examines as `<round folder>/round-<n>/<file path>`. `<n>` is the number of the round. `<file path>` is the path of the file in the project folder. Do not make the copy in a tool call that saves a report.
 3. Run the check script on the full file of each file in the round, as "When you run the check script" in `SKILL.md` tells you. Save the output of each round to a new JSON file.
 4. Give the path of the JSON file to each reviewer of the round.
-5. After the last report of the round, correct each finding of the script, or reject it, as for a reviewer finding.
-6. Put each script finding about text that you cannot edit in a warning.
 
 ## When you start the reviewers
 
@@ -128,11 +126,11 @@ Do not add other notes or questions.
 ### During and after a review round
 
 1. Round 1 examines the full file, also in the edit job. In each prompt, give the parts to review and, in a different line, the parts that the author can edit. In the edit job, put each finding about text that is not in the changed part in a warning.
-2. After the last report of the round, save each reviewer report to a new file in `<round folder>/round-<n>/`. Then run the report form of the check script for each file of the round, as "When you run the check script" in `SKILL.md` tells you. Use only the findings in the blocking list and the advisory list. Do not use the findings in the dropped list.
+2. After the last report of the round, save each reviewer report to a new file in `<round folder>/round-<n>/`. Then run the report form of the check script for each file of the round, as "When you run the check script" in `SKILL.md` tells you. In that command, write the full path of the file under review and of each report file. Do not use shell variables or `*`, because the command must show which reports the script examined. Use only the findings in the blocking list and the advisory list. Do not use the findings in the dropped list.
 3. If a report has one or more findings in the blocking list, do the vote in "When a report has blocking findings". Before you get all confirmer reports of the round, do not correct a file.
-4. The findings to use are the script findings, the confirmed blocking findings, and the findings in the advisory list. For each of these findings, correct your text, or reject the finding. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
-5. In rounds 2 and 3, start all 3 reviewers again, but only for the sections that the previous round changed. To find these sections, compare each file and its copy in the folder of the previous round, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
-6. A round passes when you accept no script finding and no confirmed blocking finding of the round. A finding that you reject with a warning does not make the round fail. A finding in the advisory list never starts a new round. The self-check stops when a round passes, or after round 3.
+4. The findings to use are the script findings, the confirmed blocking findings, and the findings in the advisory list. For each of these findings, correct your text, or reject the finding. Put each script finding about text that you cannot edit in a warning. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
+5. A round passes when you accept no script finding and no confirmed blocking finding of the round. A finding that you reject with a warning does not make the round fail. A finding in the advisory list never starts a new round. The self-check stops when a round passes, or after round 3.
+6. If the round does not pass, start all 3 reviewers again in the next round, but only for the sections that the previous round changed. To find these sections, compare each file and its copy in the folder of the previous round, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
 7. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
 8. If the round passes and you correct a finding in the advisory list, do the check in "After the last review round" on the text that this correction changed.
 
@@ -141,7 +139,7 @@ Do not add other notes or questions.
 Do this vote for each reviewer report that has one or more findings in the blocking list of the report form:
 
 1. Start 2 new, read-only confirmer subagents for the report. A round has a maximum of 6 confirmers for each file.
-2. Give each confirmer the path of the saved report file. Also give each finding in the blocking list of the report, with its rule and its text. Do not give the Problem field or the Correction field of the reviewer.
+2. Give each confirmer the path of the saved report file. Also give each finding of that report in the blocking list of the report form, with its rule and its text. Do not give the Problem field or the Correction field of the reviewer.
 3. Start the confirmers as "When you do a round" tells you. The confirmers are checks of the same round. Start them in groups of 3.
 4. A blocking finding is confirmed when one or more of its confirmers answer "yes".
 
@@ -168,7 +166,7 @@ Give only these lines. Do not give the work to a subagent.
 Do this vote for each typical-task report whose closed list has one or more "no" answers. The reader test gives the closed list.
 
 1. Start 2 new, read-only confirmer subagents for the report.
-2. Give each confirmer the path of the saved closed list, and each step with "no", with its quote, the task, and the file. Do not give your cause for the "no".
+2. Give each confirmer the path of the saved closed list, the task, and the path of the instruction file. Also give each step with "no" and its quote. Do not give your cause for the "no".
 3. Start the confirmers as "When you do a round" tells you. The confirmers are checks of the same reader-test round. Start them in groups of 3.
 4. A wrong step is confirmed when one or more of its confirmers answer "yes".
 
@@ -197,7 +195,7 @@ Give only these lines. Do not give the work to a subagent.
 Do this check on each round 3 correction. Also do it on each correction after the reader test when you did all 3 review rounds. Item 8 of "During and after a review round" gives one more correction for this check.
 
 1. Run the check script on the full file of each changed file, as "When you run the check script" in `SKILL.md` tells you.
-2. Correct each script finding in the text that the corrections changed. After each correction, do these checks again.
+2. Correct each script finding in the text that the corrections changed. After each correction, do items 1 and 2 again.
 3. Send a message that gives the condition of each changed pointer in quotation marks. If a pointer has no condition, add the condition to that sentence.
 4. Add a warning that tells that no reviewer examined the text that these corrections changed.
 
@@ -209,7 +207,7 @@ Start the reader test only after the self-check stops. Do not start a reader sub
    - Write 2 typical tasks with different inputs. If the user told you that an agent did not obey an instruction, make one task from that problem.
    - Write 1 out-of-scope task. It looks almost the same as a typical task, but the new or changed instruction does not change it. It uses the same file, words, or condition as the instruction, but the instruction is not applicable to it. An example for a rule about release branches is a task that makes a feature branch. If the instruction is applicable to all project tasks, use a different project or platform for this task.
 2. Before reader-test round 1, write the tested quotes for each typical task. A tested quote is a short quote from the file of a new or changed rule that the task tests.
-3. Write the 3 tasks of each file and their tested quotes in a tasks file, in a temporary folder that is not in the project. Use this form:
+3. Write the 3 tasks of each file and their tested quotes in a tasks file in the round folder. Use this form:
 
    ```json
    [
@@ -226,9 +224,9 @@ Start the reader test only after the self-check stops. Do not start a reader sub
    - Give the reports in the sequence of the tasks in the tasks file.
    - In the edit job, give the copy of the file that you saved before your first change. In the write job, give "none", because all lines are new.
    - Do not use the quotes in the dropped list.
-8. The script finds 2 problems. A typical task has a problem when its report does not use a tested quote. The out-of-scope task has a problem when it uses an added or changed line.
+8. The script finds 2 types of problems. A typical task has a problem when its report does not use a tested quote. The out-of-scope task has a problem when its report uses an added or changed line.
 9. For each typical-task report, write a closed list: each step, its quote, and "yes" or "no". Write "yes" when the step obeys its quote for the task. Save each closed list to a new file in `<round folder>/reader-round-<n>/`. Start the file name with `closed-list-`. Write one line for each step in this form: `<number>. <yes or no>: "<step>" - "<quote>"`. For each report with one or more "no" answers, do the vote in "When a reader step does not obey the instruction".
-10. Do not change the instruction until all readers and confirmers of the round give their reports. Then all checks of a round read the same text.
+10. Do not change the instruction file until all readers and confirmers of the round give their reports. Then all checks of a round read the same text.
 11. Correct your text for each problem of the script and each confirmed wrong step. For each quote in the unclear list, correct your text or write a warning. An unclear part never starts a new reader-test round.
 12. A reader-test round passes when it has no problem of the script and no confirmed wrong step. If the round does not pass, do the test again after your correction. Do a maximum of 3 reader-test rounds.
 13. If you cannot correct a problem without help from the user, put it in a warning.
@@ -256,11 +254,11 @@ Part 2: Used parts
 <step number>. "<the part of the instruction that you used for that step>"
 Part 3: Unclear parts
 - "<a part of the instruction that was not clear to you>" - <one sentence that gives the cause>
-If a step uses 2 parts of the instruction, write 2 lines with the same step number in part 2.
-If each part was clear to you, write "None" in part 3.
-Copy each part of the instruction word for word. A script compares each quotation with the instruction file.
-In each line of part 2 and part 3, use quotation marks only around the part of the instruction.
-Give only these 3 parts. Write each step and each part on one line. Put long text, for example a prompt, at the end of part 1.
+If a step uses 2 quotes from the instruction, write 2 lines with the same step number in part 2.
+If all of the instruction was clear to you, write "None" in part 3.
+Copy each quote from the instruction word for word. A script compares each quotation with the instruction file.
+In each line of part 2 and part 3, use quotation marks only around the quote from the instruction.
+Give only these 3 parts. Write each step and each quote from the instruction on a different line. Put long text, for example a prompt, at the end of part 1.
 ```
 
 ## When no subagent is available
@@ -288,7 +286,7 @@ Do the checks in this sequence:
 
 1. In each review round, do each review that no subagent did, in the sequence of the reviewer table.
 2. Start each review report with its title, for example "Round 2: ASD-STE100 review". Then write the blocking checklist of the reviewer prompt. Give each finding in the form of the reviewer prompt. Keep the necessary lists apart from the findings. Give no other items.
-3. Do not do the vote of "When a report has blocking findings". Each finding in the blocking list counts as a confirmed blocking finding. This is also applicable to a vote whose new confirmer also failed.
+3. Do not do the vote of "When a report has blocking findings". Each finding in the blocking list counts as a confirmed blocking finding. When the new subagent of a confirmer also fails, each finding of that vote also counts as a confirmed blocking finding.
    Also do not do the vote of "When a reader step does not obey the instruction". Each "no" in a closed list counts as a confirmed wrong step.
 4. Correct your text after each round. Then do the next round, or write that the self-check stopped.
 5. After the self-check stops, do each reader task that no subagent did, one after the other. Use these titles, with the number of the reader-test round and the file name:

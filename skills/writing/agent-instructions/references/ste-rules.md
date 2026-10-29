@@ -114,8 +114,8 @@ This table gives examples. In each example, the sentence and its word count obey
 - Do not use the signal word WARNING. It is for a risk of injury to persons. A warning in the end-of-run report is a different item. (script check)
 - After CAUTION, write the instruction or the condition first (rule 7.2). (blocking)
 - Then tell the risk or the possible result in a second sentence (rule 7.3). (blocking)
-- Use no other emphasis. Do not write these words in capital letters: "IMPORTANT", "CRITICAL", "MUST", "NEVER", "ALWAYS", "SHOULD", "MAY", "NOTE", and "WARNING". Words such as "always" and "never" are not emphasis when they are not in capital letters. (script check)
 
 ## When you write a word in capital letters
 
+- Use no emphasis other than the signal word CAUTION. Do not write these words in capital letters: "IMPORTANT", "CRITICAL", "MUST", "NEVER", "ALWAYS", "SHOULD", "MAY", "NOTE", and "WARNING". Words such as "always" and "never" are not emphasis when they are not in capital letters. (script check)
 - A word in capital letters is not emphasis when the text gives it as an example, for example "Use CAN or a condition."

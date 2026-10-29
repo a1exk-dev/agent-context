@@ -330,12 +330,6 @@
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
     },
     {
-        "path": "skills/writing/agent-instructions/references/agent-skills-spec.md",
-        "rule": "When you select the text",
-        "text": "It defines the terms, the tiers, and the end-of-run report.",
-        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
-    },
-    {
         "path": "skills/writing/agent-instructions/references/loading-rules.md",
         "rule": "When you put the text in sections and lists",
         "text": "They are not applicable to other files, for example `README.md` or `.claude/settings.json`.",
@@ -363,12 +357,6 @@
         "path": "skills/writing/agent-instructions/references/loading-rules.md",
         "rule": "When you select the text",
         "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
-        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
-    },
-    {
-        "path": "skills/writing/agent-instructions/references/loading-rules.md",
-        "rule": "When you select the text",
-        "text": "It defines the terms, the tiers, and the end-of-run report.",
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
     },
     {
@@ -446,13 +434,13 @@
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "1.8",
-        "text": "A **blocking rule** is a rule in a reference file of this skill, with the mark \"(blocking)\" at its end.",
+        "text": "A **blocking rule** is a rule in a reference file of this skill.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     },
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "1.8",
-        "text": "An **advisory rule** is a rule in a reference file of this skill, with the mark \"(advisory)\" at its end.",
+        "text": "An **advisory rule** is a rule in a reference file of this skill.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     },
     {

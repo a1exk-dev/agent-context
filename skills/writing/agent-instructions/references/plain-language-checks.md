@@ -9,9 +9,9 @@ The checks are in four groups. Each group agrees with one of the four principles
 ## When you select the text
 
 - The agent that loads the file is the only reader. Make no changes for a person. (advisory)
-- Each Agent instruction tells when it is applicable. The description of a Skill tells when the Skill is applicable. (advisory)
+- In each Agent instruction, tell when it is applicable. In the description of a Skill, tell when the Skill is applicable. (advisory)
 - Use the condition that is applicable to the smallest number of tasks. A rule with no condition is permitted only when it is applicable to all tasks for its file. (advisory)
-- Files that load in each session contain only short rules and pointers with a condition. Move long text to files that load only when a task makes them necessary. (advisory)
+- In files that load in each session, write only short rules, and pointers that give a condition. Move long text to files that load only when a task makes them necessary. (advisory)
 - Keep only the text that the agent cannot find without help. Examples are project facts, decisions, special instructions of the user, and corrections of incorrect agent work. (advisory)
 - In the edit job, remove text only in the changed part. When the user tells you that an agent did not obey a rule, do not remove that rule. The user wants agents to obey that rule. You can correct the text of that rule. You can also move that rule. (advisory)
 - Remove each instruction that tells the agent to do an action that it does without an instruction. Remove text that the agent can read in the code or in the Git history. Also remove text that the agent can read in a pointer target. (advisory)
@@ -32,12 +32,12 @@ The checks are in four groups. Each group agrees with one of the four principles
 - Do not write the condition of the heading again in each rule of the section. A pointer sentence is different, because it gives its condition. (advisory)
 - No section template is necessary.
 - Use a numbered list for steps in a sequence. Use bullets for rules in no sequence. Use a table to compare items or to give reference data. Put each template and each command of more than one line in a code block. You can put a command of one line, a path, or a path pattern in a code span. (advisory)
-- Each other heading gives the condition or the topic of its section. (advisory)
+- In each other heading, give the condition or the topic of its section. (advisory)
 - Use no headings that are applicable to all subjects: "Notes", "Other", "Misc", and "General". (script check)
-- Each pointer tells when to read its target. A pointer with no condition is a problem in the self-check. (blocking)
-- Each pointer gives the path of its target. Words such as "that file" give no path. (blocking)
-- Each pointer gives the path of a file or a folder that exists. (script check)
-- A pointer target is one step from the file that has the pointer. Make no sequences of pointers. (advisory)
+- In each pointer, tell when to read its target. A pointer with no condition is a problem in the self-check. (blocking)
+- In each pointer, give the path of its target. Words such as "that file" give no path. (blocking)
+- In each pointer, give the path of a file or a folder that exists. (script check)
+- Put each pointer target one step from the file that has the pointer. Make no sequences of pointers. (advisory)
 - When the file does not load in each session, find a pointer to it in a different Agent instruction. If you find no pointer, add a warning. (advisory)
 
 ## When you select the words and the tone

@@ -11,7 +11,7 @@
 
 ## When you add a word to the base list
 
-- When the edit job changes this skill, add a term to the base list only when most projects use the term in Agent instructions.
+- When the edit job changes this skill, add a word to the base list only when most projects use the word in Agent instructions.
 - Platform file names and commands have no entry, because a path and a code span count as 1 word.
 - The term "rule" has the meaning "a requirement in a text" in this list. A project can also give the name Rule to a type of file. Then the glossary meaning is correct for that file.
 - Terms of one platform only are also not in the list, for example "hook" or "slash command".
@@ -24,11 +24,11 @@ When the glossary gives a base-list word a different meaning, use the project me
 
 ## When a word is not in the base list or in the glossary
 
-When a technical noun is not in this list and not in the glossary, add a warning. This rule is also applicable to a technical noun that the user or a different project file uses.
+When a technical noun is not in the base list and not in the glossary, add a warning. This rule is also applicable to a technical noun that the user or a different project file uses.
 
-1. Recommend a glossary entry in the format of the project.
+1. If the project has a glossary, recommend a glossary entry in the format of the project.
 2. If the project has no glossary, recommend a new `GLOSSARY.md` with a short structure: the term and its definition.
-3. Do not write the term or the glossary entry until the user gives approval. Until then, use a term from this list or the glossary, or write a different sentence. A command in a code span is permitted. Do not put a different word in a code span to avoid these steps. When the user tells you to add a term to the glossary, the user gives approval for that term. If the entries are in alphabetical order, put the new entry in that order. If not, put it after the last entry.
+3. Do not write the term or the glossary entry until the user gives approval. Until then, use a term from the base list or the glossary, or write a different sentence. A command in a code span is permitted. Do not put a different word in a code span to avoid these steps. When the user tells you to add a term to the glossary, the user gives approval for that term. If the entries are in alphabetical order, put the new entry in that order. If not, put it after the last entry.
 
 ## Base list
 

@@ -1,6 +1,10 @@
 # Loading rules
 
-This file gives the loading rules, which are tier 1, and the steps that use them. The loading rules are applicable to each Agent instruction. They are not applicable to other files, for example `README.md` or `.claude/settings.json`. If `SKILL.md` of this skill is not in your context window, read it before you use this file. It defines the terms, the tiers, and the end-of-run report.
+This file gives the loading rules, which are tier 1, and the steps that use them. The loading rules are applicable to each Agent instruction. They are not applicable to other files, for example `README.md` or `.claude/settings.json`.
+
+## Before you use this file
+
+If `SKILL.md` of this skill is not in your context window, read it before you use this file. `SKILL.md` defines the terms, the tiers, and the end-of-run report.
 
 ## When you find the target platforms
 
@@ -30,8 +34,8 @@ When the user tells you clearly to write a feature that only one platform reads,
 
 ## When you write or edit an entry file
 
-- When the write job has Claude Code and Codex or OpenCode as targets, put the text for all targets in `AGENTS.md`. `CLAUDE.md` then contains the `@AGENTS.md` line and only the lines that are only for Claude Code. (blocking)
-- When there is one target platform, the entry file of that platform is the only entry file. (blocking)
+- When the write job has Claude Code and Codex or OpenCode as target platforms, put the text for all target platforms in `AGENTS.md`. `CLAUDE.md` then contains the `@AGENTS.md` line and only the lines that are only for Claude Code. (blocking)
+- When there is one target platform, write only the entry file of that platform. (blocking)
 - If the layout gives no copy of the text to a target platform, add a warning. (blocking)
 - Put Rule text in `AGENTS.md` or `CLAUDE.md`. Do not put it in `.claude/rules/`. (blocking)
 
@@ -39,7 +43,7 @@ When the user tells you clearly to write a feature that only one platform reads,
 
 | File | Limit |
 |---|---|
-| Entry files | The entry files from the project root to the file have a total file size of less than 32 KiB. This total is the Codex limit. A file that an `@path` line imports is not in this total, except when it is an entry file. Each entry file has less than 200 lines. These limits are applicable to all targets. (script check) |
+| Entry files | The entry files from the project root to the file have a total file size of less than 32 KiB. This total is the Codex limit. A file that an `@path` line imports is not in this total, except when it is an entry file. Each entry file has less than 200 lines. These limits are applicable to all target platforms. (script check) |
 | Skills | `SKILL.md` has a maximum of 20,000 bytes. Measure the bytes with the command after this table. 20,000 bytes are approximately 5,000 tokens. When Claude Code makes the context window smaller, it keeps only the first 5,000 tokens of a Skill. (script check) |
 | The glossary, `MEMORY.md`, and `docs/agents/` files | No limit |
 
@@ -93,6 +97,6 @@ This recommendation is applicable only to the unchanged parts in the edit job. I
 
 ## When the file is the glossary, MEMORY.md, or a Rule
 
-- The glossary and `MEMORY.md` use the format that the project uses. Copy the format of the entries in the file. This skill has no template for the glossary or `MEMORY.md`. When the project has no glossary, give each term and its definition, as `technical-terms.md` tells you. (advisory)
+- For the glossary and `MEMORY.md`, use the format that the project uses. Copy the format of the entries in the file. This skill has no template for the glossary or `MEMORY.md`. When the project has no glossary, give each term and its definition, as `technical-terms.md` tells you. (advisory)
 - This skill has no template for Rules. Edit a Rule as you edit other Agent instructions. (advisory)
 - The STE rules and the plain-language checks are also applicable to these files. For a Rule, use the file-size limit and the extraction recommendation of the entry file that contains its text. The Agent Skills specification is not applicable to a Rule. (advisory)
