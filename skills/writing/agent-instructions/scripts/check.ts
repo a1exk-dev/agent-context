@@ -539,7 +539,7 @@ function checkPlainLanguage(
             );
     const texts = [...targets].map(
         ([target, found]) =>
-            [target, normalize(readFileSync(found, "utf8"))] as const,
+            [target, collapseSpaces(readFileSync(found, "utf8"))] as const,
     );
     for (const sentence of prose) {
         const count = wordCounts(
@@ -549,7 +549,7 @@ function checkPlainLanguage(
         )[0][2];
         if (count < copyWords) continue;
         const copy = texts.find(([, text]) =>
-            text.includes(normalize(sentence.text)),
+            text.includes(collapseSpaces(sentence.text)),
         );
         if (copy)
             finding(
@@ -562,7 +562,9 @@ function checkPlainLanguage(
     return { findings, pointers };
 }
 
-function normalize(text: string) {
+// Gives the text with one space for each run of white space, and no white
+// space at the start or the end.
+function collapseSpaces(text: string) {
     return text.replace(/\s+/g, " ").trim();
 }
 
@@ -1127,7 +1129,7 @@ function reportForm(argv: string[]): number {
         process.stderr.write(`Cannot read a file: ${error}\n`);
         return 2;
     }
-    const target = normalized(source);
+    const target = comparableWithOffsets(source);
     const blocking: object[] = [];
     const advisory: object[] = [];
     const dropped: object[] = [];
@@ -1142,7 +1144,8 @@ function reportForm(argv: string[]): number {
                 continue;
             }
             const quote = quoted(found.text);
-            const at = quote === null ? -1 : target.text.indexOf(normal(quote));
+            const at =
+                quote === null ? -1 : target.text.indexOf(comparable(quote));
             if (quote === null || quote.trim() === "" || at < 0) {
                 drop("The Text quote is not in the file under review.");
                 continue;
@@ -1222,7 +1225,7 @@ function readerForm(
             input.copy === "none" ? null : readFileSync(input.copy, "utf8");
         target = {
             source,
-            ...normalized(source),
+            ...comparableWithOffsets(source),
             changed: changedLines(copy, source),
         };
         tasks = readerTasks(readFileSync(input.tasks, "utf8"));
@@ -1372,10 +1375,10 @@ function readerQuotes(report: string, text: string): ReaderQuote[] {
     return result;
 }
 
-// Gives the start and end offsets in the normal text of each place of the
+// Gives the start and end offsets in the comparable text of each place of the
 // quote.
 function occurrences(target: Target, quote: string): [number, number][] {
-    const wanted = normal(quote);
+    const wanted = comparable(quote);
     const result: [number, number][] = [];
     if (wanted === "") return result;
     for (
@@ -1387,7 +1390,7 @@ function occurrences(target: Target, quote: string): [number, number][] {
     return result;
 }
 
-// Gives the line in the file of an offset in the normal text.
+// Gives the line in the file of an offset in the comparable text.
 function lineOf(target: Target, at: number) {
     return target.source.slice(0, target.offsets[at]).split("\n").length;
 }
@@ -1474,13 +1477,13 @@ function quoted(value: string): string | null {
 
 // Makes text comparable: no code-span or emphasis marks, straight quotation
 // marks, and one space for each run of white space.
-function normal(text: string) {
-    return normalized(text).text;
+function comparable(text: string) {
+    return comparableWithOffsets(text).text;
 }
 
-// Gives the normal text and, for each of its characters, the offset in the
+// Gives the comparable text and, for each of its characters, the offset in the
 // source.
-function normalized(source: string) {
+function comparableWithOffsets(source: string) {
     let text = "";
     const offsets: number[] = [];
     for (let i = 0; i < source.length; i++) {
@@ -1531,7 +1534,7 @@ function ruleUnits(ruleFile: string, reviewer: string, source: string) {
 // The quote can continue into the rules after it under the same heading. A
 // rule with no mark of its own gets the first mark of its nested list items.
 function findRule(units: RuleUnit[], quote: string): RuleUnit | null {
-    const wanted = normal(quote).toLowerCase();
+    const wanted = comparable(quote).toLowerCase();
     if (wanted === "") return null;
     let first = 0;
     while (first < units.length) {
@@ -1545,7 +1548,7 @@ function findRule(units: RuleUnit[], quote: string): RuleUnit | null {
             units[last].heading === units[first].heading;
             last++
         ) {
-            joined += `${joined === "" ? "" : " "}${normal(units[last].text).toLowerCase()}`;
+            joined += `${joined === "" ? "" : " "}${comparable(units[last].text).toLowerCase()}`;
             ends.push(joined.length);
         }
         const at = joined.indexOf(wanted);
