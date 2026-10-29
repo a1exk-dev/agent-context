@@ -582,37 +582,58 @@ const READ_COMMANDS = [
 
 // A reader command passes only when each of its commands is on the
 // read-only list of the spec. review.md gives the same list in the reader
-// prompt.
+// prompt. A loop `for <name> in <words>; do <commands>; done` passes when
+// each command in its body passes.
 function readOnly(line: string): boolean {
     const list = commands(line);
     if (!list || list.length === 0) return false;
-    return list.every(([name, ...args]) => {
-        if (READ_COMMANDS.includes(name)) return true;
-        if (name === "sed")
-            return (
-                args[0] === "-n" &&
-                !args.some((arg) => /^(-i|--in-place)/.test(arg))
-            );
-        if (name === "find")
-            return !args.some((arg) =>
-                /^-(delete|exec|execdir|ok|okdir|fprint0?|fprintf|fls)$/.test(
-                    arg,
-                ),
-            );
-        if (name !== "git") return false;
-        const [sub, ...rest] = args;
-        if (sub === "branch")
-            return rest.every((arg) => ["-a", "-r", "--list"].includes(arg));
-        if (sub === "remote") return rest.length === 1 && rest[0] === "-v";
-        return [
-            "status",
-            "diff",
-            "log",
-            "show",
-            "ls-files",
-            "rev-parse",
-        ].includes(sub);
-    });
+    let loop: "none" | "head" | "body" = "none";
+    for (const words of list) {
+        let body = words;
+        if (words[0] === "for") {
+            const [, name, keyword] = words;
+            if (loop !== "none" || keyword !== "in") return false;
+            if (!/^[A-Za-z_]\w*$/.test(name)) return false;
+            loop = "head";
+            continue;
+        }
+        if (words[0] === "done") {
+            if (loop !== "body" || words.length !== 1) return false;
+            loop = "none";
+            continue;
+        }
+        if (words[0] === "do") {
+            if (loop !== "head") return false;
+            loop = "body";
+            body = words.slice(1);
+            if (body.length === 0) continue;
+        } else if (loop === "head") return false;
+        if (!readOnlyCommand(body)) return false;
+    }
+    return loop === "none";
+}
+
+function readOnlyCommand([name, ...args]: string[]): boolean {
+    if (READ_COMMANDS.includes(name)) return true;
+    if (name === "sed")
+        return (
+            args[0] === "-n" &&
+            !args.some((arg) => /^(-i|--in-place)/.test(arg))
+        );
+    if (name === "find")
+        return !args.some((arg) =>
+            /^-(delete|exec|execdir|ok|okdir|fprint0?|fprintf|fls)$/.test(arg),
+        );
+    if (name !== "git") return false;
+    const [sub, ...rest] = args;
+    if (sub === "branch")
+        return rest.every((arg) => ["-a", "-r", "--list"].includes(arg));
+    if (sub === "remote") return rest.length === 1 && rest[0] === "-v";
+    if (sub === "tag")
+        return rest.every((arg) => ["-l", "--list"].includes(arg));
+    return ["status", "diff", "log", "show", "ls-files", "rev-parse"].includes(
+        sub,
+    );
 }
 
 function readerWrites(round: Round): string[] {
