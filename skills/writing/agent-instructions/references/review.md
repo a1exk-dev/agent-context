@@ -160,6 +160,34 @@ Give one line for each finding in this form:
 Give only these lines. Do not give the work to a subagent.
 ```
 
+### When a reader step does not obey the instruction
+
+Do this vote for each typical-task report whose closed list has one or more "no" answers. The reader test gives the closed list.
+
+1. Start 2 new, read-only confirmer subagents for the report.
+2. Give each confirmer each step with "no", with its quote, the task, and the file. Do not give your cause for the "no".
+3. Start the confirmers as "When you do a round" tells you. The confirmers are checks of the same reader-test round. Start them in groups of 3.
+4. A wrong step is confirmed when one or more of its confirmers answer "yes".
+
+Copy this prompt for each confirmer of a reader step. Replace only the placeholders.
+
+```text
+Check class: confirmer
+This task is read-only. Only read files. Do not edit, make, move, or delete files.
+Do not run commands that change files, Git data, or external services.
+
+Instruction file: <absolute path>
+Project folder: <absolute path>
+Task: <the task text>
+Steps: <for each step with "no" in the closed list of one reader report: a number, the step in quotation marks, and its quote in quotation marks>
+
+Read the instruction file from the disk.
+For each step, decide whether the step does not obey its quote from the instruction for this task.
+Give one line for each step in this form:
+<number>. <"yes" if the step does not obey its quote, or "no">: <one sentence that gives the cause>
+Give only these lines. Do not give the work to a subagent.
+```
+
 ### After the last review round
 
 Do this check on each round 3 correction. Also do it on each correction after the reader test when you did all 3 review rounds. Item 8 of "During and after a review round" gives one more correction for this check.
@@ -176,17 +204,33 @@ Start the reader test only after the self-check stops. Do not start a reader sub
 1. For each new or changed file, write 3 tasks, also when the file has many changes. Each task tests the new or changed rules of its file:
    - Write 2 typical tasks with different inputs. If the user told you that an agent did not obey an instruction, make one task from that problem.
    - Write 1 out-of-scope task. It looks almost the same as a typical task, but the new or changed instruction does not change it. It uses the same file, words, or condition as the instruction, but the instruction is not applicable to it. An example for a rule about release branches is a task that makes a feature branch. If the instruction is applicable to all project tasks, use a different project or platform for this task.
-2. Each reader-test round has the 3 tasks of each file. Give each task and the path of its new or changed file to a different new subagent. Start the subagents as "When you do a round" tells you.
-3. Make sure that each subagent does a dry run. The first line of the reader prompt tells the subagent to do a dry run.
-4. Make sure that each subagent gives its steps for the task and the parts of the instruction that it used.
-5. Compare each report with the instruction:
-   - A typical task is correct when the steps obey the instruction.
-   - The out-of-scope task is correct when the reader uses no part of the new or changed instruction for its steps. The reader can use instructions that did not change.
-   - When a part is not clear to a reader, that part has a problem.
-6. Do not change the instruction until all readers of the round give their reports. Then all readers of a round read the same text. Then, if a task has a problem, correct your text. After the correction, do the test again. Do a maximum of 3 reader-test rounds.
-7. If you cannot correct a problem without help from the user, put it in a warning.
-8. After a reader-test round, a correction can change text. If you did fewer than 3 review rounds, start the reviewers again for that text before the next reader-test round. This review round is one of the 3 review rounds.
-9. If you did all 3 review rounds, do the check in "After the last review round". Then do the next reader-test round, if the limit permits it.
+2. Before reader-test round 1, write the tested quotes for each typical task. A tested quote is a short quote from the file of a new or changed rule that the task tests.
+3. Write the 3 tasks of each file and their tested quotes in a tasks file, in a temporary folder that is not in the project. Use this form:
+
+   ```json
+   [
+     { "task": "<typical task 1>", "kind": "typical", "tested": ["<quote>"] },
+     { "task": "<typical task 2>", "kind": "typical", "tested": ["<quote>"] },
+     { "task": "<out-of-scope task>", "kind": "out-of-scope" }
+   ]
+   ```
+
+4. Use the same tasks and the same tested quotes in each reader-test round. Change a tested quote only when a correction changes its text. Then write the new text in the tasks file.
+5. Each reader-test round has the 3 tasks of each file. Give each task and the path of its new or changed file to a different new subagent. Start the subagents as "When you do a round" tells you.
+6. Make sure that each subagent does a dry run. The first line of the reader prompt tells the subagent to do a dry run.
+7. After the last report of the round, save each reader report to a new file in a temporary folder that is not in the project. Then run the report form for reader reports for each file of the round, as "When you run the check script" in `SKILL.md` tells you:
+   - Give the reports in the sequence of the tasks in the tasks file.
+   - In the edit job, give the copy of the file that you saved before your first change. In the write job, give "none", because all lines are new.
+   - Do not use the quotes in the dropped list.
+8. The script finds 2 problems. A typical task has a problem when its report does not use a tested quote. The out-of-scope task has a problem when it uses an added or changed line.
+9. For each typical-task report, write a closed list: each step, its quote, and "yes" or "no". Write "yes" when the step obeys its quote for the task. For each report with one or more "no" answers, do the vote in "When a reader step does not obey the instruction".
+10. Do not change the instruction until all readers and confirmers of the round give their reports. Then all checks of a round read the same text.
+11. Correct your text for each problem of the script and each confirmed wrong step. For each quote in the unclear list, correct your text or write a warning. An unclear part never starts a new reader-test round.
+12. A reader-test round passes when it has no problem of the script and no confirmed wrong step. If the round does not pass, do the test again after your correction. Do a maximum of 3 reader-test rounds.
+13. If you cannot correct a problem without help from the user, put it in a warning.
+14. After a reader-test round, a correction can change text. If you did fewer than 3 review rounds, start the reviewers again for that text before the next reader-test round. This review round is one of the 3 review rounds.
+15. If you did all 3 review rounds, do the check in "After the last review round". Then do the next reader-test round, if the limit permits it.
+16. If you correct an unclear part after the last reader-test round, run the check script on the full file. Correct each script finding in the text that this correction changed. Add a warning that tells that no reader examined this text.
 
 Use this prompt for each reader:
 
@@ -201,11 +245,18 @@ Task: <the task text>
 Before your first step, read the instruction file from the disk with a file tool. A copy that loaded at the start
 of your session can be older than the file.
 Read the files that the instruction tells you to read for this task.
-Give this report:
-1. Your steps for the task, in sequence.
-2. For each step, the part of the instruction that you used, in quotation marks.
-3. Each part of the instruction that was not clear to you, or "None".
-Give only these 3 parts. Write each step on one line. Put long text, for example a prompt, after the steps.
+Give this report in 3 parts. Start each part with its heading line, as this form shows:
+Part 1: Steps
+<number>. <one step for the task. Write the steps in sequence.>
+Part 2: Used parts
+<step number>. "<the part of the instruction that you used for that step>"
+Part 3: Unclear parts
+- "<a part of the instruction that was not clear to you>" - <one sentence that gives the cause>
+If a step uses 2 parts of the instruction, write 2 lines with the same step number in part 2.
+If each part was clear to you, write "None" in part 3.
+Copy each part of the instruction word for word. A script compares each quotation with the instruction file.
+In each line of part 2 and part 3, use quotation marks only around the part of the instruction.
+Give only these 3 parts. Write each step and each part on one line. Put long text, for example a prompt, at the end of part 1.
 ```
 
 ## When no subagent is available
@@ -240,10 +291,11 @@ Do the checks in this sequence:
 1. In each review round, do each review that no subagent did, in the sequence of the reviewer table.
 2. Start each review report with its title, for example "Round 2: ASD-STE100 review". Then write the blocking checklist of the reviewer prompt. Give each finding in the form of the reviewer prompt. Keep the necessary lists apart from the findings. Give no other items.
 3. Do not do the vote of "When a report has blocking findings". Each finding in the blocking list counts as a confirmed blocking finding. This is also applicable to a vote whose new confirmer also failed.
+   Also do not do the vote of "When a reader step does not obey the instruction". Each "no" in a closed list counts as a confirmed wrong step.
 4. Correct your text after each round. Then do the next round, or write that the self-check stopped.
 5. After the self-check stops, do each reader task that no subagent did, one after the other. Use these titles, with the number of the reader-test round and the file name:
    - "Reader-test round <n>, <file>, reader task 1 (typical): <task>"
    - "Reader-test round <n>, <file>, reader task 2 (typical): <task>"
    - "Reader-test round <n>, <file>, reader task 3 (out-of-scope): <task>"
-6. In each reader report, give the 3 parts of the reader prompt. For each step, write the part of the instruction that you used in quotation marks.
-7. When you write the end-of-run report, add the warning about the checks that you did yourself. Write it as the Warnings part in `SKILL.md` tells you. In this warning, also write that no vote occurred for the blocking findings.
+6. In each reader report, give the 3 parts in the form of the reader prompt. For each step, write the part of the instruction that you used in quotation marks.
+7. When you write the end-of-run report, add the warning about the checks that you did yourself. Write it as the Warnings part in `SKILL.md` tells you. In this warning, also write that no vote occurred for the blocking findings and the wrong steps.

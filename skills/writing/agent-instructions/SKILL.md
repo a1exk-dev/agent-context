@@ -91,7 +91,7 @@ Do these steps in the write job and in the edit job.
      - For text that is applicable in each session, write entry-file text in the file that `references/loading-rules.md` gives. If the project keeps Rules, write a Rule.
      - For text that is applicable only to some tasks, write a Skill.
      - For long text, write a reference file.
-5. In the edit job, change only the changed part. In the unchanged parts, do not write lines again. Do not move lines in the unchanged parts. In the unchanged parts, do not put two lines into one line or one line into two lines. This rule is also applicable when a finding tells you to make a change. The user gives approval only for the change that they wanted. The file-size limit is one exception, as the table in "Sequence of the sources" gives. An extraction candidate that the user gives approval for is the other exception. If you find a file type that is not correct for the text, add a warning.
+5. In the edit job, before your first change, save a copy of each file that you change. Save the copies in a temporary folder that is not in the project. The reader test uses these copies. Change only the changed part. In the unchanged parts, do not write lines again. Do not move lines in the unchanged parts. In the unchanged parts, do not put two lines into one line or one line into two lines. This rule is also applicable when a finding tells you to make a change. The user gives approval only for the change that they wanted. The file-size limit is one exception, as the table in "Sequence of the sources" gives. An extraction candidate that the user gives approval for is the other exception. If you find a file type that is not correct for the text, add a warning.
 6. In the edit job, the user can tell you that an agent did not obey an instruction. For that edit job, record the condition of the previous instruction in quotation marks. The condition can be in the heading of the section or in the sentence. The Summary part of the end-of-run report gives this condition. If the previous instruction has no condition, record "no condition".
 7. Before you write text, read `references/ste-rules.md`, `references/plain-language-checks.md`, and `references/technical-terms.md`. If the file that you write or edit is a Skill, also read `references/agent-skills-spec.md`. In the edit job, first use these rules to examine each section that you will change. A new section has no previous text to examine. The Summary part then gives no problem for that section. Record each problem before you correct it. Keep the list of these problems for the Summary part. Then write the text by these rules. In the write job, also move text to reference files as "When the write job makes a SKILL.md or entry-file text" in `references/loading-rules.md` tells you. In the edit job, move text as "When the edit job changes a SKILL.md or an entry file" in that file tells you.
 8. Before the self-check, read `references/review.md`. Then do the self-check that it gives.
@@ -118,7 +118,7 @@ node <skill folder>/scripts/check.ts <file>... --project <project folder> --glos
 - Give the absolute path of each file to examine. Save the output to a new file in a temporary folder that is not in the project.
 - The script gives JSON with a list of findings and a list of the sentences that name a file path. Exit code 0 shows no findings. Exit code 1 shows one or more findings.
 - Exit code 2 shows that the check did not run, for example because of a missing file. Then the script gives no JSON.
-- If the script gives no JSON, stop the self-check. Tell the user the error and that the check script requires Node.js 22.18 or later.
+- If the script gives no JSON, stop the self-check or the reader test. Tell the user the error and that the check script requires Node.js 22.18 or later.
 
 The report form of the script examines the reviewer reports of one file. Run it once for each file of the round:
 
@@ -128,6 +128,15 @@ node <skill folder>/scripts/check.ts --reports --file <file under review> <repor
 
 - The script gives JSON with 3 lists of findings: blocking, advisory, and dropped. It drops each finding that has a missing field, a quotation that is not in the files, or no rule with a mark.
 - The exit codes are the same as in the first form. Exit code 1 shows one or more findings in the blocking list or the advisory list.
+
+For the reader reports of one file, also give the saved copy and the tasks file that `references/review.md` gives. Give the reports in the sequence of the tasks:
+
+```sh
+node <skill folder>/scripts/check.ts --reports --file <file under review> --copy <saved copy or none> --tasks <tasks file> <reader report>... > <JSON file>
+```
+
+- The script gives JSON with 3 lists: problems, unclear parts, and dropped quotes. Exit code 1 shows one or more items in the problems list or the unclear list.
+- A tested quote that is not in the file under review gives exit code 2. A reader report without its 3 parts also gives exit code 2.
 
 ## End-of-run report
 
@@ -163,7 +172,8 @@ In the Warnings part, add one item for each of these warnings that is applicable
 - In the edit job, each finding about text that is not in the changed part.
 - Each problem from the reader test that you cannot correct.
 - Each part that a round 3 correction changed, and each part that an advisory correction in the last review round changed. Also each part that changed after the reader test when you did all 3 review rounds. Write that no reviewer examined it.
-- Each check that you did yourself because no subagent was available or because a new subagent also failed. Give the path of the report folder. Write that no vote occurred for the blocking findings of these checks. If you did a reader task yourself, write that you were not a new reader for that task.
+- Each part that a correction of an unclear part after the last reader-test round changed. Write that no reader examined it.
+- Each check that you did yourself because no subagent was available or because a new subagent also failed. Give the path of the report folder. Write that no vote occurred for the blocking findings and the wrong steps of these checks. If you did a reader task yourself, write that you were not a new reader for that task.
 - Each finding that you cannot correct without help from the user.
 - Each case where two sources do not agree and that the table does not give, with the obeyed tier.
 - A feature that only one platform reads, if you wrote it because the user told you to write it.

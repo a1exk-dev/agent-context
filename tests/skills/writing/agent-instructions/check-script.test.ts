@@ -951,3 +951,272 @@ describe("check script, report form", () => {
         expect(result.stderr).toMatch(/missing-report\.md/);
     });
 });
+
+type ReaderTask =
+    | { task: string; kind: "typical"; tested: string[] }
+    | { task: string; kind: "out-of-scope" };
+
+// Runs the report form on the reader reports for one file under review.
+// `copy` is the text of the saved copy, or null for the write job. Each
+// report is for the task with the same index.
+function checkReaders(input: {
+    text: string;
+    copy: string | null;
+    tasks: ReaderTask[];
+    reports: string[];
+}) {
+    const folder = project({
+        "AGENTS.md": input.text,
+        "tasks.json": JSON.stringify(input.tasks),
+        ...(input.copy === null ? {} : { "copy.md": input.copy }),
+        ...Object.fromEntries(
+            input.reports.map((report, i) => [`reader-${i + 1}.md`, report]),
+        ),
+    });
+    const result = run([
+        "--reports",
+        "--file",
+        join(folder, "AGENTS.md"),
+        "--copy",
+        input.copy === null ? "none" : join(folder, "copy.md"),
+        "--tasks",
+        join(folder, "tasks.json"),
+        ...input.reports.map((_, i) => join(folder, `reader-${i + 1}.md`)),
+    ]);
+    return { ...result, ...JSON.parse(result.stdout || "{}") };
+}
+
+// A reader report in the form of the reader prompt: one step for each used
+// part, and the unclear parts or "None".
+const readerReport = (used: string[], unclear: string[] = []) =>
+    [
+        "Part 1: Steps",
+        ...used.map((_, i) => `${i + 1}. Do step ${i + 1}.`),
+        "",
+        "Part 2: Used parts",
+        ...used.map((quote, i) => `${i + 1}. "${quote}"`),
+        "",
+        "Part 3: Unclear parts",
+        ...(unclear.length === 0 ? ["None"] : unclear.map((q) => `- "${q}"`)),
+        "",
+    ].join("\n");
+
+const oldText = "# Branches\n\nMake a feature branch from develop.\n";
+const newText =
+    "# Branches\n\nMake a feature branch from develop.\nMake a release branch from main.\n";
+const readerTasks: ReaderTask[] = [
+    {
+        task: "Make a release branch.",
+        kind: "typical",
+        tested: ["release branch from main"],
+    },
+    {
+        task: "Make a release branch for a fix.",
+        kind: "typical",
+        tested: ["release branch from main"],
+    },
+    { task: "Make a feature branch.", kind: "out-of-scope" },
+];
+const release = "Make a release branch from main.";
+const feature = "Make a feature branch from develop.";
+
+describe("check script, report form for reader reports", () => {
+    it("fails the out-of-scope task when it uses a changed line", () => {
+        const result = checkReaders({
+            text: newText,
+            copy: oldText,
+            tasks: readerTasks,
+            reports: [
+                readerReport([release]),
+                readerReport([release]),
+                readerReport([feature, release]),
+            ],
+        });
+        expect(result.code).toBe(1);
+        expect(result.problems).toEqual([
+            {
+                task: 3,
+                kind: "out-of-scope",
+                report: expect.stringMatching(/reader-3\.md$/),
+                text: release,
+                line: 4,
+                problem:
+                    "The out-of-scope task uses a part that the job added or changed.",
+            },
+        ]);
+    });
+
+    it("passes when the typical tasks use the tested quotes", () => {
+        const result = checkReaders({
+            text: newText,
+            copy: oldText,
+            tasks: readerTasks,
+            reports: [
+                readerReport([release]),
+                readerReport(["Make a release branch"]),
+                readerReport([feature]),
+            ],
+        });
+        expect(result.code).toBe(0);
+        expect(result).toMatchObject({
+            problems: [],
+            unclear: [],
+            dropped: [],
+        });
+    });
+
+    it("fails a typical task when a tested quote is not in its part 2", () => {
+        const result = checkReaders({
+            text: newText,
+            copy: oldText,
+            tasks: readerTasks,
+            reports: [
+                readerReport([release]),
+                readerReport([feature]),
+                readerReport([feature]),
+            ],
+        });
+        expect(result.code).toBe(1);
+        expect(result.problems).toEqual([
+            {
+                task: 2,
+                kind: "typical",
+                report: expect.stringMatching(/reader-2\.md$/),
+                text: "release branch from main",
+                line: 4,
+                problem: "Part 2 of the report does not use the tested quote.",
+            },
+        ]);
+    });
+
+    it("drops a part-2 or part-3 quote that is not in the file", () => {
+        const result = checkReaders({
+            text: newText,
+            copy: oldText,
+            tasks: readerTasks,
+            reports: [
+                readerReport([release, "Make a hotfix branch."]),
+                readerReport([release], ["Make a bugfix branch."]),
+                readerReport([feature]),
+            ],
+        });
+        expect(result.code).toBe(0);
+        expect(result.dropped).toEqual([
+            {
+                report: expect.stringMatching(/reader-1\.md$/),
+                reportLine: 7,
+                part: 2,
+                text: "Make a hotfix branch.",
+                reason: "The quote is not in the file under review.",
+            },
+            {
+                report: expect.stringMatching(/reader-2\.md$/),
+                reportLine: 8,
+                part: 3,
+                text: "Make a bugfix branch.",
+                reason: "The quote is not in the file under review.",
+            },
+        ]);
+    });
+
+    it("gives each part-3 quote in the unclear list", () => {
+        const result = checkReaders({
+            text: newText,
+            copy: oldText,
+            tasks: readerTasks,
+            reports: [
+                readerReport([release], ["release branch"]),
+                readerReport([release]),
+                readerReport([feature]),
+            ],
+        });
+        expect(result.code).toBe(1);
+        expect(result.problems).toEqual([]);
+        expect(result.unclear).toEqual([
+            {
+                report: expect.stringMatching(/reader-1\.md$/),
+                reportLine: 8,
+                part: 3,
+                text: "release branch",
+                line: 4,
+            },
+        ]);
+    });
+
+    it("counts a changed line, not only an added line", () => {
+        const result = checkReaders({
+            text: "# Branches\n\nMake a feature branch from main.\n",
+            copy: oldText,
+            tasks: [{ task: "Make a feature branch.", kind: "out-of-scope" }],
+            reports: [readerReport(["feature branch from main"])],
+        });
+        expect(result.problems).toEqual([
+            expect.objectContaining({ task: 1, line: 3 }),
+        ]);
+    });
+
+    it("passes the out-of-scope task when the quote is also on an unchanged line", () => {
+        const result = checkReaders({
+            text: `${newText}Make a feature branch.\n`,
+            copy: `${oldText}Make a feature branch.\n`,
+            tasks: [{ task: "Make a branch.", kind: "out-of-scope" }],
+            reports: [readerReport(["Make a"])],
+        });
+        expect(result.code).toBe(0);
+        expect(result.problems).toEqual([]);
+    });
+
+    it("counts all lines as new in the write job", () => {
+        const result = checkReaders({
+            text: newText,
+            copy: null,
+            tasks: [{ task: "Make a feature branch.", kind: "out-of-scope" }],
+            reports: [readerReport([feature])],
+        });
+        expect(result.problems).toEqual([
+            expect.objectContaining({ task: 1, text: feature, line: 3 }),
+        ]);
+    });
+
+    it("gives exit code 2 and no JSON for a tested quote that is not in the file", () => {
+        const result = checkReaders({
+            text: newText,
+            copy: oldText,
+            tasks: [
+                {
+                    task: "Make a release branch.",
+                    kind: "typical",
+                    tested: ["release branch from develop"],
+                },
+            ],
+            reports: [readerReport([release])],
+        });
+        expect(result.code).toBe(2);
+        expect(result.stdout).toBe("");
+        expect(result.stderr).toMatch(
+            /tested quote "release branch from develop" of task 1 is not in the file/,
+        );
+    });
+
+    it("gives exit code 2 for a reader report with no part 2", () => {
+        const result = checkReaders({
+            text: newText,
+            copy: oldText,
+            tasks: [{ task: "Make a feature branch.", kind: "out-of-scope" }],
+            reports: [`1. Make the branch.\n2. "${feature}"\n`],
+        });
+        expect(result.code).toBe(2);
+        expect(result.stderr).toMatch(/reader-1\.md has no part 2/);
+    });
+
+    it("gives exit code 2 when the reports are not one for each task", () => {
+        const result = checkReaders({
+            text: newText,
+            copy: oldText,
+            tasks: readerTasks,
+            reports: [readerReport([release])],
+        });
+        expect(result.code).toBe(2);
+        expect(result.stderr).toMatch(/3 tasks, but there are 1 reports/);
+    });
+});

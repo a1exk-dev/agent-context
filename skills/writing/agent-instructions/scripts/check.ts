@@ -36,9 +36,24 @@ It drops each finding with a missing field, a Text quote that is not in the
 file, or a Rule quote that is in no rule that ends with "(blocking)" or
 "(advisory)". It sorts the other findings by the mark of their rule.
 
+Report form for reader reports: add --copy <saved copy|none> and --tasks
+<tasks file>, and give one reader report for each task, in the sequence of
+the tasks. The tasks file is a JSON array:
+[ { "task": "...", "kind": "typical", "tested": ["<quote>", ...] },
+  { "task": "...", "kind": "out-of-scope" } ]
+Each reader report has the headings "Part 1", "Part 2", and "Part 3". Each
+line of part 2 or part 3 with a quotation gives one quote. Writes JSON:
+{ "problems": [ { task, kind, report, text, line, problem } ],
+  "unclear": [ { report, reportLine, part, text, line } ],
+  "dropped": [ { report, reportLine, part, text, reason } ] }
+It drops each quote that is not in the file. An out-of-scope task fails when
+each place of a part-2 quote is on a line that is not in the copy ("none":
+all lines are new). A typical task fails when no part-2 quote overlaps a
+tested quote. A tested quote that is not in the file gives exit code 2.
+
 Exit code: 0 for no findings, 1 for one or more findings (in the report form:
-blocking or advisory), 2 when the check could not run (missing file, bad
-argument, unreadable report).`;
+blocking or advisory; for reader reports: problems or unclear parts), 2 when
+the check could not run (missing file, bad argument, unreadable report).`;
 
 type Finding = {
     reviewer: string;
@@ -1032,6 +1047,7 @@ type RuleUnit = {
 function reportForm(argv: string[]): number {
     let file: string;
     let reports: string[];
+    let readers: { copy: string; tasks: string } | null = null;
     try {
         const { values, positionals } = parseArgs({
             args: argv,
@@ -1039,18 +1055,27 @@ function reportForm(argv: string[]): number {
             options: {
                 reports: { type: "boolean" },
                 file: { type: "string" },
+                copy: { type: "string" },
+                tasks: { type: "string" },
             },
         });
         if (values.file === undefined)
             throw new UsageError("Missing --file <file under review>.");
         if (positionals.length === 0)
             throw new UsageError("No report to check.");
+        if ((values.copy === undefined) !== (values.tasks === undefined))
+            throw new UsageError(
+                "Give --copy <path|none> and --tasks <path> together.",
+            );
         file = values.file;
         reports = positionals;
+        if (values.copy !== undefined && values.tasks !== undefined)
+            readers = { copy: values.copy, tasks: values.tasks };
     } catch (error) {
         process.stderr.write(`${(error as Error).message}\n\n${usage}\n`);
         return 2;
     }
+    if (readers !== null) return readerForm(file, readers, reports);
     let source: string;
     let units: RuleUnit[];
     const sources: [string, string][] = [];
@@ -1123,6 +1148,244 @@ function reportForm(argv: string[]): number {
         `${JSON.stringify({ blocking, advisory, dropped }, null, 2)}\n`,
     );
     return blocking.length + advisory.length === 0 ? 0 : 1;
+}
+
+type ReaderTask = { kind: "typical" | "out-of-scope"; tested: string[] };
+
+// One quote in part 2 or part 3 of a reader report.
+type ReaderQuote = {
+    report: string;
+    reportLine: number;
+    part: 2 | 3;
+    text: string;
+};
+
+// The text of the file under review, with the lines that the job added or
+// changed.
+type Target = {
+    source: string;
+    text: string;
+    offsets: number[];
+    changed: Set<number>;
+};
+
+class ReaderError extends Error {}
+
+// The report form for reader reports: checks the reports of the reader tasks
+// of one file. The reports are in the sequence of the tasks.
+function readerForm(
+    file: string,
+    input: { copy: string; tasks: string },
+    reports: string[],
+): number {
+    let target: Target;
+    let tasks: ReaderTask[];
+    const quotes: ReaderQuote[][] = [];
+    // The places of each tested quote of each task.
+    const testedPlaces: [number, number][][][] = [];
+    try {
+        const source = readFileSync(file, "utf8");
+        const copy =
+            input.copy === "none" ? null : readFileSync(input.copy, "utf8");
+        target = {
+            source,
+            ...normalized(source),
+            changed: changedLines(copy, source),
+        };
+        tasks = readerTasks(readFileSync(input.tasks, "utf8"));
+        if (tasks.length !== reports.length)
+            throw new ReaderError(
+                `The tasks file gives ${tasks.length} tasks, but there are ${reports.length} reports.`,
+            );
+        tasks.forEach((task, i) => {
+            testedPlaces.push(
+                task.tested.map((quote) => {
+                    const found = occurrences(target, quote);
+                    if (found.length === 0)
+                        throw new ReaderError(
+                            `The tested quote "${quote}" of task ${i + 1} is not in the file under review.`,
+                        );
+                    return found;
+                }),
+            );
+        });
+        for (const report of reports)
+            quotes.push(readerQuotes(report, readFileSync(report, "utf8")));
+    } catch (error) {
+        process.stderr.write(
+            error instanceof ReaderError
+                ? `${error.message}\n`
+                : `Cannot read a file: ${error}\n`,
+        );
+        return 2;
+    }
+    const problems: object[] = [];
+    const unclear: object[] = [];
+    const dropped: object[] = [];
+    tasks.forEach((task, i) => {
+        const used: [number, number][][] = [];
+        for (const quote of quotes[i]) {
+            const found = occurrences(target, quote.text);
+            if (found.length === 0) {
+                dropped.push({
+                    ...quote,
+                    reason: "The quote is not in the file under review.",
+                });
+                continue;
+            }
+            const line = lineOf(target, found[0][0]);
+            if (quote.part === 3) {
+                unclear.push({ ...quote, line });
+                continue;
+            }
+            used.push(found);
+            const changed = found.every(([start, end]) => {
+                for (
+                    let k = lineOf(target, start);
+                    k <= lineOf(target, end - 1);
+                    k++
+                )
+                    if (target.changed.has(k)) return true;
+                return false;
+            });
+            if (task.kind === "out-of-scope" && changed)
+                problems.push({
+                    task: i + 1,
+                    kind: task.kind,
+                    report: quote.report,
+                    text: quote.text,
+                    line,
+                    problem:
+                        "The out-of-scope task uses a part that the job added or changed.",
+                });
+        }
+        for (const [k, tested] of testedPlaces[i].entries()) {
+            const overlaps = tested.some(([start, end]) =>
+                used.some((places) =>
+                    places.some(([s, e]) => s < end && start < e),
+                ),
+            );
+            if (!overlaps)
+                problems.push({
+                    task: i + 1,
+                    kind: task.kind,
+                    report: reports[i],
+                    text: task.tested[k],
+                    line: lineOf(target, tested[0][0]),
+                    problem:
+                        "Part 2 of the report does not use the tested quote.",
+                });
+        }
+    });
+    process.stdout.write(
+        `${JSON.stringify({ problems, unclear, dropped }, null, 2)}\n`,
+    );
+    return problems.length + unclear.length === 0 ? 0 : 1;
+}
+
+// Reads the tasks file: a JSON array with one object for each reader task.
+function readerTasks(source: string): ReaderTask[] {
+    let tasks: unknown;
+    try {
+        tasks = JSON.parse(source);
+    } catch (error) {
+        throw new ReaderError(`The tasks file is not JSON: ${error}`);
+    }
+    if (!Array.isArray(tasks))
+        throw new ReaderError("The tasks file is not a JSON array.");
+    return tasks.map((task, i) => {
+        const kind = task?.kind;
+        const tested = task?.tested ?? [];
+        if (kind !== "typical" && kind !== "out-of-scope")
+            throw new ReaderError(
+                `Task ${i + 1} in the tasks file has no kind "typical" or "out-of-scope".`,
+            );
+        if (
+            !Array.isArray(tested) ||
+            tested.some((quote) => typeof quote !== "string") ||
+            (kind === "typical" && tested.length === 0)
+        )
+            throw new ReaderError(
+                `Typical task ${i + 1} in the tasks file has no list of tested quotes.`,
+            );
+        return { kind, tested };
+    });
+}
+
+// Gives the quotes of part 2 and part 3 of a reader report. Each line of these
+// parts that has a quotation mark gives one quote.
+function readerQuotes(report: string, text: string): ReaderQuote[] {
+    const result: ReaderQuote[] = [];
+    const parts = new Set<number>();
+    let part = 0;
+    text.split(/\r?\n/).forEach((line, i) => {
+        const heading = /^\s*(?:#{1,6}\s*)?(?:\*\*)?part\s*([123])\b/i.exec(
+            line,
+        );
+        if (heading) {
+            part = Number(heading[1]);
+            parts.add(part);
+            return;
+        }
+        const quote = quoted(line);
+        if ((part === 2 || part === 3) && quote !== null)
+            result.push({ report, reportLine: i + 1, part, text: quote });
+    });
+    for (const wanted of [2, 3])
+        if (!parts.has(wanted))
+            throw new ReaderError(
+                `The reader report ${report} has no part ${wanted}.`,
+            );
+    return result;
+}
+
+// Gives the start and end offsets in the normal text of each place of the
+// quote.
+function occurrences(target: Target, quote: string): [number, number][] {
+    const wanted = normal(quote);
+    const result: [number, number][] = [];
+    if (wanted === "") return result;
+    for (
+        let at = target.text.indexOf(wanted);
+        at >= 0;
+        at = target.text.indexOf(wanted, at + 1)
+    )
+        result.push([at, at + wanted.length]);
+    return result;
+}
+
+// Gives the line in the file of an offset in the normal text.
+function lineOf(target: Target, at: number) {
+    return target.source.slice(0, target.offsets[at]).split("\n").length;
+}
+
+// Gives the numbers of the lines of the file that are not in the copy, as a
+// line diff shows them. With no copy (the write job), all lines are new.
+function changedLines(copy: string | null, source: string): Set<number> {
+    const lines = source.split(/\r?\n/);
+    const all = new Set(lines.map((_, i) => i + 1));
+    if (copy === null) return all;
+    const old = copy.split(/\r?\n/);
+    // common[i][j]: length of the longest common line sequence of
+    // lines[i..] and old[j..].
+    const common = Array.from({ length: lines.length + 1 }, () =>
+        new Array<number>(old.length + 1).fill(0),
+    );
+    for (let i = lines.length - 1; i >= 0; i--)
+        for (let j = old.length - 1; j >= 0; j--)
+            common[i][j] =
+                lines[i] === old[j]
+                    ? common[i + 1][j + 1] + 1
+                    : Math.max(common[i + 1][j], common[i][j + 1]);
+    for (let i = 0, j = 0; i < lines.length && j < old.length; ) {
+        if (lines[i] === old[j]) {
+            all.delete(i + 1);
+            i++;
+            j++;
+        } else if (common[i + 1][j] >= common[i][j + 1]) i++;
+        else j++;
+    }
+    return all;
 }
 
 // Gives each finding of a report. A finding is a group of field lines
