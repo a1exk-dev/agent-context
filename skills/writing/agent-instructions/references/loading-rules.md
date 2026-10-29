@@ -39,7 +39,7 @@ When the user tells you clearly to write a feature that only one platform reads,
 
 | File | Limit |
 |---|---|
-| Entry files | The entry files from the project root to the file have a total file size of less than 32 KiB. This total is the Codex limit. A file that an `@path` line imports is not in this total. Each entry file has less than 200 lines. These limits are applicable to all targets. (script check) |
+| Entry files | The entry files from the project root to the file have a total file size of less than 32 KiB. This total is the Codex limit. A file that an `@path` line imports is not in this total, except when it is an entry file. Each entry file has less than 200 lines. These limits are applicable to all targets. (script check) |
 | Skills | `SKILL.md` has a maximum of 20,000 bytes. Measure the bytes with the command after this table. 20,000 bytes are approximately 5,000 tokens. When Claude Code makes the context window smaller, it keeps only the first 5,000 tokens of a Skill. (script check) |
 | The glossary, `MEMORY.md`, and `docs/agents/` files | No limit |
 
