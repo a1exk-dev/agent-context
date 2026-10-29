@@ -89,6 +89,9 @@ Include each instruction that tells the reader to read, examine, or obey a diffe
 Then write the file size of each file and its limit.
 Give a finding for each text to move in a section that the author can edit.
 Also give a finding for each text that the author moved and that does not obey loading-rules.md. In the Text field, write the pointer of that text in quotation marks. If that text has no pointer, copy the heading of the moved section.
+<For the ISO 24495-1 reviewer only:> The check script findings also give the pointer list: each sentence that names a file path, with its line and heading.
+For each sentence in the pointer list that is a pointer, decide whether the heading and the sentence give the condition to read the target.
+Also find each pointer that names no file, for example "that file".
 <For the loading reviewer in the edit job only:> Write the extraction candidates in a different list: section heading, recommended file, and pointer sentence. Put in this list only sections under review that the author cannot edit. Use only the candidates that "When you recommend text to move" in loading-rules.md gives.
 
 Give each finding in this form:

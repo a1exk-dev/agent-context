@@ -22,6 +22,8 @@ Always replace these words. This list gives no replacement words, because a tabl
 - When you select a technical noun, use a noun from the glossary or the base list in `technical-terms.md` (rule 1.8).
 - When the glossary and the base list have no noun for an item, do the steps in "When a word is not in the base list or in the glossary" in `technical-terms.md`.
 - Use one technical noun for each item, and one item for each technical noun (rule 1.11).
+- Write a term in bold only when the glossary or the base list in `technical-terms.md` has it (rule 1.8). (script check)
+- Do not use a word that the glossary gives after `_Avoid_` (rule 1.11). (script check)
 
 ## When you write a multi-word noun
 
@@ -44,6 +46,7 @@ Always replace these words. This list gives no replacement words, because a tabl
 - Do not omit words when the omission changes the meaning of the sentence (rule 4.2).
 - Use the same terms and the same words for the same type of step (rule 9.4).
 - Use the same term for the same item each time (rule 6.2).
+- Write each glossary term in the same case as the glossary (rule 6.2). A capital letter at the start of a sentence is permitted. (script check)
 - When "with" can have two meanings in a sentence, write a different sentence (GR-2).
 - Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again.
 

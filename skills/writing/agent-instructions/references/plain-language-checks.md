@@ -15,6 +15,7 @@ The checks are in four groups. Each group agrees with one of the four principles
 - Keep only the text that the agent cannot find without help. Examples are project facts, decisions, special instructions of the user, and corrections of incorrect agent work.
 - In the edit job, remove text only in the changed part. When the user tells you that an agent did not obey a rule, do not remove that rule. The user wants agents to obey that rule. You can correct the text of that rule. You can also move that rule.
 - Remove each instruction that tells the agent to do an action that it does without an instruction. Remove text that the agent can read in the code or in the Git history. Also remove text that the agent can read in a pointer target.
+- Do not copy a sentence of 6 or more words from a pointer target. (script check)
 - Add one short cause to a rule in each of these conditions:
   - The rule changes the usual work of the agent.
   - The rule is not usual for the agent.
@@ -32,8 +33,9 @@ The checks are in four groups. Each group agrees with one of the four principles
 - No section template is necessary.
 - Use a numbered list for steps in a sequence. Use bullets for rules in no sequence. Use a table to compare items or to give reference data. Put each template and each command of more than one line in a code block. You can put a command of one line, a path, or a path pattern in a code span.
 - Each other heading gives the condition or the topic of its section.
-- Use no headings that are applicable to all subjects, for example "Notes" or "Other".
+- Use no headings that are applicable to all subjects: "Notes", "Other", "Misc", and "General". (script check)
 - Each pointer tells when to read its target. A pointer with no condition is a problem in the self-check.
+- Each pointer gives the path of a file or a folder that exists. (script check)
 - A pointer target is one step from the file that has the pointer. Make no sequences of pointers.
 - When the file does not load in each session, find a pointer to it in a different Agent instruction. If you find no pointer, add a warning.
 
@@ -44,7 +46,8 @@ The checks are in four groups. Each group agrees with one of the four principles
 - Do not use the word of a glossary term with a different meaning. This rule is also applicable when you write the word in lowercase letters.
 - Use one term for each item: the project term, not a different word with the same meaning.
 - Make sure that all parts of the file agree. When the file has a pointer, also make sure that the file agrees with the pointer target. When the project has a glossary, also make sure that the file agrees with the glossary.
-- Use no images and no Mermaid diagrams. Show a sequence or a structure as a numbered list or a table. You can also use a tree with indents in a code block.
+- Use no images and no Mermaid diagrams. (script check)
+- Show a sequence or a structure as a numbered list or a table. You can also use a tree with indents in a code block.
 - Use a neutral and direct tone. Write no text that tells the agent about a punishment or a reward. Write no text that tells the agent good things about itself.
 - Do not tell the agent that it is an expert. Write a sentence about the work of the agent only when the sentence gives a correct fact.
 

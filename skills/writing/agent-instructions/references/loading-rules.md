@@ -20,8 +20,8 @@ If you find no signal, or a signal does not agree with the request, speak to the
 
 Write only features that Codex, OpenCode, and Claude Code all read. This rule is also applicable when Claude Code is the only target, because the project can add a target platform later.
 
-- Do not write `@path`, `.claude/rules/`, frontmatter that only Claude Code reads, or `AGENTS.override.md`.
-- You can write only one `@path` line: the `@AGENTS.md` line in `CLAUDE.md`.
+- Do not write `.claude/rules/`, frontmatter that only Claude Code reads, or `AGENTS.override.md`.
+- Write no `@path` line, but you can write the `@AGENTS.md` line in `CLAUDE.md`. (script check)
 - Write each pointer as a sentence that gives the file and the condition to read it.
 - When the heading of a pointer gives the condition, also put the condition in the pointer sentence.
 - Put a new pointer in a section whose heading gives its condition. If no heading gives the condition, add a heading. A topic heading, for example "Tests", gives no condition. This rule is also applicable to a pointer whose condition you change.
@@ -39,8 +39,8 @@ When the user tells you clearly to write a feature that only one platform reads,
 
 | File | Limit |
 |---|---|
-| Entry files | The entry files from the project root to the file have a total file size of less than 32 KiB. This total is the Codex limit. A file that an `@path` line imports is not in this total. Each entry file has less than 200 lines. These limits are applicable to all targets. |
-| Skills | `SKILL.md` has a maximum of 20,000 bytes. Measure the bytes with the command after this table. 20,000 bytes are approximately 5,000 tokens. When Claude Code makes the context window smaller, it keeps only the first 5,000 tokens of a Skill. |
+| Entry files | The entry files from the project root to the file have a total file size of less than 32 KiB. This total is the Codex limit. A file that an `@path` line imports is not in this total. Each entry file has less than 200 lines. These limits are applicable to all targets. (script check) |
+| Skills | `SKILL.md` has a maximum of 20,000 bytes. Measure the bytes with the command after this table. 20,000 bytes are approximately 5,000 tokens. When Claude Code makes the context window smaller, it keeps only the first 5,000 tokens of a Skill. (script check) |
 | The glossary, `MEMORY.md`, and `docs/agents/` files | No limit |
 
 ```sh

@@ -113,7 +113,7 @@ node <skill folder>/scripts/check.ts <file>... --project <project folder> --glos
 
 - Replace `<skill folder>` with the absolute path of the folder of this `SKILL.md` file.
 - Give the absolute path of each file to examine. Save the output to a new file in a temporary folder that is not in the project.
-- The script gives JSON with a list of findings. Exit code 0 shows no findings. Exit code 1 shows one or more findings.
+- The script gives JSON with a list of findings and a list of the sentences that name a file path. Exit code 0 shows no findings. Exit code 1 shows one or more findings.
 - Exit code 2 shows that the check did not run, for example because of a missing file. Then the script gives no JSON.
 - If the script gives no JSON, stop the self-check. Tell the user the error and that the check script requires Node.js 22.18 or later.
 

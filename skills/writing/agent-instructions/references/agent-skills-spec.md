@@ -7,9 +7,10 @@ These rules come from the Agent Skills specification at https://agentskills.io/s
 Select the folder first, as the section "When you select the folder for the Skill" tells you.
 
 - Tier 1: A Skill is a folder with a `SKILL.md` file. The file starts with YAML frontmatter, and Markdown text comes after it.
-- Tier 1: `name` has 1 to 64 characters: lowercase letters, digits, and hyphens. It has no hyphen at the start or at the end, and no `--`. It is the same as the folder name. If the user gives a name that does not obey this rule, correct the name. Give the change in the Summary part.
-- Tier 1: `description` has 1 to 1024 characters.
-- Tier 1: The frontmatter has no top-level field other than `name`, `description`, `license`, `compatibility`, `metadata`, and `allowed-tools`. `compatibility` has a maximum of 500 characters. Each key and each value in `metadata` is text.
+- Tier 1: `name` has 1 to 64 characters: lowercase letters, digits, and hyphens. It has no hyphen at the start or at the end, and no `--`. It is the same as the folder name. If the user gives a name that does not obey this rule, correct the name. Give the change in the Summary part. (script check)
+- Tier 1: `description` has 1 to 1024 characters. (script check)
+- Tier 1: The frontmatter has no top-level field other than `name`, `description`, `license`, `compatibility`, `metadata`, and `allowed-tools`. (script check)
+- Tier 1: `compatibility` has a maximum of 500 characters. Each key and each value in `metadata` is text.
 - Tier 1: The YAML parser accepts no errors. Put a value that contains `: ` in quotation marks. You can also start the value on the next line after `|` or `>`.
 - Tier 1: Write only `name` and `description` in the frontmatter. Only these two fields operate on Codex, OpenCode, and Claude Code. A field that is not in the list of permitted fields, for example `disable-model-invocation`, also gives an error in `skills-ref validate`.
 - Tier 1: When the user tells you clearly to write `license`, `compatibility`, `metadata`, or `allowed-tools`, write it. Then add a warning that gives the platforms that do not read the field.
@@ -30,7 +31,7 @@ An agent reads the description to know when to load the Skill. When the user giv
 
 The specification gives no structure for the body.
 
-- Tier 4: `SKILL.md` has less than 500 lines and approximately 5,000 tokens.
+- Tier 4: `SKILL.md` has less than 500 lines. (script check)
 - Tier 4: Move long text to files in the Skill folder or in a folder directly in it. For each file, tell when to read it.
 - Tier 4: Add only the text that the agent does not know. Give one recommended method, not a list of alternatives. When a step has a high risk of an error, give it more limits.
 - Tier 4: Write no "Gotchas" section. Put each known problem in the section of the condition where the problem occurs. Put it next to the step that the problem makes incorrect.

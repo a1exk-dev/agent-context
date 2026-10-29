@@ -2,14 +2,28 @@
 // problems in Agent instructions. Run it with `node` (Node.js 22.18 or later).
 // It imports only `node:` built-ins, so it needs no install step.
 
+import { Buffer } from "node:buffer";
 import { readFileSync, statSync } from "node:fs";
+import {
+    basename,
+    dirname,
+    isAbsolute,
+    join,
+    relative,
+    resolve,
+    sep,
+} from "node:path";
 import { parseArgs } from "node:util";
 
 const usage = `Usage: node check.ts <file>... --project <folder> --glossary <path|none>
 
 Checks each file for the rules that end with "(script check)" in the rule
 files of the agent-instructions Skill. Writes JSON to stdout:
-{ "findings": [ { reviewer, rule, ruleFile, heading, text, path, line, problem } ] }
+{ "findings": [ { reviewer, rule, ruleFile, heading, text, path, line, problem } ],
+  "pointers": [ { path, line, heading, text, targets } ] }
+The pointers list gives each sentence that names a file path. The glossary
+gives the terms and their _Avoid_ words. The base list of technical terms
+comes from references/technical-terms.md of the Skill.
 
 Exit code: 0 for no findings, 1 for one or more findings, 2 when the check
 could not run (missing file, bad argument).`;
@@ -38,9 +52,34 @@ type Segment = {
 };
 
 const sentenceLimit = 25;
+const skillBytes = 20_000;
+const skillLines = 500;
+const copyWords = 6;
+const generalHeadings = ["notes", "other", "misc", "general"];
+const entryLines = 200;
+const entryBytes = 32 * 1024;
+const entryFiles = [
+    "AGENTS.md",
+    "AGENTS.override.md",
+    "CLAUDE.md",
+    "CLAUDE.local.md",
+];
+const skillFields = [
+    "name",
+    "description",
+    "license",
+    "compatibility",
+    "metadata",
+    "allowed-tools",
+];
 // Marks a code span, a quote, or a URL in the masked text. It counts as one
 // word and matches no word pattern.
 const placeholder = "";
+
+const technicalTerms = join(
+    import.meta.dirname,
+    "../references/technical-terms.md",
+);
 
 class UsageError extends Error {}
 
@@ -56,7 +95,21 @@ function main(argv: string[]): number {
         process.stdout.write(`${usage}\n`);
         return 0;
     }
+    let rules: WordRule[];
+    try {
+        const glossary = args.glossary
+            ? readGlossary(readFileSync(args.glossary, "utf8"))
+            : { terms: [], avoid: [] };
+        const base = readBaseList(readFileSync(technicalTerms, "utf8"));
+        rules = [...wordRules, ...glossaryRules(glossary, base)];
+    } catch (error) {
+        process.stderr.write(
+            `Cannot read the glossary or the base list: ${error}\n`,
+        );
+        return 2;
+    }
     const findings: Finding[] = [];
+    const pointers: Pointer[] = [];
     for (const path of args.files) {
         let source: string;
         try {
@@ -65,9 +118,15 @@ function main(argv: string[]): number {
             process.stderr.write(`Cannot read ${path}: ${error}\n`);
             return 2;
         }
-        findings.push(...checkText(path, source));
+        findings.push(...checkText(path, source, rules));
+        findings.push(...checkLoading(path, source, args.project));
+        const plain = checkPlainLanguage(path, source, args.project);
+        findings.push(...plain.findings);
+        pointers.push(...plain.pointers);
     }
-    process.stdout.write(`${JSON.stringify({ findings }, null, 2)}\n`);
+    process.stdout.write(
+        `${JSON.stringify({ findings, pointers }, null, 2)}\n`,
+    );
     return findings.length === 0 ? 0 : 1;
 }
 
@@ -120,7 +179,7 @@ type WordRule = {
     rule: string | null;
     heading: string;
     pattern: RegExp;
-    problem: (match: string) => string | null;
+    problem: (match: string, atStart: boolean) => string | null;
 };
 
 const wordRules: WordRule[] = [
@@ -161,64 +220,558 @@ const wordRules: WordRule[] = [
     },
 ];
 
-function checkText(path: string, source: string): Finding[] {
-    const findings: Finding[] = [];
-    for (const segment of segments(source)) {
-        const masked = mask(segment.visible);
-        for (const [start, end] of sentences(masked)) {
-            const sentence = segment.text
-                .slice(firstVisible(masked, start), end)
+// Gives the rules that use the glossary terms, their `_Avoid_` words, and the
+// base list of technical-terms.md.
+function glossaryRules(glossary: Glossary, base: string[]): WordRule[] {
+    const rules: WordRule[] = [];
+    const known = new Set(
+        [...base, ...glossary.terms].map((term) => term.toLowerCase()),
+    );
+    const words = (word: string, plural: boolean) =>
+        new RegExp(
+            `(?<![\\p{L}\\p{N}_-])${escapeRegExp(word).replace(/\s+/g, "\\s+")}${plural ? "(?:e?s)?" : ""}(?![\\p{L}\\p{N}_-])`,
+            "giu",
+        );
+    for (const avoid of glossary.avoid)
+        rules.push({
+            rule: "1.11",
+            heading: "When you select a technical noun",
+            pattern: words(avoid, false),
+            problem: (word) =>
+                `The sentence has "${word}", which the glossary gives after _Avoid_.`,
+        });
+    for (const term of glossary.terms)
+        rules.push({
+            rule: "6.2",
+            heading: "When you write a sentence",
+            pattern: words(term, true),
+            problem: (word, atStart) => {
+                const stem = word.slice(0, term.length);
+                if (stem === term) return null;
+                const capital = term[0].toUpperCase() + term.slice(1);
+                if (atStart && stem === capital) return null;
+                return `The sentence has "${word}", but the glossary term is "${term}".`;
+            },
+        });
+    rules.push({
+        rule: "1.8",
+        heading: "When you select a technical noun",
+        pattern: /\*\*([^*\n]+?)\*\*/g,
+        problem: (bold) => {
+            const term = bold
+                .slice(2, -2)
+                .replace(/[:.]$/, "")
+                .replace(/\s+/g, " ")
                 .trim();
-            const finding = (
-                rule: string | null,
-                heading: string,
-                offset: number,
-                problem: string,
-            ) => ({
-                reviewer: "ASD-STE100",
-                rule,
-                ruleFile: "references/ste-rules.md",
-                heading,
-                text: sentence,
-                path,
-                line: lineAt(segment, offset),
-                problem,
-            });
-            if (!segment.heading) {
-                for (const [s, e, count] of wordCounts(masked, start, end)) {
-                    if (count <= sentenceLimit) continue;
-                    findings.push({
-                        ...finding(
-                            null,
-                            "When you write a sentence",
-                            firstVisible(masked, s),
-                            `The sentence has ${count} words.`,
-                        ),
-                        text: segment.text
-                            .slice(firstVisible(masked, s), e)
-                            .trim(),
-                    });
-                }
+            const lower = term.toLowerCase();
+            if ([lower, lower.replace(/e?s$/, "")].some((t) => known.has(t)))
+                return null;
+            return `The bold term "${term}" is not in the glossary or in the base list of technical-terms.md.`;
+        },
+    });
+    return rules;
+}
+
+function escapeRegExp(text: string) {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+type Glossary = { terms: string[]; avoid: string[] };
+
+// Reads the terms (`**Term**:`) and the `_Avoid_:` words of a glossary.
+function readGlossary(source: string): Glossary {
+    const glossary: Glossary = { terms: [], avoid: [] };
+    for (const line of source.split(/\r?\n/)) {
+        const term = /^\*\*([^*]+)\*\*:/.exec(line);
+        if (term) glossary.terms.push(term[1].trim());
+        const avoid = /^_Avoid_:\s*(.*)$/.exec(line);
+        if (avoid)
+            for (const word of avoid[1].split(",")) {
+                const clean = word.replace(/["“”.]/g, "").trim();
+                if (clean !== "") glossary.avoid.push(clean);
             }
-            const text = masked.slice(start, end);
-            for (const { rule, heading, pattern, problem } of wordRules) {
-                for (const match of text.matchAll(pattern)) {
-                    const message = problem(match[0]);
-                    if (message === null) continue;
-                    findings.push(
-                        finding(rule, heading, start + match.index, message),
-                    );
-                }
+    }
+    return glossary;
+}
+
+// Reads the terms of the base list in technical-terms.md: the first cell of
+// each table row and each list item after the heading "Base list".
+function readBaseList(source: string): string[] {
+    const terms: string[] = [];
+    const start = source.indexOf("\n## Base list");
+    for (const line of source.slice(start).split(/\r?\n/)) {
+        const cell = /^\|\s*([^|]+?)\s*\|/.exec(line);
+        if (cell && cell[1] !== "Term" && !/^[\s:-]+$/.test(cell[1]))
+            terms.push(cell[1]);
+        const item = /^-\s+(.+?)\s*$/.exec(line);
+        if (item) terms.push(item[1]);
+    }
+    return terms;
+}
+
+function checkText(path: string, source: string, rules: WordRule[]): Finding[] {
+    const findings: Finding[] = [];
+    for (const { segment, masked, start, end, text } of fileSentences(source)) {
+        const finding = (
+            rule: string | null,
+            heading: string,
+            offset: number,
+            problem: string,
+        ) => ({
+            reviewer: "ASD-STE100",
+            rule,
+            ruleFile: "references/ste-rules.md",
+            heading,
+            text,
+            path,
+            line: lineAt(segment, offset),
+            problem,
+        });
+        if (!segment.heading) {
+            for (const [s, e, count] of wordCounts(masked, start, end)) {
+                if (count <= sentenceLimit) continue;
+                findings.push({
+                    ...finding(
+                        null,
+                        "When you write a sentence",
+                        firstVisible(masked, s),
+                        `The sentence has ${count} words.`,
+                    ),
+                    text: segment.text.slice(firstVisible(masked, s), e).trim(),
+                });
+            }
+        }
+        const words = masked.slice(start, end);
+        for (const { rule, heading, pattern, problem } of rules) {
+            for (const match of words.matchAll(pattern)) {
+                const message = problem(
+                    match[0],
+                    match.index === firstVisible(words, 0),
+                );
+                if (message === null) continue;
+                findings.push(
+                    finding(rule, heading, start + match.index, message),
+                );
             }
         }
     }
     return findings;
 }
 
+type Sentence = {
+    segment: Segment;
+    masked: string;
+    start: number;
+    end: number;
+    // The sentence, verbatim from the file.
+    text: string;
+    line: number;
+    // The text of the last heading before the sentence, or null.
+    heading: string | null;
+};
+
+// Gives each sentence of the natural-language text of a file, in file order.
+function fileSentences(source: string): Sentence[] {
+    const result: Sentence[] = [];
+    let heading: string | null = null;
+    for (const segment of segments(source)) {
+        const masked = mask(segment.visible);
+        if (segment.heading) heading = segment.visible.trim();
+        for (const [start, end] of sentences(masked)) {
+            const from = firstVisible(masked, start);
+            result.push({
+                segment,
+                masked,
+                start,
+                end,
+                text: segment.text.slice(from, end).trim(),
+                line: lineAt(segment, from),
+                heading,
+            });
+        }
+    }
+    return result;
+}
+
+type Pointer = {
+    path: string;
+    line: number;
+    heading: string | null;
+    text: string;
+    targets: string[];
+};
+
+// The plain-language rules of one file: general headings, images, Mermaid
+// diagrams, pointer targets that do not exist, and sentences copied from a
+// pointer target. It also gives each sentence that names a file path.
+function checkPlainLanguage(
+    path: string,
+    source: string,
+    project: string,
+): { findings: Finding[]; pointers: Pointer[] } {
+    const findings: Finding[] = [];
+    const pointers: Pointer[] = [];
+    const finding = (
+        heading: string,
+        text: string,
+        line: number,
+        problem: string,
+    ) =>
+        findings.push({
+            reviewer: "ISO 24495-1",
+            rule: null,
+            ruleFile: "references/plain-language-checks.md",
+            heading,
+            text,
+            path,
+            line,
+            problem,
+        });
+    for (const segment of segments(source)) {
+        const text = segment.visible.trim();
+        if (
+            segment.heading &&
+            generalHeadings.includes(text.replace(/:$/, "").toLowerCase())
+        )
+            finding(
+                "When you put the text in sections and lists",
+                text,
+                segment.lines[0],
+                `The heading "${text}" is applicable to all subjects.`,
+            );
+    }
+    const targets = new Map<string, string>();
+    const prose = fileSentences(source).filter((s) => !s.segment.heading);
+    for (const sentence of prose) {
+        const from = firstVisible(sentence.masked, sentence.start);
+        const words = sentence.masked.slice(from, sentence.end);
+        if (/!\[[^\]]*\]|<img\b/i.test(words))
+            finding(
+                "When you select the words and the tone",
+                sentence.text,
+                sentence.line,
+                "The sentence has an image.",
+            );
+        const named = filePaths(sentence.text, words);
+        if (named.length === 0) continue;
+        pointers.push({
+            path,
+            line: sentence.line,
+            heading: sentence.heading,
+            text: sentence.text,
+            targets: named,
+        });
+        for (const target of named) {
+            const found = findTarget(target, path, project);
+            if (found === null)
+                finding(
+                    "When you put the text in sections and lists",
+                    sentence.text,
+                    sentence.line,
+                    `The pointer target "${target}" does not exist.`,
+                );
+            else if (found !== resolve(path) && isFile(found))
+                targets.set(target, found);
+        }
+    }
+    for (const [line, text] of fenceLines(source))
+        if (/^\s*(`{3,}|~{3,})\s*mermaid\b/i.test(text))
+            finding(
+                "When you select the words and the tone",
+                text.trim(),
+                line,
+                "The file has a Mermaid diagram.",
+            );
+    const texts = [...targets].map(
+        ([target, found]) =>
+            [target, normalize(readFileSync(found, "utf8"))] as const,
+    );
+    for (const sentence of prose) {
+        const count = wordCounts(
+            sentence.masked,
+            sentence.start,
+            sentence.end,
+        )[0][2];
+        if (count < copyWords) continue;
+        const copy = texts.find(([, text]) =>
+            text.includes(normalize(sentence.text)),
+        );
+        if (copy)
+            finding(
+                "When you select the text",
+                sentence.text,
+                sentence.line,
+                `The sentence of ${count} words is also in the pointer target "${copy[0]}".`,
+            );
+    }
+    return { findings, pointers };
+}
+
+function normalize(text: string) {
+    return text.replace(/\s+/g, " ").trim();
+}
+
+// Gives each file path that a sentence names: in a code span, or as a bare
+// word. A path has a known file extension, or it has a "/" and starts with
+// ".", "/", or "~" or stops with "/". A placeholder or a pattern is not a path.
+function filePaths(text: string, masked: string): string[] {
+    const found: [number, string][] = [];
+    for (const match of text.matchAll(/`([^`]+)`/g))
+        found.push([match.index, match[1].trim()]);
+    for (const match of masked.matchAll(/\S+/g))
+        found.push([
+            match.index,
+            match[0].replace(/^[("'[]+/, "").replace(/[.,:;!?)\]"']+$/, ""),
+        ]);
+    const paths = found
+        .sort((a, b) => a[0] - b[0])
+        .map(([, token]) => token)
+        .filter(isPath);
+    return [...new Set(paths)];
+}
+
+function isPath(token: string) {
+    // A name such as "Node.js" is not a path.
+    if (/^[A-Z][a-z]+\.js$/.test(token)) return false;
+    if (/[<>*{}$|\s`@]/.test(token) || /^[a-z][\w+.-]*:/i.test(token))
+        return false;
+    return (
+        /\.(?:md|mdc|json|jsonl|ts|js|mjs|cjs|yml|yaml|toml|txt|sh|py)$/i.test(
+            token,
+        ) ||
+        (token.includes("/") && /^[./~]|\/$/.test(token))
+    );
+}
+
+// Finds a pointer target relative to the folder of the file or to a folder
+// above it, up to the project folder. Gives the absolute path, or null when
+// the target does not exist. A path from the home folder ("~") is not
+// examined.
+function findTarget(target: string, path: string, project: string) {
+    if (target.startsWith("~")) return target;
+    if (isAbsolute(target)) return exists(target) ? target : null;
+    for (const folder of foldersFromRoot(path, project).reverse()) {
+        const candidate = join(folder, target);
+        if (exists(candidate)) return candidate;
+    }
+    return null;
+}
+
+function exists(path: string) {
+    try {
+        statSync(path);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+// The loading rules of one file: the file size, the line count, the Skill
+// frontmatter, and the `@path` lines.
+function checkLoading(
+    path: string,
+    source: string,
+    project: string,
+): Finding[] {
+    const findings: Finding[] = [];
+    const firstLine = source.split(/\r?\n/)[0];
+    const finding = (
+        ruleFile: string,
+        heading: string,
+        problem: string,
+        text = firstLine,
+        line = 1,
+    ) =>
+        findings.push({
+            reviewer: "loading",
+            rule: null,
+            ruleFile,
+            heading,
+            text,
+            path,
+            line,
+            problem,
+        });
+    if (basename(path) === "SKILL.md") {
+        const bytes = Buffer.byteLength(source);
+        if (bytes > skillBytes)
+            finding(
+                "references/loading-rules.md",
+                "When you examine the file size",
+                `SKILL.md has ${bytes} bytes. The limit is 20,000 bytes.`,
+            );
+        const lines = lineCount(source);
+        if (lines >= skillLines)
+            finding(
+                "references/agent-skills-spec.md",
+                "When you write the body",
+                `SKILL.md has ${lines} lines. The limit is less than 500 lines.`,
+            );
+        const field = (problem: string, at?: Field) =>
+            finding(
+                "references/agent-skills-spec.md",
+                "When you write the folder and the frontmatter",
+                problem,
+                at?.text,
+                at?.line,
+            );
+        const fields = frontmatter(source);
+        const name = fields.get("name");
+        if (name === undefined) field("The frontmatter has no name.");
+        else if (!/^(?!-)(?!.*--)[a-z0-9-]{1,64}(?<!-)$/.test(name.value))
+            field(
+                `The name "${name.value}" is not 1 to 64 lowercase letters, digits, and hyphens, with no hyphen at the start or end and no "--".`,
+                name,
+            );
+        const folder = basename(dirname(resolve(path)));
+        if (name !== undefined && name.value !== folder)
+            field(
+                `The name "${name.value}" is not the folder name "${folder}".`,
+                name,
+            );
+        const description = fields.get("description");
+        const length = description ? [...description.value].length : 0;
+        if (description === undefined)
+            field("The frontmatter has no description.");
+        else if (length < 1 || length > 1024)
+            field(
+                `The description has ${length} characters. The limit is 1 to 1024 characters.`,
+                description,
+            );
+        for (const [key, at] of fields)
+            if (!skillFields.includes(key))
+                field(`The frontmatter field "${key}" is not permitted.`, at);
+    }
+    if (entryFiles.includes(basename(path))) {
+        const lines = lineCount(source);
+        if (lines >= entryLines)
+            finding(
+                "references/loading-rules.md",
+                "When you examine the file size",
+                `${basename(path)} has ${lines} lines. The limit is less than 200 lines.`,
+            );
+        const bytes = entryBytesFromRoot(path, project);
+        if (bytes >= entryBytes)
+            finding(
+                "references/loading-rules.md",
+                "When you examine the file size",
+                `The entry files from the project root to this file have ${bytes} bytes. The limit is less than 32,768 bytes.`,
+            );
+    }
+    for (const [line, text] of proseLines(source)) {
+        for (const match of mask(text).matchAll(/(?<=^|\s)@[^\s]+/g)) {
+            const target = match[0].replace(/[.,:;!?)]+$/, "");
+            if (!target.includes("/") && !target.includes(".")) continue;
+            if (basename(path) === "CLAUDE.md" && target === "@AGENTS.md")
+                continue;
+            finding(
+                "references/loading-rules.md",
+                "When you select a feature",
+                `The file imports "${target}" with an @path line.`,
+                text.trim(),
+                line,
+            );
+        }
+    }
+    return findings;
+}
+
+// Gives the total file size of the entry files in each folder from the
+// project folder to the folder of the file.
+function entryBytesFromRoot(path: string, project: string) {
+    let total = 0;
+    for (const folder of foldersFromRoot(path, project))
+        for (const name of entryFiles)
+            if (isFile(join(folder, name)))
+                total += statSync(join(folder, name)).size;
+    return total;
+}
+
+// Gives each folder from the project folder to the folder of the file. For a
+// file outside the project folder, gives only the folder of the file.
+function foldersFromRoot(path: string, project: string) {
+    const folder = dirname(resolve(path));
+    const root = resolve(project);
+    const inside = relative(root, folder);
+    if (inside.startsWith("..") || isAbsolute(inside)) return [folder];
+    const folders = [root];
+    for (const part of inside.split(sep).filter(Boolean))
+        folders.push(join(folders.at(-1) as string, part));
+    return folders;
+}
+
+// Gives each opening fence line of a code block, with its line number.
+function fenceLines(source: string): [number, string][] {
+    const result: [number, string][] = [];
+    let fence: string | null = null;
+    source.split(/\r?\n/).forEach((line, i) => {
+        const match = /^\s*(`{3,}|~{3,})/.exec(line);
+        if (fence !== null) {
+            if (line.trim().startsWith(fence)) fence = null;
+        } else if (match) {
+            fence = match[1];
+            result.push([i + 1, line]);
+        }
+    });
+    return result;
+}
+
+// Gives each line outside the frontmatter and the code blocks, with its
+// line number.
+function proseLines(source: string): [number, string][] {
+    const lines = source.split(/\r?\n/);
+    const result: [number, string][] = [];
+    let first = 0;
+    if (lines[0] === "---") first = lines.indexOf("---", 1) + 1;
+    let fence: string | null = null;
+    for (let i = first; i < lines.length; i++) {
+        const fenceMatch = /^\s*(`{3,}|~{3,})/.exec(lines[i]);
+        if (fence !== null) {
+            if (lines[i].trim().startsWith(fence)) fence = null;
+        } else if (fenceMatch) fence = fenceMatch[1];
+        else result.push([i + 1, lines[i]]);
+    }
+    return result;
+}
+
+function lineCount(source: string) {
+    return source.split("\n").length - (source.endsWith("\n") ? 1 : 0);
+}
+
+type Field = { value: string; text: string; line: number };
+
+// Gives the top-level fields of the YAML frontmatter, in file order. It reads
+// a plain value, a quoted value on one line, and a block scalar (`|` or `>`).
+function frontmatter(source: string): Map<string, Field> {
+    const fields = new Map<string, Field>();
+    const lines = source.split(/\r?\n/);
+    if (lines[0] !== "---") return fields;
+    const end = lines.indexOf("---", 1);
+    if (end < 0) return fields;
+    for (let i = 1; i < end; i++) {
+        const match = /^([^\s#:][^:]*):(?:\s+(.*))?$/.exec(lines[i]);
+        if (!match) continue;
+        const at = { text: lines[i], line: i + 1 };
+        let value = (match[2] ?? "").trim();
+        if (/^[|>][+-]?$/.test(value)) {
+            const block: string[] = [];
+            while (i + 1 < end && /^(\s|$)/.test(lines[i + 1]))
+                block.push(lines[++i].trim());
+            value = block.join(value[0] === "|" ? "\n" : " ").trim();
+        } else if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.slice(1, -1).replace(/\\(.)/g, "$1");
+        } else if (value.startsWith("'") && value.endsWith("'")) {
+            value = value.slice(1, -1).replaceAll("''", "'");
+        }
+        fields.set(match[1], { value, ...at });
+    }
+    return fields;
+}
+
 // Splits a file into segments of natural-language text. It skips code
-// blocks, frontmatter fields other than `description`, and table separator
-// rows. It blanks list markers, heading marks, and table pipes, so that each
-// segment keeps the columns of its lines.
+// blocks, frontmatter fields other than `description`, table separator rows,
+// and the `_Avoid_:` lines of a glossary. It blanks list markers, heading
+// marks, and table pipes, so that each segment keeps the columns of its lines.
 function segments(source: string): Segment[] {
     const lines = source.split(/\r?\n/);
     const result: Segment[] = [];
@@ -267,7 +820,8 @@ function segments(source: string): Segment[] {
             current = null;
             continue;
         }
-        if (line.trim() === "") {
+        // The `_Avoid_:` line of a glossary entry gives words not to use.
+        if (line.trim() === "" || line.startsWith("_Avoid_:")) {
             current = null;
             continue;
         }
