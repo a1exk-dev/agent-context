@@ -207,7 +207,11 @@ type WordRule = {
     rule: string | null;
     heading: string;
     pattern: RegExp;
-    problem: (match: string, atStart: boolean) => string | null;
+    problem: (
+        match: string,
+        atStart: boolean,
+        found: RegExpMatchArray,
+    ) => string | null;
 };
 
 const wordRules: WordRule[] = [
@@ -260,20 +264,42 @@ function glossaryRules(glossary: Glossary, base: string[]): WordRule[] {
             `(?<![\\p{L}\\p{N}_-])${escapeRegExp(word).replace(/\s+/g, "\\s+")}${plural ? "(?:e?s)?" : ""}(?![\\p{L}\\p{N}_-])`,
             "giu",
         );
+    const places = glossary.terms.map((term) => ({
+        term,
+        pattern: words(term, true),
+    }));
+    // Tells whether the match is in a place of a glossary term, in any case,
+    // other than the term `except`.
+    const inTerm = (found: RegExpMatchArray, except: string | null) => {
+        const from = found.index ?? 0;
+        const to = from + found[0].length;
+        return places.some(
+            ({ term, pattern }) =>
+                term !== except &&
+                [...(found.input ?? "").matchAll(pattern)].some(
+                    (place) =>
+                        (place.index ?? 0) <= from &&
+                        (place.index ?? 0) + place[0].length >= to,
+                ),
+        );
+    };
     for (const avoid of glossary.avoid)
         rules.push({
             rule: "1.11",
             heading: "When you select a technical noun",
             pattern: words(avoid, false),
-            problem: (word) =>
-                `The sentence has "${word}", which the glossary gives after _Avoid_.`,
+            problem: (word, _atStart, found) =>
+                inTerm(found, null)
+                    ? null
+                    : `The sentence has "${word}", which the glossary gives after _Avoid_.`,
         });
     for (const term of glossary.terms)
         rules.push({
             rule: "6.2",
             heading: "When you write a sentence",
             pattern: words(term, true),
-            problem: (word, atStart) => {
+            problem: (word, atStart, found) => {
+                if (inTerm(found, term)) return null;
                 const stem = word.slice(0, term.length);
                 if (stem === term) return null;
                 const capital = term[0].toUpperCase() + term.slice(1);
@@ -375,6 +401,7 @@ function checkText(path: string, source: string, rules: WordRule[]): Finding[] {
                 const message = problem(
                     match[0],
                     match.index === firstVisible(words, 0),
+                    match,
                 );
                 if (message === null) continue;
                 findings.push(

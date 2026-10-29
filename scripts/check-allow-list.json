@@ -19,24 +19,6 @@
     },
     {
         "path": "GLOSSARY.md",
-        "rule": "1.11",
-        "text": "**Rule**:",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "1.11",
-        "text": "A Rule is a short Markdown file `rules/<category>/<name>.md` whose text a project adds to `AGENTS.md` or `CLAUDE.md`, not to `.claude/rules/`.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "1.11",
-        "text": "Examples are a Skill, a Rule, `AGENTS.md`, `CLAUDE.md`, `GLOSSARY.md`, `MEMORY.md`, and the files in `docs/agents/`.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "GLOSSARY.md",
         "rule": "When you put the text in sections and lists",
         "text": "A Skill is a folder `skills/<category>/<name>/` that contains a `SKILL.md` file and all other files that the Skill uses.",
         "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
@@ -49,81 +31,15 @@
     },
     {
         "path": "MEMORY.md",
-        "rule": "1.11",
-        "text": "Applies when: writing or changing a Skill or Rule, or deciding which agent platforms it supports.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "MEMORY.md",
-        "rule": "1.11",
-        "text": "Guidance: Make each Skill and Rule work on Codex, OpenCode, and Claude Code.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "MEMORY.md",
         "rule": "6.2",
         "text": "A SKILL.md stays at 20,000 bytes or less",
         "cause": "The heading names the file SKILL.md, not the term Skill."
     },
     {
         "path": "MEMORY.md",
-        "rule": "1.11",
-        "text": "Applies when: adding test files, eval requests, or sample files for a Skill or Rule.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "MEMORY.md",
-        "rule": "1.11",
-        "text": "Guidance: Put them under `tests/` with a path that copies the repo layout: `tests/skills/<category>/<name>/` for a Skill and `tests/rules/<category>/<name>/` for a Rule.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "MEMORY.md",
-        "rule": "1.11",
-        "text": "Applies when: running output tests, load tests, or grader subagents for a Skill or Rule.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "MEMORY.md",
-        "rule": "1.11",
-        "text": "Applies when: output tests for a Skill or Rule fail.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "MEMORY.md",
         "rule": "6.2",
         "text": "Reason: Since 2026-09-24, the mattpocock/skills Skills that this repo installs, for example `domain-modeling`, `tdd`, and `pr`, read only `GLOSSARY.md`.",
         "cause": "mattpocock/skills is the name of a GitHub repository."
-    },
-    {
-        "path": "MEMORY.md",
-        "rule": "1.11",
-        "text": "Applies when: adding a file to a Skill, or telling a project how to get a Rule.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "MEMORY.md",
-        "rule": "1.11",
-        "text": "Tell a project to copy the text of a Rule into its `AGENTS.md` or `CLAUDE.md`.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "MEMORY.md",
-        "rule": "1.11",
-        "text": "Applies when: adding a file to a Skill or Rule, or making a Skill run a script to do its own work.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "MEMORY.md",
-        "rule": "1.11",
-        "text": "Guidance: A Skill can contain code files in any language, and a Rule can contain code blocks.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
-    },
-    {
-        "path": "MEMORY.md",
-        "rule": "1.11",
-        "text": "A Rule runs no script.",
-        "cause": "The word is the glossary term \"Rule\". The _Avoid_ word \"rule\" of Setting is the generic word."
     },
     {
         "path": "MEMORY.md",
@@ -526,90 +442,6 @@
         "rule": "When you select the text",
         "text": "It defines the terms, the tiers, and the end-of-run report.",
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "1.11",
-        "text": "**Blocking rule**:",
-        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "1.11",
-        "text": "A Blocking rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark \"(blocking)\" at its end.",
-        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "1.11",
-        "text": "A confirmed finding for a Blocking rule makes its review round fail.",
-        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "1.11",
-        "text": "A breach of a Blocking rule makes an agent do a wrong action or miss an instruction.",
-        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "6.2",
-        "text": "**Blocking rule**:",
-        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "6.2",
-        "text": "A Blocking rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark \"(blocking)\" at its end.",
-        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "6.2",
-        "text": "A confirmed finding for a Blocking rule makes its review round fail.",
-        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "6.2",
-        "text": "A breach of a Blocking rule makes an agent do a wrong action or miss an instruction.",
-        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "1.11",
-        "text": "**Advisory rule**:",
-        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "1.11",
-        "text": "An Advisory rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark \"(advisory)\" at its end.",
-        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "1.11",
-        "text": "A finding for an Advisory rule never makes a review round fail.",
-        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "6.2",
-        "text": "**Advisory rule**:",
-        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "6.2",
-        "text": "An Advisory rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark \"(advisory)\" at its end.",
-        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
-    },
-    {
-        "path": "GLOSSARY.md",
-        "rule": "6.2",
-        "text": "A finding for an Advisory rule never makes a review round fail.",
-        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
     },
     {
         "path": "skills/writing/agent-instructions/SKILL.md",

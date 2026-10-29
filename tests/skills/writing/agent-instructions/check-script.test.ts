@@ -578,6 +578,41 @@ describe("check script, glossary rules", () => {
         ]);
     });
 
+    it("does not find an _Avoid_ word or a term case in a glossary term", () => {
+        const folder = project({
+            "GLOSSARY.md": [
+                "**Rule**:",
+                "A short file.",
+                "",
+                "**Setting**:",
+                "One line of a policy.",
+                "_Avoid_: option, rule",
+                "",
+                "**Blocking rule**:",
+                "A rule that fails a round.",
+                "",
+            ].join("\n"),
+            "AGENTS.md":
+                "Each Rule applies. A Blocking rule fails. Each blocking rule fails. The rule applies.\n",
+        });
+        expect(
+            checkFiles(folder, ["AGENTS.md"], "GLOSSARY.md").findings,
+        ).toEqual([
+            term(
+                "6.2",
+                "Each blocking rule fails.",
+                1,
+                'The sentence has "blocking rule", but the glossary term is "Blocking rule".',
+            ),
+            term(
+                "6.2",
+                "The rule applies.",
+                1,
+                'The sentence has "rule", but the glossary term is "Rule".',
+            ),
+        ]);
+    });
+
     it("skips the _Avoid_ lines of the glossary", () => {
         const folder = project({ "GLOSSARY.md": glossary });
         expect(
