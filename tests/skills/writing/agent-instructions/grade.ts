@@ -145,11 +145,11 @@ function mergeStep(runDir: string) {
         : {};
     const expectations = [
         ...grading.script.map((item) => ({ ...item, grader: "script" })),
-        ...grading.llm.map(({ id, text, grader }) => ({
+        ...grading.llm.map(({ id, text, grader, list }) => ({
             id,
             text,
             grader,
-            ...llmVerdict(id, grader, llm, confirmers),
+            ...llmVerdict(id, grader, list, llm, confirmers),
         })),
     ];
     const order = (id: string) =>
@@ -178,14 +178,19 @@ function mergeStep(runDir: string) {
 
 // The grader passes a statement when it answers yes for each checklist item.
 // A failed `llm` statement fails only when at least 1 of its 2 confirmers
-// agrees. An advisory statement keeps the verdict of the grader.
+// agrees. An advisory statement keeps the verdict of the grader. A
+// statement whose script list is empty passes with an empty checklist.
 function llmVerdict(
     id: string,
     grader: string,
+    list: unknown,
     llm: LlmGrading,
     confirmers: Confirmers,
 ): Verdict {
     const answer = llm.statements.find((item) => item.id === id);
+    const empty = Array.isArray(list) && list.length === 0;
+    if (empty && (answer?.checklist.length ?? 0) === 0)
+        return { passed: true, evidence: "The list of the script is empty." };
     if (!answer || answer.checklist.length === 0)
         throw new GradeError(`llm-grading.json has no checklist for [${id}].`);
     const no = answer.checklist.filter((item) => item.answer !== "yes");
@@ -456,12 +461,11 @@ function claudeRecord(runDir: string): Pick<Run, "messages" | "subagents"> {
                 if (block.type !== "tool_result" || !agent) continue;
                 // A background start returns at once. Its report comes
                 // later, with a task_notification event.
-                if (
-                    resultText(block.content).startsWith("Async agent launched")
-                )
-                    continue;
+                const text = resultText(block.content);
+                if (text.startsWith("Async agent launched")) continue;
                 agent.end = at;
                 agent.error = block.is_error === true;
+                if (!agent.report.trim()) agent.report = handBackReport(text);
             }
         } else if (event.subtype === "task_notification") {
             const agent = agents.get(event.tool_use_id ?? "");
@@ -478,6 +482,22 @@ function claudeRecord(runDir: string): Pick<Run, "messages" | "subagents"> {
             !agent.report.trim(),
     }));
     return { messages: [...messages.values()], subagents };
+}
+
+// The report in the tool result of a Claude Code subagent that has no text
+// event of its own: the lines after the frame line "The report follows:",
+// without the indent of the harness, up to the first line without it.
+function handBackReport(text: string): string {
+    const marker = "The report follows:\n";
+    const at = text.indexOf("[Subagent hand-back]");
+    const start = text.indexOf(marker, at);
+    if (at < 0 || start < 0) return "";
+    const report: string[] = [];
+    for (const line of text.slice(start + marker.length).split("\n")) {
+        if (line && !line.startsWith("  ")) break;
+        report.push(line.slice(2));
+    }
+    return report.join("\n").trim();
 }
 
 function openCodeRecord(

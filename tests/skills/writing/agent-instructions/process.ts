@@ -514,8 +514,12 @@ function confirmerProblems(
     return problems;
 }
 
+// The stderr redirects that a reader command can use.
+const STDERR_REDIRECT = /^>(?:\/dev\/null|&1)(?=$|[\s;|&])/;
+
 // The words of each command in a shell line, or null when the line has a
-// redirect, a command substitution, or a background job.
+// redirect other than 2>/dev/null or 2>&1, a command substitution, or a
+// background job.
 function commands(line: string): string[][] | null {
     const result: string[][] = [[]];
     let word = "";
@@ -539,7 +543,10 @@ function commands(line: string): string[][] | null {
         } else if (char === "'" || char === '"') {
             quote = char;
         } else if (char === ">") {
-            return null;
+            const redirect = STDERR_REDIRECT.exec(line.slice(index));
+            if (word !== "2" || !redirect) return null;
+            word = "";
+            index += redirect[0].length - 1;
         } else if (/[;|&\n]/.test(char)) {
             if (
                 char === "&" &&
@@ -559,18 +566,28 @@ function commands(line: string): string[][] | null {
     return result.filter((words) => words.length > 0);
 }
 
+const READ_COMMANDS = [
+    "cat",
+    "head",
+    "tail",
+    "grep",
+    "rg",
+    "ls",
+    "wc",
+    "diff",
+    "cd",
+    "echo",
+    "pwd",
+];
+
 // A reader command passes only when each of its commands is on the
-// read-only list of the spec.
+// read-only list of the spec. review.md gives the same list in the reader
+// prompt.
 function readOnly(line: string): boolean {
     const list = commands(line);
     if (!list || list.length === 0) return false;
     return list.every(([name, ...args]) => {
-        if (
-            ["cat", "head", "tail", "grep", "rg", "ls", "wc", "diff"].includes(
-                name,
-            )
-        )
-            return true;
+        if (READ_COMMANDS.includes(name)) return true;
         if (name === "sed")
             return (
                 args[0] === "-n" &&
@@ -582,9 +599,19 @@ function readOnly(line: string): boolean {
                     arg,
                 ),
             );
-        if (name === "git")
-            return ["status", "diff", "log", "show"].includes(args[0]);
-        return false;
+        if (name !== "git") return false;
+        const [sub, ...rest] = args;
+        if (sub === "branch")
+            return rest.every((arg) => ["-a", "-r", "--list"].includes(arg));
+        if (sub === "remote") return rest.length === 1 && rest[0] === "-v";
+        return [
+            "status",
+            "diff",
+            "log",
+            "show",
+            "ls-files",
+            "rev-parse",
+        ].includes(sub);
     });
 }
 

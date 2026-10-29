@@ -304,9 +304,26 @@ function movedSections(run: Run): Verdict {
         return { passed: false, evidence: "The run did not change AGENTS.md." };
     }
     const old = sections(start.before);
-    const now = new Map(
-        sections(start.after).map((section) => [section.heading, section]),
-    );
+    const after = sections(start.after);
+    const now = new Map(after.map((section) => [section.heading, section]));
+    // The old place of a section: the section with the same heading, or else
+    // the section after the one that came before it in the starting file,
+    // because loading-rules.md tells the author to write a new heading there.
+    const oldPlace = (section: { heading: string }) => {
+        const same = now.get(section.heading);
+        if (same) return same;
+        const index = old.indexOf(section as (typeof old)[number]);
+        const previous =
+            index > 0
+                ? after.findIndex(
+                      (item) => item.heading === old[index - 1].heading,
+                  )
+                : -1;
+        const place = after[previous + 1];
+        return place && !old.some((item) => item.heading === place.heading)
+            ? place
+            : undefined;
+    };
     const moved = old.filter((section) => {
         const kept = new Set(nonBlank(now.get(section.heading)?.body ?? []));
         return nonBlank(section.body).some((line) => !kept.has(line));
@@ -342,7 +359,7 @@ function movedSections(run: Run): Verdict {
             );
             continue;
         }
-        const place = nonBlank(now.get(section.heading)?.body ?? []);
+        const place = nonBlank(oldPlace(section)?.body ?? []);
         if (
             place.length !== 1 ||
             /^\s*([-*]|\d+\.)\s/.test(place[0]) ||
@@ -452,7 +469,14 @@ export const scriptStatements: Record<string, (run: Run) => Verdict> = {
             )
         )
             problems.push("No file in references/ has the PR template.");
-        if (!has((text) => /fail/i.test(text) && /release branch/i.test(text)))
+        // The rules can name the release branch by its name pattern.
+        if (
+            !has(
+                (text) =>
+                    /fail/i.test(text) &&
+                    /release branch|release\/<version>/i.test(text),
+            )
+        )
             problems.push(
                 "No file in references/ has the If-the-release-fails rules.",
             );
@@ -590,7 +614,16 @@ function glossaryTerms(glossary: string): string[] {
 // The lists that the LLM grader examines item by item, keyed by statement id.
 // A statement with no list here gets null.
 export const statementLists: Record<string, (run: Run) => unknown> = {
-    "8b": (run) => run.pointers,
+    // Moved text is not new: a sentence that is on a removed line, also of a
+    // different file, is not on the list.
+    "8b": (run) => {
+        const removed = run.changes.flatMap((change) =>
+            change.removed.map(({ text }) => text),
+        );
+        return run.pointers.filter(
+            (pointer) => !removed.some((text) => text.includes(pointer.text)),
+        );
+    },
     "9b": (run) => {
         const terms = run.glossary ? glossaryTerms(run.glossary) : [];
         return run.changes.flatMap((change) =>
