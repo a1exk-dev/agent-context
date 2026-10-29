@@ -28,12 +28,21 @@ export const SKILL_DIR = ".claude/skills/agent-instructions";
 export const FORCE_SKILL = "Use the agent-instructions skill for this task.";
 const MAX_JOBS = 5;
 
+// A statement of an output test. grade.ts decides a `script` statement. The
+// grader subagent decides an `llm` or `advisory` statement, and the pass
+// count leaves out an `advisory` statement.
+export type Statement = {
+    id: string;
+    text: string;
+    grader: "script" | "llm" | "advisory";
+};
+
 export type Eval = {
     id: number;
     name: string;
     prompt: string;
     setup: { overlay?: string | null; remove?: string[] };
-    assertions: string[];
+    assertions: Statement[];
     known_mistakes?: unknown;
     disallowed_tools?: string[];
 };
@@ -240,12 +249,13 @@ export function writeTiming(
     });
 }
 
-// Writes eval_metadata.json for the grader in out/eval-<name>/.
+// Writes eval_metadata.json for grade.ts and the grader in out/eval-<name>/.
 export function writeMetadata(evalDir: string, ev: Eval): void {
     writeJson(join(evalDir, "eval_metadata.json"), {
         eval_id: ev.id,
         eval_name: ev.name,
         prompt: ev.prompt,
+        setup: ev.setup,
         assertions: ev.assertions,
         known_mistakes: ev.known_mistakes ?? null,
     });
@@ -326,7 +336,7 @@ type Block = {
 export type ClaudeEvent = {
     type?: string;
     parent_tool_use_id?: string | null;
-    message?: { content?: Block[] | string };
+    message?: { id?: string; content?: Block[] | string };
     result?: string;
     usage?: Record<string, number>;
     total_cost_usd?: number;
@@ -498,16 +508,4 @@ export function toolCalls(event: ClaudeEvent & OpenCodeEvent): ToolCall[] {
         ];
     }
     return [];
-}
-
-// Counts one sentence by "When you count words" in the skill's ste-rules.md.
-// A code span, quoted text, and text in parentheses each count as 1 word.
-export function countWords(sentence: string): number {
-    return sentence
-        .replace(/^\s*(?:\d+\.|[-*])\s+/, "")
-        .replace(/`[^`]*`/g, " x ")
-        .replace(/"[^"]*"|“[^”]*”/g, " x ")
-        .replace(/\([^)]*\)/g, " x ")
-        .split(/\s+/)
-        .filter((word) => /[\p{L}\p{N}]/u.test(word)).length;
 }
