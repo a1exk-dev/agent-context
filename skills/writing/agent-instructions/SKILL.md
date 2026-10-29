@@ -66,7 +66,6 @@ This table gives the known cases where two sources do not agree, and the decisio
 | Case | Decision |
 |---|---|
 | The "Gotchas" section of the specification and the rule "Use no headings that are applicable to all subjects" | When a Skill has a known problem, put it where `references/agent-skills-spec.md` tells you. Write no "Gotchas" section. |
-| ISO words that the reader knows and STE words | Use the STE words. |
 | The specification "give freedom where many approaches work" and the STE modal verbs | Use CAN or a condition that you write in the sentence. |
 | ISO neutral tone and CAUTION | You can use CAUTION. Use no other emphasis. |
 | The rule "Write each pointer as a sentence that gives the file" and the rule "Make no sequences of pointers" | When a reference file refers to a different reference file that `SKILL.md` also points to, give the file name. This text is not a sequence of pointers. |
@@ -118,7 +117,6 @@ The job stops with one report. Use this structure. Do not write a part that has 
 <For an edit job after an agent did not obey an instruction: the previous condition in quotation marks, or "no condition".>
 
 ## Warnings
-- The author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary.
 - <One item for each warning that is applicable.>
 
 ## Extraction candidates
@@ -130,10 +128,10 @@ The job stops with one report. Use this structure. Do not write a part that has 
 
 In the Summary part of the edit job, include each problem that you recorded before you changed the file. Give the cause and the change that corrected it.
 
-The Warnings part always starts with the word-selection warning. Copy it with the same words: "The author selected words from model knowledge and did not examine them in the ASD-STE100 dictionary." Then add one item for each of these warnings that is applicable:
+In the Warnings part, add one item for each of these warnings that is applicable:
 
 - Each finding that you did not correct after round 3, with its rule.
-- Each finding that you rejected, with the rule or the text type that permits the text.
+- Each finding that you rejected, with the rule that permits the text.
 - In the edit job, each finding about text that is not in the changed part.
 - Each problem from the reader test that you cannot correct.
 - Each part that a round 3 correction changed. Also each part that changed after the reader test when you did all 3 review rounds. Write that no reviewer examined it.
@@ -145,7 +143,7 @@ The Warnings part always starts with the word-selection warning. Copy it with th
 - An entry-file layout that gives no copy of the text to a target platform.
 - An Agent instruction that does not load in each session and that no pointer identifies.
 - A file size that is more than its limit after you moved text, or after a new Rule. Give the measured file size and the limit.
-- A word that is not approved, not in the base list, and not in the glossary. Give the recommended STE word or glossary entry.
+- A technical noun that is not in the base list and not in the glossary. Give the recommended glossary entry.
 - A Skill folder that a target platform does not load, with that platform.
 
 Obey these rules for the moved text and the extraction candidates:

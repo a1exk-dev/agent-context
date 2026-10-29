@@ -8,7 +8,7 @@ The checks are in four groups. Each group agrees with one of the four principles
 
 ## When you select the text
 
-- The agent that loads the file is the only reader. Make no changes for a person. STE keeps the text easy to review.
+- The agent that loads the file is the only reader. Make no changes for a person.
 - Each Agent instruction tells when it is applicable. The description of a Skill tells when the Skill is applicable.
 - Use the condition that is applicable to the smallest number of tasks. A rule with no condition is permitted only when it is applicable to all tasks for its file.
 - Files that load in each session contain only short rules and pointers with a condition. Move long text to files that load only when a task makes them necessary.
@@ -31,7 +31,7 @@ The checks are in four groups. Each group agrees with one of the four principles
 - Do not write the condition of the heading again in each rule of the section. A pointer sentence is different, because it gives its condition.
 - No section template is necessary.
 - Use a numbered list for steps in a sequence. Use bullets for rules in no sequence. Use a table to compare items or to give reference data. Put each template and each command of more than one line in a code block. You can put a command of one line, a path, or a path pattern in a code span.
-- Each other heading gives the condition or the topic of its section. Use only heading levels 1, 2, and 3.
+- Each other heading gives the condition or the topic of its section.
 - Use no headings that are applicable to all subjects, for example "Notes" or "Other".
 - Each pointer tells when to read its target. A pointer with no condition is a problem in the self-check.
 - A pointer target is one step from the file that has the pointer. Make no sequences of pointers.

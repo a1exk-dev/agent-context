@@ -1,6 +1,6 @@
 # Self-check and reader test
 
-No check is a script. New subagents do the self-check, because they can examine items that a script cannot examine. Examples are the mood of a sentence, the passive voice, "-ing" technical nouns, and the meanings of words.
+No check is a script. New subagents do the self-check, because they can examine items that a script cannot examine. Examples are the mood of a sentence, the passive voice, and the meanings of words.
 
 ## When you start a subagent
 
@@ -81,16 +81,13 @@ Then write the file size of each file and its limit.
 Give a finding for each text to move in a section that the author can edit.
 Also give a finding for each text that the author moved and that does not obey loading-rules.md. In the Text field, write the pointer of that text in quotation marks. If that text has no pointer, copy the heading of the moved section.
 <For the loading reviewer in the edit job only:> Write the extraction candidates in a different list: section heading, recommended file, and pointer sentence. Put in this list only sections under review that the author cannot edit. Use only the candidates that "When you recommend text to move" in loading-rules.md gives.
-<For the ASD-STE100 reviewer only:> First, write each sentence with its text type
-(procedural, descriptive, or note) and its word count.
+<For the ASD-STE100 reviewer only:> First, write each sentence with its word count.
 For each sentence of 18 words or more, write a number after each word,
 for example "If(1) no(2) commit(3)". The numbers prevent errors in the count near the limit.
 Save this list to a new file in a temporary folder that is not in the project folder.
 You can write only this file.
 In your report, give the path of the list, not the list.
 Then examine each sentence.
-Select words from model knowledge. Do not read the ASD-STE100 dictionary
-or a copy of the standard.
 
 Give each finding in this form:
 - Rule: <the rule number, if the rule has one, and the full text of the rule in quotation marks from the rule files>
@@ -112,7 +109,7 @@ Do not add other notes or questions.
 ### During and after a review round
 
 1. Round 1 examines the full file, also in the edit job. In each prompt, give the parts to review and, in a different line, the parts that the author can edit. In the edit job, put each finding about text that is not in the changed part in a warning.
-2. For each finding, correct your text, or reject the finding. To reject a finding, give the rule or the text type that permits the text. Examples are an "-ing" technical noun and quoted text. Write each finding that you reject in a warning.
+2. For each finding, correct your text, or reject the finding. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
 3. Before you correct your text after a round, save a copy of each file that the round examines. Do not make the copy in a tool call that saves a report. Put the copy in a temporary folder that is not in the project. In rounds 2 and 3, start all 3 reviewers again, but only for the sections that the previous round changed. To find these sections, compare each file and its copy, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
 4. The self-check stops when a round gives no finding in your text that you accept, or after round 3.
 5. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
@@ -121,10 +118,10 @@ Do not add other notes or questions.
 
 Do this check on each round 3 correction. Also do it on each correction after the reader test when you did all 3 review rounds.
 
-1. Send a message that shows each changed sentence with its text type and its word count.
+1. Send a message that shows each changed sentence with its word count.
 2. For each sentence of 18 words or more, write a number after each word, for example "If(1) no(2) commit(3)". The numbers prevent errors in the count near the limit.
 3. For each changed pointer, also write the condition from that sentence in quotation marks. If a pointer has no condition, add the condition to that sentence.
-4. Correct each sentence that is longer than its limit: 20 words for procedural text, 25 words for descriptive text and notes. After each correction, do these checks again.
+4. Correct each sentence that is longer than 25 words. After each correction, do these checks again.
 5. Add a warning that tells that no reviewer examined the text that these corrections changed.
 
 ## After the self-check: the reader test
@@ -196,7 +193,7 @@ Do the checks in this sequence:
 
 1. In each review round, do each review that no subagent did, in the sequence of the reviewer table.
 2. Start each review report with its title, for example "Round 2: ASD-STE100 review". Give each finding in the form of the reviewer prompt. Keep the necessary lists apart from the findings. Give no other items.
-3. In each ASD-STE100 review report, write each sentence, its text type, and its word count on one line. These lines replace the list file of the reviewer prompt.
+3. In each ASD-STE100 review report, write each sentence and its word count on one line. These lines replace the list file of the reviewer prompt.
 4. Correct your text after each round. Then do the next round, or write that the self-check stopped.
 5. After the self-check stops, do each reader task that no subagent did, one after the other. Use these titles, with the number of the reader-test round and the file name:
    - "Reader-test round <n>, <file>, reader task 1 (typical): <task>"

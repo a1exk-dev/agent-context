@@ -18,11 +18,9 @@ Select the folder first, as the section "When you select the folder for the Skil
 
 ## When you write the description
 
-When the description gives an instruction, for example "use this skill", it is procedural text. Each sentence in it then has a maximum of 20 words.
-
 An agent reads the description to know when to load the Skill. When the user gives text for the description, keep its meaning and write it by these rules.
 
-- Tier 2: Write the condition first: "When ..., use this skill." Do not write "Use this skill when ...". STE rule 5.4 puts the condition at the start of the sentence.
+- Tier 2: Write the condition first: "When ..., use this skill." Do not write "Use this skill when ...".
 - Tier 4: Include a minimum of one user phrase in quotation marks, for example "draft a skill". The YAML quotation marks around the value do not show a user phrase. A code span also does not show a user phrase. The word rules are not applicable to quoted text, and it counts as 1 word.
 - Tier 4: Write each condition where the Skill is applicable. Include conditions where the user does not tell the subject of the task. An example is "the agent keeps ignoring ...". Do not write a condition where the Skill is not applicable.
 - Tier 4: Give the files and folders that make the Skill applicable, for example the files that its tasks change.
