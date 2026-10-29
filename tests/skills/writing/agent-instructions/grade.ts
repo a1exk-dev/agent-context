@@ -13,8 +13,10 @@ import { spawnSync } from "node:child_process";
 import {
     existsSync,
     mkdtempSync,
+    readdirSync,
     readFileSync,
     rmSync,
+    statSync,
     writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -217,6 +219,8 @@ function readRun(runDir: string, metadata: Metadata): Run {
     );
     const glossary = glossaryPath(outputs, metadata);
     const checked = runCheckScript(outputs, changes, glossary);
+    const timing = readTiming(runDir);
+    const tmp = savedFiles(join(outputs, "tmp"), timing.tmp_dir);
     const onAdded = <T extends { path: string; line: number }>(item: T) =>
         changes
             .find((change) => change.path === item.path)
@@ -228,11 +232,32 @@ function readRun(runDir: string, metadata: Metadata): Run {
         findings: checked.findings.filter(onAdded),
         pointers: checked.pointers.filter(onAdded),
         glossary: glossary ? readFileSync(glossary, "utf8") : null,
-        workDir: readTiming(runDir).work_dir ?? "",
+        workDir: timing.work_dir ?? "",
         ...runRecord(runDir),
         dropped: (path, reports) =>
             droppedFindings(join(outputs, "files"), path, reports),
+        saved: [...tmp.keys()],
+        readSaved: (path) => {
+            const local = tmp.get(path);
+            return local === undefined ? null : readFileSync(local, "utf8");
+        },
+        blockingCounts: (copy, reports) => blockingCounts(tmp, copy, reports),
     };
+}
+
+// The files that the run left in its TMPDIR, which the eval runner copies to
+// outputs/tmp/: the absolute path that the run used, and the saved copy.
+function savedFiles(
+    folder: string,
+    tmpDir: string | undefined,
+): Map<string, string> {
+    const files = new Map<string, string>();
+    if (!tmpDir || !existsSync(folder)) return files;
+    for (const path of readdirSync(folder, { recursive: true }) as string[]) {
+        const local = join(folder, path);
+        if (statSync(local).isFile()) files.set(`${tmpDir}/${path}`, local);
+    }
+    return files;
 }
 
 // The glossary of the run: CONTEXT.md as the run left it.
@@ -365,6 +390,7 @@ function oldText(change: FileChange): string {
 
 function readTiming(runDir: string): {
     work_dir?: string;
+    tmp_dir?: string;
     session_id?: string;
 } {
     const timing = join(runDir, "timing.json");
@@ -533,26 +559,57 @@ function droppedFindings(
             writeFileSync(reportPath, report);
             return reportPath;
         });
-        const result = spawnSync(
-            process.execPath,
-            [
-                join(SKILL, "scripts/check.ts"),
-                "--reports",
-                "--file",
-                file,
-                ...paths,
-            ],
-            { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
-        );
-        if (result.status !== 0 && result.status !== 1)
-            throw new GradeError(
-                `The report form of the check script failed: ${result.stderr}`,
-            );
-        return (JSON.parse(result.stdout) as { dropped: unknown[] }).dropped
-            .length;
+        return reportForm(file, paths).dropped.length;
     } finally {
         rmSync(folder, { recursive: true });
     }
+}
+
+// The number of blocking findings of each saved reviewer report, from the
+// report form against the saved copy of its round. Each path is one that
+// the run used, and each file is in `saved`.
+function blockingCounts(
+    saved: Map<string, string>,
+    copy: string,
+    reports: string[],
+): Map<string, number> {
+    const local = (path: string) => {
+        const file = saved.get(path);
+        if (file === undefined)
+            throw new GradeError(`The run saved no file ${path}.`);
+        return file;
+    };
+    const { blocking } = reportForm(local(copy), reports.map(local));
+    return new Map(
+        reports.map((report) => [
+            report,
+            blocking.filter((finding) => finding.report === local(report))
+                .length,
+        ]),
+    );
+}
+
+// Runs the report form of the check script on reviewer reports.
+function reportForm(
+    file: string,
+    reports: string[],
+): { blocking: { report: string }[]; dropped: unknown[] } {
+    const result = spawnSync(
+        process.execPath,
+        [
+            join(SKILL, "scripts/check.ts"),
+            "--reports",
+            "--file",
+            file,
+            ...reports,
+        ],
+        { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
+    );
+    if (result.status !== 0 && result.status !== 1)
+        throw new GradeError(
+            `The report form of the check script failed: ${result.stderr}`,
+        );
+    return JSON.parse(result.stdout);
 }
 
 if (import.meta.main) process.exitCode = main(process.argv.slice(2));

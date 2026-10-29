@@ -14,7 +14,7 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, started a maximum of 2 confirmers for each report and 6 for each file after the last reviewer report, and changed no reviewed file before the last report of the round.",
+                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
                     "grader": "script"
                 },
                 {
@@ -24,7 +24,7 @@
                 },
                 {
                     "id": "3a",
-                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list.",
+                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
                     "grader": "script"
                 },
                 {
@@ -117,7 +117,7 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, started a maximum of 2 confirmers for each report and 6 for each file after the last reviewer report, and changed no reviewed file before the last report of the round.",
+                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
                     "grader": "script"
                 },
                 {
@@ -127,7 +127,7 @@
                 },
                 {
                     "id": "3a",
-                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list.",
+                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
                     "grader": "script"
                 },
                 {
@@ -220,7 +220,7 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, started a maximum of 2 confirmers for each report and 6 for each file after the last reviewer report, and changed no reviewed file before the last report of the round.",
+                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
                     "grader": "script"
                 },
                 {
@@ -230,7 +230,7 @@
                 },
                 {
                     "id": "3a",
-                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list.",
+                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
                     "grader": "script"
                 },
                 {
@@ -318,7 +318,7 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, started a maximum of 2 confirmers for each report and 6 for each file after the last reviewer report, and changed no reviewed file before the last report of the round.",
+                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
                     "grader": "script"
                 },
                 {
@@ -328,7 +328,7 @@
                 },
                 {
                     "id": "3a",
-                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list.",
+                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
                     "grader": "script"
                 },
                 {
@@ -410,7 +410,7 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, started a maximum of 2 confirmers for each report and 6 for each file after the last reviewer report, and changed no reviewed file before the last report of the round.",
+                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
                     "grader": "script"
                 },
                 {
@@ -420,7 +420,7 @@
                 },
                 {
                     "id": "3a",
-                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list.",
+                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
                     "grader": "script"
                 },
                 {
@@ -507,7 +507,7 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, started a maximum of 2 confirmers for each report and 6 for each file after the last reviewer report, and changed no reviewed file before the last report of the round.",
+                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
                     "grader": "script"
                 },
                 {
@@ -517,7 +517,7 @@
                 },
                 {
                     "id": "3a",
-                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list.",
+                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
                     "grader": "script"
                 },
                 {
@@ -595,7 +595,7 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, started a maximum of 2 confirmers for each report and 6 for each file after the last reviewer report, and changed no reviewed file before the last report of the round.",
+                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
                     "grader": "script"
                 },
                 {
@@ -605,7 +605,7 @@
                 },
                 {
                     "id": "3a",
-                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list.",
+                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
                     "grader": "script"
                 },
                 {
@@ -689,7 +689,7 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, started a maximum of 2 confirmers for each report and 6 for each file after the last reviewer report, and changed no reviewed file before the last report of the round.",
+                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
                     "grader": "script"
                 },
                 {
@@ -699,7 +699,7 @@
                 },
                 {
                     "id": "3a",
-                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list.",
+                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
                     "grader": "script"
                 },
                 {
@@ -785,7 +785,7 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, started a maximum of 2 confirmers for each report and 6 for each file after the last reviewer report, and changed no reviewed file before the last report of the round.",
+                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
                     "grader": "script"
                 },
                 {
@@ -795,7 +795,7 @@
                 },
                 {
                     "id": "3a",
-                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list.",
+                    "text": "After the last review round, the run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
                     "grader": "script"
                 },
                 {

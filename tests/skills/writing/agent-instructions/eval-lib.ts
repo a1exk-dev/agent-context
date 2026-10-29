@@ -6,6 +6,7 @@
 import {
     copyFileSync,
     cpSync,
+    lstatSync,
     mkdirSync,
     mkdtempSync,
     readFileSync,
@@ -184,12 +185,17 @@ export async function git(cwd: string, args: string[]): Promise<string> {
 
 // Copies project/ to a fresh folder outside this repository, so no AGENTS.md
 // or CLAUDE.md of this repository loads, and commits it as the start point.
+// `tmp` is the empty TMPDIR of the run, next to the project folder. There the
+// run makes its round folder with `mktemp -d`.
 export async function prepare(
     ev: Eval,
     withSkill: boolean,
     prefix: string,
-): Promise<{ work: string; startCommit: string }> {
-    const work = join(mkdtempSync(join(tmpdir(), prefix)), "project");
+): Promise<{ work: string; startCommit: string; tmp: string }> {
+    const run = mkdtempSync(join(tmpdir(), prefix));
+    const work = join(run, "project");
+    const tmp = join(run, "tmp");
+    mkdirSync(tmp);
     cpSync(join(HERE, "project"), work, { recursive: true });
     if (ev.setup.overlay) {
         cpSync(join(HERE, ev.setup.overlay), work, { recursive: true });
@@ -211,7 +217,20 @@ export async function prepare(
         "start",
     ]);
     const startCommit = (await git(work, ["rev-parse", "HEAD"])).trim();
-    return { work, startCommit };
+    return { work, startCommit, tmp };
+}
+
+// Copies the TMPDIR of the run to outputs/tmp/: the copies of each round, the
+// saved reports and closed lists, and the other files of the run. grade.ts
+// examines the vote of each round with them. Only files and folders copy.
+export function collectTmp(tmp: string, outputs: string): void {
+    cpSync(tmp, join(outputs, "tmp"), {
+        recursive: true,
+        filter: (path) => {
+            const stat = lstatSync(path);
+            return stat.isFile() || stat.isDirectory();
+        },
+    });
 }
 
 // Writes outputs/changes.diff and copies each changed file to outputs/files/.

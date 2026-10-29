@@ -35,6 +35,7 @@ type Check = {
     type: string;
     task: string;
     report: string;
+    reportPath: string | null;
     calls: ToolCall[];
     round?: number;
 };
@@ -52,6 +53,7 @@ type Process = {
 const CLASS_LINE = /^\s*(?:<[^>]*>\s*)?Check class: (.+?)\s*$/gm;
 const FILE_LINE = /^\s*(?:File under review|Instruction file): (.+?)\s*$/m;
 const TASK_LINE = /^\s*Task: (.+?)\s*$/m;
+const REPORT_LINE = /^\s*Report: (.+?)\s*$/m;
 
 // The class of a prompt, or null when the prompt has no class line of
 // review.md or more than one.
@@ -90,12 +92,14 @@ function subagentChecks(run: Run, unclassified: string[]): Check[] {
         const path = FILE_LINE.exec(agent.prompt)?.[1];
         const file = path ? local(run, path) : null;
         const task = TASK_LINE.exec(agent.prompt)?.[1] ?? "";
+        const report = REPORT_LINE.exec(agent.prompt)?.[1];
         return [
             {
                 ...agent,
                 class: name,
                 file,
                 task,
+                reportPath: report ? local(run, report) : null,
                 key: `${file} ${name === "reader" ? task : name}`,
             },
         ];
@@ -132,6 +136,7 @@ function savedChecks(run: Run): Check[] {
                     type: "",
                     task: task ?? "",
                     report,
+                    reportPath: null,
                     calls: [],
                     round: Number(round),
                 },
@@ -318,29 +323,192 @@ function roundProblems(run: Run, found: Process, round: Round): string[] {
     return problems;
 }
 
-// The confirmers of a round: 2 for each report with blocking findings or
-// with a wrong step, a maximum of 6 for each file of a review round and 4 for
-// each file of a reader-test round, after the last report of the round.
-function confirmerProblems(round: Round): string[] {
+// A report form run of the main agent: the file under review and the
+// report paths, as the command gives them.
+type FormRun = { file: string; reports: string[]; reader: boolean };
+
+function formRun(run: Run, line: string): FormRun | null {
+    const words = [...line.matchAll(/"([^"]*)"|'([^']*)'|(\S+)/g)].map(
+        (match) => match[1] ?? match[2] ?? match[3],
+    );
+    const first = words.findIndex((word) => word.endsWith("check.ts"));
+    if (first < 0) return null;
+    const args: string[] = [];
+    for (const word of words.slice(first + 1)) {
+        if (/^(\d?>|\||&&|;)/.test(word)) break;
+        args.push(word);
+    }
+    if (!args.includes("--reports")) return null;
+    const form: FormRun = { file: "", reports: [], reader: false };
+    for (let index = 0; index < args.length; index++) {
+        const arg = args[index];
+        if (arg === "--reports") continue;
+        if (arg.startsWith("--")) {
+            const value = args[++index] ?? "";
+            if (arg === "--file") form.file = local(run, value);
+            if (arg === "--tasks") form.reader = true;
+            continue;
+        }
+        form.reports.push(local(run, arg));
+    }
+    return form;
+}
+
+// The round folder of a saved file: `round-<n>/` for a review round and
+// `reader-round-<n>/` for a reader-test round, in the folder of the run.
+function roundFolder(
+    path: string,
+): { folder: string; kind: Kind; number: number } | null {
+    const match = /^(.*\/(reader-)?round-(\d+))\/./.exec(path);
+    if (!match) return null;
+    return {
+        folder: match[1],
+        kind: match[2] ? "reader" : "review",
+        number: Number(match[3]),
+    };
+}
+
+// A saved report of a round with its file and the number that its
+// confirmers decide: blocking findings, or "no" answers of a closed list.
+type SavedReport = { round: number; file: string | null; count: number };
+
+// The saved reports of all rounds of one kind. Review rounds: each report of
+// a report form run, with the blocking findings of the report form against
+// the copy of its round. Reader-test rounds: each closed list, with its "no"
+// answers. A later report form run of a report replaces the earlier one.
+function savedReports(run: Run, found: Process, kind: Kind) {
+    const problems: string[] = [];
+    const reports = new Map<string, SavedReport>();
+    if (kind === "reader") {
+        for (const path of run.saved) {
+            const place = roundFolder(path);
+            if (place?.kind !== "reader") continue;
+            if (!basename(path).startsWith("closed-list-")) continue;
+            const text = run.readSaved(path) ?? "";
+            reports.set(path, {
+                round: place.number,
+                file: null,
+                count: [...text.matchAll(/^\s*\d+\.\s*[*"']*no\b/gim)].length,
+            });
+        }
+        return { problems, reports };
+    }
+    for (const call of found.calls) {
+        if (!isBash(call)) continue;
+        const form = formRun(run, command(call));
+        if (!form || form.reader) continue;
+        for (const [folder, paths] of groupBy(
+            form.reports,
+            (path) => roundFolder(path)?.folder ?? "",
+        )) {
+            const place = roundFolder(paths[0]);
+            if (place?.kind !== "review") {
+                for (const path of paths)
+                    problems.push(
+                        `The report file ${path} is not in a round-<n> folder.`,
+                    );
+                continue;
+            }
+            const name = `Review round ${place.number}`;
+            const present = paths.filter((path) => {
+                if (run.readSaved(path) !== null) return true;
+                problems.push(`${name}: the report file ${path} is missing.`);
+                return false;
+            });
+            const copy = `${folder}/${form.file}`;
+            if (run.readSaved(copy) === null) {
+                problems.push(`${name}: the copy ${copy} is missing.`);
+                continue;
+            }
+            if (present.length === 0) continue;
+            const counts = run.blockingCounts(copy, present);
+            for (const path of present)
+                reports.set(path, {
+                    round: place.number,
+                    file: form.file,
+                    count: counts.get(path) ?? 0,
+                });
+        }
+    }
+    return { problems, reports };
+}
+
+// The vote of a round. Review round: the report form has the report of each
+// reviewer, and each report with blocking findings has 2 confirmers that
+// give it in their Report line. Reader-test round: 2 closed lists for each
+// file, and each closed list with a "no" has 2 confirmers. A report without
+// blocking findings or "no" answers has no confirmer. A round has a maximum
+// of 6 confirmers for each file of a review round and 4 for each file of a
+// reader-test round, after the last report of the round. A round that the
+// run did itself, or a report whose 2 confirmers failed, has no vote.
+function confirmerProblems(
+    round: Round,
+    reports: Map<string, SavedReport>,
+): string[] {
     const problems: string[] = [];
     const name = label(round);
+    const review = round.kind === "review";
+    const ofRound = [...reports].filter(
+        ([, report]) => report.round === round.number,
+    );
+    const mains = subagentsOf(round).filter(
+        (check) => check.class !== "confirmer" && !check.failed,
+    );
+    const files = new Set(mains.map((check) => `${check.file}`));
+    if (review) {
+        for (const file of files) {
+            const expected = mains.filter(
+                (check) => `${check.file}` === file,
+            ).length;
+            const given = ofRound.filter(
+                ([, report]) => report.file === file,
+            ).length;
+            if (given < expected)
+                problems.push(
+                    `${name}, ${file}: the report form has ${given} of the ${expected} reviewer reports.`,
+                );
+        }
+    } else if (ofRound.length < 2 * files.size) {
+        problems.push(
+            `${name}: ${ofRound.length} closed lists for ${files.size} files. Each file has 2 typical tasks.`,
+        );
+    }
     const confirmers = round.checks.filter(
         (check) => check.class === "confirmer",
     );
-    const lastReport = Math.max(...mainChecks(round).map((check) => check.end));
-    const limit = round.kind === "review" ? 6 : 4;
-    for (const [file, checks] of groupBy(
-        confirmers,
-        (check) => `${check.file}`,
-    )) {
-        const reports = mainChecks(round).filter(
-            (check) =>
-                !check.failed && (check.file === file || check.file === null),
-        ).length;
-        const count = checks.length;
-        if (count % 2 !== 0 || count > limit || count > 2 * reports)
-            problems.push(`${name}: ${file} has ${count} confirmers.`);
+    for (const check of confirmers) {
+        const report = check.reportPath ? reports.get(check.reportPath) : null;
+        if (!check.reportPath)
+            problems.push(`${name}: a confirmer has no Report line.`);
+        else if (report?.round !== round.number)
+            problems.push(
+                `${name}: a confirmer gives ${check.reportPath}, which is not a saved ${review ? "report" : "closed list"} of this round.`,
+            );
     }
+    const selfDone = round.checks.some((check) => check.message === null);
+    for (const [path, report] of ofRound) {
+        const started = confirmers.filter((check) => check.reportPath === path);
+        const ok = started.filter((check) => !check.failed).length;
+        const noVote = selfDone || started.length - ok >= 2;
+        if (
+            (report.count > 0 && ok < 2 && !noVote) ||
+            (report.count === 0 && started.length > 0) ||
+            ok > 2
+        )
+            problems.push(
+                review
+                    ? `${name}: the report ${path} has ${report.count} blocking findings and ${started.length} confirmers.`
+                    : `${name}: the closed list ${path} has ${report.count} "no" answers and ${started.length} confirmers.`,
+            );
+    }
+    const limit = review ? 6 : 4;
+    for (const [file, checks] of groupBy(
+        confirmers.filter((check) => !check.failed),
+        (check) => `${check.file}`,
+    ))
+        if (checks.length > limit)
+            problems.push(`${name}: ${file} has ${checks.length} confirmers.`);
+    const lastReport = Math.max(...mainChecks(round).map((check) => check.end));
     if (confirmers.some((check) => check.start < lastReport))
         problems.push(`${name}: a confirmer starts before the last report.`);
     return problems;
@@ -442,22 +610,24 @@ const verdict = (problems: string[], ok: string): Verdict =>
 
 export function reviewers(run: Run): Verdict {
     const found = findRounds(run);
-    const problems = [...found.unclassified];
+    const saved = savedReports(run, found, "review");
+    const problems = [...found.unclassified, ...saved.problems];
     if (found.review.length === 0) problems.push("No review round.");
     for (const round of found.review)
         problems.push(
             ...roundProblems(run, found, round),
-            ...confirmerProblems(round),
+            ...confirmerProblems(round, saved.reports),
         );
     return verdict(
         problems,
-        `${found.review.length} review rounds with 3 reviewers for each file, in groups of 3, and no file change before the last report.`,
+        `${found.review.length} review rounds with 3 reviewers for each file, in groups of 3, 2 confirmers for each saved report with blocking findings, and no file change before the last report.`,
     );
 }
 
 export function readers(run: Run): Verdict {
     const found = findRounds(run);
-    const problems = [...found.unclassified];
+    const saved = savedReports(run, found, "reader");
+    const problems = [...found.unclassified, ...saved.problems];
     const [first] = found.reader;
     if (!first) problems.push("No reader-test round.");
     else if (
@@ -469,12 +639,12 @@ export function readers(run: Run): Verdict {
     for (const round of found.reader)
         problems.push(
             ...roundProblems(run, found, round),
-            ...confirmerProblems(round),
+            ...confirmerProblems(round, saved.reports),
             ...readerWrites(round),
         );
     return verdict(
         problems,
-        `${found.reader.length} reader-test rounds with 3 read-only readers for each file, after the review rounds.`,
+        `${found.reader.length} reader-test rounds with 3 read-only readers for each file, after the review rounds, and 2 confirmers for each saved closed list with a "no".`,
     );
 }
 

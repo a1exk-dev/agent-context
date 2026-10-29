@@ -5,6 +5,7 @@ import { mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
     collectChanges,
+    collectTmp,
     completedSession,
     type Eval,
     integerOption,
@@ -107,7 +108,7 @@ async function run(ev: Eval, options: Options): Promise<string> {
     mkdirSync(runDir, { recursive: true });
     mkdirSync(outputs);
     mkdirSync(join(runDir, "sessions"));
-    const { work, startCommit } = await prepare(
+    const { work, startCommit, tmp } = await prepare(
         ev,
         true,
         `ai-eval-${String(ev.id).padStart(2, "0")}-with_skill-`,
@@ -133,10 +134,13 @@ async function run(ev: Eval, options: Options): Promise<string> {
         ],
         {
             cwd: work,
-            env: openCodeEnv(options.model, work, {
-                noSubagents: Boolean(ev.disallowed_tools?.length),
-                forceSkill: true,
-            }),
+            env: {
+                ...openCodeEnv(options.model, work, {
+                    noSubagents: Boolean(ev.disallowed_tools?.length),
+                    forceSkill: true,
+                }),
+                TMPDIR: tmp,
+            },
             stdout: Bun.file(transcript),
             stderr: Bun.file(join(runDir, "stderr.txt")),
         },
@@ -178,8 +182,10 @@ async function run(ev: Eval, options: Options): Promise<string> {
         events.findLast((event) => event.type === "text")?.part?.text ?? "";
     writeFileSync(join(outputs, "report.md"), report);
     await collectChanges(work, startCommit, outputs);
+    collectTmp(tmp, outputs);
     writeTiming(runDir, rendered.tokens, duration, {
         work_dir: work,
+        tmp_dir: tmp,
         platform: "OpenCode",
         model: options.model,
         session_id: sessionId,

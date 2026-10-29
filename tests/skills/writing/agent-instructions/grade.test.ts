@@ -95,8 +95,17 @@ function runFolder(
     );
     writeFileSync(
         join(runDir, "timing.json"),
-        JSON.stringify({ work_dir: WORK, session_id: record.sessionId }),
+        JSON.stringify({
+            work_dir: WORK,
+            tmp_dir: TMP,
+            session_id: record.sessionId,
+        }),
     );
+    for (const [path, text] of Object.entries(record.saved ?? {})) {
+        const saved = join(outputs, "tmp", path.slice(TMP.length + 1));
+        mkdirSync(dirname(saved), { recursive: true });
+        writeFileSync(saved, text);
+    }
     if (record.sessions) {
         mkdirSync(join(runDir, "sessions"));
         for (const [id, session] of Object.entries(record.sessions))
@@ -269,14 +278,18 @@ describe("grade script, merge step", () => {
     });
 });
 
-// The project folder of the saved runs.
+// The project folder of the saved runs, the TMPDIR of the runs, and the
+// folder that the run made with `mktemp -d` for the rounds.
 const WORK = "/work/project";
+const TMP = "/work/tmp";
+const DIR = `${TMP}/tmp.Ab12Cd34`;
 const CHECK = `node ${WORK}/.claude/skills/agent-instructions/scripts/check.ts`;
 
 type RunRecord = {
     transcript?: unknown[];
     sessions?: Record<string, unknown>;
     sessionId?: string;
+    saved?: Record<string, string>;
 };
 type Call = { name: string; input: Record<string, unknown> };
 type AgentOptions = {
@@ -301,13 +314,22 @@ const reviewerPrompt = (name: string, file = "AGENTS.md") =>
     `You are the ${name} for an Agent instruction.\nCheck class: ${name}\nThis task is read-only.\n\nFile under review: ${WORK}/${file}\n`;
 const readerPrompt = (task: string, file = "AGENTS.md") =>
     `Check class: reader\nThis task is a dry run.\n\nInstruction file: ${WORK}/${file}\nProject folder: ${WORK}\nTask: ${task}\n`;
-const confirmerPrompt = (file = "AGENTS.md") =>
-    `Check class: confirmer\nThis task is read-only.\n\nFile under review: ${WORK}/${file}\nFindings: 1. "rule" "text"\n`;
+const confirmerPrompt = (report: string, file = "AGENTS.md") =>
+    `Check class: confirmer\nThis task is read-only.\n\nFile under review: ${WORK}/${file}\nReport: ${report}\nFindings: 1. "rule" "text"\n`;
+const stepConfirmerPrompt = (report: string, file = "AGENTS.md") =>
+    `Check class: confirmer\nThis task is read-only.\n\nInstruction file: ${WORK}/${file}\nProject folder: ${WORK}\nTask: ${TASKS[0]}\nReport: ${report}\nSteps: 1. "Run make test." "Run \`make test\`."\n`;
 
 // A reviewer report with one finding. Its Text quote is not in the file, so
 // the report form drops it.
 const REPORT =
     'Blocking checklist:\n\n- Rule: "Each sentence has a maximum of 25 words."\n- Text: "This text is not in the file."\n- Problem: The sentence is long.\n- Correction: Write a short sentence.\n';
+// A reviewer report with one blocking finding whose quotes are in the copy
+// of the round and in the rule files.
+const BLOCKING_REPORT =
+    '- Rule: 3.6 "Use the active voice (rule 3.6)."\n- Text: "Use pnpm."\n- Problem: The sentence is in the passive voice.\n- Correction: Use pnpm.\n';
+// The closed lists of the 2 typical reader tasks.
+const CLOSED_YES = '1. yes: "Run make test." - "Run `make test`."\n';
+const CLOSED_NO = '1. no: "Run make test." - "Run `make test`."\n';
 const READER_REPORT =
     'Part 1: Steps\n1. Run make test.\nPart 2: Used parts\n1. "Run `make test`."\nPart 3: Unclear parts\nNone\n';
 const read = (file = "AGENTS.md"): Call => ({
@@ -320,12 +342,14 @@ type Builder = {
     agents(prompts: string[], options?: AgentOptions): Builder;
     bash(command: string): Builder;
     edit(file?: string): Builder;
+    save(path: string, text: string): Builder;
     record(): RunRecord;
 };
 
 // A Claude Code transcript.jsonl.
 function claude(): Builder {
     const events: unknown[] = [];
+    const saved: Record<string, string> = {};
     let next = 0;
     const id = (prefix: string) => `${prefix}-${++next}`;
     const assistant = (parent: string | null, content: unknown[]) =>
@@ -404,7 +428,11 @@ function claude(): Builder {
         bash: (command) => call("Bash", { command }),
         edit: (file = "AGENTS.md") =>
             call("Edit", { file_path: `${WORK}/${file}` }),
-        record: () => ({ transcript: events }),
+        save(path, text) {
+            saved[path] = text;
+            return builder;
+        },
+        record: () => ({ transcript: events, saved }),
     };
     return builder;
 }
@@ -413,6 +441,7 @@ function claude(): Builder {
 function openCode(): Builder {
     const messages: unknown[] = [];
     const sessions: Record<string, unknown> = {};
+    const saved: Record<string, string> = {};
     let time = 1000;
     const part = (tool: string, input: Record<string, unknown>) => ({
         type: "tool",
@@ -486,7 +515,12 @@ function openCode(): Builder {
         bash: (command) => call("bash", { command }),
         edit: (file = "AGENTS.md") =>
             call("edit", { filePath: `${WORK}/${file}` }),
+        save(path, text) {
+            saved[path] = text;
+            return builder;
+        },
         record: () => ({
+            saved,
             sessionId: "ses_main",
             sessions: {
                 ses_main: {
@@ -500,32 +534,79 @@ function openCode(): Builder {
     return builder;
 }
 
-const reportForm = (file = "AGENTS.md") =>
-    `${CHECK} --reports --file ${WORK}/${file} /tmp/r/loading.md /tmp/r/ste.md /tmp/r/iso.md > /tmp/r/form.json`;
-const readerForm = (file = "AGENTS.md") =>
-    `${CHECK} --reports --file ${WORK}/${file} --copy /tmp/r/copy.md --tasks /tmp/r/tasks.json /tmp/r/1.md /tmp/r/2.md /tmp/r/3.md > /tmp/r/reader.json`;
+// The text of AGENTS.md before the run, and the copy of each round.
+const BEFORE = agents("Use pnpm.");
 
-// One review round of one file, as review.md tells: the check script, the
-// 3 reviewers in one message, the report form, then the correction.
-const reviewRound = (run: Builder, file = "AGENTS.md") =>
-    run
-        .bash(
-            `${CHECK} ${WORK}/${file} --project ${WORK} --glossary none > /tmp/r/script.json`,
-        )
+const reviewReports = (round: number) =>
+    REVIEWERS.map((_, index) => `${DIR}/round-${round}/report-${index + 1}.md`);
+const reportForm = (file = "AGENTS.md", round = 1) =>
+    `${CHECK} --reports --file ${WORK}/${file} ${reviewReports(round).join(" ")} > ${DIR}/round-${round}/form.json`;
+const readerReports = (round: number) =>
+    TASKS.map(
+        (_, index) => `${DIR}/reader-round-${round}/reader-${index + 1}.md`,
+    );
+const closedLists = (round: number) =>
+    [1, 2].map((task) => `${DIR}/reader-round-${round}/closed-list-${task}.md`);
+const readerForm = (file = "AGENTS.md", round = 1) =>
+    `${CHECK} --reports --file ${WORK}/${file} --copy ${DIR}/copy.md --tasks ${DIR}/tasks.json ${readerReports(round).join(" ")} > ${DIR}/reader-round-${round}/form.json`;
+
+// Saves the copy of a review round and its reviewer reports, as review.md
+// tells.
+function saveReviewRound(
+    run: Builder,
+    round = 1,
+    reports = [REPORT, REPORT, REPORT],
+    file = "AGENTS.md",
+) {
+    run.save(`${DIR}/round-${round}/${file}`, BEFORE);
+    reviewReports(round).forEach((path, index) => {
+        run.save(path, reports[index]);
+    });
+}
+
+type RoundOptions = {
+    round?: number;
+    file?: string;
+    reports?: string[];
+    closed?: string[];
+    calls?: Call[];
+    vote?: (run: Builder) => void;
+};
+
+// One review round of one file, as review.md tells: the copy, the check
+// script, the 3 reviewers in one message, the saved reports and the report
+// form, the vote, then the correction.
+const reviewRound = (run: Builder, options: RoundOptions = {}) => {
+    const { round = 1, file = "AGENTS.md" } = options;
+    saveReviewRound(run, round, options.reports, file);
+    run.bash(
+        `${CHECK} ${WORK}/${file} --project ${WORK} --glossary none > ${DIR}/round-${round}/script.json`,
+    )
         .agents(REVIEWERS.map((name) => reviewerPrompt(name, file)))
-        .bash(reportForm(file))
-        .edit(file);
+        .bash(reportForm(file, round));
+    options.vote?.(run);
+    return run.edit(file);
+};
 
-// One reader-test round of one file: the 3 readers in one message, the
-// report form for reader reports, then the correction.
-const readerRound = (run: Builder, calls?: Call[], file = "AGENTS.md") =>
-    run
-        .agents(
-            TASKS.map((task) => readerPrompt(task, file)),
-            { report: READER_REPORT, calls },
-        )
-        .bash(readerForm(file))
-        .edit(file);
+// One reader-test round of one file: the copy, the 3 readers in one message,
+// the saved reports and the report form for reader reports, the closed
+// lists, the vote, then the correction.
+const readerRound = (run: Builder, options: RoundOptions = {}) => {
+    const { round = 1, file = "AGENTS.md" } = options;
+    run.save(`${DIR}/reader-round-${round}/${file}`, BEFORE);
+    run.agents(
+        TASKS.map((task) => readerPrompt(task, file)),
+        { report: READER_REPORT, calls: options.calls },
+    );
+    for (const path of readerReports(round)) run.save(path, READER_REPORT);
+    run.bash(readerForm(file, round));
+    const closed = options.closed ?? [CLOSED_YES, CLOSED_YES];
+    closedLists(round).forEach((path, index) => {
+        if (closed[index] !== undefined) run.save(path, closed[index]);
+    });
+    options.vote?.(run);
+    return run.edit(file);
+};
 
 const PROCESS = ["1", "2", "3a", "3c", "4"];
 
@@ -580,10 +661,15 @@ describe("process statements", () => {
         it(`fails [3a] for a ${platform} reader that runs a Bash redirect`, () => {
             const run = start();
             reviewRound(run);
-            readerRound(run, [
-                read(),
-                { name: "Bash", input: { command: "cat AGENTS.md > /tmp/x" } },
-            ]);
+            readerRound(run, {
+                calls: [
+                    read(),
+                    {
+                        name: "Bash",
+                        input: { command: "cat AGENTS.md > /tmp/x" },
+                    },
+                ],
+            });
             const verdicts = processVerdicts(run.record());
             expect(verdicts["3a"].passed).toBe(false);
             expect(verdicts["3a"].evidence).toContain(
@@ -595,30 +681,32 @@ describe("process statements", () => {
     it("fails [3a] for a reader that writes a file", () => {
         const run = claude();
         reviewRound(run);
-        readerRound(run, [
-            { name: "Write", input: { file_path: "/tmp/notes.md" } },
-        ]);
+        readerRound(run, {
+            calls: [{ name: "Write", input: { file_path: "/tmp/notes.md" } }],
+        });
         expect(processVerdicts(run.record())["3a"].passed).toBe(false);
     });
 
     it("passes [3a] for a reader that runs only read-only commands", () => {
         const run = claude();
         reviewRound(run);
-        readerRound(run, [
-            {
-                name: "Bash",
-                input: {
-                    command:
-                        "grep -n release AGENTS.md | head -5; sed -n '1,20p' AGENTS.md && git log --oneline -3",
+        readerRound(run, {
+            calls: [
+                {
+                    name: "Bash",
+                    input: {
+                        command:
+                            "grep -n release AGENTS.md | head -5; sed -n '1,20p' AGENTS.md && git log --oneline -3",
+                    },
                 },
-            },
-        ]);
+            ],
+        });
         expect(processVerdicts(run.record())["3a"].passed).toBe(true);
     });
 
     it("fails [4] for a run with 4 review rounds", () => {
         const run = claude();
-        for (let round = 0; round < 4; round++) reviewRound(run);
+        for (let round = 1; round <= 4; round++) reviewRound(run, { round });
         readerRound(run);
         const verdicts = processVerdicts(run.record());
         expect(verdicts["4"]).toMatchObject({
@@ -640,6 +728,7 @@ describe("process statements", () => {
 
     it("fails [1] for a file change before the last report of a round", () => {
         const run = claude();
+        saveReviewRound(run);
         run.agents(
             REVIEWERS.map((name) => reviewerPrompt(name)),
             { during: () => run.edit() },
@@ -656,33 +745,127 @@ describe("process statements", () => {
 
     it("fails [1] for reviewers of one file in different messages", () => {
         const run = claude();
+        saveReviewRound(run);
         for (const name of REVIEWERS) run.agents([reviewerPrompt(name)]);
         run.bash(reportForm()).edit();
         readerRound(run);
         expect(processVerdicts(run.record())["1"].passed).toBe(false);
     });
 
-    it("passes [1] for 2 confirmers after the report form, and fails it for 3", () => {
-        const withConfirmers = (count: number) => {
-            const run = claude();
-            run.agents(REVIEWERS.map((name) => reviewerPrompt(name)))
-                .bash(reportForm())
-                .agents(Array(count).fill(confirmerPrompt()), {
-                    report: "1. yes: The sentence is long.",
-                })
-                .edit();
-            readerRound(run);
-            return processVerdicts(run.record())["1"];
-        };
-        expect(withConfirmers(2).passed).toBe(true);
-        expect(withConfirmers(3)).toMatchObject({
+    // A review round whose loading report has a blocking finding, with
+    // `count` confirmers for that report and `others` for the next report.
+    const blockingVote = (count: number, others = 0) => {
+        const run = claude();
+        const [loading, ste] = reviewReports(1);
+        reviewRound(run, {
+            reports: [BLOCKING_REPORT, REPORT, REPORT],
+            vote: (round) =>
+                round.agents(
+                    [
+                        ...Array(count).fill(confirmerPrompt(loading)),
+                        ...Array(others).fill(confirmerPrompt(ste)),
+                    ],
+                    { report: "1. yes: The sentence is passive." },
+                ),
+        });
+        readerRound(run);
+        return processVerdicts(run.record())["1"];
+    };
+
+    it("passes [1] for 2 confirmers of a report with a blocking finding", () => {
+        expect(blockingVote(2)).toMatchObject({ passed: true });
+    });
+
+    it("fails [1] for 1 confirmer of a report with a blocking finding", () => {
+        expect(blockingVote(1)).toMatchObject({
             passed: false,
-            evidence: expect.stringContaining("3 confirmers"),
+            evidence: expect.stringContaining(
+                `Review round 1: the report ${DIR}/round-1/report-1.md has 1 blocking findings and 1 confirmers.`,
+            ),
+        });
+    });
+
+    it("fails [1] for a confirmer of a report with no blocking finding", () => {
+        expect(blockingVote(2, 1)).toMatchObject({
+            passed: false,
+            evidence: expect.stringContaining(
+                `Review round 1: the report ${DIR}/round-1/report-2.md has 0 blocking findings and 1 confirmers.`,
+            ),
+        });
+    });
+
+    it("fails [1] when a report file of the report form is missing", () => {
+        const run = claude();
+        saveReviewRound(run);
+        run.agents(REVIEWERS.map((name) => reviewerPrompt(name)))
+            .bash(reportForm().replace("report-3.md", "report-9.md"))
+            .edit();
+        readerRound(run);
+        expect(processVerdicts(run.record())["1"]).toMatchObject({
+            passed: false,
+            evidence: expect.stringContaining(
+                `Review round 1: the report file ${DIR}/round-1/report-9.md is missing.`,
+            ),
+        });
+    });
+
+    // A reader-test round whose first closed list has `first`, with `count`
+    // confirmers for that list and `others` for the second list.
+    const stepVote = (first: string, count: number, others = 0) => {
+        const run = claude();
+        const [one, two] = closedLists(1);
+        reviewRound(run);
+        readerRound(run, {
+            closed: [first, CLOSED_YES],
+            vote: (round) =>
+                round.agents(
+                    [
+                        ...Array(count).fill(stepConfirmerPrompt(one)),
+                        ...Array(others).fill(stepConfirmerPrompt(two)),
+                    ],
+                    { report: "1. yes: The step does not run the tests." },
+                ),
+        });
+        return processVerdicts(run.record())["3a"];
+    };
+
+    it("passes [3a] for 2 confirmers of a closed list with a no", () => {
+        expect(stepVote(CLOSED_NO, 2)).toMatchObject({ passed: true });
+    });
+
+    it("fails [3a] for 1 confirmer of a closed list with a no", () => {
+        expect(stepVote(CLOSED_NO, 1)).toMatchObject({
+            passed: false,
+            evidence: expect.stringContaining(
+                `Reader-test round 1: the closed list ${DIR}/reader-round-1/closed-list-1.md has 1 "no" answers and 1 confirmers.`,
+            ),
+        });
+    });
+
+    it("fails [3a] for a confirmer of a closed list with no no", () => {
+        expect(stepVote(CLOSED_NO, 2, 1)).toMatchObject({
+            passed: false,
+            evidence: expect.stringContaining(
+                `Reader-test round 1: the closed list ${DIR}/reader-round-1/closed-list-2.md has 0 "no" answers and 1 confirmers.`,
+            ),
+        });
+    });
+
+    it("fails [3a] when a closed list is missing", () => {
+        const run = claude();
+        reviewRound(run);
+        readerRound(run, { closed: [CLOSED_YES] });
+        expect(processVerdicts(run.record())["3a"]).toMatchObject({
+            passed: false,
+            evidence: expect.stringContaining(
+                "Reader-test round 1: 1 closed lists for 1 files. Each file has 2 typical tasks.",
+            ),
         });
     });
 
     it("passes [1] when the run starts one new subagent for a failed reviewer", () => {
         const run = claude();
+        saveReviewRound(run);
         run.agents(
             REVIEWERS.map((name) => reviewerPrompt(name)),
             { failed: [2] },

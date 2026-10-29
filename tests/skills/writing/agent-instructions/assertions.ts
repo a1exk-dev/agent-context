@@ -71,7 +71,11 @@ export type Subagent = {
 // main agent, each with its tool calls. `workDir` is the absolute project
 // folder of the run. `dropped` runs the report form of the check script on
 // reports against a changed file and gives the number of dropped findings,
-// or null when the run deleted the file or there is no report.
+// or null when the run deleted the file or there is no report. `saved` gives
+// each file that the run left in its TMPDIR, by the absolute path that the
+// run used, and `readSaved` gives the text of one of them, or null.
+// `blockingCounts` runs the report form on saved reports against a saved
+// copy and gives the number of blocking findings of each report.
 export type Run = {
     prompt: string;
     knownMistakes: unknown;
@@ -83,6 +87,9 @@ export type Run = {
     messages: { id: string; calls: MainCall[] }[];
     subagents: Subagent[];
     dropped: (path: string, reports: string[]) => number | null;
+    saved: string[];
+    readSaved: (path: string) => string | null;
+    blockingCounts: (copy: string, reports: string[]) => Map<string, number>;
 };
 
 export type Verdict = { passed: boolean; evidence: string };
