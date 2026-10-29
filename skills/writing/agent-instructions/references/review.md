@@ -11,7 +11,7 @@ The check script of this skill examines each rule that ends with "(script check)
 2. Tell the platform clearly to start a new subagent with an empty context window. Start each subagent from the main agent, because a subagent on Codex or OpenCode cannot start subagents.
 3. Put the full task and its limits in the prompt. No platform can make a subagent read-only from a `SKILL.md` file. Let the subagent use the shell, because Codex uses the shell to read files.
 4. Give each subagent the absolute paths of the reference files that it uses and of the file that it examines. The reference files are in the `references/` folder next to the `SKILL.md` file of this skill.
-5. Start a new subagent for each check: each reviewer in each round, and each reader task. Do not give a second check to a subagent, because that subagent knows the previous text and findings.
+5. Start a new subagent for each check: each reviewer and each confirmer in each round, and each reader task. Do not give a second check to a subagent, because that subagent knows the previous text and findings.
 6. Start the subagents of each round as "When you do a round" tells you.
 
 If no tool starts a subagent, go to the section "When no subagent is available".
@@ -61,6 +61,9 @@ Copy this prompt for each reviewer. Replace only the placeholders. Do not change
 
 ```text
 You are the <name> reviewer for an Agent instruction: a file that an agent reads as instructions.
+<For the loading reviewer only:> Check class: loading reviewer
+<For the ASD-STE100 reviewer only:> Check class: ASD-STE100 reviewer
+<For the ISO 24495-1 reviewer only:> Check class: ISO 24495-1 reviewer
 This task is read-only. Only read files. Do not edit, make, move, or delete files.
 Do not run commands that change files, Git data, or external services.
 
@@ -95,6 +98,13 @@ In "When you select the text" in plain-language-checks.md, skip the rule about l
 In "When you select the words and the tone", skip the rule about one term for each item. The ASD-STE100 reviewer examines it.
 <For the loading reviewer in the edit job only:> Write the extraction candidates in a different list: section heading, recommended file, and pointer sentence. Put in this list only sections under review that the author cannot edit. Use only the candidates that "When you recommend text to move" in loading-rules.md gives.
 
+Start the report with the blocking checklist, in this form:
+Blocking checklist:
+1. "<a rule that ends with "(blocking)", word for word>" - <each place in the sections under review that does not obey the rule: its line and its text in quotation marks, or "none">
+Put each rule of your rule files that ends with "(blocking)" in the checklist. Do not put a rule that you skip in the checklist.
+For the checklist, examine only the sections under review.
+After the checklist, give one finding for each place in the checklist. Then give the findings for the other rules.
+
 Give each finding in this form:
 - Rule: <the rule number, if the rule has one, and the full text of the rule in quotation marks from the rule files>
 - Text: "<the words from the file in quotation marks>"
@@ -117,14 +127,42 @@ Do not add other notes or questions.
 
 1. Round 1 examines the full file, also in the edit job. In each prompt, give the parts to review and, in a different line, the parts that the author can edit. In the edit job, put each finding about text that is not in the changed part in a warning.
 2. After the last report of the round, save each reviewer report to a new file in a temporary folder that is not in the project. Then run the report form of the check script for each file of the round, as "When you run the check script" in `SKILL.md` tells you. Use only the findings in the blocking list and the advisory list. Do not use the findings in the dropped list.
-3. For each finding, correct your text, or reject the finding. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
-4. Before you correct your text after a round, save a copy of each file that the round examines. Do not make the copy in a tool call that saves a report. Put the copy in a temporary folder that is not in the project. In rounds 2 and 3, start all 3 reviewers again, but only for the sections that the previous round changed. To find these sections, compare each file and its copy, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
-5. The self-check stops when a round gives no finding in your text that you accept, or after round 3.
-6. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
+3. If a report has one or more findings in the blocking list, do the vote in "When a report has blocking findings". Before you get all confirmer reports of the round, do not correct a file.
+4. The findings to use are the script findings, the confirmed blocking findings, and the findings in the advisory list. For each of these findings, correct your text, or reject the finding. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
+5. Before you correct your text after a round, save a copy of each file that the round examines. Do not make the copy in a tool call that saves a report. Put the copy in a temporary folder that is not in the project. In rounds 2 and 3, start all 3 reviewers again, but only for the sections that the previous round changed. To find these sections, compare each file and its copy, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
+6. A round passes when it has no script finding and no confirmed blocking finding that you accept. A finding in the advisory list never starts a new round. The self-check stops when a round passes, or after round 3.
+7. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
+8. If the round passes and you correct a finding in the advisory list, do the check in "After the last review round" on the text that this correction changed.
+
+### When a report has blocking findings
+
+Do this vote for each reviewer report that has one or more findings in the blocking list of the report form:
+
+1. Start 2 new, read-only confirmer subagents for the report. A round has a maximum of 6 confirmers for each file.
+2. Give each confirmer each finding in the blocking list of the report, with its rule and its text. Do not give the Problem field or the Correction field of the reviewer.
+3. Start the confirmers as "When you do a round" tells you. The confirmers are checks of the same round. Start them in groups of 3.
+4. A blocking finding is confirmed when one or more of its confirmers answer "yes".
+
+Copy this prompt for each confirmer. Replace only the placeholders.
+
+```text
+Check class: confirmer
+This task is read-only. Only read files. Do not edit, make, move, or delete files.
+Do not run commands that change files, Git data, or external services.
+
+File under review: <absolute path>
+Findings: <for each finding in the blocking list of one reviewer report: a number, the rule in quotation marks, and the text in quotation marks>
+
+Read the file under review from the disk.
+For each finding, decide whether the text in the file does not obey the rule.
+Give one line for each finding in this form:
+<number>. <"yes" if the text does not obey the rule, or "no">: <one sentence that gives the cause>
+Give only these lines. Do not give the work to a subagent.
+```
 
 ### After the last review round
 
-Do this check on each round 3 correction. Also do it on each correction after the reader test when you did all 3 review rounds.
+Do this check on each round 3 correction. Also do it on each correction after the reader test when you did all 3 review rounds. Item 8 of "During and after a review round" gives one more correction for this check.
 
 1. Run the check script on the full file of each changed file, as "When you run the check script" in `SKILL.md` tells you.
 2. Correct each script finding in the text that the corrections changed. After each correction, do these checks again.
@@ -153,6 +191,7 @@ Start the reader test only after the self-check stops. Do not start a reader sub
 Use this prompt for each reader:
 
 ```text
+Check class: reader
 This task is a dry run. Only read files. Do not write files, change Git data, or change external services.
 
 Instruction file: <absolute path>
@@ -199,11 +238,12 @@ The end-of-run report cannot replace these files. Give the path of the report fo
 Do the checks in this sequence:
 
 1. In each review round, do each review that no subagent did, in the sequence of the reviewer table.
-2. Start each review report with its title, for example "Round 2: ASD-STE100 review". Give each finding in the form of the reviewer prompt. Keep the necessary lists apart from the findings. Give no other items.
-3. Correct your text after each round. Then do the next round, or write that the self-check stopped.
-4. After the self-check stops, do each reader task that no subagent did, one after the other. Use these titles, with the number of the reader-test round and the file name:
+2. Start each review report with its title, for example "Round 2: ASD-STE100 review". Then write the blocking checklist of the reviewer prompt. Give each finding in the form of the reviewer prompt. Keep the necessary lists apart from the findings. Give no other items.
+3. Do not do the vote of "When a report has blocking findings". Each finding in the blocking list counts as a confirmed blocking finding. This is also applicable to a vote whose new confirmer also failed.
+4. Correct your text after each round. Then do the next round, or write that the self-check stopped.
+5. After the self-check stops, do each reader task that no subagent did, one after the other. Use these titles, with the number of the reader-test round and the file name:
    - "Reader-test round <n>, <file>, reader task 1 (typical): <task>"
    - "Reader-test round <n>, <file>, reader task 2 (typical): <task>"
    - "Reader-test round <n>, <file>, reader task 3 (out-of-scope): <task>"
-5. In each reader report, give the 3 parts of the reader prompt. For each step, write the part of the instruction that you used in quotation marks.
-6. When you write the end-of-run report, add the warning about the checks that you did yourself. Write it as the Warnings part in `SKILL.md` tells you.
+6. In each reader report, give the 3 parts of the reader prompt. For each step, write the part of the instruction that you used in quotation marks.
+7. When you write the end-of-run report, add the warning about the checks that you did yourself. Write it as the Warnings part in `SKILL.md` tells you. In this warning, also write that no vote occurred for the blocking findings.

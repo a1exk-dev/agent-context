@@ -23,6 +23,7 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - A **finding** is one problem that a reviewer subagent gives in its report. The check script also gives findings.
 - A **blocking rule** is a rule that ends with "(blocking)". A finding for a blocking rule can make a review round fail.
 - An **advisory rule** is a rule that ends with "(advisory)". A review round cannot fail because of a finding for an advisory rule.
+- A **confirmer** is a new subagent that answers "yes" or "no" for a problem that a different check gave. It gets the rule, the quoted text, and the file, but not the cause that the other check gave.
 - A **warning** is one item in the Warnings part of the end-of-run report. It is not the STE signal word WARNING, which this skill does not use.
 - A **tier** is one position in the sequence of the sources.
 - An **ADR** is an architecture decision record: a file that records one design decision and its cause.
@@ -161,8 +162,8 @@ In the Warnings part, add one item for each of these warnings that is applicable
 - Each finding that you rejected, with the rule that permits the text.
 - In the edit job, each finding about text that is not in the changed part.
 - Each problem from the reader test that you cannot correct.
-- Each part that a round 3 correction changed. Also each part that changed after the reader test when you did all 3 review rounds. Write that no reviewer examined it.
-- Each check that you did yourself because no subagent was available or because a new subagent also failed. Give the path of the report folder. If you did a reader task yourself, write that you were not a new reader for that task.
+- Each part that a round 3 correction changed, and each part that an advisory correction in the last review round changed. Also each part that changed after the reader test when you did all 3 review rounds. Write that no reviewer examined it.
+- Each check that you did yourself because no subagent was available or because a new subagent also failed. Give the path of the report folder. Write that no vote occurred for the blocking findings of these checks. If you did a reader task yourself, write that you were not a new reader for that task.
 - Each finding that you cannot correct without help from the user.
 - Each case where two sources do not agree and that the table does not give, with the obeyed tier.
 - A feature that only one platform reads, if you wrote it because the user told you to write it.
