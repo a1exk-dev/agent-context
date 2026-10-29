@@ -421,12 +421,6 @@
     },
     {
         "path": "skills/writing/agent-instructions/references/loading-rules.md",
-        "rule": "When you write a sentence",
-        "text": "Examples are the heading \"Before a release\" and the sentence \"Obey the rules in this section only when the user asks for a deploy.\" Count each instruction as one rule, also when one sentence or one list item gives 2 or more instructions.",
-        "cause": "The period of the first sentence is in the quotation, so the script counts 2 sentences as 1."
-    },
-    {
-        "path": "skills/writing/agent-instructions/references/loading-rules.md",
         "rule": "When you put the text in sections and lists",
         "text": "They are not applicable to other files, for example `README.md` or `.claude/settings.json`.",
         "cause": "The path is an example of a file or folder in a project that installs the Skill."

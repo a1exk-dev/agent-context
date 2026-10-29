@@ -216,6 +216,13 @@ describe("check script, file form", () => {
         expect(result.findings).toEqual([]);
     });
 
+    it("stops a sentence at a period inside quoted text", () => {
+        const result = check(
+            `${words(15)} "Stop the run." ${words(15)}.\n\n${words(15)} “Stop now!” ${words(15)}.\n`,
+        );
+        expect(result.findings).toEqual([]);
+    });
+
     it("counts text in parentheses as 1 word and as its own sentence", () => {
         const result = check(
             `${words(24)} (${words(10)}).\n\n${words(3)} (${words(26)}).\n`,

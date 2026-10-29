@@ -926,16 +926,22 @@ function tableCells(line: string): string[] {
 }
 
 // Replaces each code span, quoted text, and URL with a placeholder and spaces
-// of the same length. The masked text keeps the offsets of the segment.
+// of the same length. The masked text keeps the offsets of the segment. A
+// quoted text that stops with ".", "!", or "?" keeps that mark in the place of
+// its closing quotation mark, so that the sentence stops there.
 function mask(text: string): string {
     const hide = (match: string) => placeholder + " ".repeat(match.length - 1);
+    const hideQuote = (match: string) =>
+        /[.!?]$/.test(match.slice(0, -1))
+            ? `${hide(match.slice(0, -1))}${match.at(-2)}`
+            : hide(match);
     return text
         .replace(/(`+)[\s\S]*?\1/g, hide)
         .replace(/\]\([^)\s]*\)/g, (m) => `]${" ".repeat(m.length - 1)}`)
         .replace(/https?:\/\/[^\s)]*[^\s).,:]/g, hide)
-        .replace(/"[^"]*"/g, hide)
-        .replace(/“[^”]*”/g, hide)
-        .replace(/(?<=^|[\s([])'[^'\n]*'(?![\p{L}\p{N}])/gu, hide);
+        .replace(/"[^"]*"/g, hideQuote)
+        .replace(/“[^”]*”/g, hideQuote)
+        .replace(/(?<=^|[\s([])'[^'\n]*'(?![\p{L}\p{N}])/gu, hideQuote);
 }
 
 // Gives the [start, end) offsets of each sentence in the masked text. A
