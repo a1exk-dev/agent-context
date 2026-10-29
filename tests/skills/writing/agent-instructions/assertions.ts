@@ -573,10 +573,10 @@ export const scriptStatements: Record<string, (run: Run) => Verdict> = {
 const escapeRegExp = (text: string) =>
     text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-// The terms of a glossary: each `**Term**:` line and each `## Term` heading.
+// The terms of a glossary: each `**Term**:` line, as the check script reads them.
 function glossaryTerms(glossary: string): string[] {
-    return [...glossary.matchAll(/^\*\*([^*]+)\*\*:|^## (.+)$/gm)].map(
-        (match) => (match[1] ?? match[2]).trim(),
+    return [...glossary.matchAll(/^\*\*([^*]+)\*\*:/gm)].map((match) =>
+        match[1].trim(),
     );
 }
 
