@@ -26,6 +26,21 @@ export const SKILL = join(
 );
 export const SKILL_DIR = ".claude/skills/agent-instructions";
 export const FORCE_SKILL = "Use the agent-instructions skill for this task.";
+
+// The report titles that "When no subagent is available" in review.md gives.
+export const REVIEW_TITLE =
+    /Round (\d+): (loading|ASD-STE100|ISO 24495-1) review/gi;
+export const READER_TITLE =
+    /Reader-test round (\d+), ([^,\n]+), reader task ([123])/gi;
+// The tools that write or change a file, in lower case.
+export const WRITE_TOOLS = [
+    "write",
+    "edit",
+    "multiedit",
+    "notebookedit",
+    "apply_patch",
+    "patch",
+];
 const MAX_JOBS = 5;
 
 // A statement of an output test. grade.ts decides a `script` statement. The

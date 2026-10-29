@@ -3,7 +3,12 @@
 // grader for the other statements. grade.ts builds the Run of a saved run
 // folder and calls these functions.
 
-import type { ToolCall } from "./eval-lib.ts";
+import {
+    READER_TITLE,
+    REVIEW_TITLE,
+    type ToolCall,
+    WRITE_TOOLS,
+} from "./eval-lib.ts";
 import {
     readerReportForms,
     readers,
@@ -83,7 +88,7 @@ export type Run = {
 export type Verdict = { passed: boolean; evidence: string };
 
 const RELEASE = ".claude/skills/release/";
-const SKILL = `${RELEASE}SKILL.md`;
+const RELEASE_SKILL_MD = `${RELEASE}SKILL.md`;
 const REFERENCES = `${RELEASE}references/`;
 
 function after(run: Run, path: string): string | null {
@@ -184,12 +189,7 @@ const nonBlank = (body: string[]) => body.filter((line) => line.trim());
 // change its heading level.
 const sameLevel = (line: string) => line.replace(/^#+ /, "# ");
 
-// The report titles that "When no subagent is available" in review.md gives.
-const REVIEW_TITLE = /Round (\d+): (loading|ASD-STE100|ISO 24495-1) review/gi;
-const READER_TITLE =
-    /Reader-test round (\d+), ([^,\n]+), reader task ([123])/gi;
 const SUBAGENT_TOOLS = ["agent", "task"];
-const WRITE_TOOLS = ["write", "edit", "apply_patch"];
 
 function selfChecks(run: Run): Verdict {
     const problems: string[] = [];
@@ -395,8 +395,12 @@ export const scriptStatements: Record<string, (run: Run) => Verdict> = {
             "No _Avoid_ word and no glossary term in a different case on an added line.",
         ),
     "1.1": (run) => {
-        const fields = [...frontmatter(after(run, SKILL) ?? "").keys()];
-        const name = frontmatter(after(run, SKILL) ?? "").get("name");
+        const fields = [
+            ...frontmatter(after(run, RELEASE_SKILL_MD) ?? "").keys(),
+        ];
+        const name = frontmatter(after(run, RELEASE_SKILL_MD) ?? "").get(
+            "name",
+        );
         return verdict(
             fields.join(",") === "name,description" && name === "release"
                 ? []
@@ -406,7 +410,9 @@ export const scriptStatements: Record<string, (run: Run) => Verdict> = {
     },
     "1.2": (run) => {
         const description =
-            frontmatter(after(run, SKILL) ?? "").get("description") ?? "";
+            frontmatter(after(run, RELEASE_SKILL_MD) ?? "").get(
+                "description",
+            ) ?? "";
         const ok =
             /^When\b/.test(description) && /"[^"]+"|“[^”]+”/.test(description);
         return {
@@ -414,16 +420,16 @@ export const scriptStatements: Record<string, (run: Run) => Verdict> = {
             evidence: `description: ${JSON.stringify(description)}`,
         };
     },
-    "1.3a": (run) => numberedList(run, SKILL),
+    "1.3a": (run) => numberedList(run, RELEASE_SKILL_MD),
     "1.4": (run) => {
-        const text = after(run, SKILL) ?? "";
-        const problems = maxLines(run, SKILL, 500);
+        const text = after(run, RELEASE_SKILL_MD) ?? "";
+        const problems = maxLines(run, RELEASE_SKILL_MD, 500);
         if (/^#+ .*gotchas/im.test(text))
             problems.push('SKILL.md has a "Gotchas" section.');
         return verdict(problems, `SKILL.md has ${lines(text).length} lines.`);
     },
     "1.5": (run) => {
-        const skill = after(run, SKILL) ?? "";
+        const skill = after(run, RELEASE_SKILL_MD) ?? "";
         const references = run.changes.filter(
             (change) =>
                 change.path.startsWith(REFERENCES) && change.after !== null,

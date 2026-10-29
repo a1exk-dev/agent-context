@@ -5,7 +5,12 @@
 
 import { basename } from "node:path";
 import type { MainCall, Run, Verdict } from "./assertions.ts";
-import type { ToolCall } from "./eval-lib.ts";
+import {
+    READER_TITLE,
+    REVIEW_TITLE,
+    type ToolCall,
+    WRITE_TOOLS,
+} from "./eval-lib.ts";
 
 type Kind = "review" | "reader";
 
@@ -47,17 +52,6 @@ type Process = {
 const CLASS_LINE = /^\s*(?:<[^>]*>\s*)?Check class: (.+?)\s*$/gm;
 const FILE_LINE = /^\s*(?:File under review|Instruction file): (.+?)\s*$/m;
 const TASK_LINE = /^\s*Task: (.+?)\s*$/m;
-const REVIEW_TITLE = /Round (\d+): (loading|ASD-STE100|ISO 24495-1) review/gi;
-const READER_TITLE =
-    /Reader-test round (\d+), ([^,\n]+), reader task ([123])/gi;
-const WRITE_TOOLS = [
-    "write",
-    "edit",
-    "multiedit",
-    "notebookedit",
-    "apply_patch",
-    "patch",
-];
 
 // The class of a prompt, or null when the prompt has no class line of
 // review.md or more than one.
