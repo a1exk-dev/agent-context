@@ -196,6 +196,32 @@ describe("grade script, script step", () => {
     });
 });
 
+describe("grade script, 8b list", () => {
+    // From run 08 of #145: the run changed the line, but the sentence was on
+    // a removed line word for word.
+    const kept =
+        "Most of the business logic lives in `src/`, the API routes live in `src/routes/`, and shared types live in `src/types/`.";
+    const pointer = "When you deploy, read `docs/agents/deploy.md`.";
+
+    it("gives only the added sentences whose text is not on a removed line", () => {
+        const runDir = runFolder(
+            [statement("8b", "llm")],
+            [
+                {
+                    path: "AGENTS.md",
+                    before: agents(`${kept} Run \`make lint\`.`),
+                    after: agents(`${kept}\n\n${pointer}`),
+                },
+            ],
+        );
+        expect(grade("script", runDir).code).toBe(0);
+        const [item] = readJson(join(runDir, "script-grading.json")).llm;
+        expect(item.list.map((entry: { text: string }) => entry.text)).toEqual([
+            pointer,
+        ]);
+    });
+});
+
 describe("grade script, merge step", () => {
     const statements = [
         statement("7"),
@@ -271,6 +297,24 @@ describe("grade script, merge step", () => {
         expect(grading.summary.passed).toBe(3);
     });
 
+    it("passes an LLM statement whose script list is empty with an empty checklist", () => {
+        const runDir = runFolder([statement("8b", "llm")], files);
+        grade("script", runDir);
+        expect(
+            readJson(join(runDir, "script-grading.json")).llm[0].list,
+        ).toEqual([]);
+        writeFileSync(
+            join(runDir, "llm-grading.json"),
+            JSON.stringify({ statements: [{ id: "8b", checklist: [] }] }),
+        );
+        expect(grade("merge", runDir).code).toBe(0);
+        const grading = readJson(join(runDir, "grading.json"));
+        expect(grading.passed).toEqual(["8b"]);
+        expect(grading.expectations[0].evidence).toBe(
+            "The list of the script is empty.",
+        );
+    });
+
     it("stops when a failed LLM statement has no confirmer answers", () => {
         const result = merged({});
         expect(result.code).toBe(2);
@@ -297,6 +341,7 @@ type AgentOptions = {
     calls?: Call[];
     failed?: number[];
     during?: () => void;
+    handBack?: boolean;
 };
 
 const REVIEWERS = [
@@ -332,6 +377,16 @@ const CLOSED_YES = '1. yes: "Run make test." - "Run `make test`."\n';
 const CLOSED_NO = '1. no: "Run make test." - "Run `make test`."\n';
 const READER_REPORT =
     'Part 1: Steps\n1. Run make test.\nPart 2: Used parts\n1. "Run `make test`."\nPart 3: Unclear parts\nNone\n';
+// The tool result of a Claude Code subagent that gives its report only to
+// the main agent, as run records 01 and 08 of #145 show: a frame line, the
+// report with each line indented, and the agent id line.
+const handBack = (report: string) =>
+    `[Subagent hand-back] The text below is the final report of a subagent this session delegated to. The harness indents every line of the report. The report follows:\n${report
+        .split("\n")
+        .map((line) => (line ? `  ${line}` : "  "))
+        .join(
+            "\n",
+        )}\nagentId: adcba5bdadce0406b (use SendMessage with to: 'adcba5bdadce0406b' to continue this agent)\n<usage>subagent_tokens: 40375\ntool_uses: 7</usage>`;
 const read = (file = "AGENTS.md"): Call => ({
     name: "Read",
     input: { file_path: `${WORK}/${file}` },
@@ -417,11 +472,18 @@ function claude(): Builder {
                             input: item.input,
                         },
                     ]);
-                if (!fail)
-                    assistant(toolUseId, [
-                        { type: "text", text: options.report ?? REPORT },
-                    ]);
-                result(toolUseId, fail ? "Error." : "Report.", fail);
+                const report = options.report ?? REPORT;
+                if (!fail && !options.handBack)
+                    assistant(toolUseId, [{ type: "text", text: report }]);
+                result(
+                    toolUseId,
+                    fail
+                        ? "Error."
+                        : options.handBack
+                          ? handBack(report)
+                          : "Report.",
+                    fail,
+                );
             });
             return builder;
         },
@@ -678,6 +740,24 @@ describe("process statements", () => {
         });
     }
 
+    it("takes the report of a subagent from its hand-back tool result", () => {
+        const run = claude();
+        saveReviewRound(run, 1, [BLOCKING_REPORT, REPORT, REPORT]);
+        run.agents(
+            REVIEWERS.map((name) => reviewerPrompt(name)),
+            { handBack: true, report: BLOCKING_REPORT },
+        )
+            .bash(reportForm())
+            .agents(
+                [1, 2].map(() => confirmerPrompt(`${DIR}/round-1/report-1.md`)),
+                { handBack: true, report: "1. yes: The text is passive." },
+            )
+            .edit();
+        readerRound(run);
+        const verdicts = processVerdicts(run.record());
+        expect(passed(verdicts)).toEqual(PROCESS);
+    });
+
     it("fails [3a] for a reader that writes a file", () => {
         const run = claude();
         reviewRound(run);
@@ -702,6 +782,32 @@ describe("process statements", () => {
             ],
         });
         expect(processVerdicts(run.record())["3a"].passed).toBe(true);
+    });
+
+    // Reader commands from the run records 01 and 08 of #145.
+    it.each([
+        `cd ${WORK} && ls -R .claude docs 2>/dev/null; git branch -a; git log --oneline --all | head`,
+        `ls -a ${WORK}; cat ${WORK}/package.json ${WORK}/Makefile 2>&1`,
+        `cd ${WORK}; cat CHANGELOG.md; echo ----; git branch; git remote -v; pwd`,
+        "git branch --list && git ls-files docs && git rev-parse --show-toplevel",
+    ])("passes [3a] for the read-only reader command %s", (command) => {
+        const run = claude();
+        reviewRound(run);
+        readerRound(run, { calls: [{ name: "Bash", input: { command } }] });
+        expect(processVerdicts(run.record())["3a"].passed).toBe(true);
+    });
+
+    it.each([
+        "echo text > notes.md",
+        "cat AGENTS.md 2>/tmp/errors",
+        "git branch -D feature/coupons",
+        "git remote add origin https://example.com/repo.git",
+        "git rev-parse HEAD > /tmp/head; echo done",
+    ])("fails [3a] for the reader command %s", (command) => {
+        const run = claude();
+        reviewRound(run);
+        readerRound(run, { calls: [{ name: "Bash", input: { command } }] });
+        expect(processVerdicts(run.record())["3a"].passed).toBe(false);
     });
 
     it("fails [4] for a run with 4 review rounds", () => {
@@ -935,7 +1041,83 @@ describe("process statements", () => {
     });
 });
 
+// Grades one script statement of a run with the given files.
+function scriptVerdict(id: string, files: File[]) {
+    const runDir = runFolder([statement(id)], files);
+    expect(grade("script", runDir).code).toBe(0);
+    return readJson(join(runDir, "script-grading.json")).script[0];
+}
+
 describe("script statements", () => {
+    // From run 01 of #145: the fail rules name the release branch by its
+    // name pattern.
+    it("passes [1.5] for fail rules that name the branch release/<version>", () => {
+        const skillMd = [
+            "# Release",
+            "",
+            "When a step of this skill fails, read `references/failed-step.md` before your next action.",
+            "",
+            "When you open the pull request, read `references/pull-request-text.md` to write its text.",
+            "",
+            "1. Run `make test`.",
+            "2. Run `git push -u origin release/<version>`.",
+            "3. Run `gh pr create`.",
+            "",
+        ].join("\n");
+        const failed = [
+            "# Failed step",
+            "",
+            "## When a step of the release skill fails",
+            "",
+            "- Stop. Do not do the next step.",
+            "- If the branch `release/<version>` exists, keep it.",
+            "- Tell the user the number and the section of the step that failed.",
+            "",
+        ].join("\n");
+        const template =
+            "# Pull request text\n\n## Summary\n\n## Changes\n\n## Version\n";
+        const added = (path: string, after: string) => ({
+            path: `.claude/skills/release/${path}`,
+            before: null,
+            after,
+        });
+        expect(
+            scriptVerdict("1.5", [
+                added("SKILL.md", skillMd),
+                added("references/failed-step.md", failed),
+                added("references/pull-request-text.md", template),
+            ]),
+        ).toMatchObject({ passed: true });
+    });
+
+    // From run 09 of #145: loading-rules.md tells the author to write a new
+    // heading with the condition in the old place of a moved section.
+    it("passes [9.2] for a moved section whose old place has a new heading", () => {
+        const deploy = [
+            "## Deploy",
+            "",
+            "1. Read `CHANGELOG.md` and find the version to deploy.",
+            "2. Run `make deploy`.",
+            "3. Tell the user the version.",
+            "",
+        ].join("\n");
+        const before = `# Agent rules\n\n## Before a commit\n\nUse pnpm.\n\n${deploy}\n## Security\n\nKeep secrets out of Git.\n`;
+        const after = before.replace(
+            deploy,
+            "## When the user asks for a deploy\n\nWhen the user asks for a deploy, read `docs/agents/deploy.md`.\n",
+        );
+        expect(
+            scriptVerdict("9.2", [
+                { path: "AGENTS.md", before, after },
+                {
+                    path: "docs/agents/deploy.md",
+                    before: null,
+                    after: `# Deploy\n\n${deploy}`,
+                },
+            ]),
+        ).toMatchObject({ passed: true });
+    });
+
     it("has one function for each script statement id in evals.json", () => {
         const evals: { assertions: Statement[] }[] = readJson(
             join(import.meta.dirname, "evals.json"),

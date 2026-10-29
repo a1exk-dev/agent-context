@@ -17,7 +17,7 @@ You grade the LLM statements of one run of one output test. This is a read-only 
 
 ## When you grade a statement
 
-1. Make a closed checklist for the statement. When `list` is a list, write one checklist item for each list item. When `list` is null, write one item for each part of the statement.
+1. Make a closed checklist for the statement. When `list` is a list, write one checklist item for each list item. When `list` is an empty list, write an empty checklist: `grade.ts merge` passes the statement. When `list` is null, write one item for each part of the statement.
 2. For each item, answer "yes" or "no". "yes" shows that the item obeys the statement.
 3. For each item, copy one quote from the files or from the run record as evidence.
 4. Answer "yes" only with clear evidence. When the evidence is missing, partial, or only on the surface, answer "no".
@@ -25,7 +25,7 @@ You grade the LLM statements of one run of one output test. This is a read-only 
 Read the statements literally:
 
 - "New or changed text" is the added lines in `changes.diff`, for the files that the run wrote or changed. It does not include the report.
-- [8b]: Each list item is a new sentence that names a file path, with its heading. Answer "yes" when the sentence or its heading states when to read the target.
+- [8b]: Each list item is a new sentence that names a file path, with its heading. Answer "yes" when the sentence or its heading states when to read the target. Also answer "yes" when the sentence does not tell the reader to read its target, because then it is not a pointer.
 - [9b]: Each list item is an added line with the `CONTEXT.md` terms in it. Answer "yes" when each term has its meaning in `CONTEXT.md`.
 - [10a]: Each list item is a removed line, and no added line has its text. Answer "yes" when the line is in the asked change.
 - [10b]: Each list item is a known mistake of the starting file. Answer "yes" when the report names that mistake.

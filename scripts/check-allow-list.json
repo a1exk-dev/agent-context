@@ -448,5 +448,11 @@
         "rule": "1.8",
         "text": "A **confirmer** is a new subagent that answers \"yes\" or \"no\", with one sentence, for one problem that a different check found.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "If the project has a glossary, read `GLOSSARY.md` or `CONTEXT.md`, as \"Terms in this skill\" tells you.",
+        "cause": "The path is a file in a project that installs the Skill."
     }
 ]
