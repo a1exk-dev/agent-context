@@ -11,7 +11,7 @@ The check script of this skill examines each rule that ends with "(script check)
 
    If you do not find the tool, also after the search with `tool_search` on Codex, go to the section "When no subagent is available".
 2. Tell the platform clearly to start a new subagent with an empty context window. Start each subagent from the main agent, because a subagent on Codex or OpenCode cannot start subagents.
-3. Put the full task and its limits in the prompt. No platform can make a subagent read-only from a `SKILL.md` file. Let the subagent use the shell, because Codex uses the shell to read files.
+3. Put the full task and its limits in the prompt. Put the full prompt text from this file, with its `Check class:` line, in the tool call that starts the subagent. Do not save the prompt to a file for the subagent to read. When the full prompt is in the tool call, the tool call shows the class of each check. No platform can make a subagent read-only from a `SKILL.md` file. Let the subagent use the shell, because Codex uses the shell to read files.
 4. Give each subagent the absolute paths of the reference files that it uses and of the file that it examines. The reference files are in the `references/` folder next to the `SKILL.md` file of this skill.
 5. Start a new subagent for each check: each reviewer and each confirmer in each round, and each reader task. Do not give a second check to a subagent, because that subagent knows the previous text and findings.
 6. Start the subagents of each round as "When you do a round" tells you.
@@ -126,19 +126,20 @@ Do not add other notes or questions.
 ### During and after a review round
 
 1. Round 1 examines the full file, also in the edit job. In each prompt, give the parts to review and, in a different line, the parts that the author can edit. In the edit job, put each finding about text that is not in the changed part in a warning.
-2. After the last report of the round, save each reviewer report to a new file in `<round folder>/round-<n>/`. Use the file name `<file name>-<reviewer>.md`. `<file name>` is the name of the file under review, with its extension. `<reviewer>` is `loading`, `ste`, or `iso`. Then run the report form of the check script for each file of the round, as "When you run the check script" in `SKILL.md` tells you. In that command, write the full path of the file under review and of each report file. Do not use shell variables or `*`, because the command must show which reports the script examined. Use only the findings in the blocking list and the advisory list. Do not use the findings in the dropped list.
-3. If a report has one or more findings in the blocking list, do the vote in "When a report has blocking findings". Before you get all confirmer reports of the round, do not correct a file.
-4. The findings to use are the script findings, the confirmed blocking findings, and the findings in the advisory list. For each of these findings, correct your text, or reject the finding. Put each script finding about text that you cannot edit in a warning. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
-5. A round passes when you accept no script finding and no confirmed blocking finding of the round. A finding that you reject with a warning does not make the round fail. A finding in the advisory list never starts a new round. The self-check stops when a round passes, or after round 3.
-6. If the round does not pass, start all 3 reviewers again in the next round, but only for the sections that the previous round changed. A section is changed when one or more of its lines changed. To find these sections, compare each file and its copy in the folder of the previous round, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
-7. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
-8. If the round passes and you correct a finding in the advisory list, do the check in "After the last review round" on the text that this correction changed.
+2. After the last report of the round, save each reviewer report to a new file in `<round folder>/round-<n>/`. Use the file name `<file name>-<reviewer>.md`. `<file name>` is the name of the file under review, with its extension. `<reviewer>` is `loading`, `ste`, or `iso`.
+3. Before you change a file of the round, run the report form of the check script for each file of the round. Run it as "When you run the check script" in `SKILL.md` tells you. In that command, write the full path of the file under review and of each report file. Do not use shell variables or `*`, because the command must show which reports the script examined. Also do not set a shell variable for a path in the same command. The script refuses a path with `$` or `*`. Use only the findings in the blocking list and the advisory list. Do not use the findings in the dropped list.
+4. If a report has one or more findings in the blocking list, do the vote in "When a report has blocking findings". Before you get all confirmer reports of the round, do not correct a file.
+5. The findings to use are the script findings, the confirmed blocking findings, and the findings in the advisory list. For each of these findings, correct your text, or reject the finding. Put each script finding about text that you cannot edit in a warning. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
+6. A round passes when you accept no script finding and no confirmed blocking finding of the round. A finding that you reject with a warning does not make the round fail. A finding in the advisory list never starts a new round. The self-check stops when a round passes, or after round 3.
+7. If the round does not pass, start all 3 reviewers again in the next round, but only for the sections that the previous round changed. A section is changed when one or more of its lines changed. To find these sections, compare each file and its copy in the folder of the previous round, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
+8. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
+9. If the round passes and you correct a finding in the advisory list, do the check in "After the last review round" on the text that this correction changed.
 
 ### When a report has blocking findings
 
 Do this vote for each reviewer report that has one or more findings in the blocking list of the report form:
 
-1. Start 2 new, read-only confirmer subagents for the report. A round has a maximum of 6 confirmers for each file.
+1. Start 2 new, read-only confirmer subagents for the report. Start the 2 confirmers also when the report has many findings, because only a confirmer can confirm a blocking finding. Wait for the reports of the 2 confirmers, also when the first confirmer answers "yes" for each finding. A round is complete only after each check gives its report. A round has a maximum of 6 confirmers for each file.
 2. Give each confirmer the path of the saved report file. Also give each finding of that report in the blocking list of the report form, with its rule and its text. Do not give the Problem field or the Correction field of the reviewer.
 3. Start the confirmers as "When you do a round" tells you. The confirmers are checks of the same round. Start them in groups of 3.
 4. A blocking finding is confirmed when one or more of its confirmers answer "yes".
@@ -165,7 +166,7 @@ Give only these lines. Do not give the work to a subagent.
 
 Do this vote for each typical-task report whose closed list has one or more "no" answers. The reader test gives the closed list.
 
-1. Start 2 new, read-only confirmer subagents for the report.
+1. Start 2 new, read-only confirmer subagents for the report. Wait for the reports of the 2 confirmers, also when the first confirmer answers "yes" for each step. A round is complete only after each check gives its report.
 2. Give each confirmer the path of the saved closed list, the task, and the path of the instruction file. Also give each step with "no" and its quote. Do not give your cause for the "no".
 3. Start the confirmers as "When you do a round" tells you. The confirmers are checks of the same reader-test round. Start them in groups of 3.
 4. A wrong step is confirmed when one or more of its confirmers answer "yes".
@@ -192,7 +193,7 @@ Give only these lines. Do not give the work to a subagent.
 
 ### After the last review round
 
-Do this check on each round 3 correction. Also do it on each correction after the reader test when you did all 3 review rounds. Item 8 of "During and after a review round" gives one more correction for this check.
+Do this check on each round 3 correction. Also do it on each correction after the reader test when you did all 3 review rounds. Item 9 of "During and after a review round" gives one more correction for this check.
 
 1. Run the check script on the full file of each changed file, as "When you run the check script" in `SKILL.md` tells you.
 2. Correct each script finding in the text that the corrections changed. After each correction, do items 1 and 2 again.
@@ -203,7 +204,7 @@ Do this check on each round 3 correction. Also do it on each correction after th
 
 Start the reader test only after the self-check stops. Do not start a reader subagent while a review round continues.
 
-1. For each new or changed file, write 3 tasks, also when the file has many changes. Each task tests the new or changed rules of its file:
+1. For each new or changed file, write 3 tasks. Also write 3 tasks for a file with many changes, and for a file that contains only an `@path` line. A reader can find that the line identifies an incorrect file. Each task tests the new or changed rules of its file:
    - Write 2 typical tasks with different inputs. If the user told you that an agent did not obey an instruction, make one task from that problem.
    - Write 1 out-of-scope task. It looks almost the same as a typical task, but the new or changed instruction does not change it. It uses the same file, words, or condition as the instruction, but the instruction is not applicable to it. An example for a rule about release branches is a task that makes a feature branch. If the instruction is applicable to all project tasks, use a different project or platform for this task.
 2. Before reader-test round 1, write the tested quotes for each typical task. A tested quote is a short quote from the file of a new or changed rule that the task tests.
@@ -220,19 +221,20 @@ Start the reader test only after the self-check stops. Do not start a reader sub
 4. Use the same tasks and the same tested quotes in each reader-test round. Change a tested quote only when a correction changes its text. Then write the new text in the tasks file.
 5. At the start of each reader-test round, save a copy of each file that the round tests as `<round folder>/reader-round-<n>/<file path>`. Each reader-test round has the 3 tasks of each file. Give each task and the path of its new or changed file to a different new subagent. Start the subagents as "When you do a round" tells you.
 6. Make sure that each subagent does a dry run. The first line of the reader prompt tells the subagent to do a dry run.
-7. After the last report of the round, save each reader report to a new file in `<round folder>/reader-round-<n>/`. Then run the report form for reader reports for each file of the round, as "When you run the check script" in `SKILL.md` tells you:
+7. After the last report of the round, save each reader report to a new file in `<round folder>/reader-round-<n>/`.
+8. Before you change a file of the round, run the report form for reader reports for each file of the round. The script compares each quote with the file on the disk. Run the report form for reader reports as "When you run the check script" in `SKILL.md` tells you. Write the full path of each file, as item 3 of "During and after a review round" tells you. In that command, also obey these rules:
    - Give the reports in the sequence of the tasks in the tasks file.
    - In the edit job, give the copy of the file that you saved before your first change. In the write job, give "none", because all lines are new.
    - Do not use the quotes in the dropped list.
-8. The script finds 2 types of problems. A typical task has a problem when its report does not use a tested quote. The out-of-scope task has a problem when its report uses an added or changed line.
-9. For each typical-task report, write a closed list: each step, its quote, and "yes" or "no". Write "yes" when the step obeys its quote for the task. Save each closed list to a new file in `<round folder>/reader-round-<n>/`. Start the file name with `closed-list-`. Write one line for each step in this form: `<number>. <yes or no>: "<step>" - "<quote>"`. For each report with one or more "no" answers, do the vote in "When a reader step does not obey the instruction".
-10. Do not change the instruction file until all readers and confirmers of the round give their reports. Then all checks of a round read the same text.
-11. Correct your text for each problem of the script and each confirmed wrong step. For each quote in the unclear list, correct your text or write a warning. An unclear part never starts a new reader-test round.
-12. A reader-test round passes when it has no problem of the script and no confirmed wrong step. If the round does not pass, do the test again after your correction. Do a maximum of 3 reader-test rounds.
-13. If you cannot correct a problem without help from the user, put it in a warning.
-14. After a reader-test round, a correction can change text. If you did fewer than 3 review rounds, start the reviewers again for that text before the next reader-test round. This review round is one of the 3 review rounds.
-15. If you did all 3 review rounds, do the check in "After the last review round". Then do the next reader-test round, if the limit permits it.
-16. If you correct an unclear part after the last reader-test round, run the check script on the full file. Correct each script finding in the text that this correction changed. Add a warning that tells that no reader examined this text.
+9. The script finds 2 types of problems. A typical task has a problem when its report does not use a tested quote. The out-of-scope task has a problem when its report uses an added or changed line.
+10. For each typical-task report, write a closed list: each step, its quote, and "yes" or "no". Write "yes" when the step obeys its quote for the task. Save each closed list to a new file in `<round folder>/reader-round-<n>/`. Start the file name with `closed-list-`. Write one line for each step in this form: `<number>. <yes or no>: "<step>" - "<quote>"`. For each report with one or more "no" answers, do the vote in "When a reader step does not obey the instruction".
+11. Do not change the instruction file until all readers and confirmers of the round give their reports. Then all checks of a round read the same text.
+12. Correct your text for each problem of the script and each confirmed wrong step. For each quote in the unclear list, correct your text or write a warning. An unclear part never starts a new reader-test round.
+13. A reader-test round passes when it has no problem of the script and no confirmed wrong step. If the round does not pass, do the test again after your correction. Do a maximum of 3 reader-test rounds.
+14. If you cannot correct a problem without help from the user, put it in a warning. Do not stop the reader test for a question to the user, because the user reads all questions in the end-of-run report.
+15. After a reader-test round, a correction can change text. If you did fewer than 3 review rounds, start the reviewers again for that text before the next reader-test round. This review round is one of the 3 review rounds.
+16. If you did all 3 review rounds, do the check in "After the last review round". Then do the next reader-test round, if the limit permits it.
+17. If you correct an unclear part after the last reader-test round, run the check script on the full file. Correct each script finding in the text that this correction changed. Add a warning that tells that no reader examined this text.
 
 Use this prompt for each reader:
 
@@ -247,6 +249,11 @@ Task: <the task text>
 Before your first step, read the instruction file from the disk with a file tool. A copy that loaded at the start
 of your session can be older than the file.
 Read the files that the instruction tells you to read for this task.
+Use only these shell commands: `cat`, `head`, `tail`, `grep`, `rg`, `ls`, `wc`, `diff`, `cd`, `echo`, `pwd`, and `sed -n`.
+You can also use `find`, but not with `-delete`, `-exec`, `-ok`, or `-fprint`.
+You can also use `git status`, `git diff`, `git log`, `git show`, `git ls-files`, `git rev-parse`, and `git remote -v`.
+You can also use `git branch` alone, or only with `-a`, `-r`, or `--list`.
+Do not send the output of a command to a file. You can add only `2>/dev/null` or `2>&1` to a command.
 Give this report in 3 parts. Start each part with its heading line, as this form shows:
 Part 1: Steps
 <number>. <one step for the task. Write the steps in sequence.>
@@ -269,12 +276,16 @@ Do each review and each reader task as a different check. Use the same reviewer 
 
 Save each report file in the folder of its round: `<round folder>/round-<n>/` or `<round folder>/reader-round-<n>/`. In this section, you can write these report files. The limits in the reviewer prompt and the reader prompt do not stop these files.
 
+Before the first check of each round, save a copy of each file that the round examines. Send only this tool call in a new message. Put no other tool call in that message. This message shows that you saved the copy before the checks of the round.
+
 Do these 2 steps for each check: each review and each reader task. Do not start the next check before you complete step 2.
 
 1. Do the check as the reviewer prompt or the reader prompt tells you.
 2. Save the full report to a new file. Send only this tool call in a new message. Put no other tool call in that message, for example a `git` command or a copy of the file. Wait for its result before you start the next check. This tool call writes only one file. Do not change a report after you save it.
 
 If you find an error in a saved report, do not correct that file. Give the correction in the Warnings part of the end-of-run report.
+
+In each round, do each check again. Do not copy a report of an earlier round, also when the text of that check did not change. Make each report from a check that you do in the current round.
 
 Do not save 2 reports in one tool call or in one message. Do not send 2 tool calls at the same time. This rule is applicable in each round, also when the reports of a round are short. It is also applicable when a round examines only one line, and when a report gives "No findings". The sequence of the messages shows that you did the checks one after the other.
 
@@ -299,5 +310,5 @@ Do the checks in this sequence:
 ## When a reviewer gives a finding
 
 - When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.
-- If you cannot correct a finding without help from the user, put it in a warning. An example is a word that makes a new technical noun in the project necessary.
+- If you cannot correct a finding without help from the user, do not stop the job for a question to the user. The user reads all questions in the end-of-run report. An example is a word that makes a new technical noun in the project necessary. Do the review rounds and the reader-test rounds until each one stops. Then put the finding and the question in the Warnings part of the end-of-run report.
 - A finding comes only from a reviewer report or from the check script. When you find a problem yourself, give it in a warning, not as a finding. In that warning, give the text in quotation marks and the problem.

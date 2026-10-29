@@ -83,7 +83,7 @@ If two sources do not agree in a case that is not in this table, use the tier se
 Do these steps in the write job and in the edit job.
 
 1. Before you select target platforms, read `references/loading-rules.md`. Then find the target platforms as that file tells you.
-2. If the project has a glossary, read it. Its terms are technical nouns for this task. If no file gives a project fact for the task, speak to the user one time. An example is a branch name. If the project does not have a command or a path from the task, speak to the user one time.
+2. If the project has a glossary, read `GLOSSARY.md` or `CONTEXT.md`, as "Terms in this skill" tells you. The terms of the glossary are technical nouns for this task. Before you write text, find each project fact, command, and path that the task makes necessary. If no project file gives one or more of these items, speak to the user one time. Ask about all of these items in that time. An example of a project fact is a branch name. After you start to write text, do not stop the job for a question to the user. The end-of-run report gives all questions to the user. Put each question that you find after you start to write text in the Warnings part of the end-of-run report.
 3. Find when the file loads: in each session, only when a task makes it necessary, or through a pointer. Use the result to select the file type and the file-size limit.
 4. In the write job, select the file type:
    - If the user gives a file type, write that type. If that type is not correct for the text, add a warning.

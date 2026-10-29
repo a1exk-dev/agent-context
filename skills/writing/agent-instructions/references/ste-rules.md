@@ -16,6 +16,7 @@ ASD-STE100 is tier 2. If `SKILL.md` of this skill is not in your context window,
 Always replace these words. This list gives no replacement words, because a table of replacements is a part of the dictionary.
 
 - "should", "may", "might", "would", "shall", "could" (for a possibility) (script check)
+- "ensure". ASD-STE100 does not approve this word. (script check)
 
 ## When you select a technical noun
 
@@ -46,7 +47,7 @@ Always replace these words. This list gives no replacement words, because a tabl
 - Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)
 - Use the same terms and the same words for the same type of step (rule 9.4). (blocking)
 - Use the same term for the same item each time (rule 6.2). (blocking)
-- Write each glossary term in the same case as the glossary (rule 6.2). A capital letter at the start of a sentence is permitted. (script check)
+- Write each glossary term in the same case as the glossary (rule 6.2). A capital letter at the start of a sentence is permitted. A word in your text can have the letters of a glossary term but a different meaning. Then do not write that word in a different case to show the different meaning. Write a different word, because the agent reads the glossary meaning in each case of the word. Exception: you can write the base-list term "rule" in lowercase with its base-list meaning, also when the glossary has the term "Rule". "When you add a word to the base list" in `technical-terms.md` gives the two meanings. (script check)
 - When "with" can have two meanings in a sentence, write a different sentence (GR-2). (blocking)
 - Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)
 
