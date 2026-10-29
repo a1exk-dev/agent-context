@@ -790,6 +790,11 @@ describe("process statements", () => {
         `ls -a ${WORK}; cat ${WORK}/package.json ${WORK}/Makefile 2>&1`,
         `cd ${WORK}; cat CHANGELOG.md; echo ----; git branch; git remote -v; pwd`,
         "git branch --list && git ls-files docs && git rev-parse --show-toplevel",
+        // Run records 05 and 02 of #145, round 2.
+        'for f in Makefile package.json CONTEXT.md; do echo "== $f"; cat $f; done',
+        `ls -a && grep -n '"version"' package.json; git branch -a; git tag 2>/dev/null; git log --oneline -5`,
+        "git tag -l && git tag --list",
+        "for f in a.md b.md\ndo\n  head -5 $f\ndone | wc -l",
     ])("passes [3a] for the read-only reader command %s", (command) => {
         const run = claude();
         reviewRound(run);
@@ -803,6 +808,12 @@ describe("process statements", () => {
         "git branch -D feature/coupons",
         "git remote add origin https://example.com/repo.git",
         "git rev-parse HEAD > /tmp/head; echo done",
+        "for f in a.md b.md; do rm $f; done",
+        "for f in a.md; do cat $f; done; for g in b.md; do cat $g",
+        "do cat a.md; done",
+        "for 1f in a.md; do cat $1f; done",
+        "git tag v1.0.0",
+        "git tag -d v1.0.0",
     ])("fails [3a] for the reader command %s", (command) => {
         const run = claude();
         reviewRound(run);

@@ -31,10 +31,13 @@ reviewer reports of one file under review. Writes JSON to stdout:
 { "blocking": [ { reviewer, rule, ruleFile, heading, text, path, line,
                   problem, correction, report, reportLine } ],
   "advisory": [ ...the same fields ],
-  "dropped": [ { report, reportLine, rule, text, problem, correction, reason } ] }
+  "dropped": [ { report, reportLine, rule, text, problem, correction, reason } ],
+  "confirm": [ { report, blocking, action } ] }
 It drops each finding with a missing field, a Text quote that is not in the
 file, or a Rule quote that is in no rule that ends with "(blocking)" or
-"(advisory)". It sorts the other findings by the mark of their rule.
+"(advisory)". It sorts the other findings by the mark of their rule. The
+confirm list gives each report with one or more findings in the blocking
+list, and tells the author to start 2 confirmers for it.
 
 Report form for reader reports: add --copy <saved copy|none> and --tasks
 <tasks file>, and give one reader report for each task, in the sequence of
@@ -1141,6 +1144,7 @@ function reportForm(argv: string[]): number {
     const blocking: object[] = [];
     const advisory: object[] = [];
     const dropped: object[] = [];
+    const blockingCounts = new Map<string, number>();
     for (const [report, text] of sources) {
         for (const found of reportFindings(report, text)) {
             const drop = (reason: string) => dropped.push({ ...found, reason });
@@ -1173,6 +1177,11 @@ function reportForm(argv: string[]): number {
                 continue;
             }
             const line = source.slice(0, target.offsets[at]).split("\n").length;
+            if (unit.mark === "blocking")
+                blockingCounts.set(
+                    report,
+                    (blockingCounts.get(report) ?? 0) + 1,
+                );
             (unit.mark === "blocking" ? blocking : advisory).push({
                 reviewer: unit.reviewer,
                 rule: ruleNumber(unit.text),
@@ -1188,8 +1197,14 @@ function reportForm(argv: string[]): number {
             });
         }
     }
+    const confirm = reports.flatMap((report) => {
+        const count = blockingCounts.get(report) ?? 0;
+        if (count === 0) return [];
+        const action = "Start 2 confirmers for this report.";
+        return [{ report, blocking: count, action }];
+    });
     process.stdout.write(
-        `${JSON.stringify({ blocking, advisory, dropped }, null, 2)}\n`,
+        `${JSON.stringify({ blocking, advisory, dropped, confirm }, null, 2)}\n`,
     );
     return blocking.length + advisory.length === 0 ? 0 : 1;
 }

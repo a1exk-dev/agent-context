@@ -94,8 +94,8 @@ Do these steps in the write job and in the edit job.
 5. In the edit job, before your first change, save a copy of each file that you change. Save the copies in a temporary folder that is not in the project. The reader test uses these copies. Change only the changed part. In the unchanged parts, do not write lines again. Do not move lines in the unchanged parts. In the unchanged parts, do not put two lines into one line or one line into two lines. The rules about the unchanged parts are also applicable when a finding tells you to make a change. The user gives approval only for the change that they wanted. The file-size limit is one exception, as the table in "Sequence of the sources" gives. An extraction candidate that the user gives approval for is the other exception. If you find a file type that is not correct for the text, add a warning.
 6. In the edit job, the user can tell you that an agent did not obey an instruction. For that edit job, record the condition of the previous instruction in quotation marks. The condition can be in the heading of the section or in the sentence. The Summary part of the end-of-run report gives this condition. If the previous instruction has no condition, record "no condition".
 7. Before you write text, read `references/ste-rules.md`, `references/plain-language-checks.md`, and `references/technical-terms.md`. If the file that you write or edit is a Skill, also read `references/agent-skills-spec.md`. In the edit job, first use these rules to examine each section that you will change. A new section has no previous text to examine. The Summary part then gives no problem for that section. Record each problem before you correct it. Keep the list of these problems for the Summary part. Then write the text by these rules. In the write job, also move text to reference files as "When the write job makes a SKILL.md or entry-file text" in `references/loading-rules.md` tells you. In the edit job, move text as "When the edit job changes a SKILL.md or an entry file" in that file tells you.
-8. Before the self-check, read `references/review.md`. Then do the self-check that it gives.
-9. After the self-check, do the reader test that `references/review.md` gives.
+8. Before the self-check, read `references/review.md`. Then do the self-check that it gives. In each job, also for a small change, do the vote of the confirmers that `references/review.md` gives. Do the vote also when you expect to reject the findings.
+9. After the self-check, do the reader test that `references/review.md` gives, also for a small change. The self-check does not examine how a new reader obeys the file.
 10. Write the end-of-run report.
 
 ### When a reviewer gives a finding
@@ -126,6 +126,7 @@ node <skill folder>/scripts/check.ts --reports --file <file under review> <repor
 ```
 
 - The script gives JSON with 3 lists of findings: blocking, advisory, and dropped. It drops each finding that has a missing field, a quotation that is not in the files, or no rule with a mark.
+- The JSON also gives the confirm list. This list gives each report that has one or more findings in the blocking list. When a subagent is available, start 2 confirmers for each report in the confirm list, and for no other report.
 - The exit codes are the same as in the first form. Exit code 1 shows one or more findings in the blocking list or the advisory list.
 
 For the reader reports of one file, also give the saved copy and the tasks file that `references/review.md` gives. Give the reports in the sequence of the tasks:

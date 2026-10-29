@@ -982,6 +982,52 @@ describe("check script, report form", () => {
         ]);
     });
 
+    // Runs 05, 07, and 09 of #145 started no confirmers for some reports
+    // with blocking findings, so the output names each such report.
+    it("lists each report with blocking findings after the drop for 2 confirmers", () => {
+        const text = "# Title\n\nWork well.\nThe file is read by the agent.\n";
+        const result = checkReports(text, [
+            finding({ rule: passive, text: "The file is read by the agent." }),
+            finding({ rule: passive, text: "The file is written by it." }),
+            finding({
+                rule: '4.1 "Write short and clear sentences (rule 4.1). Give the action or the fact, not a general statement."',
+                text: "Work well.",
+            }),
+            [
+                finding({
+                    rule: passive,
+                    text: "The file is read by the agent.",
+                }),
+                finding({
+                    rule: passive,
+                    text: "The file is read by the agent.",
+                }),
+            ].join("\n"),
+        ]);
+        expect(result.confirm).toEqual([
+            {
+                report: expect.stringMatching(/report-1\.md$/),
+                blocking: 1,
+                action: "Start 2 confirmers for this report.",
+            },
+            {
+                report: expect.stringMatching(/report-4\.md$/),
+                blocking: 2,
+                action: "Start 2 confirmers for this report.",
+            },
+        ]);
+    });
+
+    it("gives an empty confirm list when no report has blocking findings", () => {
+        const result = checkReports("Work well.\n", [
+            finding({
+                rule: '4.1 "Write short and clear sentences (rule 4.1). Give the action or the fact, not a general statement."',
+                text: "Work well.",
+            }),
+        ]);
+        expect(result.confirm).toEqual([]);
+    });
+
     it("gives a rule with a nested list the mark of its list items", () => {
         const result = checkReports("Run the tests in the container.\n", [
             finding({
