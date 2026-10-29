@@ -58,7 +58,7 @@ function diff({ path, before, after }: File): string {
 function runFolder(
     statements: Statement[],
     files: File[],
-    options: { limitHit?: boolean } = {},
+    options: { limitHit?: boolean; record?: RunRecord } = {},
 ): string {
     const evalDir = join(
         mkdtempSync(join(tmpdir(), "grade-")),
@@ -86,7 +86,25 @@ function runFolder(
         writeFileSync(path, file.after);
     }
     writeFileSync(join(outputs, "report.md"), "Done.\n");
-    writeFileSync(join(runDir, "transcript.jsonl"), "");
+    const record = options.record ?? { transcript: [] };
+    writeFileSync(
+        join(runDir, "transcript.jsonl"),
+        (record.transcript ?? [])
+            .map((event) => JSON.stringify(event))
+            .join("\n"),
+    );
+    writeFileSync(
+        join(runDir, "timing.json"),
+        JSON.stringify({ work_dir: WORK, session_id: record.sessionId }),
+    );
+    if (record.sessions) {
+        mkdirSync(join(runDir, "sessions"));
+        for (const [id, session] of Object.entries(record.sessions))
+            writeFileSync(
+                join(runDir, "sessions", `${id}.json`),
+                JSON.stringify(session),
+            );
+    }
     if (options.limitHit) writeFileSync(join(runDir, "LIMIT_HIT"), "");
     return runDir;
 }
@@ -248,6 +266,489 @@ describe("grade script, merge step", () => {
         const result = merged({});
         expect(result.code).toBe(2);
         expect(result.stderr).toMatch(/3\.1/);
+    });
+});
+
+// The project folder of the saved runs.
+const WORK = "/work/project";
+const CHECK = `node ${WORK}/.claude/skills/agent-instructions/scripts/check.ts`;
+
+type RunRecord = {
+    transcript?: unknown[];
+    sessions?: Record<string, unknown>;
+    sessionId?: string;
+};
+type Call = { name: string; input: Record<string, unknown> };
+type AgentOptions = {
+    report?: string;
+    calls?: Call[];
+    failed?: number[];
+    during?: () => void;
+};
+
+const REVIEWERS = [
+    "loading reviewer",
+    "ASD-STE100 reviewer",
+    "ISO 24495-1 reviewer",
+];
+const TASKS = [
+    "Make release 1.2.0.",
+    "Make release 2.0.0.",
+    "Make a feature branch.",
+];
+
+const reviewerPrompt = (name: string, file = "AGENTS.md") =>
+    `You are the ${name} for an Agent instruction.\nCheck class: ${name}\nThis task is read-only.\n\nFile under review: ${WORK}/${file}\n`;
+const readerPrompt = (task: string, file = "AGENTS.md") =>
+    `Check class: reader\nThis task is a dry run.\n\nInstruction file: ${WORK}/${file}\nProject folder: ${WORK}\nTask: ${task}\n`;
+const confirmerPrompt = (file = "AGENTS.md") =>
+    `Check class: confirmer\nThis task is read-only.\n\nFile under review: ${WORK}/${file}\nFindings: 1. "rule" "text"\n`;
+
+// A reviewer report with one finding. Its Text quote is not in the file, so
+// the report form drops it.
+const REPORT =
+    'Blocking checklist:\n\n- Rule: "Each sentence has a maximum of 25 words."\n- Text: "This text is not in the file."\n- Problem: The sentence is long.\n- Correction: Write a short sentence.\n';
+const READER_REPORT =
+    'Part 1: Steps\n1. Run make test.\nPart 2: Used parts\n1. "Run `make test`."\nPart 3: Unclear parts\nNone\n';
+const read = (file = "AGENTS.md"): Call => ({
+    name: "Read",
+    input: { file_path: `${WORK}/${file}` },
+});
+
+// The tools that the main agent uses on one platform.
+type Builder = {
+    agents(prompts: string[], options?: AgentOptions): Builder;
+    bash(command: string): Builder;
+    edit(file?: string): Builder;
+    record(): RunRecord;
+};
+
+// A Claude Code transcript.jsonl.
+function claude(): Builder {
+    const events: unknown[] = [];
+    let next = 0;
+    const id = (prefix: string) => `${prefix}-${++next}`;
+    const assistant = (parent: string | null, content: unknown[]) =>
+        events.push({
+            type: "assistant",
+            parent_tool_use_id: parent,
+            message: { id: id("msg"), content },
+        });
+    const result = (toolUseId: string, text: string, error = false) =>
+        events.push({
+            type: "user",
+            parent_tool_use_id: null,
+            message: {
+                content: [
+                    {
+                        type: "tool_result",
+                        tool_use_id: toolUseId,
+                        is_error: error,
+                        content: [{ type: "text", text }],
+                    },
+                ],
+            },
+        });
+    const call = (name: string, input: Record<string, unknown>) => {
+        const toolUseId = id("toolu");
+        assistant(null, [{ type: "tool_use", id: toolUseId, name, input }]);
+        result(toolUseId, "Done.");
+        return builder;
+    };
+    const builder: Builder = {
+        agents(prompts, options = {}) {
+            const message = id("msg");
+            const ids = prompts.map((prompt) => {
+                const toolUseId = id("toolu");
+                events.push({
+                    type: "assistant",
+                    parent_tool_use_id: null,
+                    message: {
+                        id: message,
+                        content: [
+                            {
+                                type: "tool_use",
+                                id: toolUseId,
+                                name: "Agent",
+                                input: {
+                                    description: "Check",
+                                    subagent_type: "general-purpose",
+                                    prompt,
+                                },
+                            },
+                        ],
+                    },
+                });
+                return toolUseId;
+            });
+            options.during?.();
+            ids.forEach((toolUseId, index) => {
+                const fail = options.failed?.includes(index) ?? false;
+                for (const item of options.calls ?? [read()])
+                    assistant(toolUseId, [
+                        {
+                            type: "tool_use",
+                            id: id("toolu"),
+                            name: item.name,
+                            input: item.input,
+                        },
+                    ]);
+                if (!fail)
+                    assistant(toolUseId, [
+                        { type: "text", text: options.report ?? REPORT },
+                    ]);
+                result(toolUseId, fail ? "Error." : "Report.", fail);
+            });
+            return builder;
+        },
+        bash: (command) => call("Bash", { command }),
+        edit: (file = "AGENTS.md") =>
+            call("Edit", { file_path: `${WORK}/${file}` }),
+        record: () => ({ transcript: events }),
+    };
+    return builder;
+}
+
+// The OpenCode session exports of a run in sessions/.
+function openCode(): Builder {
+    const messages: unknown[] = [];
+    const sessions: Record<string, unknown> = {};
+    let time = 1000;
+    const part = (tool: string, input: Record<string, unknown>) => ({
+        type: "tool",
+        tool,
+        state: {
+            status: "completed",
+            input,
+            time: { start: ++time, end: ++time },
+        },
+    });
+    const message = (parts: unknown[]) =>
+        messages.push({
+            info: {
+                id: `msg_${messages.length}`,
+                role: "assistant",
+                time: { created: time },
+                finish: "tool-calls",
+            },
+            parts,
+        });
+    const call = (tool: string, input: Record<string, unknown>) => {
+        message([part(tool, input)]);
+        return builder;
+    };
+    const builder: Builder = {
+        agents(prompts, options = {}) {
+            const start = ++time;
+            const parts = prompts.map((prompt, index) => {
+                const fail = options.failed?.includes(index) ?? false;
+                const child = `ses_child${Object.keys(sessions).length}`;
+                sessions[child] = {
+                    info: { id: child, directory: WORK },
+                    messages: [
+                        {
+                            info: { id: `${child}_1`, role: "assistant" },
+                            parts: [
+                                ...(options.calls ?? [read()]).map((item) =>
+                                    part(item.name.toLowerCase(), item.input),
+                                ),
+                                ...(fail
+                                    ? []
+                                    : [
+                                          {
+                                              type: "text",
+                                              text: options.report ?? REPORT,
+                                          },
+                                      ]),
+                            ],
+                        },
+                    ],
+                };
+                return {
+                    type: "tool",
+                    tool: "task",
+                    state: {
+                        status: fail ? "error" : "completed",
+                        input: {
+                            description: "Check",
+                            subagent_type: "general",
+                            prompt,
+                        },
+                        metadata: { sessionId: child },
+                        time: { start, end: start + 500 },
+                    },
+                };
+            });
+            message(parts);
+            time = start + 500;
+            return builder;
+        },
+        bash: (command) => call("bash", { command }),
+        edit: (file = "AGENTS.md") =>
+            call("edit", { filePath: `${WORK}/${file}` }),
+        record: () => ({
+            sessionId: "ses_main",
+            sessions: {
+                ses_main: {
+                    info: { id: "ses_main", directory: WORK },
+                    messages,
+                },
+                ...sessions,
+            },
+        }),
+    };
+    return builder;
+}
+
+const reportForm = (file = "AGENTS.md") =>
+    `${CHECK} --reports --file ${WORK}/${file} /tmp/r/loading.md /tmp/r/ste.md /tmp/r/iso.md > /tmp/r/form.json`;
+const readerForm = (file = "AGENTS.md") =>
+    `${CHECK} --reports --file ${WORK}/${file} --copy /tmp/r/copy.md --tasks /tmp/r/tasks.json /tmp/r/1.md /tmp/r/2.md /tmp/r/3.md > /tmp/r/reader.json`;
+
+// One review round of one file, as review.md tells: the check script, the
+// 3 reviewers in one message, the report form, then the correction.
+const reviewRound = (run: Builder, file = "AGENTS.md") =>
+    run
+        .bash(
+            `${CHECK} ${WORK}/${file} --project ${WORK} --glossary none > /tmp/r/script.json`,
+        )
+        .agents(REVIEWERS.map((name) => reviewerPrompt(name, file)))
+        .bash(reportForm(file))
+        .edit(file);
+
+// One reader-test round of one file: the 3 readers in one message, the
+// report form for reader reports, then the correction.
+const readerRound = (run: Builder, calls?: Call[], file = "AGENTS.md") =>
+    run
+        .agents(
+            TASKS.map((task) => readerPrompt(task, file)),
+            { report: READER_REPORT, calls },
+        )
+        .bash(readerForm(file))
+        .edit(file);
+
+const PROCESS = ["1", "2", "3a", "3c", "4"];
+
+// Grades the process statements of a run and gives the verdict of each id.
+function processVerdicts(record: RunRecord, ids = PROCESS) {
+    const runDir = runFolder(
+        ids.map((id) => statement(id)),
+        [
+            {
+                path: "AGENTS.md",
+                before: agents("Use pnpm."),
+                after: agents("Use pnpm.\n\nRun `make test`."),
+            },
+        ],
+        { record },
+    );
+    const result = grade("script", runDir);
+    expect(result.stderr).toBe("");
+    expect(result.code).toBe(0);
+    const grading = readJson(join(runDir, "script-grading.json"));
+    return Object.fromEntries(
+        grading.script.map(
+            (item: { id: string; passed: boolean; evidence: string }) => [
+                item.id,
+                item,
+            ],
+        ),
+    ) as Record<string, { passed: boolean; evidence: string }>;
+}
+
+const passed = (verdicts: Record<string, { passed: boolean }>) =>
+    Object.keys(verdicts)
+        .toSorted()
+        .filter((id) => verdicts[id].passed);
+
+describe("process statements", () => {
+    for (const [platform, start] of [
+        ["Claude Code", claude],
+        ["OpenCode", openCode],
+    ] as const) {
+        it(`passes each process statement of a ${platform} run that obeys review.md`, () => {
+            const run = start();
+            reviewRound(run);
+            readerRound(run);
+            const verdicts = processVerdicts(run.record());
+            expect(passed(verdicts)).toEqual(PROCESS);
+            expect(verdicts["2"].evidence).toMatch(
+                /Review round 1, AGENTS\.md: the report form ran\. 3 dropped findings in 3 reports/,
+            );
+        });
+
+        it(`fails [3a] for a ${platform} reader that runs a Bash redirect`, () => {
+            const run = start();
+            reviewRound(run);
+            readerRound(run, [
+                read(),
+                { name: "Bash", input: { command: "cat AGENTS.md > /tmp/x" } },
+            ]);
+            const verdicts = processVerdicts(run.record());
+            expect(verdicts["3a"].passed).toBe(false);
+            expect(verdicts["3a"].evidence).toContain(
+                'runs "cat AGENTS.md > /tmp/x"',
+            );
+        });
+    }
+
+    it("fails [3a] for a reader that writes a file", () => {
+        const run = claude();
+        reviewRound(run);
+        readerRound(run, [
+            { name: "Write", input: { file_path: "/tmp/notes.md" } },
+        ]);
+        expect(processVerdicts(run.record())["3a"].passed).toBe(false);
+    });
+
+    it("passes [3a] for a reader that runs only read-only commands", () => {
+        const run = claude();
+        reviewRound(run);
+        readerRound(run, [
+            {
+                name: "Bash",
+                input: {
+                    command:
+                        "grep -n release AGENTS.md | head -5; sed -n '1,20p' AGENTS.md && git log --oneline -3",
+                },
+            },
+        ]);
+        expect(processVerdicts(run.record())["3a"].passed).toBe(true);
+    });
+
+    it("fails [4] for a run with 4 review rounds", () => {
+        const run = claude();
+        for (let round = 0; round < 4; round++) reviewRound(run);
+        readerRound(run);
+        const verdicts = processVerdicts(run.record());
+        expect(verdicts["4"]).toMatchObject({
+            passed: false,
+            evidence: "4 review rounds and 1 reader-test rounds.",
+        });
+        expect(verdicts["1"].passed).toBe(true);
+    });
+
+    it("fails [1] for a subagent whose prompt has no class line", () => {
+        const run = claude();
+        reviewRound(run);
+        run.agents(["Review the file AGENTS.md."]);
+        readerRound(run);
+        const verdicts = processVerdicts(run.record());
+        expect(verdicts["1"].passed).toBe(false);
+        expect(verdicts["1"].evidence).toMatch(/no class line/);
+    });
+
+    it("fails [1] for a file change before the last report of a round", () => {
+        const run = claude();
+        run.agents(
+            REVIEWERS.map((name) => reviewerPrompt(name)),
+            { during: () => run.edit() },
+        )
+            .bash(reportForm())
+            .edit();
+        readerRound(run);
+        const verdicts = processVerdicts(run.record());
+        expect(verdicts["1"].passed).toBe(false);
+        expect(verdicts["1"].evidence).toMatch(
+            /Review round 1: Edit changes AGENTS\.md before the last report/,
+        );
+    });
+
+    it("fails [1] for reviewers of one file in different messages", () => {
+        const run = claude();
+        for (const name of REVIEWERS) run.agents([reviewerPrompt(name)]);
+        run.bash(reportForm()).edit();
+        readerRound(run);
+        expect(processVerdicts(run.record())["1"].passed).toBe(false);
+    });
+
+    it("passes [1] for 2 confirmers after the report form, and fails it for 3", () => {
+        const withConfirmers = (count: number) => {
+            const run = claude();
+            run.agents(REVIEWERS.map((name) => reviewerPrompt(name)))
+                .bash(reportForm())
+                .agents(Array(count).fill(confirmerPrompt()), {
+                    report: "1. yes: The sentence is long.",
+                })
+                .edit();
+            readerRound(run);
+            return processVerdicts(run.record())["1"];
+        };
+        expect(withConfirmers(2).passed).toBe(true);
+        expect(withConfirmers(3)).toMatchObject({
+            passed: false,
+            evidence: expect.stringContaining("3 confirmers"),
+        });
+    });
+
+    it("passes [1] when the run starts one new subagent for a failed reviewer", () => {
+        const run = claude();
+        run.agents(
+            REVIEWERS.map((name) => reviewerPrompt(name)),
+            { failed: [2] },
+        )
+            .agents([reviewerPrompt(REVIEWERS[2])])
+            .bash(reportForm())
+            .edit();
+        readerRound(run);
+        const verdicts = processVerdicts(run.record());
+        expect(verdicts["1"].passed).toBe(true);
+        expect(verdicts["4"].evidence).toBe(
+            "1 review rounds and 1 reader-test rounds.",
+        );
+    });
+
+    it("fails [1] when the run starts no new subagent for a failed reviewer", () => {
+        const run = claude();
+        run.agents(
+            REVIEWERS.map((name) => reviewerPrompt(name)),
+            { failed: [2] },
+        )
+            .bash(reportForm())
+            .edit();
+        readerRound(run);
+        expect(processVerdicts(run.record())["1"].evidence).toMatch(
+            /no new subagent/,
+        );
+    });
+
+    it("fails [2] and [3c] when the run corrects the file before the report form", () => {
+        const run = claude();
+        run.agents(REVIEWERS.map((name) => reviewerPrompt(name)))
+            .edit()
+            .bash(reportForm())
+            .agents(
+                TASKS.map((task) => readerPrompt(task)),
+                {
+                    report: READER_REPORT,
+                },
+            )
+            .edit();
+        const verdicts = processVerdicts(run.record());
+        expect(verdicts["2"].passed).toBe(false);
+        expect(verdicts["2"].evidence).toMatch(
+            /Review round 1, AGENTS\.md: no report form before the correction/,
+        );
+        expect(verdicts["3c"].passed).toBe(false);
+    });
+
+    it("grades the rounds of a run that did the checks itself", () => {
+        const run = claude();
+        const save = (title: string) =>
+            run.bash(
+                `cat > /tmp/r/${title.length}.md <<'EOF'\n${title}\n${REPORT}EOF`,
+            );
+        for (let round = 1; round <= 4; round++) {
+            for (const name of ["loading", "ASD-STE100", "ISO 24495-1"])
+                save(`Round ${round}: ${name} review`);
+            run.bash(reportForm()).edit();
+        }
+        const verdicts = processVerdicts(run.record(), ["2", "4"]);
+        expect(verdicts["2"].passed).toBe(true);
+        expect(verdicts["4"]).toMatchObject({
+            passed: false,
+            evidence: "4 review rounds and 0 reader-test rounds.",
+        });
     });
 });
 

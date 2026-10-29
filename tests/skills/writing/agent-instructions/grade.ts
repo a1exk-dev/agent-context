@@ -10,13 +10,21 @@
 // Runs with Bun or Node.js 22.18 or later.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import {
+    existsSync,
+    mkdtempSync,
+    readFileSync,
+    rmSync,
+    writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
 import {
     type FileChange,
     type Finding,
     type Pointer,
     type Run,
+    type Subagent,
     scriptStatements,
     statementLists,
     type Verdict,
@@ -26,9 +34,9 @@ import {
     HERE,
     type OpenCodeSession,
     parseJsonLines,
+    resultText,
     SKILL,
     type Statement,
-    type ToolCall,
     toolCalls,
     writeJson,
 } from "./eval-lib.ts";
@@ -220,7 +228,10 @@ function readRun(runDir: string, metadata: Metadata): Run {
         findings: checked.findings.filter(onAdded),
         pointers: checked.pointers.filter(onAdded),
         glossary: glossary ? readFileSync(glossary, "utf8") : null,
-        messages: mainMessages(runDir),
+        workDir: readTiming(runDir).work_dir ?? "",
+        ...runRecord(runDir),
+        dropped: (path, reports) =>
+            droppedFindings(join(outputs, "files"), path, reports),
     };
 }
 
@@ -335,10 +346,11 @@ function parseDiff(diff: string, read: (path: string) => string): FileChange[] {
     return changes;
 }
 
+// Git writes a/ and b/, or c/, i/, w/, and o/ with diff.mnemonicPrefix.
 function diffPath(line: string): string | null {
     const path = line.slice(4).split("\t")[0];
     if (path === "/dev/null") return null;
-    return path.replace(/^[ab]\//, "");
+    return path.replace(/^(?:a|b|c|i|o|w)\//, "");
 }
 
 // The old text of a file: the new lines without the added ones, with each
@@ -351,41 +363,196 @@ function oldText(change: FileChange): string {
     return kept.join("\n");
 }
 
-// The assistant messages of the main agent, each with its tool calls.
-// Claude Code: transcript.jsonl, one message for each message id. OpenCode:
-// the parent session in sessions/.
-function mainMessages(runDir: string): { calls: ToolCall[] }[] {
+function readTiming(runDir: string): {
+    work_dir?: string;
+    session_id?: string;
+} {
     const timing = join(runDir, "timing.json");
-    const sessionId = existsSync(timing)
-        ? (readJson<{ session_id?: string }>(timing).session_id ?? null)
-        : null;
-    if (sessionId) {
-        const session = readJson<OpenCodeSession>(
-            join(runDir, "sessions", `${sessionId}.json`),
-        );
-        return session.messages
-            .filter((message) => message.info.role === "assistant")
-            .map((message) => ({
-                calls: message.parts
-                    .filter((part) => part.type === "tool")
-                    .map((part) => ({
-                        name: part.tool ?? "",
-                        input: part.state?.input ?? {},
-                    })),
-            }));
-    }
+    return existsSync(timing) ? readJson(timing) : {};
+}
+
+// The run record: the assistant messages of the main agent, each with its
+// tool calls, and the subagents that the main agent started. `at` orders the
+// calls, the starts, and the reports. Claude Code: the event number in
+// transcript.jsonl. OpenCode: the time of the tool call in sessions/.
+function runRecord(runDir: string): Pick<Run, "messages" | "subagents"> {
+    const sessionId = readTiming(runDir).session_id;
+    return sessionId ? openCodeRecord(runDir, sessionId) : claudeRecord(runDir);
+}
+
+const isSubagentStart = (name: string) =>
+    ["agent", "task"].includes(name.toLowerCase());
+
+function claudeRecord(runDir: string): Pick<Run, "messages" | "subagents"> {
     const events = parseJsonLines<ClaudeEvent>(
         readFileSync(join(runDir, "transcript.jsonl"), "utf8"),
     );
-    const messages = new Map<string, { calls: ToolCall[] }>();
-    events.forEach((event, index) => {
-        if (event.type !== "assistant" || event.parent_tool_use_id) return;
-        const key = event.message?.id ?? `event-${index}`;
-        const message = messages.get(key) ?? { calls: [] };
-        message.calls.push(...toolCalls(event));
-        messages.set(key, message);
+    const messages = new Map<string, Run["messages"][number]>();
+    const agents = new Map<string, Subagent & { error: boolean }>();
+    events.forEach((event, at) => {
+        const content = event.message?.content;
+        const blocks = Array.isArray(content) ? content : [];
+        const parent = event.parent_tool_use_id;
+        if (event.type === "assistant" && parent) {
+            const agent = agents.get(parent);
+            if (!agent) return;
+            agent.calls.push(...toolCalls(event));
+            for (const block of blocks)
+                if (block.type === "text" && block.text?.trim())
+                    agent.report = block.text;
+        } else if (event.type === "assistant") {
+            const id = event.message?.id ?? `event-${at}`;
+            const message = messages.get(id) ?? { id, calls: [] };
+            messages.set(id, message);
+            for (const block of blocks) {
+                if (block.type !== "tool_use") continue;
+                const call = {
+                    name: block.name ?? "",
+                    input: block.input ?? {},
+                    at,
+                };
+                message.calls.push(call);
+                if (!isSubagentStart(call.name)) continue;
+                agents.set(block.id ?? `event-${at}`, {
+                    ...subagentInput(call.input),
+                    message: id,
+                    start: at,
+                    end: Number.POSITIVE_INFINITY,
+                    failed: true,
+                    error: false,
+                    report: "",
+                    calls: [],
+                });
+            }
+        } else if (event.type === "user" && !parent) {
+            for (const block of blocks) {
+                const agent = agents.get(block.tool_use_id ?? "");
+                if (block.type !== "tool_result" || !agent) continue;
+                // A background start returns at once. Its report comes
+                // later, with a task_notification event.
+                if (
+                    resultText(block.content).startsWith("Async agent launched")
+                )
+                    continue;
+                agent.end = at;
+                agent.error = block.is_error === true;
+            }
+        } else if (event.subtype === "task_notification") {
+            const agent = agents.get(event.tool_use_id ?? "");
+            if (!agent) return;
+            agent.end = at;
+            agent.error = event.status !== "completed";
+        }
     });
-    return [...messages.values()];
+    const subagents = [...agents.values()].map(({ error, ...agent }) => ({
+        ...agent,
+        failed:
+            error ||
+            agent.end === Number.POSITIVE_INFINITY ||
+            !agent.report.trim(),
+    }));
+    return { messages: [...messages.values()], subagents };
+}
+
+function openCodeRecord(
+    runDir: string,
+    sessionId: string,
+): Pick<Run, "messages" | "subagents"> {
+    const session = (id: string) =>
+        readJson<OpenCodeSession>(join(runDir, "sessions", `${id}.json`));
+    const subagents: Subagent[] = [];
+    const messages = session(sessionId)
+        .messages.filter((message) => message.info.role === "assistant")
+        .map((message, index) => {
+            const id = message.info.id ?? `message-${index}`;
+            const created = message.info.time?.created ?? index;
+            const parts = message.parts.filter((part) => part.type === "tool");
+            for (const part of parts) {
+                if (!isSubagentStart(part.tool ?? "")) continue;
+                const state = part.state ?? {};
+                const childId = state.metadata?.sessionId;
+                const child = childId
+                    ? session(childId).messages.filter(
+                          (item) => item.info.role === "assistant",
+                      )
+                    : [];
+                const childParts = child.flatMap((item) => item.parts);
+                const report =
+                    childParts
+                        .filter(
+                            (item) => item.type === "text" && item.text?.trim(),
+                        )
+                        .at(-1)?.text ?? "";
+                subagents.push({
+                    ...subagentInput(state.input ?? {}),
+                    message: id,
+                    start: state.time?.start ?? created,
+                    end: state.time?.end ?? Number.POSITIVE_INFINITY,
+                    failed: state.status !== "completed" || !report.trim(),
+                    report,
+                    calls: childParts
+                        .filter((item) => item.type === "tool")
+                        .map((item) => ({
+                            name: item.tool ?? "",
+                            input: item.state?.input ?? {},
+                        })),
+                });
+            }
+            return {
+                id,
+                calls: parts.map((part) => ({
+                    name: part.tool ?? "",
+                    input: part.state?.input ?? {},
+                    at: part.state?.time?.start ?? created,
+                })),
+            };
+        });
+    return { messages, subagents };
+}
+
+function subagentInput(input: Record<string, unknown>) {
+    return {
+        prompt: String(input.prompt ?? ""),
+        type: String(input.subagent_type ?? ""),
+    };
+}
+
+// The number of findings that the report form of the check script drops
+// from the reports of one file, or null when the run deleted the file.
+function droppedFindings(
+    files: string,
+    path: string,
+    reports: string[],
+): number | null {
+    const file = join(files, path);
+    if (reports.length === 0 || !existsSync(file)) return null;
+    const folder = mkdtempSync(join(tmpdir(), "grade-reports-"));
+    try {
+        const paths = reports.map((report, index) => {
+            const reportPath = join(folder, `report-${index + 1}.md`);
+            writeFileSync(reportPath, report);
+            return reportPath;
+        });
+        const result = spawnSync(
+            process.execPath,
+            [
+                join(SKILL, "scripts/check.ts"),
+                "--reports",
+                "--file",
+                file,
+                ...paths,
+            ],
+            { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
+        );
+        if (result.status !== 0 && result.status !== 1)
+            throw new GradeError(
+                `The report form of the check script failed: ${result.stderr}`,
+            );
+        return (JSON.parse(result.stdout) as { dropped: unknown[] }).dropped
+            .length;
+    } finally {
+        rmSync(folder, { recursive: true });
+    }
 }
 
 if (import.meta.main) process.exitCode = main(process.argv.slice(2));

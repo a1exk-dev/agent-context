@@ -4,6 +4,13 @@
 // folder and calls these functions.
 
 import type { ToolCall } from "./eval-lib.ts";
+import {
+    readerReportForms,
+    readers,
+    reviewers,
+    reviewReportForms,
+    roundLimits,
+} from "./process.ts";
 
 export type Finding = {
     reviewer: string;
@@ -35,10 +42,31 @@ export type FileChange = {
     after: string | null;
 };
 
+// A tool call of the main agent. `at` orders the calls, the subagent starts,
+// and the subagent reports of a run.
+export type MainCall = ToolCall & { at: number };
+
+// A subagent that the main agent started. `message` is the id of the main
+// message that started it. `end` is the place of its report or failure, or
+// Infinity when it gave neither. `calls` are its own tool calls.
+export type Subagent = {
+    prompt: string;
+    type: string;
+    message: string;
+    start: number;
+    end: number;
+    failed: boolean;
+    report: string;
+    calls: ToolCall[];
+};
+
 // The run as the statements see it. Paths are relative to the project root.
 // `findings` and `pointers` come from the check script of the Skill and are
 // only those on added lines. `messages` are the assistant messages of the
-// main agent, each with its tool calls.
+// main agent, each with its tool calls. `workDir` is the absolute project
+// folder of the run. `dropped` runs the report form of the check script on
+// reports against a changed file and gives the number of dropped findings,
+// or null when the run deleted the file or there is no report.
 export type Run = {
     prompt: string;
     knownMistakes: unknown;
@@ -46,7 +74,10 @@ export type Run = {
     findings: Finding[];
     pointers: Pointer[];
     glossary: string | null;
-    messages: { calls: ToolCall[] }[];
+    workDir: string;
+    messages: { id: string; calls: MainCall[] }[];
+    subagents: Subagent[];
+    dropped: (path: string, reports: string[]) => number | null;
 };
 
 export type Verdict = { passed: boolean; evidence: string };
@@ -323,6 +354,11 @@ function movedSections(run: Run): Verdict {
 
 // The script statements, keyed by statement id.
 export const scriptStatements: Record<string, (run: Run) => Verdict> = {
+    "1": reviewers,
+    "2": reviewReportForms,
+    "3a": readers,
+    "3c": readerReportForms,
+    "4": roundLimits,
     "6": (run) =>
         findingVerdict(
             run,

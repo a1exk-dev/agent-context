@@ -9,6 +9,7 @@ The eval plan is in issue #17, section 12. These files run it.
 | `evals.json` | The 10 output tests: request, setup, statements, and known mistakes. Each statement is `{id, text, grader}`, and `grader` is `script`, `llm`, or `advisory`. |
 | `grade.ts` | The grade script: it grades the `script` statements of one run and merges the LLM results into `grading.json`. |
 | `assertions.ts` | The `script` statement checks keyed by id, and the lists that the LLM grader examines. |
+| `process.ts` | The process statements [1], [2], [3a], [3c], and [4]. They sort each subagent by the `Check class:` line of its prompt and read `transcript.jsonl` or `sessions/`. |
 | `load-requests.json` | The 20 load-test requests. |
 | `run-evals.ts` | Runs the output tests with `claude -p`, with and without the skill. |
 | `run-opencode-evals.ts` | Runs the output tests with OpenCode and exports every parent and child session. |

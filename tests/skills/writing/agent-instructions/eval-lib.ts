@@ -331,10 +331,14 @@ type Block = {
     name?: string;
     input?: Input;
     tool_use_id?: string;
+    is_error?: boolean;
     content?: unknown;
 };
 export type ClaudeEvent = {
     type?: string;
+    subtype?: string;
+    tool_use_id?: string;
+    status?: string;
     parent_tool_use_id?: string | null;
     message?: { id?: string; content?: Block[] | string };
     result?: string;
@@ -383,7 +387,7 @@ export function renderTranscript(events: ClaudeEvent[]): string {
     return lines.join("\n");
 }
 
-function resultText(content: unknown): string {
+export function resultText(content: unknown): string {
     if (Array.isArray(content)) {
         return content
             .filter((item) => typeof item === "object" && item !== null)
@@ -457,7 +461,13 @@ export type OpenCodeSession = {
         tokens?: { input?: number; output?: number; cache?: Input };
     };
     messages: {
-        info: { role: string; error?: unknown; finish?: string };
+        info: {
+            id?: string;
+            role: string;
+            time?: { created?: number };
+            error?: unknown;
+            finish?: string;
+        };
         parts: OpenCodePart[];
     }[];
 };
@@ -467,7 +477,9 @@ export type OpenCodePart = {
     tool?: string;
     callID?: string;
     state?: {
+        status?: string;
         input?: Input;
+        time?: { start?: number; end?: number };
         output?: string;
         error?: string;
         metadata?: { sessionId?: string };

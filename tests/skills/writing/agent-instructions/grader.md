@@ -31,23 +31,6 @@ Read the statements literally:
 - [10b]: Each list item is a known mistake of the starting file. Answer "yes" when the report names that mistake.
 - [9.1b]: Use the Summary part of the report.
 
-## Until grade.ts decides statements 1 to 4
-
-`grade.ts` does not yet decide statements [1], [2], [3a], and [4]. For these statements, use this list:
-
-- [1]: The main agent started 3 reviewer subagents, one for each source, with no fork of its history.
-- [1] and [3a], shared rounds: `transcript.md` has no timestamps, so use the sequence of the calls.
-  - On Claude Code, all `Agent` starts of a round come before the first `TOOL RESULT` of that round that gives a report.
-  - A background `Agent` start returns a `TOOL RESULT` that says "Async agent launched". That result is not a report.
-  - The report of a background subagent is its last `[subagent <description>] TEXT` block.
-  - On OpenCode, all `task` calls of a round are in one assistant message.
-  - A round with more than 3 checks runs in groups of 3. A group starts only after a subagent of the group before it stops.
-  - A write by the main agent to a reviewed or tested file during a round fails the statement. A round lasts from its first start to its last report.
-- [2]: A required notice about a permitted limit is not a finding. An example is the notice about a Skill folder that the project has. Each finding of a reviewer needs its "Rule" field and a quote of the text.
-- [3a]: Find each reader subagent and examine its tool calls. A `Write`, `Edit`, `apply_patch`, or `Bash` call that changes a file fails the statement. The reader test starts after the last review round. A review round after the reader test is permitted when it examines only the text that a reader-test correction changed.
-- [4]: Count the review rounds and the reader-test rounds from the subagent starts. A round is all subagent starts between two corrections by the author.
-- When a subagent failed: the run passes [1], [3a], and [4] only when it started one new subagent for that check. After a second failure, the run must do that check and all checks after it as "When no subagent is available" in `skills/writing/agent-instructions/references/review.md` tells.
-
 ## When you write the result
 
 1. Write `llm-grading.json` in the run folder in this form. Give one item in `statements` for each statement of the `llm` list.
