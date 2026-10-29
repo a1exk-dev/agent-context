@@ -36,7 +36,7 @@ A Commit review is what an agent shows the Operator before one commit: the stage
 _Avoid_: commit preview, approval request
 
 **Blocking rule**:
-A Blocking rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark "(blocking)" at its end. A confirmed finding for a Blocking rule makes its review round fail. A breach of a Blocking rule makes an agent do a wrong action or miss an instruction. One or two quotations from the files let a new subagent answer yes or no.
+A Blocking rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark "(blocking)" at its end. A confirmed finding for a Blocking rule that the author accepts makes its review round fail. A breach of a Blocking rule makes an agent do a wrong action or miss an instruction. One or two quotations from the files let a new subagent answer yes or no.
 _Avoid_: hard rule, error rule
 
 **Advisory rule**:

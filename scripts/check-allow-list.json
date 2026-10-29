@@ -446,19 +446,19 @@
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "1.8",
-        "text": "A **blocking rule** is a rule that ends with \"(blocking)\".",
+        "text": "A **blocking rule** is a rule in a reference file of this skill, with the mark \"(blocking)\" at its end.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     },
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "1.8",
-        "text": "An **advisory rule** is a rule that ends with \"(advisory)\".",
+        "text": "An **advisory rule** is a rule in a reference file of this skill, with the mark \"(advisory)\" at its end.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     },
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "1.8",
-        "text": "A **confirmer** is a new subagent that answers \"yes\" or \"no\" for a problem that a different check gave.",
+        "text": "A **confirmer** is a new subagent that answers \"yes\" or \"no\", with one sentence, for one problem that a different check found.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     }
 ]
