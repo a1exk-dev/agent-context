@@ -22,7 +22,7 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - A **Rule** is a short Markdown file. A project adds the text of a Rule to `AGENTS.md` or `CLAUDE.md`.
 - A **finding** is one problem that a reviewer subagent gives in its report. The check script also gives findings.
 - A **blocking rule** is a rule that ends with "(blocking)". A finding for a blocking rule can make a review round fail.
-- An **advisory rule** is a rule that ends with "(advisory)". A finding for an advisory rule never makes a review round fail.
+- An **advisory rule** is a rule that ends with "(advisory)". A review round cannot fail because of a finding for an advisory rule.
 - A **warning** is one item in the Warnings part of the end-of-run report. It is not the STE signal word WARNING, which this skill does not use.
 - A **tier** is one position in the sequence of the sources.
 - An **ADR** is an architecture decision record: a file that records one design decision and its cause.

@@ -91,8 +91,8 @@ Also give a finding for each text that the author moved and that does not obey l
 <For the ISO 24495-1 reviewer only:> The check script findings also give the pointer list: each sentence that names a file path, with its line and heading.
 For each sentence in the pointer list that is a pointer, decide whether the heading and the sentence give the condition to read the target.
 Also find each pointer that names no file, for example "that file".
-Skip the rule "Files that load in each session contain only short rules and pointers with a condition." The loading reviewer examines it.
-Skip the rule "Use one term for each item: the project term, not a different word with the same meaning." The ASD-STE100 reviewer examines it.
+In "When you select the text" in plain-language-checks.md, skip the rule about long text. The loading reviewer examines it.
+In "When you select the words and the tone", skip the rule about one term for each item. The ASD-STE100 reviewer examines it.
 <For the loading reviewer in the edit job only:> Write the extraction candidates in a different list: section heading, recommended file, and pointer sentence. Put in this list only sections under review that the author cannot edit. Use only the candidates that "When you recommend text to move" in loading-rules.md gives.
 
 Give each finding in this form:

@@ -532,5 +532,101 @@
         "rule": "When you select the text",
         "text": "It defines the terms, the tiers, and the end-of-run report.",
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "1.11",
+        "text": "**Blocking rule**:",
+        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "1.11",
+        "text": "A Blocking rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark \"(blocking)\" at its end.",
+        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "1.11",
+        "text": "A confirmed finding for a Blocking rule makes its review round fail.",
+        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "1.11",
+        "text": "A breach of a Blocking rule makes an agent do a wrong action or miss an instruction.",
+        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "6.2",
+        "text": "**Blocking rule**:",
+        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "6.2",
+        "text": "A Blocking rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark \"(blocking)\" at its end.",
+        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "6.2",
+        "text": "A confirmed finding for a Blocking rule makes its review round fail.",
+        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "6.2",
+        "text": "A breach of a Blocking rule makes an agent do a wrong action or miss an instruction.",
+        "cause": "The word is a part of the glossary term \"Blocking rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "1.11",
+        "text": "**Advisory rule**:",
+        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "1.11",
+        "text": "An Advisory rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark \"(advisory)\" at its end.",
+        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "1.11",
+        "text": "A finding for an Advisory rule never makes a review round fail.",
+        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "6.2",
+        "text": "**Advisory rule**:",
+        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "6.2",
+        "text": "An Advisory rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark \"(advisory)\" at its end.",
+        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "6.2",
+        "text": "A finding for an Advisory rule never makes a review round fail.",
+        "cause": "The word is a part of the glossary term \"Advisory rule\". The _Avoid_ word \"rule\" of Setting and the term \"Rule\" are different items."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **blocking rule** is a rule that ends with \"(blocking)\".",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "An **advisory rule** is a rule that ends with \"(advisory)\".",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     }
 ]
