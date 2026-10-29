@@ -13,8 +13,8 @@ Select the folder first, as the section "When you select the folder for the Skil
 - Tier 1: `compatibility` has a maximum of 500 characters. Each key and each value in `metadata` is text. (blocking)
 - Tier 1: The YAML parser accepts no errors. Put a value that contains `: ` in quotation marks. You can also start the value on the next line after `|` or `>`. (blocking)
 - Tier 1: Write only `name` and `description` in the frontmatter. Only these two fields operate on Codex, OpenCode, and Claude Code. A field that is not in the list of permitted fields, for example `disable-model-invocation`, also gives an error in `skills-ref validate`. (blocking)
-- Tier 1: When the user tells you clearly to write `license`, `compatibility`, `metadata`, or `allowed-tools`, write it. Then add a warning that gives the platforms that do not read the field.
-- Tier 1: If the user tells you to write a field that is not permitted, do not write it. Add a warning that gives the field and the error.
+- Tier 1: When the user tells you clearly to write `license`, `compatibility`, `metadata`, or `allowed-tools`, write it. Then add a warning that gives the platforms that do not read the field. (advisory)
+- Tier 1: If the user tells you to write a field that is not permitted, do not write it. Add a warning that gives the field and the error. (advisory)
 - Tier 4: Write `description` as one line in quotation marks. Some checks read only the first line of a value. In the value, write `\"` for each double quotation mark. (advisory)
 
 ## When you write the description

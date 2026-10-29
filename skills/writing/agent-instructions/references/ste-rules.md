@@ -62,7 +62,7 @@ Always replace these words. This list gives no replacement words, because a tabl
 - Make sure that the procedure is correct without its notes. To examine a note, read the procedure without the note. (blocking)
 - Put each instruction in a step or a rule, not in a note. An agent does not always obey a note. (blocking)
 - Put information that prevents damage in a CAUTION, not in a note. (blocking)
-- When the user tells you to write a "note" that gives an instruction, write a rule. Give this change in the Summary part.
+- When the user tells you to write a "note" that gives an instruction, write a rule. Give this change in the Summary part. (advisory)
 
 ## When you write a safety list
 

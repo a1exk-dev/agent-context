@@ -94,5 +94,5 @@ This recommendation is applicable only to the unchanged parts in the edit job. I
 ## When the file is the glossary, MEMORY.md, or a Rule
 
 - The glossary and `MEMORY.md` use the format that the project uses. Copy the format of the entries in the file. This skill has no template for the glossary or `MEMORY.md`. When the project has no glossary, give each term and its definition, as `technical-terms.md` tells you. (advisory)
-- This skill has no template for Rules. Edit a Rule as you edit other Agent instructions.
-- The STE rules and the plain-language checks are also applicable to these files. For a Rule, use the file-size limit and the extraction recommendation of the entry file that contains its text. The Agent Skills specification is not applicable to a Rule.
+- This skill has no template for Rules. Edit a Rule as you edit other Agent instructions. (advisory)
+- The STE rules and the plain-language checks are also applicable to these files. For a Rule, use the file-size limit and the extraction recommendation of the entry file that contains its text. The Agent Skills specification is not applicable to a Rule. (advisory)
