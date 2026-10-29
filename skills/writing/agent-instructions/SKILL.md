@@ -54,10 +54,10 @@ Do not write in a file that your text or this skill is "STE compliant" or "certi
 
 When two sources do not agree, obey the higher tier. The tiers are in this sequence, with the highest tier first:
 
-1. **Loading rules:** These are the MUST items of the Agent Skills specification for a Skill, and the platform loading rules for each Agent instruction. The MUST items include all items that `skills-ref validate` examines.
-2. **ASD-STE100:** This tier contains the STE rules of this skill.
-3. **ISO 24495-1 checks:** This tier contains the plain-language checks of this skill.
-4. **Recommendations:** This tier contains the recommendations of the Agent Skills specification. It also contains the rules in `references/loading-rules.md` that tell you to move text and that are not tier 1. Text that does not obey a recommendation can obey all rules of the specification.
+1. Loading rules: These are the MUST items of the Agent Skills specification for a Skill, and the platform loading rules for each Agent instruction. The MUST items include all items that `skills-ref validate` examines.
+2. ASD-STE100: This tier contains the STE rules of this skill.
+3. ISO 24495-1 checks: This tier contains the plain-language checks of this skill.
+4. Recommendations: This tier contains the recommendations of the Agent Skills specification. It also contains the rules in `references/loading-rules.md` that tell you to move text and that are not tier 1. Text that does not obey a recommendation can obey all rules of the specification.
 
 For an Agent instruction that is not a Skill, the Agent Skills specification is not applicable. Tier 1 then contains only the loading rules for that file. Tier 4 contains only the rules that tell you to move text and that are not tier 1.
 
