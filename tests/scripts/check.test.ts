@@ -1,5 +1,12 @@
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { checkBunPin, checkRepo } from "../../scripts/check.ts";
+import {
+    checkBunPin,
+    checkInstructions,
+    checkRepo,
+} from "../../scripts/check.ts";
 
 // Vitest runs on Node, which has no Bun.YAML. JSON is valid YAML, so the
 // tests write frontmatter as JSON and parse it with JSON.parse.
@@ -255,6 +262,77 @@ describe("checkBunPin", () => {
                 level: "error",
                 message:
                     "Dockerfile: oven/bun tag '1.4.2' differs from packageManager 'bun@1.4.3' in package.json",
+            },
+        ]);
+    });
+});
+
+// Makes a project folder with the given files, for checkInstructions.
+function project(files: Record<string, string>) {
+    const root = mkdtempSync(join(tmpdir(), "check-instructions-"));
+    for (const [path, text] of Object.entries(files)) {
+        mkdirSync(dirname(join(root, path)), { recursive: true });
+        writeFileSync(join(root, path), text);
+    }
+    return root;
+}
+
+describe("checkInstructions", () => {
+    it("runs the check script of the agent-instructions Skill", () => {
+        const root = project({ "AGENTS.md": "You should run the tests.\n" });
+        expect(checkInstructions(root, [])).toEqual([
+            {
+                level: "error",
+                message:
+                    'AGENTS.md:1: The sentence has the non-approved word "should". [When you select a word] "You should run the tests."',
+            },
+        ]);
+    });
+
+    it("checks repo files with GLOSSARY.md and shipped files with no glossary", () => {
+        const ask = "Ask the user for the branch.\n";
+        const root = project({
+            "GLOSSARY.md":
+                "**Operator**:\nThe Operator is a human.\n_Avoid_: user\n",
+            "AGENTS.md": ask,
+            "CLAUDE.md": ask,
+            "MEMORY.md": ask,
+            "docs/agents/domain.md": ask,
+            "skills/writing/foo/SKILL.md": `---\nname: foo\ndescription: Does foo.\n---\n${ask}`,
+            "skills/writing/foo/references/bar.md": ask,
+            "rules/writing/baz.md": ask,
+            ".claude/skills/other/SKILL.md": "You should run it.\n",
+        });
+        const avoid = (path: string) => ({
+            level: "error",
+            message: `${path}:1: The sentence has "user", which the glossary gives after _Avoid_. [1.11] "Ask the user for the branch."`,
+        });
+        expect(checkInstructions(root, [])).toEqual([
+            avoid("AGENTS.md"),
+            avoid("CLAUDE.md"),
+            avoid("MEMORY.md"),
+            avoid("docs/agents/domain.md"),
+        ]);
+    });
+
+    it("ignores each hit that the allow-list gives", () => {
+        const root = project({
+            "AGENTS.md":
+                'Do not write "MUST" as MUST.\n\nYou should run the tests.\n',
+        });
+        const allowList = [
+            {
+                path: "AGENTS.md",
+                rule: "Before a step with a risk",
+                text: 'Do not write "MUST" as MUST.',
+                cause: "The sentence gives the word as an example.",
+            },
+        ];
+        expect(checkInstructions(root, allowList)).toEqual([
+            {
+                level: "error",
+                message:
+                    'AGENTS.md:3: The sentence has the non-approved word "should". [When you select a word] "You should run the tests."',
             },
         ]);
     });

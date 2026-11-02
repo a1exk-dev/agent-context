@@ -1,0 +1,458 @@
+[
+    {
+        "path": "AGENTS.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Before you change a part of the project, read the ADRs in `docs/adr/` that are related to that part.",
+        "cause": "The folder holds the ADRs of this repo. The sentence applies when the first ADR exists."
+    },
+    {
+        "path": "AGENTS.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Prototypes: The `prototypes/` folder contains work that the repository does not keep.",
+        "cause": "The folder is local work that the repository does not keep."
+    },
+    {
+        "path": "AGENTS.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Open `prototypes/` only when the current prompt of the Operator tells you to open it.",
+        "cause": "The folder is local work that the repository does not keep."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "A Skill is a folder `skills/<category>/<name>/` that contains a `SKILL.md` file and all other files that the Skill uses.",
+        "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
+    },
+    {
+        "path": "GLOSSARY.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "A Rule is a short Markdown file `rules/<category>/<name>.md` whose text a project adds to `AGENTS.md` or `CLAUDE.md`, not to `.claude/rules/`.",
+        "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
+    },
+    {
+        "path": "MEMORY.md",
+        "rule": "6.2",
+        "text": "A SKILL.md stays at 20,000 bytes or less",
+        "cause": "The heading names the file SKILL.md, not the term Skill."
+    },
+    {
+        "path": "MEMORY.md",
+        "rule": "6.2",
+        "text": "Reason: Since 2026-09-24, the mattpocock/skills Skills that this repo installs, for example `domain-modeling`, `tdd`, and `pr`, read only `GLOSSARY.md`.",
+        "cause": "mattpocock/skills is the name of a GitHub repository."
+    },
+    {
+        "path": "MEMORY.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Applies when: writing or changing a `SKILL.md`, or changing the Skill size check in `scripts/check.ts`.",
+        "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
+    },
+    {
+        "path": "MEMORY.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Guidance: Keep each `SKILL.md` at 20,000 bytes or less, about 5,000 tokens.",
+        "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
+    },
+    {
+        "path": "MEMORY.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "When Codex reads a longer `SKILL.md` with a shell command, it removes the middle of the file.",
+        "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
+    },
+    {
+        "path": "MEMORY.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "In each Skill, accept `GLOSSARY.md` and `CONTEXT.md`, and use `GLOSSARY.md` when a project has the two files.",
+        "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
+    },
+    {
+        "path": "MEMORY.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "With `CONTEXT.md`, `domain-modeling` makes a second glossary.",
+        "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
+    },
+    {
+        "path": "MEMORY.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Projects that install our Skills can still use `CONTEXT.md`.",
+        "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
+    },
+    {
+        "path": "MEMORY.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "In `SKILL.md`, state \"Requires Node.js 22.18 or later\" and call the script with `node`, not a shebang.",
+        "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
+    },
+    {
+        "path": "docs/agents/domain.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Before you write the ADR in `docs/adr/`, get approval from the Operator, because the Operator controls each ADR.",
+        "cause": "The folder holds the ADRs of this repo. The sentence applies when the first ADR exists."
+    },
+    {
+        "path": "docs/agents/issue-tracker.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "_(Set to `yes` if this repo treats external PRs as feature requests. `/triage` reads this flag.)_",
+        "cause": "The text is a slash command, not a path."
+    },
+    {
+        "path": "docs/agents/issue-tracker.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Comment / label / close: `gh pr comment`, `gh pr edit --add-label`/`--remove-label`, `gh pr close`.",
+        "cause": "The \"/\" between code spans is a separator, not a path."
+    },
+    {
+        "path": "docs/agents/issue-tracker.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Used by `/wayfinder`.",
+        "cause": "The text is a slash command, not a path."
+    },
+    {
+        "path": "docs/agents/issue-tracker.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Labels: `wayfinder:<type>` (`research`/`prototype`/`grilling`/`task`).",
+        "cause": "The \"/\" between code spans is a separator, not a path."
+    },
+    {
+        "path": "docs/agents/triage-labels.md",
+        "rule": "6.2",
+        "text": "Label in mattpocock/skills",
+        "cause": "mattpocock/skills is the name of a GitHub repository."
+    },
+    {
+        "path": "skills/engineering/git-commit/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Operator** is the person who controls a project and the agents that operate in it.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/git-commit/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Commit policy** is the file `docs/agents/commit-policy.md` of a project.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/git-commit/SKILL.md",
+        "rule": "1.8",
+        "text": "A **Setting** is one line `- <name>: <value>` of a Commit policy.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/git-commit/SKILL.md",
+        "rule": "1.8",
+        "text": "A **Commit review** is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/git-commit/SKILL.md",
+        "rule": "1.8",
+        "text": "The **task files** are the files that the current task changed, added, or deleted.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/git-commit/SKILL.md",
+        "rule": "1.8",
+        "text": "The **header** is the first line of the commit message.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/git-commit/SKILL.md",
+        "rule": "1.8",
+        "text": "The **type**, the **scope**, the **body**, the **footer**, the **footer token**, and the **breaking change** have their meanings from Conventional Commits 1.0.0.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "An **Agent instruction** is a file that an agent reads as instructions.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "The **write job** makes a new Agent instruction.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "The **edit job** changes an Agent instruction that the project has.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "The **glossary** is the file that gives the terms of the project.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **finding** is one problem that a reviewer subagent gives in its report.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **warning** is one item in the Warnings part of the end-of-run report.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "Before a step with a risk",
+        "text": "It is not the STE signal word WARNING, which this skill does not use.",
+        "cause": "The sentence gives the word as an example or as the name of a modal verb."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **tier** is one position in the sequence of the sources.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "An **ADR** is an architecture decision record: a file that records one design decision and its cause.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "**Loading rules** are the rules that a file must obey.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "The **loading reviewer**, the **ASD-STE100 reviewer**, and the **ISO 24495-1 reviewer** are the 3 reviewer subagents.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "The **self-check** is the review by the 3 reviewer subagents, in a maximum of 3 rounds.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "The **reader test** is a dry run of 3 tasks by new reader subagents after the self-check.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "In the edit job, the **changed part** is the text that the user wants to change.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "Each other part of the file is an **unchanged part**.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "An **extraction candidate** is a whole section of an unchanged part that the author recommends to move in the edit job.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "Before a step with a risk",
+        "text": "Loading rules: These are the MUST items of the Agent Skills specification for a Skill, and the platform loading rules for each Agent instruction.",
+        "cause": "The sentence gives the word as an example or as the name of a modal verb."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "Before a step with a risk",
+        "text": "The MUST items include all items that `skills-ref validate` examines.",
+        "cause": "The sentence gives the word as an example or as the name of a modal verb."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "These files are SKILL.md files and their reference files, AGENTS.md, AGENTS.override.md, CLAUDE.md, CLAUDE.local.md, GLOSSARY.md, CONTEXT.md, MEMORY.md, and Rules.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "These files also include the files in docs/agents/, .claude/rules/, .claude/skills/, .agents/skills/, and .opencode/skills/, and the targets of their pointers.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "The entry files `AGENTS.md`, `CLAUDE.md`, `CLAUDE.local.md`, and `AGENTS.override.md` are Agent instructions.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "`GLOSSARY.md`, `CONTEXT.md`, `MEMORY.md`, Rules, the files in `.claude/rules/`, and the files in `docs/agents/` are Agent instructions.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Its name is `GLOSSARY.md` or `CONTEXT.md`.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Files for persons, for example `README.md`, `CONTRIBUTING.md`, ADRs, user manuals, code comments, and commit messages.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Subagent definitions, for example the files in `.claude/agents/`.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Files for platforms other than Codex, OpenCode, and Claude Code, for example Cursor rules and `.github/copilot-instructions.md`.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/agent-skills-spec.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "`.opencode/skills/`, `.claude/skills/`, and `.agents/skills/`",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/agent-skills-spec.md",
+        "rule": "When you select the text",
+        "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/loading-rules.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "They are not applicable to other files, for example `README.md` or `.claude/settings.json`.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/loading-rules.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "`.opencode/` or `opencode.json`",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/loading-rules.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Do not write `.claude/rules/`, frontmatter that only Claude Code reads, or `AGENTS.override.md`.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/loading-rules.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Do not put it in `.claude/rules/`.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/loading-rules.md",
+        "rule": "When you select the text",
+        "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/plain-language-checks.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/plain-language-checks.md",
+        "rule": "When you select the text",
+        "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/plain-language-checks.md",
+        "rule": "When you select the text",
+        "text": "It defines the terms, the tiers, and the end-of-run report.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/plain-language-checks.md",
+        "rule": "When you select the text",
+        "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/ste-rules.md",
+        "rule": "Before a step with a risk",
+        "text": "The only modal verbs are CAN, CANNOT, MUST, and WILL.",
+        "cause": "The sentence gives the word as an example or as the name of a modal verb."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/ste-rules.md",
+        "rule": "Before a step with a risk",
+        "text": "Change a \"should\" or a \"may\" to MUST, CAN, or a condition that you write in the sentence.",
+        "cause": "The sentence gives the word as an example or as the name of a modal verb."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/ste-rules.md",
+        "rule": "Before a step with a risk",
+        "text": "Do not use the signal word WARNING.",
+        "cause": "The sentence gives the word as an example or as the name of a modal verb."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/ste-rules.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/ste-rules.md",
+        "rule": "When you select the text",
+        "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/ste-rules.md",
+        "rule": "When you select the text",
+        "text": "It defines the terms, the tiers, and the end-of-run report.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/technical-terms.md",
+        "rule": "When you select the text",
+        "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/technical-terms.md",
+        "rule": "When you select the text",
+        "text": "It defines the terms, the tiers, and the end-of-run report.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **blocking rule** is a rule in a reference file of this skill.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "An **advisory rule** is a rule in a reference file of this skill.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **confirmer** is a new subagent that answers \"yes\" or \"no\", with one sentence, for one problem that a different check found.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "If the project has a glossary, read `GLOSSARY.md` or `CONTEXT.md`, as \"Terms in this skill\" tells you.",
+        "cause": "The path is a file in a project that installs the Skill."
+    }
+]

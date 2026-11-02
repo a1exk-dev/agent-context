@@ -8,45 +8,49 @@ The checks are in four groups. Each group agrees with one of the four principles
 
 ## When you select the text
 
-- The agent that loads the file is the only reader. Make no changes for a person. STE keeps the text easy to review.
-- Each Agent instruction tells when it is applicable. The description of a Skill tells when the Skill is applicable.
-- Use the condition that is applicable to the smallest number of tasks. A rule with no condition is permitted only when it is applicable to all tasks for its file.
-- Files that load in each session contain only short rules and pointers with a condition. Move long text to files that load only when a task makes them necessary.
-- Keep only the text that the agent cannot find without help. Examples are project facts, decisions, special instructions of the user, and corrections of incorrect agent work.
-- In the edit job, remove text only in the changed part. When the user tells you that an agent did not obey a rule, do not remove that rule. The user wants agents to obey that rule. You can correct the text of that rule. You can also move that rule.
-- Remove each instruction that tells the agent to do an action that it does without an instruction. Remove text that the agent can read in the code or in the Git history. Also remove text that the agent can read in a pointer target.
+- The agent that loads the file is the only reader. Make no changes for a person. (advisory)
+- In each Agent instruction, tell when it is applicable. In the description of a Skill, tell when the Skill is applicable. (advisory)
+- Use the condition that is applicable to the smallest number of tasks. A rule with no condition is permitted only when it is applicable to all tasks for its file. (advisory)
+- In files that load in each session, write only short rules, and pointers that give a condition. Move long text to files that load only when a task makes them necessary. (advisory)
+- Keep only the text that the agent cannot find without help. Examples are project facts, decisions, special instructions of the user, and corrections of incorrect agent work. (advisory)
+- In the edit job, remove text only in the changed part. When the user tells you that an agent did not obey a rule, do not remove that rule. The user wants agents to obey that rule. You can correct the text of that rule. You can also move that rule. (advisory)
+- Remove each instruction that tells the agent to do an action that it does without an instruction. Remove text that the agent can read in the code or in the Git history. Also remove text that the agent can read in a pointer target. (advisory)
+- Do not copy a sentence of 6 or more words from a pointer target. (script check)
 - Add one short cause to a rule in each of these conditions:
-  - The rule changes the usual work of the agent.
-  - The rule is not usual for the agent.
-  - To obey the rule, the agent must make a decision.
+  - The rule changes the usual work of the agent. (advisory)
+  - The rule is not usual for the agent. (advisory)
+  - To obey the rule, the agent must make a decision. (advisory)
 - Examine only the rules that you add or change for these conditions.
-- A file gives the cause when it tells why the rule is necessary. A command or a setting in a file does not give the cause. If no file gives the cause and the user does not give it, add a warning. Do not speak to the user about the cause.
+- A file gives the cause when it tells why the rule is necessary. A command or a setting in a file does not give the cause. If no file gives the cause and the user does not give it, add a warning. Do not speak to the user about the cause. (advisory)
 
 ## When you put the text in sections and lists
 
-- Put procedure steps in the sequence of the task, with the necessary conditions first.
-- In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. The heading of that section gives the condition where the rule is applicable, for example "Before a commit". A topic heading, for example "Branches", gives no condition.
-- In the glossary and `MEMORY.md`, copy the format of the entries that the file has. This rule replaces the heading rules of this section for these files.
-- When you add a rule and no heading gives its condition, add a heading for the rule. Use the level of the other condition headings. If the file has only a level 1 heading, use level 2. Put the new section after the last section of the file. Put a new rule in a section after the last rule of that section. Do not change the headings of the other rules.
-- Do not write the condition of the heading again in each rule of the section. A pointer sentence is different, because it gives its condition.
+- Put procedure steps in the sequence of the task, with the necessary conditions first. (blocking)
+- In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. The heading of that section gives the condition where the rule is applicable, for example "Before a commit". A topic heading, for example "Branches", gives no condition. (blocking)
+- In the glossary and `MEMORY.md`, copy the format of the entries that the file has. This rule replaces the heading rules of this section for these files. (advisory)
+- When you add a rule and no heading gives its condition, add a heading for the rule. Use the level of the other condition headings. If the file has only a level 1 heading, use level 2. Put the new section after the last section of the file. Put a new rule in a section after the last rule of that section. Do not change the headings of the other rules. (advisory)
+- Do not write the condition of the heading again in each rule of the section. A pointer sentence is different, because it gives its condition. (advisory)
 - No section template is necessary.
-- Use a numbered list for steps in a sequence. Use bullets for rules in no sequence. Use a table to compare items or to give reference data. Put each template and each command of more than one line in a code block. You can put a command of one line, a path, or a path pattern in a code span.
-- Each other heading gives the condition or the topic of its section. Use only heading levels 1, 2, and 3.
-- Use no headings that are applicable to all subjects, for example "Notes" or "Other".
-- Each pointer tells when to read its target. A pointer with no condition is a problem in the self-check.
-- A pointer target is one step from the file that has the pointer. Make no sequences of pointers.
-- When the file does not load in each session, find a pointer to it in a different Agent instruction. If you find no pointer, add a warning.
+- Use a numbered list for steps in a sequence. Use bullets for rules in no sequence. Use a table to compare items or to give reference data. Put each template and each command of more than one line in a code block. You can put a command of one line, a path, or a path pattern in a code span. (advisory)
+- In each other heading, give the condition or the topic of its section. (advisory)
+- Use no headings that are applicable to all subjects: "Notes", "Other", "Misc", and "General". (script check)
+- In each pointer, tell when to read its target. A pointer with no condition is a problem in the self-check. (blocking)
+- In each pointer, give the path of its target. Words such as "that file" give no path. (blocking)
+- In each pointer, give the path of a file or a folder that exists. (script check)
+- Put each pointer target one step from the file that has the pointer. Make no sequences of pointers. (advisory)
+- When the file does not load in each session, find a pointer to it in a different Agent instruction. If you find no pointer, add a warning. (advisory)
 
 ## When you select the words and the tone
 
 - For words that the reader knows, and for clear, short sentences and paragraphs, obey the rules in `ste-rules.md`.
-- When the project has a glossary, use each project term with its meaning in that file.
-- Do not use the word of a glossary term with a different meaning. This rule is also applicable when you write the word in lowercase letters.
-- Use one term for each item: the project term, not a different word with the same meaning.
-- Make sure that all parts of the file agree. When the file has a pointer, also make sure that the file agrees with the pointer target. When the project has a glossary, also make sure that the file agrees with the glossary.
-- Use no images and no Mermaid diagrams. Show a sequence or a structure as a numbered list or a table. You can also use a tree with indents in a code block.
-- Use a neutral and direct tone. Write no text that tells the agent about a punishment or a reward. Write no text that tells the agent good things about itself.
-- Do not tell the agent that it is an expert. Write a sentence about the work of the agent only when the sentence gives a correct fact.
+- When the project has a glossary, use each project term with its meaning in that file. (blocking)
+- Do not use the word of a glossary term with a different meaning. This rule is also applicable when you write the word in lowercase letters. (blocking)
+- Use one term for each item: the project term, not a different word with the same meaning. (blocking)
+- Make sure that all parts of the file agree. When the file has a pointer, also make sure that the file agrees with the pointer target. When the project has a glossary, also make sure that the file agrees with the glossary. (advisory)
+- Use no images and no Mermaid diagrams. (script check)
+- Show a sequence or a structure as a numbered list or a table. You can also use a tree with indents in a code block. (advisory)
+- Use a neutral and direct tone. Write no text that tells the agent about a punishment or a reward. Write no text that tells the agent good things about itself. (blocking)
+- Do not tell the agent that it is an expert. Write a sentence about the work of the agent only when the sentence gives a correct fact. (blocking)
 
 ## When you test the text
 

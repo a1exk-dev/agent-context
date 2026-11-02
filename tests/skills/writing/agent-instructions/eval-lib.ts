@@ -6,6 +6,7 @@
 import {
     copyFileSync,
     cpSync,
+    lstatSync,
     mkdirSync,
     mkdtempSync,
     readFileSync,
@@ -26,14 +27,38 @@ export const SKILL = join(
 );
 export const SKILL_DIR = ".claude/skills/agent-instructions";
 export const FORCE_SKILL = "Use the agent-instructions skill for this task.";
+
+// The report titles that "When no subagent is available" in review.md gives.
+export const REVIEW_TITLE =
+    /Round (\d+): (loading|ASD-STE100|ISO 24495-1) review/gi;
+export const READER_TITLE =
+    /Reader-test round (\d+), ([^,\n]+), reader task ([123])/gi;
+// The tools that write or change a file, in lower case.
+export const WRITE_TOOLS = [
+    "write",
+    "edit",
+    "multiedit",
+    "notebookedit",
+    "apply_patch",
+    "patch",
+];
 const MAX_JOBS = 5;
+
+// A statement of an output test. grade.ts decides a `script` statement. The
+// grader subagent decides an `llm` or `advisory` statement, and the pass
+// count leaves out an `advisory` statement.
+export type Statement = {
+    id: string;
+    text: string;
+    grader: "script" | "llm" | "advisory";
+};
 
 export type Eval = {
     id: number;
     name: string;
     prompt: string;
     setup: { overlay?: string | null; remove?: string[] };
-    assertions: string[];
+    assertions: Statement[];
     known_mistakes?: unknown;
     disallowed_tools?: string[];
 };
@@ -160,12 +185,17 @@ export async function git(cwd: string, args: string[]): Promise<string> {
 
 // Copies project/ to a fresh folder outside this repository, so no AGENTS.md
 // or CLAUDE.md of this repository loads, and commits it as the start point.
+// `tmp` is the empty TMPDIR of the run, next to the project folder. There the
+// run makes its round folder with `mktemp -d`.
 export async function prepare(
     ev: Eval,
     withSkill: boolean,
     prefix: string,
-): Promise<{ work: string; startCommit: string }> {
-    const work = join(mkdtempSync(join(tmpdir(), prefix)), "project");
+): Promise<{ work: string; startCommit: string; tmp: string }> {
+    const run = mkdtempSync(join(tmpdir(), prefix));
+    const work = join(run, "project");
+    const tmp = join(run, "tmp");
+    mkdirSync(tmp);
     cpSync(join(HERE, "project"), work, { recursive: true });
     if (ev.setup.overlay) {
         cpSync(join(HERE, ev.setup.overlay), work, { recursive: true });
@@ -187,7 +217,20 @@ export async function prepare(
         "start",
     ]);
     const startCommit = (await git(work, ["rev-parse", "HEAD"])).trim();
-    return { work, startCommit };
+    return { work, startCommit, tmp };
+}
+
+// Copies the TMPDIR of the run to outputs/tmp/: the copies of each round, the
+// saved reports and closed lists, and the other files of the run. grade.ts
+// examines the vote of each round with them. Only files and folders copy.
+export function collectTmp(tmp: string, outputs: string): void {
+    cpSync(tmp, join(outputs, "tmp"), {
+        recursive: true,
+        filter: (path) => {
+            const stat = lstatSync(path);
+            return stat.isFile() || stat.isDirectory();
+        },
+    });
 }
 
 // Writes outputs/changes.diff and copies each changed file to outputs/files/.
@@ -240,12 +283,13 @@ export function writeTiming(
     });
 }
 
-// Writes eval_metadata.json for the grader in out/eval-<name>/.
+// Writes eval_metadata.json for grade.ts and the grader in out/eval-<name>/.
 export function writeMetadata(evalDir: string, ev: Eval): void {
     writeJson(join(evalDir, "eval_metadata.json"), {
         eval_id: ev.id,
         eval_name: ev.name,
         prompt: ev.prompt,
+        setup: ev.setup,
         assertions: ev.assertions,
         known_mistakes: ev.known_mistakes ?? null,
     });
@@ -321,12 +365,16 @@ type Block = {
     name?: string;
     input?: Input;
     tool_use_id?: string;
+    is_error?: boolean;
     content?: unknown;
 };
 export type ClaudeEvent = {
     type?: string;
+    subtype?: string;
+    tool_use_id?: string;
+    status?: string;
     parent_tool_use_id?: string | null;
-    message?: { content?: Block[] | string };
+    message?: { id?: string; content?: Block[] | string };
     result?: string;
     usage?: Record<string, number>;
     total_cost_usd?: number;
@@ -373,7 +421,7 @@ export function renderTranscript(events: ClaudeEvent[]): string {
     return lines.join("\n");
 }
 
-function resultText(content: unknown): string {
+export function resultText(content: unknown): string {
     if (Array.isArray(content)) {
         return content
             .filter((item) => typeof item === "object" && item !== null)
@@ -447,7 +495,13 @@ export type OpenCodeSession = {
         tokens?: { input?: number; output?: number; cache?: Input };
     };
     messages: {
-        info: { role: string; error?: unknown; finish?: string };
+        info: {
+            id?: string;
+            role: string;
+            time?: { created?: number };
+            error?: unknown;
+            finish?: string;
+        };
         parts: OpenCodePart[];
     }[];
 };
@@ -457,7 +511,9 @@ export type OpenCodePart = {
     tool?: string;
     callID?: string;
     state?: {
+        status?: string;
         input?: Input;
+        time?: { start?: number; end?: number };
         output?: string;
         error?: string;
         metadata?: { sessionId?: string };
@@ -498,16 +554,4 @@ export function toolCalls(event: ClaudeEvent & OpenCodeEvent): ToolCall[] {
         ];
     }
     return [];
-}
-
-// Counts one sentence by "When you count words" in the skill's ste-rules.md.
-// A code span, quoted text, and text in parentheses each count as 1 word.
-export function countWords(sentence: string): number {
-    return sentence
-        .replace(/^\s*(?:\d+\.|[-*])\s+/, "")
-        .replace(/`[^`]*`/g, " x ")
-        .replace(/"[^"]*"|“[^”]*”/g, " x ")
-        .replace(/\([^)]*\)/g, " x ")
-        .split(/\s+/)
-        .filter((word) => /[\p{L}\p{N}]/u.test(word)).length;
 }
