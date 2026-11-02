@@ -20,8 +20,8 @@ An Agent instruction is a file that an agent reads as instructions. Examples are
 _Avoid_: prompt file, instruction file
 
 **Operator**:
-The operator is the human who controls a project and the agents that work in it. Only the operator answers the questions of an agent and gives approval. An agent never acts as the operator.
-_Avoid_: user, owner, maintainer
+The Operator is the person who controls a project and the agents that operate in it. Only the Operator answers the questions of an agent and approves the actions of an agent. An agent is never the Operator. A Skill or a Rule can use the term "user" for the Operator, because other projects install Skills and Rules without this glossary.
+_Avoid_: owner, maintainer, user in a file that is not a Skill or a Rule
 
 **Commit policy**:
 A Commit policy is the file `docs/agents/commit-policy.md` of a project. It holds the title `# Commit policy` and the Settings that each commit by the git-commit Skill obeys, and no other text.
