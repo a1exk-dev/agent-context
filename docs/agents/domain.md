@@ -4,13 +4,13 @@
 
 Before you write or edit `AGENTS.md`, `GLOSSARY.md`, or `MEMORY.md`, use the `agent-instructions` Skill, because these files are Agent instructions.
 
-A knowledge read is complete when every task term defined by `GLOSSARY.md` is used consistently and every `MEMORY.md` entry whose `Applies when:` condition matches the task is accounted for before editing.
+A knowledge read is complete when two conditions are true before editing. Every task term defined by `GLOSSARY.md` is used consistently. Every `MEMORY.md` entry whose `Applies when:` condition matches the task is accounted for.
 
 ## When a task makes or changes a project term
 
-`GLOSSARY.md` is the repository glossary. Create or update it in the same task that resolves or changes a project-specific term, conceptual boundary, or relationship another agent could otherwise interpret differently.
+`GLOSSARY.md` is the repository glossary. Create or update it in the same task that resolves or changes a project-specific term, conceptual boundary, or relationship another agent can otherwise interpret differently.
 
-When a task makes or changes a project term, use the `domain-modeling` skill to write each entry in `GLOSSARY.md`. That skill gives the entry format.
+When a task makes or changes a project term, use the `domain-modeling` Skill to write each entry in `GLOSSARY.md`. That Skill gives the entry format.
 
 Keep commands, procedures, task history, and temporary findings in their operational sources. A context update is complete when every resolved or changed concept appears once under its canonical name and no conflicting definition remains.
 
@@ -44,7 +44,7 @@ Treat `AGENTS.md`, `GLOSSARY.md`, and `MEMORY.md` as agent-owned operating knowl
 
 At the completion of every task, classify each useful discovery and important decision:
 
-- Agent behavior or invocation rule: update `AGENTS.md`, disclosing branch-specific detail behind a pointer.
+- Agent behavior or invocation instruction: update `AGENTS.md`, disclosing branch-specific detail behind a pointer.
 - Canonical project term, boundary, or relationship: update `GLOSSARY.md`.
 - Architecture decision: obey the section "When a task makes an architecture decision".
 - Durable constraint, gotcha, proven lesson, or other decision with rationale: update `MEMORY.md`.
@@ -55,10 +55,10 @@ Commit every knowledge-file edit on the branch whose work produced it, before th
 
 ## When a task makes an architecture decision
 
-1. When a task makes an architecture decision, use the `domain-modeling` skill to examine the decision.
-2. If all 3 conditions in the section "Offer ADRs sparingly" of the `domain-modeling` skill are true, recommend an ADR to the operator. If not, write the decision in `MEMORY.md`.
-3. Before you write the ADR in `docs/adr/`, get approval from the operator, because the operator controls each ADR.
+1. When a task makes an architecture decision, use the `domain-modeling` Skill to examine the decision.
+2. If all 3 conditions in the section "Offer ADRs sparingly" of the `domain-modeling` Skill are true, recommend an ADR to the Operator. If not, write the decision in `MEMORY.md`.
+3. Before you write the ADR in `docs/adr/`, get approval from the Operator, because the Operator controls each ADR.
 
 ## Before you change an ADR
 
-- Get approval from the operator, because the operator controls each ADR.
+- Get approval from the Operator, because the Operator controls each ADR.

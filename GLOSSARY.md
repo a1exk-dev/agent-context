@@ -20,7 +20,7 @@ An Agent instruction is a file that an agent reads as instructions. Examples are
 _Avoid_: prompt file, instruction file
 
 **Operator**:
-The operator is the human who controls a project and the agents that work in it. Only the operator answers the questions of an agent and gives approval. An agent never acts as the operator.
+The Operator is the human who controls a project and the agents that work in it. Only the Operator answers the questions of an agent and gives approval. An agent never acts as the Operator.
 _Avoid_: user, owner, maintainer
 
 **Commit policy**:
@@ -34,3 +34,15 @@ _Avoid_: option, rule
 **Commit review**:
 A Commit review is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message. But for a diff of more than 500 lines, the Commit review gives the command that shows the diff, not the full diff. The commit occurs only after the Operator approves that review.
 _Avoid_: commit preview, approval request
+
+**Blocking rule**:
+A Blocking rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark "(blocking)" at its end. A confirmed finding for a Blocking rule that the author accepts makes its review round fail. A breach of a Blocking rule makes an agent do a wrong action or miss an instruction. One or two quotations from the files let a new subagent answer yes or no.
+_Avoid_: hard rule, error rule
+
+**Advisory rule**:
+An Advisory rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark "(advisory)" at its end. A finding for an Advisory rule never makes a review round fail.
+_Avoid_: soft rule, warning rule
+
+**Confirmer**:
+A Confirmer is a new subagent that answers "yes" or "no", with one sentence, for one problem that a different check found. That check can be a reviewer, the grader of the output tests, or the author in a reader test. The Confirmer gets the requirement, the quoted text, and the files, but not the reason of the other check. The problem counts when one or more Confirmers answer "yes".
+_Avoid_: verifier, second reviewer
