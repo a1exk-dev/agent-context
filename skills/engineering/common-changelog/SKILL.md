@@ -29,7 +29,7 @@ This skill makes each change to the changelog obey Common Changelog (https://com
 This skill obeys Common Changelog with 2 deviations. Each deviation is on or off in the Changelog policy.
 
 - The Unreleased section breaks §2.1, §2.2, and §6.2. It is on when `Unreleased` is `on`.
-- An item with no references breaks §2.4.2. Items have no references only when `Host` is `none`.
+- An item with no references breaks §2.4.2. Items have no references only when `Host` is `none`, or when `references/links.md` finds no URL forms and there is no human.
 
 ## Before each job
 
@@ -77,7 +77,7 @@ The default Changelog policy is this file:
   - The changelog is not there.
   - The changelog has a line that is not in Common Changelog form.
   - The caller asks for a conversion.
-- Before you write a reference or a version link, read `references/links.md`. Take each URL form from that file, not from the links in the changelog.
+- Before the Write job or the Review job, read `references/links.md`. Take each URL form from that file, not from the links in the changelog.
 - Do not stage, commit, or push. The Operator approves the change in the Commit review of the commit that follows.
 - Do not ask for approval before a Write job. The Commit review gives the Operator the change. The only exception is a draft when `Draft approval` is `on`.
 
@@ -110,7 +110,7 @@ When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, and 11
    - If the Unreleased section has no group for the item, add the group in the sequence `Changed`, `Added`, `Removed`, `Fixed`.
    - Put the item at the end of its group.
 5. If that section tells you to make a release entry, do "When you make a release entry" and "When you write a notice" in `references/release-entries.md`.
-6. Write the references of the item as the `References` Setting tells you:
+6. If `references/links.md` tells you to write no references, write no reference. Else, write the references of the item as the `References` Setting tells you:
    - Under the Unreleased section, write no commit reference, because the merge commit is not there yet.
    - In a release entry, always write the commit reference.
    - Write a pull-request or issue reference only when the `References` Setting has that kind and the change has one.
@@ -125,7 +125,7 @@ When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, and 11
 
 Do the Review job when the caller asks for a review of the changelog, and after each Write job.
 
-1. Examine each line of the changelog for each rule in `references/common-changelog-rules.md` and for each Setting.
+1. Examine each line of the changelog for each rule in `references/common-changelog-rules.md` and for each Setting. Also do the steps of "When you review links" in `references/links.md`.
 2. Do not change a file in the Review job.
 3. For each finding, record the line numbers, the rule and its § number, the severity, and a fix. A "must" rule gives the severity `error`. A "should" rule gives the severity `warning`.
 4. When 2 or more findings have the same rule and the same fix, make one finding with all their line numbers.

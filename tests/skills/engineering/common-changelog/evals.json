@@ -718,6 +718,200 @@
                 "[50.2] The report gives line 11 (`- Format: keepachangelog`) as an incorrect line, and gives no other policy line as incorrect.",
                 "[50.3] The report tells the Operator to correct the Changelog policy or to delete it."
             ]
+        },
+        {
+            "id": 51,
+            "name": "51-gitlab-subgroups",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/51-gitlab",
+                "origin": "git@gitlab.com:grp/sub/demo.git",
+                "mergeMessage": "Merge branch '{branch}' into 'main'\n\nSee merge request grp/sub/demo!{n}"
+            },
+            "assertions": [
+                "[51.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[51.2] The `truncate()` item has a commit link `https://gitlab.com/grp/sub/demo/-/commit/<sha>` to the merge commit of merge request !5 (link text the short SHA), the reference `([!5](https://gitlab.com/grp/sub/demo/-/merge_requests/5))`, and the author `(Alice)`. The accented-letters item has the same forms for merge request !6 and the author `(Bob)`.",
+                "[51.3] The link definition `[1.3.0]: https://gitlab.com/grp/sub/demo/-/releases/v1.3.0` is at the bottom of the file, above the `[1.2.0]:` definition. No new link uses `github.com`. The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 52,
+            "name": "52-bitbucket",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/52-bitbucket",
+                "origin": "https://bitbucket.org/example/demo.git",
+                "mergeMessage": "Merged in {branch} (pull request #{n})"
+            },
+            "assertions": [
+                "[52.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[52.2] The `truncate()` item has a commit link `https://bitbucket.org/example/demo/commits/<sha>` to the merge commit of pull request #5 (link text the short SHA), the reference `([#5](https://bitbucket.org/example/demo/pull-requests/5))`, and the author `(Alice)`. The accented-letters item has the same forms for pull request #6 and the author `(Bob)`.",
+                "[52.3] No item of the 1.3.0 entry has an issue reference.",
+                "[52.4] The link definition `[1.3.0]: https://bitbucket.org/example/demo/commits/tag/v1.3.0` is at the bottom of the file, above the `[1.2.0]:` definition. The `## [1.2.0] - 2026-09-01` entry is unchanged.",
+                "[52.5] No question was asked: the run record has no question-tool call, and the final report asks the Operator no question."
+            ]
+        },
+        {
+            "id": 53,
+            "name": "53-bitbucket-compare",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/53-bitbucket-compare",
+                "origin": "https://bitbucket.org/example/demo.git",
+                "mergeMessage": "Merged in {branch} (pull request #{n})"
+            },
+            "assertions": [
+                "[53.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`, and each of its items has a commit link `https://bitbucket.org/example/demo/commits/<sha>`.",
+                "[53.2] The link definition of 1.3.0 is the tag view `[1.3.0]: https://bitbucket.org/example/demo/commits/tag/v1.3.0`. The file has no compare URL, for example with `/compare/` or `/branches/compare/`."
+            ]
+        },
+        {
+            "id": 54,
+            "name": "54-github-scp-origin",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "origin": "git@github.com:example/demo.git"
+            },
+            "assertions": [
+                "[54.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[54.2] Each line of `CHANGELOG.md` that the run did not add is unchanged."
+            ]
+        },
+        {
+            "id": 55,
+            "name": "55-github-ssh-port-origin",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "origin": "ssh://git@ssh.github.com:443/example/demo.git"
+            },
+            "assertions": [
+                "[55.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference. No link in the file has `ssh.github.com`, `git@`, or `:443`.",
+                "[55.2] Each line of `CHANGELOG.md` that the run did not add is unchanged."
+            ]
+        },
+        {
+            "id": 56,
+            "name": "56-unknown-host",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "origin": "https://git.example.com/team/demo.git"
+            },
+            "assertions": [
+                "[56.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, and is about `slugify` and leading spaces. It has no reference: no link, no `#6`, and no commit SHA.",
+                "[56.2] `docs/agents/changelog-policy.md` is unchanged: it has `- Host: auto` and no other `Host` line.",
+                "[56.3] The final report names the host `git.example.com` as a host that the Skill does not know, and names the `Host` Setting as the way to get links."
+            ]
+        },
+        {
+            "id": 57,
+            "name": "57-host-gitlab-custom-domain",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/57-host-gitlab-custom-domain",
+                "origin": "https://git.example.com/team/demo.git",
+                "mergeMessage": "Merge branch '{branch}' into 'main'\n\nSee merge request team/demo!{n}"
+            },
+            "assertions": [
+                "[57.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[57.2] Each item of the 1.3.0 entry has a commit link `https://git.example.com/team/demo/-/commit/<sha>` to the merge commit of its merge request, and its merge-request reference in the form `([!5](https://git.example.com/team/demo/-/merge_requests/5))`.",
+                "[57.3] The link definition `[1.3.0]: https://git.example.com/team/demo/-/releases/v1.3.0` is at the bottom of the file, above the `[1.2.0]:` definition."
+            ]
+        },
+        {
+            "id": 58,
+            "name": "58-host-gitlab-github-origin",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/58-host-gitlab-github-origin",
+                "mergeMessage": "Merge branch '{branch}' into 'main'\n\nSee merge request example/demo!{n}"
+            },
+            "assertions": [
+                "[58.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[!6](https://github.com/example/demo/-/merge_requests/6)` and no commit reference. It has no `/pull/6` link.",
+                "[58.2] Each line of `CHANGELOG.md` that the run did not add is unchanged."
+            ]
+        },
+        {
+            "id": 59,
+            "name": "59-no-remote",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "origin": null
+            },
+            "assertions": [
+                "[59.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, and is about `slugify` and leading spaces. It has no reference: no link, no `#6`, and no commit SHA.",
+                "[59.2] `docs/agents/changelog-policy.md` is unchanged: it has `- Host: auto` and no other `Host` line.",
+                "[59.3] The final report tells that the repository has no remote `origin`."
+            ]
+        },
+        {
+            "id": 60,
+            "name": "60-host-none",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/60-host-none"
+            },
+            "assertions": [
+                "[60.1] The first section after `# Changelog` is `## 1.3.0 - <run date>`, with no brackets. The file has no `## Unreleased` section and no link definition.",
+                "[60.2] The 1.3.0 entry holds the `truncate()` item with the author `(Alice)` and the accented-letters item with the author `(Bob)`. No item of the file has a reference: no link, no `#5` or `#6`, and no commit SHA.",
+                "[60.3] The final report gives no finding about a missing reference or a missing version link.",
+                "[60.4] No question was asked: the run record has no question-tool call, and the final report asks the Operator no question."
+            ]
+        },
+        {
+            "id": 61,
+            "name": "61-old-link-form",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/61-old-link-form"
+            },
+            "assertions": [
+                "[61.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[61.2] The 1.2.0 item ``- Add `formatPrice()` ([`3f2a9c1`](https://github.com/example/demo/commits/3f2a9c1)) (Carol)`` is unchanged.",
+                "[61.3] The final report lists the `formatPrice()` line, with its line number, as a finding about the URL form of its commit link (`/commits/` in place of `/commit/`), and gives the words \"convert the changelog\"."
+            ]
+        },
+        {
+            "id": 62,
+            "name": "62-review-old-link-form",
+            "prompt": "Review the changelog. Do not change it.",
+            "setup": {
+                "overlay": "fixtures/61-old-link-form",
+                "branch": "main"
+            },
+            "assertions": [
+                "[62.1] `CHANGELOG.md` is unchanged: `git status --porcelain` and `git diff` show no change to it.",
+                "[62.2] The final report gives line 17, the commit link in the `/commits/` form, as an error finding with the fix `/commit/`.",
+                "[62.3] The final report gives no URL-form finding for line 18."
+            ]
+        },
+        {
+            "id": 63,
+            "name": "63-review-unknown-host",
+            "prompt": "Review the changelog. Do not change it.",
+            "setup": {
+                "overlay": "fixtures/63-unknown-host-no-references",
+                "origin": "https://git.example.com/team/demo.git"
+            },
+            "assertions": [
+                "[63.1] `CHANGELOG.md` is unchanged: `git status --porcelain` and `git diff` show no change to it.",
+                "[63.2] The final report gives lines 7, 11, and 18, the items with no reference, in findings with the severity warning. It gives none of these lines in a finding with the severity error.",
+                "[63.3] The final report gives no finding about the URL form of a link, for example on line 17 or line 20."
+            ]
+        },
+        {
+            "id": 64,
+            "name": "64-bitbucket-jira-no-human",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/52-bitbucket",
+                "origin": "https://bitbucket.org/example/demo.git",
+                "mergeMessage": "Merged in {branch} (pull request #{n})",
+                "branch": "feature/APP-42-login"
+            },
+            "assertions": [
+                "[64.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://bitbucket.org/example/demo/pull-requests/6)` and no commit reference. It has no issue reference: no `APP-42` and no Jira link.",
+                "[64.2] No question was asked: the run record has no question-tool call, and the final report asks the Operator no question."
+            ]
         }
     ]
 }

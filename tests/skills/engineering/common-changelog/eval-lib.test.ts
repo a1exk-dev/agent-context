@@ -384,6 +384,24 @@ describe("changelogBefore", () => {
         );
     });
 
+    it("finds the items of GitLab merge requests and Bitbucket pull requests", () => {
+        const text = changelog
+            .replace("/pull/5)", "/-/merge_requests/5)")
+            .replace("/pull/6)", "/pull-requests/6)");
+        expect(changelogBefore(text, [5, 6])).toBe(
+            [
+                "# Changelog",
+                "",
+                "## [1.2.0] - 2026-09-01",
+                "",
+                "### Added",
+                "",
+                "- Add c ([`3f2a9c1`](https://github.com/example/demo/commit/3f2a9c1))",
+                "",
+            ].join("\n"),
+        );
+    });
+
     it("keeps a changelog with no Unreleased section", () => {
         const text = "# Changelog\n\nFree text about #5.\n";
         expect(changelogBefore(text, [5])).toBe(text);
