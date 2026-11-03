@@ -43,6 +43,130 @@
             ]
         },
         {
+            "id": 4,
+            "name": "04-release",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {},
+            "assertions": [
+                "[4.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[4.2] The 1.3.0 entry holds the 2 old Unreleased items, about `truncate()` and accented letters, in their groups. The `truncate()` item has a commit link to the merge commit of pull request #5 (`/commit/<sha>`, link text the short SHA), `[#5](https://github.com/example/demo/pull/5)`, and the author `(Alice)`. The accented-letters item has a commit link to the merge commit of pull request #6, `[#6](https://github.com/example/demo/pull/6)`, and the author `(Bob)`.",
+                "[4.3] The link definition `[1.3.0]: https://github.com/example/demo/releases/tag/v1.3.0` is at the bottom of the file, above `[1.2.0]: https://github.com/example/demo/releases/tag/v1.2.0`. The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 5,
+            "name": "05-release-branch",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "branch": "release/1.3.0"
+            },
+            "assertions": [
+                "[5.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[5.2] The 1.3.0 entry holds one new item under `### Fixed` about `slugify` and leading spaces. The new item has a commit link (`/commit/<sha>`) to the merge commit of pull request #6 or to the commit `fix: trim leading spaces in slugify`, the reference `[#6](https://github.com/example/demo/pull/6)`, and the author `(Bob)`.",
+                "[5.3] The link definition `[1.3.0]: https://github.com/example/demo/releases/tag/v1.3.0` is at the bottom of the file. The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 6,
+            "name": "06-version-mismatch",
+            "prompt": "Release the changelog as 1.4.0.",
+            "setup": {
+                "branch": "release/1.3.0"
+            },
+            "assertions": [
+                "[6.1] `CHANGELOG.md` is unchanged.",
+                "[6.2] The final report names the version 1.3.0 from the branch name and the version 1.4.0 from the request, and asks which version to use."
+            ]
+        },
+        {
+            "id": 7,
+            "name": "07-hotfix-no-version",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "branch": "hotfix/login"
+            },
+            "assertions": [
+                "[7.1] `CHANGELOG.md` is unchanged.",
+                "[7.2] The final report asks for the version of the release, because the branch name `hotfix/login` gives no version. It does not calculate or select a version itself."
+            ]
+        },
+        {
+            "id": 8,
+            "name": "08-unreleased-off-version",
+            "prompt": "Add a changelog entry for 1.3.0: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/08-unreleased-off"
+            },
+            "assertions": [
+                "[8.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no Unreleased section.",
+                "[8.2] The 1.3.0 entry holds one item under `### Fixed` about `slugify` and leading spaces, with a commit link (`/commit/<sha>`) to the merge commit of pull request #6 or to the commit `fix: trim leading spaces in slugify`, the reference `[#6](https://github.com/example/demo/pull/6)`, and the author `(Bob)`.",
+                "[8.3] The link definition `[1.3.0]: https://github.com/example/demo/releases/tag/v1.3.0` is at the bottom of the file. The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 9,
+            "name": "09-unreleased-off-no-version",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/08-unreleased-off"
+            },
+            "assertions": [
+                "[9.1] `CHANGELOG.md` is unchanged.",
+                "[9.2] The final report asks for the version of the release. It does not calculate or select a version itself."
+            ]
+        },
+        {
+            "id": 10,
+            "name": "10-commits-no-links",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/10-commits-no-links"
+            },
+            "assertions": [
+                "[10.1] The first section after `# Changelog` is `## 1.3.0 - <run date>`, with no brackets. The file has no `## Unreleased` section and no `[1.3.0]:` link definition.",
+                "[10.2] Each item of the 1.3.0 entry has a commit link (`/commit/<sha>`) to the merge commit of its pull request and the author (`(Alice)` for `truncate()`, `(Bob)` for accented letters). No item of the 1.3.0 entry has a pull-request link.",
+                "[10.3] The `## [1.2.0] - 2026-09-01` entry and its link definition are unchanged."
+            ]
+        },
+        {
+            "id": 11,
+            "name": "11-issues-compare",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/11-issues-compare"
+            },
+            "assertions": [
+                "[11.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[11.2] The accented-letters item has a maximum of 2 references, and one of them is a commit link (`/commit/<sha>`) to the merge commit of pull request #6. The final report names each reference that it left out.",
+                "[11.3] No item of the 1.3.0 entry has an author.",
+                "[11.4] The link definition `[1.3.0]: https://github.com/example/demo/compare/v1.2.0...v1.3.0` is at the bottom of the file."
+            ]
+        },
+        {
+            "id": 12,
+            "name": "12-notice-major",
+            "prompt": "Release the changelog as 2.0.0.",
+            "setup": {
+                "overlay": "fixtures/12-notice-major"
+            },
+            "assertions": [
+                "[12.1] The first section after `# Changelog` is `## [2.0.0] - <run date>`, and it holds the `**Breaking:**` item first in `### Changed`. The file has no `## Unreleased` section.",
+                "[12.2] The 2.0.0 entry has no notice: no paragraph between the heading and the first group.",
+                "[12.3] The final report tells that no upgrade-guide notice was asked for or written, because no human can answer."
+            ]
+        },
+        {
+            "id": 13,
+            "name": "13-yank",
+            "prompt": "Mark 1.2.0 as yanked: it breaks install.",
+            "setup": {},
+            "assertions": [
+                "[13.1] The heading `## [1.2.0] - 2026-09-01` is unchanged, with no `[YANKED]` tag.",
+                "[13.2] The 1.2.0 entry has one notice directly after its heading: a paragraph of one sentence that tells that the release is yanked and that it breaks install. The groups and items of 1.2.0 stay after the notice.",
+                "[13.3] Each other line of `CHANGELOG.md` is unchanged."
+            ]
+        },
+        {
             "id": 14,
             "name": "14-review-mistakes",
             "prompt": "Review the changelog. Do not change it.",

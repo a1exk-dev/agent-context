@@ -71,6 +71,7 @@ The default Changelog policy is this file:
 ## Rules for all jobs
 
 - Before the Write job or the Review job, read `references/common-changelog-rules.md`. That file gives each rule of Common Changelog that this skill obeys, with its § number.
+- Before the Write job, read `references/release-entries.md`. That file tells you how to find the version, make a release entry, write a notice, and mark a yanked release.
 - Before you write a reference or a version link, read `references/links.md`. Take each URL form from that file, not from the links in the changelog.
 - Do not stage, commit, or push. The Operator approves the change in the Commit review of the commit that follows.
 - Do not ask for approval before a Write job. The Commit review gives the Operator the change.
@@ -93,14 +94,16 @@ Find each conflict in the changelog. A conflict is the lines from a line that st
 
 Do the Write job for each change to the changelog, for example a new item or a release entry.
 
+When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, and 11. In place of steps 2 to 7, do "When you mark a release as yanked" in `references/release-entries.md`.
+
 1. If the changelog is not there, do the Create job first.
 2. Use the change text that the caller gives. Write it as one item in the imperative mood, for example "Fix `slugify()` keeping leading spaces". Keep the meaning of the change text.
 3. Find the group of the item from the change text: `Changed`, `Added`, `Removed`, or `Fixed`. A breaking change goes in `Changed` with the prefix `**Breaking:** `.
-4. When `Unreleased` is `on` and the caller gives no version, put the item in the Unreleased section:
+4. Find the version as "When you find the version" in `references/release-entries.md` tells you. If that section tells you to put the item in the Unreleased section, do these steps:
    - If the file has no Unreleased section, add `## Unreleased` directly after `# Changelog`.
    - If the Unreleased section has no group for the item, add the group in the sequence `Changed`, `Added`, `Removed`, `Fixed`.
    - Put the item at the end of its group.
-5. When `Unreleased` is `on` and the caller gives a version, change the Unreleased section into the release entry `## [X.Y.Z] - YYYY-MM-DD` with the date of today. Add the commit reference of each item from the Git history, for example the merge commit of its pull request.
+5. If that section tells you to make a release entry, do "When you make a release entry" and "When you write a notice" in `references/release-entries.md`.
 6. Write the references of the item as the `References` Setting tells you:
    - Under the Unreleased section, write no commit reference, because the merge commit is not there yet.
    - In a release entry, always write the commit reference.
