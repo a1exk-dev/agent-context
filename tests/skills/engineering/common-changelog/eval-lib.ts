@@ -45,6 +45,10 @@ export type Eval = {
         branch?: string;
         // The URL of `origin`, or null for no remote.
         origin?: string | null;
+        // The message of the merge commits of pull requests #5 and #6, with
+        // `{n}` for the number and `{branch}` for the source branch. The
+        // default is the GitHub form `Merge pull request #{n} from {branch}`.
+        mergeMessage?: string;
         // Shell commands that run on `main` after `git init`, before the
         // commit with tag `v1.2.0`. Their commits get the committer Maintainer.
         beforeTag?: string[];
@@ -80,10 +84,13 @@ export function changelogBefore(text: string, pulls: number[]): string {
         (line, i) => i > start && line.startsWith("## "),
     );
     const end = nextRelease === -1 ? lines.length : nextRelease;
-    const links = pulls.map((n) => `/pull/${n})`);
+    // The pull-request link forms of GitHub, GitLab, and Bitbucket Cloud.
+    const links = pulls.map(
+        (n) => new RegExp(`/(pull|merge_requests|pull-requests)/${n}\\)`),
+    );
     const items = lines
         .slice(start + 1, end)
-        .filter((line) => !links.some((link) => line.includes(link)));
+        .filter((line) => !links.some((link) => link.test(line)));
     const groups: string[][] = [];
     for (const line of items) {
         if (line.startsWith("### ")) groups.push([line]);
@@ -147,6 +154,10 @@ export async function prepare(
         }
     };
     const strings = join(work, "src/strings.ts");
+    const mergeMessage = (n: number, branch: string) =>
+        (ev.setup.mergeMessage ?? "Merge pull request #{n} from {branch}")
+            .replaceAll("{n}", String(n))
+            .replaceAll("{branch}", branch);
     const commit = async (
         message: string,
         date: string,
@@ -202,7 +213,7 @@ export async function prepare(
     ]);
     await git(work, ["switch", "-q", "main"]);
     await commit(
-        "Merge pull request #5 from alice/truncate",
+        mergeMessage(5, "alice/truncate"),
         "2026-09-11T10:00:00Z",
         "Maintainer",
         ["merge", "-q", "--no-ff", "truncate"],
@@ -240,7 +251,7 @@ export async function prepare(
     );
     await git(work, ["switch", "-q", "main"]);
     await commit(
-        "Merge pull request #6 from bob/slugify-fixes",
+        mergeMessage(6, "bob/slugify-fixes"),
         "2026-09-21T10:00:00Z",
         "Maintainer",
         ["merge", "-q", "--no-ff", "slugify-fixes"],
