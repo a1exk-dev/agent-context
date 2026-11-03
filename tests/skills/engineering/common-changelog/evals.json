@@ -41,6 +41,100 @@
             "assertions": [
                 "[3.1] After the run, `CHANGELOG.md` holds, in this sequence: `# Changelog`, `## Unreleased`, `### Fixed`, and one item about `slugify` and leading spaces with the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference. It holds no other heading and no other item."
             ]
+        },
+        {
+            "id": 19,
+            "name": "19-no-policy-write",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "remove": ["docs/agents/changelog-policy.md"]
+            },
+            "assertions": [
+                "[19.1] After the run, `docs/agents/changelog-policy.md` is missing, and `CHANGELOG.md` is unchanged.",
+                "[19.2] The final report names each of the 8 Settings (References, Notice, Authors, Version links, Host, Unreleased, Release branches, Draft approval) as a Setting with no answer, and gives the words \"use the default changelog policy\"."
+            ]
+        },
+        {
+            "id": 20,
+            "name": "20-no-policy-review",
+            "prompt": "review the changelog",
+            "setup": {
+                "remove": ["docs/agents/changelog-policy.md"]
+            },
+            "assertions": [
+                "[20.1] After the run, `docs/agents/changelog-policy.md` is missing, and `CHANGELOG.md` is unchanged.",
+                "[20.2] The final report names each of the 8 Settings (References, Notice, Authors, Version links, Host, Unreleased, Release branches, Draft approval) as a Setting with no answer, and gives the words \"use the default changelog policy\"."
+            ]
+        },
+        {
+            "id": 21,
+            "name": "21-no-policy-create",
+            "prompt": "create a changelog",
+            "setup": {
+                "remove": ["docs/agents/changelog-policy.md", "CHANGELOG.md"]
+            },
+            "assertions": [
+                "[21.1] After the run, `docs/agents/changelog-policy.md` and `CHANGELOG.md` are both missing.",
+                "[21.2] The final report names each of the 8 Settings (References, Notice, Authors, Version links, Host, Unreleased, Release branches, Draft approval) as a Setting with no answer, and gives the words \"use the default changelog policy\"."
+            ]
+        },
+        {
+            "id": 22,
+            "name": "22-no-policy-use-defaults",
+            "prompt": "Use the default changelog policy. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "remove": ["docs/agents/changelog-policy.md"]
+            },
+            "assertions": [
+                "[22.1] After the run, `docs/agents/changelog-policy.md` holds exactly the title `# Changelog policy`, a blank line, and these 8 lines in this sequence: `- References: commits, pull requests`, `- Notice: required`, `- Authors: on`, `- Version links: release`, `- Host: auto`, `- Unreleased: on`, `- Release branches: release, hotfix`, `- Draft approval: off` (a final newline is permitted).",
+                "[22.2] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, has the linked reference `[#6](https://github.com/example/demo/pull/6)`, and has no commit reference.",
+                "[22.3] The final report names both `CHANGELOG.md` and `docs/agents/changelog-policy.md` as changed or new files.",
+                "[22.4] `docs/agents/changelog-policy.md` is not staged and not in a commit: `git status --porcelain` of the state after shows it as an untracked file."
+            ]
+        },
+        {
+            "id": 23,
+            "name": "23-no-policy-all-values",
+            "prompt": "Set up the changelog policy with these values: References: commits, pull requests. Notice: required. Authors: on. Version links: compare. Host: auto. Unreleased: off. Release branches: release. Draft approval: off. Then add a changelog entry for 1.3.0: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/23-policy-all-values",
+                "remove": ["docs/agents/changelog-policy.md"]
+            },
+            "assertions": [
+                "[23.1] After the run, `docs/agents/changelog-policy.md` holds exactly the title `# Changelog policy`, a blank line, and these 8 lines in this sequence: `- References: commits, pull requests`, `- Notice: required`, `- Authors: on`, `- Version links: compare`, `- Host: auto`, `- Unreleased: off`, `- Release branches: release`, `- Draft approval: off` (a final newline is permitted).",
+                "[23.2] `CHANGELOG.md` has no `## Unreleased` heading. Its first section after `# Changelog` is `## [1.3.0] - <run date>`, above `## [1.2.0] - 2026-09-01`.",
+                "[23.3] The 1.3.0 entry has a group `### Fixed` with an item about `slugify` and leading spaces. That item has a linked short SHA of a commit of pull request #6 in the form `https://github.com/example/demo/commit/<sha>`, the linked reference `[#6](https://github.com/example/demo/pull/6)`, and the author `(Bob)` after the references.",
+                "[23.4] The bottom of `CHANGELOG.md` has the definition `[1.3.0]: https://github.com/example/demo/compare/v1.2.0...v1.3.0`, and the old `## [1.2.0]` entry and its definition are unchanged.",
+                "[23.5] The final report names both `CHANGELOG.md` and `docs/agents/changelog-policy.md` as changed or new files."
+            ]
+        },
+        {
+            "id": 24,
+            "name": "24-policy-bad-lines",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/24-policy-bad-lines"
+            },
+            "assertions": [
+                "[24.1] `CHANGELOG.md` and `docs/agents/changelog-policy.md` are unchanged, and `git status --porcelain` of the state after is empty.",
+                "[24.2] The final report gives line 3 (the prose sentence) and line 6 (`- Notice: always`) as incorrect lines, and gives no other policy line as incorrect.",
+                "[24.3] The final report tells the Operator to correct the Changelog policy or to delete it so that a new Changelog policy is set up.",
+                "[24.4] The run record shows no question to the Operator: no question-tool call and no question in the final report."
+            ]
+        },
+        {
+            "id": 25,
+            "name": "25-policy-missing-settings",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/25-policy-missing-settings"
+            },
+            "assertions": [
+                "[25.1] After the run, `docs/agents/changelog-policy.md` holds exactly the title `# Changelog policy`, a blank line, and these 8 lines in this sequence: `- References: commits, pull requests`, `- Notice: required`, `- Authors: on`, `- Version links: release`, `- Host: auto`, `- Unreleased: on`, `- Release branches: release, hotfix`, `- Draft approval: off` (a final newline is permitted). The first 4 Settings are unchanged.",
+                "[25.2] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, has the linked reference `[#6](https://github.com/example/demo/pull/6)`, and has no commit reference.",
+                "[25.3] The final report names the change to `docs/agents/changelog-policy.md` and the 4 added Settings, and names `CHANGELOG.md`.",
+                "[25.4] The change to `docs/agents/changelog-policy.md` is not staged and not in a commit."
+            ]
         }
     ]
 }
