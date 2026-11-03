@@ -114,7 +114,8 @@ export function truncate(text: string, max: number): string {
 // Makes the fixed history in a copy of project/ with the overlay of the test:
 // a start commit with tag `v1.2.0` on `main`, then the merge commits of pull
 // requests #5 (Alice) and #6 (Bob). Each pull request adds its Unreleased item
-// to `CHANGELOG.md`. Then the run branch and the setup steps of the test.
+// to `CHANGELOG.md`. Pull request #6 has a second fix, leading spaces in
+// `slugify()`, with no item, so that output tests can add that item. Then the run branch and the setup steps of the test.
 // `origin` gets a URL but no push, so no test needs the network.
 export async function prepare(
     ev: Eval,
@@ -189,7 +190,7 @@ export async function prepare(
         ["merge", "-q", "--no-ff", "truncate"],
     );
 
-    await git(work, ["switch", "-q", "-c", "slugify-accents"]);
+    await git(work, ["switch", "-q", "-c", "slugify-fixes"]);
     writeFileSync(
         strings,
         readFileSync(strings, "utf8").replace(
@@ -205,14 +206,28 @@ export async function prepare(
         "Bob",
         ["commit", "-q"],
     );
+    writeFileSync(
+        strings,
+        readFileSync(strings, "utf8").replace(
+            "        .toLowerCase()",
+            "        .toLowerCase()\n        .trim()",
+        ),
+    );
+    await git(work, ["add", "-A"]);
+    await commit(
+        "fix: trim leading spaces in slugify",
+        "2026-09-20T11:00:00Z",
+        "Bob",
+        ["commit", "-q"],
+    );
     await git(work, ["switch", "-q", "main"]);
     await commit(
-        "Merge pull request #6 from bob/slugify-accents",
+        "Merge pull request #6 from bob/slugify-fixes",
         "2026-09-21T10:00:00Z",
         "Maintainer",
-        ["merge", "-q", "--no-ff", "slugify-accents"],
+        ["merge", "-q", "--no-ff", "slugify-fixes"],
     );
-    await git(work, ["branch", "-q", "-D", "truncate", "slugify-accents"]);
+    await git(work, ["branch", "-q", "-D", "truncate", "slugify-fixes"]);
 
     const branch = ev.setup.branch ?? "feature/x";
     if (branch !== "main") await git(work, ["switch", "-q", "-c", branch]);

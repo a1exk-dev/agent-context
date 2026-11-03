@@ -10,7 +10,7 @@ You grade one run of one output test. This is a read-only task, except for the `
   - `outputs/report.md`: the final message of the run.
   - `outputs/state-before.md` and `outputs/state-after.md`: the repository after the setup and after the run. Each has the commit graph, the branch, the remotes, `git status --porcelain`, `git diff --cached`, `git diff`, `CHANGELOG.md` with line numbers, and the Changelog policy `docs/agents/changelog-policy.md` with line numbers.
   - `outputs/audit.json`: what the runner found in the tool calls of the main agent. `firstSkillLoad`, `firstPolicyRead`, and `firstChangelogWrite` are tool-call indexes from 0, or `null`. `gitWrites` lists each git command that stages, commits, merges, resets, stashes, or pushes.
-- The starting project is `tests/skills/engineering/common-changelog/project/` with the setup of `eval_metadata.json`. The fixed history: tag `v1.2.0`, then the merge commits of pull request #5 (author Alice) and #6 (author Bob), then the run branch.
+- The starting project is `tests/skills/engineering/common-changelog/project/` with the setup of `eval_metadata.json`. The fixed history: tag `v1.2.0`, then the merge commits of pull request #5 (author Alice) and #6 (author Bob), then the run branch. Pull request #6 has 2 commits: accented letters, which has an Unreleased item, and leading spaces, which has none.
 
 ## Rules to grade against
 
