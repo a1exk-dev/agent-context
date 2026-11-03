@@ -20,6 +20,7 @@ import {
     git,
     type ToolCall,
 } from "../../writing/agent-instructions/eval-lib.ts";
+import { readEvalsIn } from "../eval-lib.ts";
 import { gitCommands } from "../git-commit/eval-lib.ts";
 
 export const HERE = dirname(fileURLToPath(import.meta.url));
@@ -59,19 +60,7 @@ export type Eval = {
 };
 
 // Reads the tests of evals.json. Each test gets the common statements first.
-export function readEvals(ids: string): Eval[] {
-    const wanted = ids.split(",").filter(Boolean).map(Number);
-    const file = JSON.parse(readFileSync(join(HERE, "evals.json"), "utf8")) as {
-        common_assertions: string[];
-        evals: Eval[];
-    };
-    return file.evals
-        .filter((ev) => wanted.length === 0 || wanted.includes(ev.id))
-        .map((ev) => ({
-            ...ev,
-            assertions: [...file.common_assertions, ...ev.assertions],
-        }));
-}
+export const readEvals = (ids: string): Eval[] => readEvalsIn<Eval>(HERE, ids);
 
 // The changelog before the given pull requests merged: their items leave the
 // Unreleased section, then each empty group, then an empty Unreleased section.
