@@ -22,6 +22,7 @@ This skill makes each change to the changelog obey Common Changelog (https://com
 - A **reference** is a link after an item to a commit, a pull request, or an issue.
 - The **Release branches** Setting gives branch prefixes. "A branch that the Release branches Setting lists" is a branch `<prefix>/<rest>` with `<prefix>` in that Setting.
 - A **finding** is one problem that the Review job finds.
+- A **conversion** is a Write job that corrects each finding in the full changelog, also in the old lines.
 
 ## Deviations from Common Changelog
 
@@ -72,6 +73,10 @@ The default Changelog policy is this file:
 
 - Before the Write job or the Review job, read `references/common-changelog-rules.md`. That file gives each rule of Common Changelog that this skill obeys, with its § number.
 - Before the Write job, read `references/release-entries.md`. That file tells you how to find the version, make a release entry, write a notice, and mark a yanked release.
+- Before the Create job or the Write job, read `references/other-formats.md` when one of these conditions is true:
+  - The changelog is not there.
+  - The changelog has a line that is not in Common Changelog form.
+  - The caller asks for a conversion.
 - Before you write a reference or a version link, read `references/links.md`. Take each URL form from that file, not from the links in the changelog.
 - Do not stage, commit, or push. The Operator approves the change in the Commit review of the commit that follows.
 - Do not ask for approval before a Write job. The Commit review gives the Operator the change.
@@ -80,7 +85,7 @@ The default Changelog policy is this file:
 
 Do the Create job when the caller asks for a changelog, or when a Write job finds no changelog.
 
-1. If the changelog is there, do not change it. In the report, tell that the changelog is there.
+1. If the changelog is there, do not change it. Do the Review job. In the report, tell that the changelog is there, and give the findings.
 2. If the changelog is not there, write the file with only the line `# Changelog`. Do not add entries for old tags, because only a Write job adds entries.
 
 ## Before the Write job changes the changelog
@@ -96,7 +101,7 @@ Do the Write job for each change to the changelog, for example a new item or a r
 
 When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, and 11. In place of steps 2 to 7, do "When you mark a release as yanked" in `references/release-entries.md`.
 
-1. If the changelog is not there, do the Create job first.
+1. If the changelog is not there, do "When the changelog has a different file name" in `references/other-formats.md`. If you do not stop in that section and the changelog is still not there, do the Create job.
 2. Use the change text that the caller gives. Write it as one item in the imperative mood, for example "Fix `slugify()` keeping leading spaces". Keep the meaning of the change text.
 3. Find the group of the item from the change text: `Changed`, `Added`, `Removed`, or `Fixed`. A breaking change goes in `Changed` with the prefix `**Breaking:** `.
 4. Find the version as "When you find the version" in `references/release-entries.md` tells you. If that section tells you to put the item in the Unreleased section, do these steps:
@@ -113,6 +118,7 @@ When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, and 11
 9. After the change, do the Review job on the full file.
 10. Correct each finding in a line that this Write job wrote. Then do the Review job again on these lines.
 11. Do not correct a finding in a different line. List that finding in the report.
+12. Do "When you offer a conversion" in `references/other-formats.md`.
 
 ## When you do the Review job
 
