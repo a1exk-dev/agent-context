@@ -306,12 +306,17 @@ export async function repoState(work: string): Promise<string> {
 export type RunAudit = {
     firstSkillLoad: number | null;
     firstPolicyRead: number | null;
+    // The first change to `CHANGELOG.md` or to a changelog file in a
+    // different format, for example `HISTORY.md`.
     firstChangelogWrite: number | null;
+    // The first change to the Changelog policy.
+    firstPolicyWrite: number | null;
     // Shell commands that the runner cannot classify with confidence, for the
-    // grader to examine. A call in `firstPolicyRead` or `firstChangelogWrite`
-    // is never in these lists.
+    // grader to examine. A call that is a certain read or change of the file
+    // is never in the list for that file.
     possiblePolicyReads: PossibleCall[];
     possibleChangelogWrites: PossibleCall[];
+    possiblePolicyWrites: PossibleCall[];
     gitWrites: string[];
 };
 
@@ -477,31 +482,71 @@ export function isPolicyRead(call: ToolCall): boolean {
     );
 }
 
-// `CHANGELOG.md` as a whole file name, not as part of `CHANGELOG.md.bak`.
-const CHANGELOG = String.raw`(\S*\/)?CHANGELOG\.md(?![\w.])`;
+// A file that the audit watches for changes. `path` is a regular expression
+// for the path from the project folder. `name` is a regular expression for
+// the file name, which a command can also use from a different folder.
+type Target = { path: string; name: string };
 
-// A shell command part that writes to CHANGELOG.md with a redirect, `tee`,
-// `sed -i`, `perl -i`, or `mv` or `cp` onto the file.
-const isShellWrite = (part: string) =>
-    new RegExp(String.raw`(>>?|\btee\b(\s+-a)?)\s*${CHANGELOG}`).test(part) ||
-    new RegExp(String.raw`(^|\s)(sed|perl)\s(.*\s)?-\w*i\b.*${CHANGELOG}`).test(
+// `CHANGELOG.md` and the other changelog files that the Skill can rename to
+// it. The runner makes the project in a folder with the name `project`.
+const CHANGELOG_FILES: Target = {
+    path: String.raw`(CHANGELOG|changelog|HISTORY|CHANGES|NEWS)\.md`,
+    name: String.raw`(CHANGELOG|changelog|HISTORY|CHANGES|NEWS)\.md`,
+};
+const POLICY_FILE: Target = {
+    path: String.raw`docs\/agents\/changelog-policy\.md`,
+    name: String.raw`changelog-policy\.md`,
+};
+
+// The file as a shell word: the path relative to the project folder, or an
+// absolute path through the project folder. A different folder, for example
+// `docs/agents/changelog.md`, does not count.
+const projectWord = ({ path }: Target) =>
+    String.raw`(?<![\w.\/-])(\.\/|\S*\/project\/)?${path}(?![\w.-])`;
+// The file name in any folder.
+const anyWord = ({ name }: Target) =>
+    String.raw`(?<![\w.-])(\S*\/)?${name}(?![\w.-])`;
+
+// The command without the text of each heredoc, because that text is data
+// for the command.
+const withoutHereDocs = (command: string) =>
+    command.replace(
+        /<<-?\s*['"]?(\w+)['"]?([^\n]*)\n[\s\S]*?\n\1(?=\n|$)/g,
+        "<<$1$2",
+    );
+
+// A shell command part that changes the file with a redirect, `tee`,
+// `sed -i`, `perl -i`, `cp` onto the file, or `mv` or `rm` of the file.
+const isShellWrite = (part: string, file: string) =>
+    new RegExp(String.raw`(>>?|\btee\b(\s+-a)?)\s*${file}`).test(part) ||
+    new RegExp(String.raw`(^|\s)(sed|perl)\s(.*\s)?-\w*i\b.*${file}`).test(
         part,
     ) ||
-    new RegExp(String.raw`\b(mv|cp)\b.*\s${CHANGELOG}\s*$`).test(part);
+    new RegExp(String.raw`(^|\s)cp\s.*\s${file}\s*$`).test(part) ||
+    new RegExp(String.raw`(^|\s)(mv|rm)\s(.*\s)?${file}`).test(part);
 
-// A Python, Node, or Bun script in the command that writes to CHANGELOG.md:
-// a file write call on a string with the file name, or on a name that the
-// script binds to that string.
-function isScriptWrite(command: string): boolean {
+// The parts of the command without heredoc text and quotes. The signs that
+// split a command lose their effect in quoted text, for example a backtick in
+// a `sed` expression.
+const shellParts = (command: string) =>
+    commandParts(
+        withoutHereDocs(command).replace(
+            /'[^']*'|"(?:[^"\\]|\\.)*"/g,
+            (quoted) => quoted.slice(1, -1).replace(/[`|;&]|\$\(/g, " "),
+        ),
+    );
+
+// A Python, Node, or Bun script in the command that writes to the file: a
+// file write call on a string with the path, or on a name that the script
+// binds to that string.
+function isScriptWrite(command: string, { path }: Target): boolean {
+    const literal = String.raw`['"](\.\/|[^'"\n]*\/project\/)?${path}['"]`;
     const names = [
         ...command.matchAll(
-            /(\w+)\s*=\s*(?:Path\()?\s*['"][^'"\n]*CHANGELOG\.md['"]/g,
+            new RegExp(String.raw`(\w+)\s*=\s*(?:Path\()?\s*${literal}`, "g"),
         ),
     ].map((match) => String.raw`\b${match[1]}\b`);
-    const target = [
-        String.raw`['"][^'"\n]*CHANGELOG\.md['"]\)?`,
-        ...names,
-    ].join("|");
+    const target = [String.raw`${literal}\)?`, ...names].join("|");
     return [
         String.raw`\bopen\(\s*(${target})\s*,\s*['"][wa]`,
         String.raw`(${target})\.(write_text|write_bytes)\(`,
@@ -511,33 +556,75 @@ function isScriptWrite(command: string): boolean {
 
 const WRITE_TOOLS = new Set(["write", "edit", "multiedit", "notebookedit"]);
 
-// A change to CHANGELOG.md: a write tool on the file, a shell command that
-// writes to it, or a script in a shell command that writes to it.
-export function isChangelogWrite(call: ToolCall): boolean {
+// A certain change to the file: a write tool on the file, a shell command
+// that changes it, or a script in a shell command that writes to it.
+function isWrite(call: ToolCall, target: Target): boolean {
+    const file = projectWord(target);
     if (WRITE_TOOLS.has(call.name.toLowerCase())) {
-        return /(^|\/)CHANGELOG\.md$/.test(pathOf(call));
+        return new RegExp(`^${file}$`).test(pathOf(call));
     }
     const command = commandOf(call);
     return (
-        commandParts(command.replace(/['"]/g, "")).some(isShellWrite) ||
-        isScriptWrite(command)
+        shellParts(command).some((part) => isShellWrite(part, file)) ||
+        isScriptWrite(command, target)
     );
 }
 
+// A change to `CHANGELOG.md` or to a changelog file in a different format,
+// for example `HISTORY.md`, in the project folder. `mv HISTORY.md
+// CHANGELOG.md` changes both files.
+export const isChangelogWrite = (call: ToolCall) =>
+    isWrite(call, CHANGELOG_FILES);
+
+// A change to the Changelog policy `docs/agents/changelog-policy.md`.
+export const isPolicyWrite = (call: ToolCall) => isWrite(call, POLICY_FILE);
+
+// The command with each quoted text as one word `Q`, so that a sign in a
+// pattern or message does not split the command.
+const unquote = (command: string) =>
+    command.replace(/'[^']*'|"(?:[^"\\]|\\.)*"/g, "Q");
+
 // Words in a shell command that start a script.
 const SCRIPTS = /(^|[\s;&|(])(python3?|node|bun|deno|perl|ruby)\s/;
-// Words that pass file names on to another command, or search a folder.
-const INDIRECT =
-    /(^|\s)(xargs|-exec|-execdir|rg|grep\s+(-\w*[rR]\w*|--recursive))\s/;
+// Words that pass file names on to another command.
+const INDIRECT = /(^|\s)(xargs|-exec|-execdir)\s/;
 
-// A shell command that is no certain read, but that names the Changelog
-// policy or a folder above it, and that can read the file: a script, a
-// recursive search, `xargs`, or `find -exec`, or a read command for a word
+// A recursive `grep` or an `rg` that searches the policy file: a path that
+// covers the policy, the project folder `.`, or no path. Each `--include`
+// glob must match the policy file name.
+function isPolicySearch(part: string): boolean {
+    const words = wordsOf(part);
+    const at = words.findIndex((word) => /^(grep|egrep|rg)$/.test(word));
+    if (at === -1) return false;
+    const args = words.slice(at + 1);
+    const recursive =
+        words[at] === "rg" ||
+        args.some((arg) => /^-\w*[rR]/.test(arg) || arg === "--recursive");
+    if (!recursive) return false;
+    const includes = args.flatMap((arg) =>
+        arg.startsWith("--include=") ? [arg.slice(10)] : [],
+    );
+    if (!includes.every((glob) => globMatches(glob, POLICY_NAME))) return false;
+    const positional = args.filter((arg) => !arg.startsWith("-"));
+    const paths = args.includes("-e") ? positional : positional.slice(1);
+    return (
+        paths.length === 0 ||
+        paths.some(
+            (path) =>
+                path === "." || path === "./" || policyCover(path) !== null,
+        )
+    );
+}
+
+// A shell command that is no certain read, but that can read the Changelog
+// policy: a recursive search that covers the file, or a script, `xargs`, or
+// `find -exec` with a word that covers the file, or a read command for a word
 // that names the file. A plain read command such as `cat docs/*` gets the
 // folder docs/agents, not the file, so it does not count.
 export function isPossiblePolicyRead(call: ToolCall): boolean {
     const command = commandOf(call);
     if (!command || isPolicyRead(call)) return false;
+    if (commandParts(unquote(command)).some(isPolicySearch)) return true;
     const covers = wordsOf(command.replace(/['"]/g, " ")).map(policyCover);
     if (SCRIPTS.test(command) || INDIRECT.test(command)) {
         return covers.some((cover) => cover !== null);
@@ -585,22 +672,28 @@ const isReadOnlyPart = (part: string) => {
     return name !== undefined && READ_ONLY.has(name);
 };
 
-const MENTIONS_CHANGELOG = new RegExp(CHANGELOG);
-
-// A shell command that names CHANGELOG.md in a script or in a command that
-// is not known to be read-only. Quoted text outside a script, for example a
-// commit message, does not count.
-export function isPossibleChangelogWrite(call: ToolCall): boolean {
+// A shell command that is no certain change, but that names the file in any
+// folder in a script, in a change command, or in a command that is not known
+// to be read-only. Quoted text outside a script, for example a commit
+// message, and the text of a heredoc do not count.
+function isPossibleWrite(call: ToolCall, target: Target): boolean {
     const command = commandOf(call);
-    if (!MENTIONS_CHANGELOG.test(command) || isChangelogWrite(call)) {
-        return false;
-    }
+    const file = anyWord(target);
+    const mentions = new RegExp(file);
+    if (!mentions.test(command) || isWrite(call, target)) return false;
     if (SCRIPTS.test(command)) return true;
-    const unquoted = command.replace(/'[^']*'|"(?:[^"\\]|\\.)*"/g, "Q");
-    return commandParts(unquoted).some(
-        (part) => MENTIONS_CHANGELOG.test(part) && !isReadOnlyPart(part),
+    if (shellParts(command).some((part) => isShellWrite(part, file))) {
+        return true;
+    }
+    return commandParts(unquote(withoutHereDocs(command))).some(
+        (part) => mentions.test(part) && !isReadOnlyPart(part),
     );
 }
+
+export const isPossibleChangelogWrite = (call: ToolCall) =>
+    isPossibleWrite(call, CHANGELOG_FILES);
+export const isPossiblePolicyWrite = (call: ToolCall) =>
+    isPossibleWrite(call, POLICY_FILE);
 
 export function auditRun(calls: ToolCall[]): RunAudit {
     const first = (test: (call: ToolCall) => boolean) => {
@@ -615,8 +708,10 @@ export function auditRun(calls: ToolCall[]): RunAudit {
         firstSkillLoad: first(isSkillLoad),
         firstPolicyRead: first(isPolicyRead),
         firstChangelogWrite: first(isChangelogWrite),
+        firstPolicyWrite: first(isPolicyWrite),
         possiblePolicyReads: possible(isPossiblePolicyRead),
         possibleChangelogWrites: possible(isPossibleChangelogWrite),
+        possiblePolicyWrites: possible(isPossiblePolicyWrite),
         gitWrites: calls
             .flatMap((call) => gitCommands(commandOf(call)))
             .filter((command) => GIT_WRITES.has(command.sub))

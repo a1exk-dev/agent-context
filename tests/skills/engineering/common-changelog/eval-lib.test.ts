@@ -1,10 +1,11 @@
-// cspell:ignore pathlib yzxoz
+// cspell:ignore pathlib yzxoz nsed
 import { describe, expect, it } from "vitest";
 import {
     auditRun,
     changelogBefore,
     isChangelogWrite,
     isPolicyRead,
+    isPolicyWrite,
     isSkillLoad,
     loadDecision,
     readEvals,
@@ -71,13 +72,40 @@ describe("isChangelogWrite", () => {
         bash("perl -pi -e 's/a/b/' CHANGELOG.md"),
         bash("cat >> CHANGELOG.md <<'EOF'\n\n### Added\nEOF"),
         bash("cp /tmp/new.md ./CHANGELOG.md && git add CHANGELOG.md"),
+        { name: "Write", input: { file_path: "/w/project/HISTORY.md" } },
+        { name: "Edit", input: { file_path: "changelog.md" } },
+        bash("sed -i 's/a/b/' NEWS.md"),
+        bash("echo '- Fix x' >> ./CHANGES.md"),
+        bash("git mv HISTORY.md OLD-HISTORY.md"),
+        bash("rm HISTORY.md"),
+        // From saved run transcripts.
+        bash(
+            "cd /tmp/cc-eval-48-with_skill-B2CBLh/project && git log --format=%an 3227833^1..3227833^2 && mv HISTORY.md CHANGELOG.md && cat -n CHANGELOG.md && git status --short",
+        ),
+        bash(
+            "git log -1 --format='%an' 5e6f6a1 && git mv HISTORY.md CHANGELOG.md",
+        ),
+        bash(
+            "cd /tmp/cc-eval-25-with_skill-F3DyI6/project\nsed -i '11a - Fix `slugify()` keeping leading spaces ([#6](https://github.com/example/demo/pull/6)) (Bob)' CHANGELOG.md\ncat -n CHANGELOG.md",
+        ),
+        bash(
+            "cd /tmp/cc-eval-44-with_skill-maZvSm/project && { printf '# Changelog\\n\\n'; cat CHANGELOG.md; } > /tmp/cl.new && mv /tmp/cl.new CHANGELOG.md && cat -n CHANGELOG.md",
+        ),
     ])("counts %j as a change", (call) => {
         expect(isChangelogWrite(call)).toBe(true);
     });
 
     it.each([
         { name: "Read", input: { file_path: "/w/project/CHANGELOG.md" } },
-        { name: "Write", input: { file_path: "/w/project/HISTORY.md" } },
+        { name: "Write", input: { file_path: "/w/project/README.md" } },
+        // From saved run transcripts: a policy file with a wrong name, and a
+        // read of HISTORY.md.
+        bash(
+            "cat > docs/agents/changelog.md <<'EOF'\n# Changelog policy\n\nRules for agents and maintainers editing `CHANGELOG.md`.\nEOF",
+        ),
+        bash(
+            "cd /tmp/cc-eval-47-with_skill-ak8BrD/project; cat -n HISTORY.md; ls -a",
+        ),
         bash("cat -n CHANGELOG.md"),
         bash("git diff CHANGELOG.md"),
         bash("grep -n Unreleased CHANGELOG.md > /tmp/out.txt"),
@@ -88,6 +116,35 @@ describe("isChangelogWrite", () => {
         ),
     ])("counts %j as no change", (call) => {
         expect(isChangelogWrite(call)).toBe(false);
+    });
+});
+
+describe("isPolicyWrite", () => {
+    it.each([
+        {
+            name: "Edit",
+            input: { file_path: "/w/project/docs/agents/changelog-policy.md" },
+        },
+        // From saved run transcripts.
+        bash(
+            "cd /tmp/cc-eval-25-with_skill-F3DyI6/project\nprintf -- '- Host: auto\\n- Unreleased: on\\n' >> docs/agents/changelog-policy.md\ncat -n docs/agents/changelog-policy.md",
+        ),
+        bash(
+            "cd /tmp/cc-eval-22-with_skill-Q3lHUx/project && mkdir -p docs/agents && cat > docs/agents/changelog-policy.md <<'EOF'\n# Changelog policy\n\n- Notice: required\nEOF\ncat -n CHANGELOG.md",
+        ),
+    ])("counts %j as a change", (call) => {
+        expect(isPolicyWrite(call)).toBe(true);
+    });
+
+    it.each([
+        {
+            name: "Read",
+            input: { file_path: "/w/docs/agents/changelog-policy.md" },
+        },
+        bash("cat -n docs/agents/changelog-policy.md"),
+        bash("echo x > CHANGELOG.md"),
+    ])("counts %j as no change", (call) => {
+        expect(isPolicyWrite(call)).toBe(false);
     });
 });
 
@@ -142,15 +199,17 @@ describe("auditRun", () => {
             bash("git status --porcelain"),
             { name: "Skill", input: { skill: "common-changelog" } },
             bash("cat -n docs/agents/changelog-policy.md"),
-            { name: "Edit", input: { file_path: "/w/CHANGELOG.md" } },
+            { name: "Edit", input: { file_path: "/w/project/CHANGELOG.md" } },
             bash("git add CHANGELOG.md"),
         ]);
         expect(audit).toEqual({
             firstSkillLoad: 1,
             firstPolicyRead: 2,
             firstChangelogWrite: 3,
+            firstPolicyWrite: null,
             possiblePolicyReads: [],
             possibleChangelogWrites: [],
+            possiblePolicyWrites: [],
             gitWrites: ["git add CHANGELOG.md"],
         });
     });
@@ -160,8 +219,10 @@ describe("auditRun", () => {
             firstSkillLoad: null,
             firstPolicyRead: null,
             firstChangelogWrite: null,
+            firstPolicyWrite: null,
             possiblePolicyReads: [],
             possibleChangelogWrites: [],
+            possiblePolicyWrites: [],
             gitWrites: [],
         });
     });
@@ -183,6 +244,15 @@ describe("auditRun", () => {
             bash(
                 "python3 - <<'EOF'\nold=s[s.index('## Unreleased'):s.index('## [1.2.0]')]\nEOF",
             ),
+            bash("ls -R docs/agents && cat docs/agents/*; cat README.md"),
+            bash(
+                "ls -R docs && cat docs/* README.md | head -80; grep -rni yank . --exclude-dir=.git",
+            ),
+            bash("ls docs && grep -ril changelog docs README.md"),
+            bash("grep -rn -i notice . --include=*.md | grep -v node_modules"),
+            bash('grep -rn "old\\|search\\|export\\|dark" src'),
+            bash("grep -rn notice . --include=*.ts"),
+            bash("grep -rn notice"),
         ]);
         expect(audit.firstPolicyRead).toBe(3);
         expect(audit.possiblePolicyReads).toEqual([
@@ -193,6 +263,21 @@ describe("auditRun", () => {
                 command:
                     "python3 -c \"print(open('docs/agents/changelog-policy.md').read())\"",
             },
+            {
+                call: 8,
+                command:
+                    "ls -R docs && cat docs/* README.md | head -80; grep -rni yank . --exclude-dir=.git",
+            },
+            {
+                call: 9,
+                command: "ls docs && grep -ril changelog docs README.md",
+            },
+            {
+                call: 10,
+                command:
+                    "grep -rn -i notice . --include=*.md | grep -v node_modules",
+            },
+            { call: 13, command: "grep -rn notice" },
         ]);
     });
 
@@ -214,6 +299,29 @@ describe("auditRun", () => {
         expect(audit.firstChangelogWrite).toBeNull();
         expect(audit.possibleChangelogWrites.map(({ call }) => call)).toEqual([
             0, 1, 2,
+        ]);
+    });
+
+    it("gives the first change to the policy and lists possible changes", () => {
+        const audit = auditRun([
+            bash("cat -n docs/agents/changelog-policy.md"),
+            bash("cd docs/agents && sed -i 's/on/off/' changelog-policy.md"),
+            {
+                name: "Write",
+                input: {
+                    file_path: "/w/project/docs/agents/changelog-policy.md",
+                },
+            },
+            // From a saved run transcript: a policy file with a wrong name.
+            bash(
+                "cat > docs/agents/changelog.md <<'EOF'\n# Changelog policy\n\nRules for agents and maintainers editing `CHANGELOG.md`.\nEOF",
+            ),
+        ]);
+        expect(audit.firstPolicyWrite).toBe(2);
+        expect(audit.firstChangelogWrite).toBeNull();
+        expect(audit.possiblePolicyWrites.map(({ call }) => call)).toEqual([1]);
+        expect(audit.possibleChangelogWrites.map(({ call }) => call)).toEqual([
+            3,
         ]);
     });
 });
@@ -284,7 +392,10 @@ describe("changelogBefore", () => {
 
 describe("loadDecision", () => {
     const load = { name: "Skill", input: { skill: "common-changelog" } };
-    const write = { name: "Edit", input: { file_path: "/w/CHANGELOG.md" } };
+    const write = {
+        name: "Edit",
+        input: { file_path: "/w/project/CHANGELOG.md" },
+    };
     const read = bash("cat -n CHANGELOG.md");
 
     it("counts a load before the first change to CHANGELOG.md", () => {
