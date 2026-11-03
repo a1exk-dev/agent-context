@@ -86,10 +86,12 @@ The default Changelog policy is this file:
 Each step of this skill that tells you to ask the Operator gives the action, not a tool. Do that action in this way:
 
 1. Do not ask a question when the caller gives the answer before the job, for example "use the default changelog policy".
-2. Ask with the question tool of the platform. Ask a maximum of 3 questions in one tool call. When one answer can change the next question, ask only one question in each tool call.
+2. When the platform has a question tool, ask with that tool. Ask a maximum of 3 questions in one tool call. When one answer can change the next question, ask only one question in each tool call.
 3. Give 2 or 3 options for each question. The one exception is the unknown-host question of `references/links.md`, which has 4 options.
-4. There is no human when the platform has no question tool, or when the question tool gives an error. With no human, do not select an answer for the Operator. Do the no-human step that the reference file of the question gives for that case.
-5. With no human, give the result in plain text in the report, as that step tells you. Then stop, and do not wait for an answer.
+4. When the platform has no question tool, ask the same question in plain text, with its options. Do not change a file for the step of that question.
+5. In that plain-text message, also give the text that the report gives with no human for that case. Examples are each Setting with no answer and the words "use the default changelog policy", or the words "convert the changelog". Then the caller can give the answer before the next job.
+6. After the plain-text message, end your turn. Do not continue the job before the Operator answers.
+7. There is no human only when the question tool gives an error, or when the caller tells you that there is no human. With no human, do not select an answer for the Operator. Do the no-human step that the reference file of the question gives for that case.
 
 ## When you do the Create job
 
