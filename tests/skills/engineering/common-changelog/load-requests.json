@@ -1,0 +1,85 @@
+[
+    {
+        "query": "add a changelog entry for the new search option",
+        "should_trigger": true,
+        "steps": [
+            "printf 'export function search(items: string[], term: string): string[] {\\n    return items.filter((item) => item.includes(term));\\n}\\n' > src/search.ts && git add src/search.ts && git commit -q -m 'feat: add search option'"
+        ]
+    },
+    { "query": "update CHANGELOG.md for this fix", "should_trigger": true },
+    {
+        "query": "create a changelog for this repo",
+        "should_trigger": true,
+        "steps": [
+            "git rm -q CHANGELOG.md && git commit -q -m 'chore: remove the changelog'"
+        ]
+    },
+    { "query": "review the changelog", "should_trigger": true },
+    { "query": "check CHANGELOG.md for mistakes", "should_trigger": true },
+    {
+        "query": "write the release notes for 1.3.0",
+        "should_trigger": true
+    },
+    {
+        "query": "release the changelog as version 1.3.0",
+        "should_trigger": true
+    },
+    {
+        "query": "mark 1.2.0 as yanked in the changelog",
+        "should_trigger": true
+    },
+    {
+        "query": "fix the merge conflict in CHANGELOG.md",
+        "should_trigger": true,
+        "steps": [
+            "git switch -q -c rounding main && sed -i '11a - Fix rounding of half cents in formatPrice() (Dave)' CHANGELOG.md && git commit -q -am 'docs: add the rounding fix to the changelog' && git switch -q feature/x",
+            "sed -i '11a - Fix truncate() cutting an emoji in half (Eve)' CHANGELOG.md && git commit -q -am 'docs: add the truncate fix to the changelog'",
+            "git merge -q rounding; true"
+        ]
+    },
+    {
+        "query": "set up a changelog policy for this repo",
+        "should_trigger": true,
+        "steps": [
+            "git rm -q docs/agents/changelog-policy.md && git commit -q -m 'chore: remove the changelog policy'"
+        ]
+    },
+    { "query": "what changed in version 1.2.0?", "should_trigger": false },
+    {
+        "query": "create the GitHub release v1.3.0 with gh release create",
+        "should_trigger": false
+    },
+    {
+        "query": "what should the next version number be?",
+        "should_trigger": false
+    },
+    {
+        "query": "commit the changelog change",
+        "should_trigger": false,
+        "steps": [
+            "git restore --staged src/price.ts && git checkout -q src/price.ts",
+            "sed -i '11a - Fix leading spaces in slugify() ([#6](https://github.com/example/demo/pull/6)) (Bob)' CHANGELOG.md"
+        ]
+    },
+    {
+        "query": "write the commit message for these staged changes",
+        "should_trigger": false
+    },
+    {
+        "query": "write the PR description for this branch",
+        "should_trigger": false
+    },
+    {
+        "query": "bump the version in package.json to 1.3.0",
+        "should_trigger": false
+    },
+    {
+        "query": "show me the commits since v1.2.0",
+        "should_trigger": false
+    },
+    {
+        "query": "explain what Common Changelog is",
+        "should_trigger": false
+    },
+    { "query": "fix the typo in README.md", "should_trigger": false }
+]
