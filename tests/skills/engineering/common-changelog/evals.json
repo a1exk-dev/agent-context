@@ -43,6 +43,80 @@
             ]
         },
         {
+            "id": 14,
+            "name": "14-review-mistakes",
+            "prompt": "Review the changelog. Do not change it.",
+            "setup": {
+                "overlay": "fixtures/14-review-mistakes",
+                "branch": "main"
+            },
+            "assertions": [
+                "[14.1] `CHANGELOG.md` is unchanged: `git status --porcelain` and `git diff` show no change to it.",
+                "[14.2] The report gives the release heading date `01/09/2026` on line 3 as an error finding of §2.2.",
+                "[14.3] The report gives the item with no commit reference on line 8 as an error finding of §2.4.2.",
+                "[14.4] The report gives the group `### Deprecated` on line 10 as an error finding of §2.4.",
+                "[14.5] The report gives the Unreleased section below a release on line 14 as an error finding.",
+                "[14.6] The report gives the item `Added` on line 18, which is not in the imperative mood, as an error finding of §2.4.1.",
+                "[14.7] The report gives no finding that comes from the branch name `main`."
+            ]
+        },
+        {
+            "id": 15,
+            "name": "15-review-unreleased-off",
+            "prompt": "Review the changelog. Do not change it.",
+            "setup": {
+                "overlay": "fixtures/15-review-unreleased-off"
+            },
+            "assertions": [
+                "[15.1] `CHANGELOG.md` is unchanged: `git status --porcelain` and `git diff` show no change to it.",
+                "[15.2] The report gives exactly one finding with the severity error: the Unreleased section (line 3), with §6.2."
+            ]
+        },
+        {
+            "id": 16,
+            "name": "16-write-old-finding",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/16-write-old-finding"
+            },
+            "assertions": [
+                "[16.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[16.2] The 1.2.0 item ``- Add `slugify()` (Carol)`` is unchanged.",
+                "[16.3] The report lists the 1.2.0 item with no commit reference as a finding with its line number, §2.4.2, and the severity error."
+            ]
+        },
+        {
+            "id": 17,
+            "name": "17-conflict-unreleased",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "steps": [
+                    "cat > CHANGELOG.md <<'EOF'\n# Changelog\n\n## Unreleased\n\n### Added\n\n- Add `truncate()` to shorten long titles ([#5](https://github.com/example/demo/pull/5)) (Alice)\n\n<<<<<<< HEAD\n### Fixed\n\n- Fix `slugify()` dropping accented letters ([#6](https://github.com/example/demo/pull/6)) (Bob)\n=======\n### Changed\n\n- Round `formatPrice()` results to 2 decimals ([#7](https://github.com/example/demo/pull/7)) (Dave)\n>>>>>>> feature/price\n\n## [1.2.0] - 2026-09-01\n\n### Added\n\n- Add `formatPrice()` ([`3f2a9c1`](https://github.com/example/demo/commit/3f2a9c1)) (Carol)\n- Add `slugify()` ([`8d4e7b2`](https://github.com/example/demo/commit/8d4e7b2)) (Carol)\n\n[1.2.0]: https://github.com/example/demo/releases/tag/v1.2.0\nEOF"
+                ]
+            },
+            "assertions": [
+                "[17.1] `CHANGELOG.md` has no conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`).",
+                "[17.2] The Unreleased section keeps the items of both sides of the conflict: `formatPrice()` rounding (#7, Dave), `truncate()` (#5, Alice), and `slugify()` accented letters (#6, Bob), with their text, references, and authors unchanged.",
+                "[17.3] The Unreleased section has the groups in the sequence `### Changed`, `### Added`, `### Fixed`, with one heading for each group.",
+                "[17.4] One new item about `slugify` and leading spaces is in `### Fixed` of the Unreleased section, with the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[17.5] The `## [1.2.0] - 2026-09-01` entry and its link definition are unchanged."
+            ]
+        },
+        {
+            "id": 18,
+            "name": "18-conflict-release",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "steps": [
+                    "cat > CHANGELOG.md <<'EOF'\n# Changelog\n\n## Unreleased\n\n### Added\n\n- Add `truncate()` to shorten long titles ([#5](https://github.com/example/demo/pull/5)) (Alice)\n\n### Fixed\n\n- Fix `slugify()` dropping accented letters ([#6](https://github.com/example/demo/pull/6)) (Bob)\n\n## [1.2.0] - 2026-09-01\n\n### Added\n\n<<<<<<< HEAD\n- Add `formatPrice()` ([`3f2a9c1`](https://github.com/example/demo/commit/3f2a9c1)) (Carol)\n=======\n- Add `formatPrice()` with a currency option ([`3f2a9c1`](https://github.com/example/demo/commit/3f2a9c1)) (Carol)\n>>>>>>> hotfix/price\n- Add `slugify()` ([`8d4e7b2`](https://github.com/example/demo/commit/8d4e7b2)) (Carol)\n\n[1.2.0]: https://github.com/example/demo/releases/tag/v1.2.0\nEOF"
+                ]
+            },
+            "assertions": [
+                "[18.1] `CHANGELOG.md` is the same in `state-before.md` and `state-after.md`, conflict markers included.",
+                "[18.2] The report says that the conflict is outside the Unreleased section (in the 1.2.0 entry) and asks the caller to resolve it or how to resolve it."
+            ]
+        },
+        {
             "id": 19,
             "name": "19-no-policy-write",
             "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
