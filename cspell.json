@@ -23,6 +23,7 @@
         "frontmatter",
         "gitflow",
         "gpgsign",
+        "keepachangelog",
         "mattpocock",
         "mktemp",
         "multiedit",

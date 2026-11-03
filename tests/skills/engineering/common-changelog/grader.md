@@ -17,6 +17,7 @@ You grade one run of one output test. This is a read-only task, except for the `
 - Common Changelog: https://common-changelog.org/. A release heading is `## [X.Y.Z] - YYYY-MM-DD`. The groups are `Changed`, `Added`, `Removed`, `Fixed`, in that order. Each item is one line in the imperative mood, then its references, then its authors in their own parentheses, for example `([#6](https://github.com/example/demo/pull/6)) (Bob)`. Each reference is a Markdown link.
 - The 2 deviations of the Skill: an undated `## Unreleased` section with no link, first after `# Changelog`, whose items have no commit reference; and `Host: none` items with no references.
 - GitHub URL forms after `https://github.com/<owner>/<repo>`: `/commit/<sha>`, `/pull/<n>` written `#n`, `/issues/<n>`, `/releases/tag/<tag>`, `/compare/<prev>...<tag>`.
+- A draft (an item that the Skill writes from git when the request gives no change text) is one summary item for all covered changes. It goes in the first group of `Changed`, `Added`, `Removed`, `Fixed` that has a change, with a maximum of 2 references. When one change is breaking, it goes in `Changed` with `**Breaking:** `. Its authors are the authors of each committed change that it covers. Such an item is correct, also when it names changes of other groups.
 - `Authors: on` puts the author of the change after the references. When git gives no author for the change, an item with no author is correct.
 
 ## Grading
