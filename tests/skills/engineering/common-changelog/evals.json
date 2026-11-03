@@ -445,10 +445,13 @@
             "name": "45-free-text-convert",
             "prompt": "Convert CHANGELOG.md to Common Changelog.",
             "setup": {
-                "overlay": "fixtures/44-free-text"
+                "overlay": "fixtures/44-free-text",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ]
             },
             "assertions": [
-                "[45.1] Line 1 of `CHANGELOG.md` is `# Changelog`, and the file has a release entry `## [1.2.0] - 2026-09-01` (the date of the commit with tag `v1.2.0`) with exactly one item about dark mode, in a group, in the imperative mood.",
+                "[45.1] Line 1 of `CHANGELOG.md` is `# Changelog`, and the file has a release entry `## [1.2.0] - 2026-09-01` (the date of the commit with tag `v1.2.0`) with exactly one item about dark mode, in a group, in the imperative mood, with a commit link to the merge commit of pull request #3 and the author `(Dave)`.",
                 "[45.2] The line \"Version 0.9 was a beta for testers.\" is in the file, unchanged, below the 1.2.0 entry. The file has no release entry for 0.9.",
                 "[45.3] The report lists the text that matches no tag, the 0.9 line included."
             ]

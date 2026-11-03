@@ -41,8 +41,9 @@ Do these steps when the Write job turns a section in a different form into the r
 1. Change the heading into the release heading, and remove the link definition of the old heading.
 2. Move each item of a `### Security` group to `### Fixed`. Move each item of a `### Deprecated` group to `### Changed`. Put the groups in the sequence `Changed`, `Added`, `Removed`, `Fixed`.
 3. Write each item in the imperative mood, for example "Fixed XSS in search" becomes "Fix XSS in search". Keep the meaning of the item.
-4. Write the references and the author of each item as "When you make a release entry" in `references/release-entries.md` tells you. A text reference, for example `(#6)`, gives the pull request. Find its merge commit in the Git history.
-5. In the report, give each item that moved to a different group, with the old group and the new group.
+4. Keep each item, also when its text does not agree with the changes in the Git history. Do not replace, remove, or add an item. The Operator approves the items in the Commit review.
+5. Write the references and the author of each item as "When you make a release entry" in `references/release-entries.md` tells you. A text reference, for example `(#6)`, gives the pull request. Find its merge commit in the Git history.
+6. In the report, give each item that moved to a different group, with the old group and the new group.
 
 ## When you do a conversion
 
@@ -52,8 +53,8 @@ A conversion is a Write job that corrects each finding in the full changelog. Co
 2. Write the title `# Changelog` as the first line.
 3. Change each release heading to `## [X.Y.Z] - YYYY-MM-DD`, with no `v`.
 4. When the heading has a `[YANKED]` tag, remove the tag. Write a yanked notice as "When you mark a release as yanked" in `references/release-entries.md` tells you.
-5. Change the groups and the items of each release entry as steps 2 and 3 of "When a release converts a section" tell you.
-6. When `Unreleased` is `on`, change the heading of the Unreleased section to `## Unreleased`. Change its groups and items as steps 2 and 3 of "When a release converts a section" tell you.
+5. Change the groups and the items of each release entry as steps 2 to 4 of "When a release converts a section" tell you.
+6. When `Unreleased` is `on`, change the heading of the Unreleased section to `## Unreleased`. Change its groups and items as steps 2 to 4 of "When a release converts a section" tell you.
 7. An item can give a pull request or a commit that the Git history has. For each such item, write its references and author as the Settings tell you. Write no commit reference in the Unreleased section.
 8. When an item gives no pull request or commit, or the Git history does not have it, keep the item with no reference. The Review job lists it as a §2.4.2 error.
 9. Remove other text after the title, for example an introduction paragraph. Keep the text that step 7 of "When you convert free text" keeps. Give each removed text in the report, as a quotation.
@@ -67,7 +68,7 @@ A conversion is a Write job that corrects each finding in the full changelog. Co
 2. If the project has no tags, do not change a file. In the report, tell that the project has no Git tags, so the free text stays as it is.
 3. For each tag that has a semver version, make a release entry `## [X.Y.Z] - YYYY-MM-DD`. The version comes from the tag name, for example `1.2.0` from `v1.2.0`. The date is the date of the tagged commit: run `git log -1 --format=%cs <tag>`.
 4. Find the text that gives the version of a tag, for example "Version 1.2 added dark mode" for `v1.2.0`. Write that text as items of that release entry, in Common Changelog form.
-5. Write the references of each item as "When you do a conversion" tells you.
+5. Find the commit of each item in the Git history up to its tag. An example is the merge commit `Merge pull request #3 from dave/dark-mode` for "added dark mode". Then write the references and the author of the item as "When you do a conversion" tells you.
 6. Put the release entries in semver sequence, with the latest release first, directly after `# Changelog`.
 7. Keep the text that gives no version of a tag below the last release entry, with no change. In the report, give each line of that text.
 
