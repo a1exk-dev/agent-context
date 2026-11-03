@@ -1,0 +1,917 @@
+{
+    "skill_name": "common-changelog",
+    "common_assertions": [
+        "[C1] The Skill was loaded (Skill call or `SKILL.md` read) before the first change to `CHANGELOG.md` or the Changelog policy, and before the final report.",
+        "[C2] When the policy file exists at the start, the run read it before it changed or reviewed `CHANGELOG.md`.",
+        "[C3] No new commit. `git diff --cached` is empty.",
+        "[C4] No file changed except `CHANGELOG.md` and the Changelog policy; in test 48, `HISTORY.md` is renamed to `CHANGELOG.md`.",
+        "[C5] When `CHANGELOG.md` changed: the lines that this run wrote follow every §2 rule and each Setting of the run's policy (Unreleased items need no commit reference; `Host: none` items need no references). Old lines are unchanged unless the request asked for it.",
+        "[C6] The final report names each changed file and lists each Review finding with line numbers, rule and § number, severity, and a fix; findings with the same rule and fix are one finding with all their line numbers. Or it says why nothing changed."
+    ],
+    "evals": [
+        {
+            "id": 1,
+            "name": "01-create",
+            "prompt": "create a changelog",
+            "setup": {
+                "remove": ["CHANGELOG.md"]
+            },
+            "assertions": [
+                "[1.1] After the run, `CHANGELOG.md` holds only the line `# Changelog` (a final newline is permitted)."
+            ]
+        },
+        {
+            "id": 2,
+            "name": "02-write-unreleased",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {},
+            "assertions": [
+                "[2.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, starts with an imperative verb, and is about `slugify` and leading spaces.",
+                "[2.2] The new item has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[2.3] The `## [1.2.0] - 2026-09-01` entry, its link definition, and the 2 old Unreleased items are unchanged."
+            ]
+        },
+        {
+            "id": 3,
+            "name": "03-write-no-changelog",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "remove": ["CHANGELOG.md"]
+            },
+            "assertions": [
+                "[3.1] After the run, `CHANGELOG.md` holds, in this sequence: `# Changelog`, `## Unreleased`, `### Fixed`, and one item about `slugify` and leading spaces with the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference. It holds no other heading and no other item."
+            ]
+        },
+        {
+            "id": 4,
+            "name": "04-release",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {},
+            "assertions": [
+                "[4.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[4.2] The 1.3.0 entry holds the 2 old Unreleased items, about `truncate()` and accented letters, in their groups. The `truncate()` item has a commit link to the merge commit of pull request #5 (`/commit/<sha>`, link text the short SHA), `[#5](https://github.com/example/demo/pull/5)`, and the author `(Alice)`. The accented-letters item has a commit link to the merge commit of pull request #6, `[#6](https://github.com/example/demo/pull/6)`, and the author `(Bob)`.",
+                "[4.3] The link definition `[1.3.0]: https://github.com/example/demo/releases/tag/v1.3.0` is at the bottom of the file, above `[1.2.0]: https://github.com/example/demo/releases/tag/v1.2.0`. The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 5,
+            "name": "05-release-branch",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "branch": "release/1.3.0"
+            },
+            "assertions": [
+                "[5.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[5.2] The 1.3.0 entry holds one new item under `### Fixed` about `slugify` and leading spaces. The new item has a commit link (`/commit/<sha>`) to the merge commit of pull request #6 or to the commit `fix: trim leading spaces in slugify`, the reference `[#6](https://github.com/example/demo/pull/6)`, and the author `(Bob)`.",
+                "[5.3] The link definition `[1.3.0]: https://github.com/example/demo/releases/tag/v1.3.0` is at the bottom of the file. The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 6,
+            "name": "06-version-mismatch",
+            "prompt": "Release the changelog as 1.4.0.",
+            "setup": {
+                "branch": "release/1.3.0"
+            },
+            "assertions": [
+                "[6.1] `CHANGELOG.md` is unchanged.",
+                "[6.2] The final report names the version 1.3.0 from the branch name and the version 1.4.0 from the request, and asks which version to use."
+            ]
+        },
+        {
+            "id": 7,
+            "name": "07-hotfix-no-version",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "branch": "hotfix/login"
+            },
+            "assertions": [
+                "[7.1] `CHANGELOG.md` is unchanged.",
+                "[7.2] The final report asks for the version of the release, because the branch name `hotfix/login` gives no version. It does not calculate or select a version itself."
+            ]
+        },
+        {
+            "id": 8,
+            "name": "08-unreleased-off-version",
+            "prompt": "Add a changelog entry for 1.3.0: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/08-unreleased-off"
+            },
+            "assertions": [
+                "[8.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no Unreleased section.",
+                "[8.2] The 1.3.0 entry holds one item under `### Fixed` about `slugify` and leading spaces, with a commit link (`/commit/<sha>`) to the merge commit of pull request #6 or to the commit `fix: trim leading spaces in slugify`, the reference `[#6](https://github.com/example/demo/pull/6)`, and the author `(Bob)`.",
+                "[8.3] The link definition `[1.3.0]: https://github.com/example/demo/releases/tag/v1.3.0` is at the bottom of the file. The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 9,
+            "name": "09-unreleased-off-no-version",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/08-unreleased-off"
+            },
+            "assertions": [
+                "[9.1] `CHANGELOG.md` is unchanged.",
+                "[9.2] The final report asks for the version of the release. It does not calculate or select a version itself."
+            ]
+        },
+        {
+            "id": 10,
+            "name": "10-commits-no-links",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/10-commits-no-links"
+            },
+            "assertions": [
+                "[10.1] The first section after `# Changelog` is `## 1.3.0 - <run date>`, with no brackets. The file has no `## Unreleased` section and no `[1.3.0]:` link definition.",
+                "[10.2] Each item of the 1.3.0 entry has a commit link (`/commit/<sha>`) to the merge commit of its pull request and the author (`(Alice)` for `truncate()`, `(Bob)` for accented letters). No item of the 1.3.0 entry has a pull-request link.",
+                "[10.3] The `## [1.2.0] - 2026-09-01` entry and its link definition are unchanged."
+            ]
+        },
+        {
+            "id": 11,
+            "name": "11-issues-compare",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/11-issues-compare"
+            },
+            "assertions": [
+                "[11.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[11.2] The accented-letters item has a maximum of 2 references, and one of them is a commit link (`/commit/<sha>`) to the merge commit of pull request #6. The final report names each reference that it left out.",
+                "[11.3] No item of the 1.3.0 entry has an author.",
+                "[11.4] The link definition `[1.3.0]: https://github.com/example/demo/compare/v1.2.0...v1.3.0` is at the bottom of the file."
+            ]
+        },
+        {
+            "id": 12,
+            "name": "12-notice-major",
+            "prompt": "Release the changelog as 2.0.0.",
+            "setup": {
+                "overlay": "fixtures/12-notice-major"
+            },
+            "assertions": [
+                "[12.1] The first section after `# Changelog` is `## [2.0.0] - <run date>`, and it holds the `**Breaking:**` item first in `### Changed`. The file has no `## Unreleased` section.",
+                "[12.2] The 2.0.0 entry has no notice: no paragraph between the heading and the first group.",
+                "[12.3] The final report tells that no upgrade-guide notice was asked for or written, because no human can answer."
+            ]
+        },
+        {
+            "id": 13,
+            "name": "13-yank",
+            "prompt": "Mark 1.2.0 as yanked: it breaks install.",
+            "setup": {},
+            "assertions": [
+                "[13.1] The heading `## [1.2.0] - 2026-09-01` is unchanged, with no `[YANKED]` tag.",
+                "[13.2] The 1.2.0 entry has one notice directly after its heading: a paragraph of one sentence that tells that the release is yanked and that it breaks install. The groups and items of 1.2.0 stay after the notice.",
+                "[13.3] Each other line of `CHANGELOG.md` is unchanged."
+            ]
+        },
+        {
+            "id": 14,
+            "name": "14-review-mistakes",
+            "prompt": "Review the changelog. Do not change it.",
+            "setup": {
+                "overlay": "fixtures/14-review-mistakes",
+                "branch": "main"
+            },
+            "assertions": [
+                "[14.1] `CHANGELOG.md` is unchanged: `git status --porcelain` and `git diff` show no change to it.",
+                "[14.2] The report gives the release heading date `01/09/2026` on line 3 as an error finding of §2.2.",
+                "[14.3] The report gives the item with no commit reference on line 8 as an error finding of §2.4.2.",
+                "[14.4] The report gives the group `### Deprecated` on line 10 as an error finding of §2.4.",
+                "[14.5] The report gives the Unreleased section below a release on line 14 as an error finding.",
+                "[14.6] The report gives the item `Added` on line 18, which is not in the imperative mood, as an error finding of §2.4.1.",
+                "[14.7] The report gives no finding that comes from the branch name `main`."
+            ]
+        },
+        {
+            "id": 15,
+            "name": "15-review-unreleased-off",
+            "prompt": "Review the changelog. Do not change it.",
+            "setup": {
+                "overlay": "fixtures/15-review-unreleased-off"
+            },
+            "assertions": [
+                "[15.1] `CHANGELOG.md` is unchanged: `git status --porcelain` and `git diff` show no change to it.",
+                "[15.2] The report gives exactly one finding with the severity error: the Unreleased section (line 3), with §6.2."
+            ]
+        },
+        {
+            "id": 16,
+            "name": "16-write-old-finding",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/16-write-old-finding"
+            },
+            "assertions": [
+                "[16.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[16.2] The 1.2.0 item ``- Add `slugify()` (Carol)`` is unchanged.",
+                "[16.3] The report lists the 1.2.0 item with no commit reference as a finding with its line number, §2.4.2, and the severity error."
+            ]
+        },
+        {
+            "id": 17,
+            "name": "17-conflict-unreleased",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "steps": [
+                    "cat > CHANGELOG.md <<'EOF'\n# Changelog\n\n## Unreleased\n\n### Added\n\n- Add `truncate()` to shorten long titles ([#5](https://github.com/example/demo/pull/5)) (Alice)\n\n<<<<<<< HEAD\n### Fixed\n\n- Fix `slugify()` dropping accented letters ([#6](https://github.com/example/demo/pull/6)) (Bob)\n=======\n### Changed\n\n- Round `formatPrice()` results to 2 decimals ([#7](https://github.com/example/demo/pull/7)) (Dave)\n>>>>>>> feature/price\n\n## [1.2.0] - 2026-09-01\n\n### Added\n\n- Add `formatPrice()` ([`3f2a9c1`](https://github.com/example/demo/commit/3f2a9c1)) (Carol)\n- Add `slugify()` ([`8d4e7b2`](https://github.com/example/demo/commit/8d4e7b2)) (Carol)\n\n[1.2.0]: https://github.com/example/demo/releases/tag/v1.2.0\nEOF"
+                ]
+            },
+            "assertions": [
+                "[17.1] `CHANGELOG.md` has no conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`).",
+                "[17.2] The Unreleased section keeps the items of both sides of the conflict: `formatPrice()` rounding (#7, Dave), `truncate()` (#5, Alice), and `slugify()` accented letters (#6, Bob), with their text, references, and authors unchanged.",
+                "[17.3] The Unreleased section has the groups in the sequence `### Changed`, `### Added`, `### Fixed`, with one heading for each group.",
+                "[17.4] One new item about `slugify` and leading spaces is in `### Fixed` of the Unreleased section, with the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[17.5] The `## [1.2.0] - 2026-09-01` entry and its link definition are unchanged."
+            ]
+        },
+        {
+            "id": 18,
+            "name": "18-conflict-release",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "steps": [
+                    "cat > CHANGELOG.md <<'EOF'\n# Changelog\n\n## Unreleased\n\n### Added\n\n- Add `truncate()` to shorten long titles ([#5](https://github.com/example/demo/pull/5)) (Alice)\n\n### Fixed\n\n- Fix `slugify()` dropping accented letters ([#6](https://github.com/example/demo/pull/6)) (Bob)\n\n## [1.2.0] - 2026-09-01\n\n### Added\n\n<<<<<<< HEAD\n- Add `formatPrice()` ([`3f2a9c1`](https://github.com/example/demo/commit/3f2a9c1)) (Carol)\n=======\n- Add `formatPrice()` with a currency option ([`3f2a9c1`](https://github.com/example/demo/commit/3f2a9c1)) (Carol)\n>>>>>>> hotfix/price\n- Add `slugify()` ([`8d4e7b2`](https://github.com/example/demo/commit/8d4e7b2)) (Carol)\n\n[1.2.0]: https://github.com/example/demo/releases/tag/v1.2.0\nEOF"
+                ]
+            },
+            "assertions": [
+                "[18.1] `CHANGELOG.md` is the same in `state-before.md` and `state-after.md`, conflict markers included.",
+                "[18.2] The report says that the conflict is outside the Unreleased section (in the 1.2.0 entry) and asks the caller to resolve it or how to resolve it."
+            ]
+        },
+        {
+            "id": 19,
+            "name": "19-no-policy-write",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "remove": ["docs/agents/changelog-policy.md"]
+            },
+            "assertions": [
+                "[19.1] After the run, `docs/agents/changelog-policy.md` is missing, and `CHANGELOG.md` is unchanged.",
+                "[19.2] The final report names each of the 8 Settings (References, Notice, Authors, Version links, Host, Unreleased, Release branches, Draft approval) as a Setting with no answer, and gives the words \"use the default changelog policy\"."
+            ]
+        },
+        {
+            "id": 20,
+            "name": "20-no-policy-review",
+            "prompt": "review the changelog",
+            "setup": {
+                "remove": ["docs/agents/changelog-policy.md"]
+            },
+            "assertions": [
+                "[20.1] After the run, `docs/agents/changelog-policy.md` is missing, and `CHANGELOG.md` is unchanged.",
+                "[20.2] The final report names each of the 8 Settings (References, Notice, Authors, Version links, Host, Unreleased, Release branches, Draft approval) as a Setting with no answer, and gives the words \"use the default changelog policy\"."
+            ]
+        },
+        {
+            "id": 21,
+            "name": "21-no-policy-create",
+            "prompt": "create a changelog",
+            "setup": {
+                "remove": ["docs/agents/changelog-policy.md", "CHANGELOG.md"]
+            },
+            "assertions": [
+                "[21.1] After the run, `docs/agents/changelog-policy.md` and `CHANGELOG.md` are both missing.",
+                "[21.2] The final report names each of the 8 Settings (References, Notice, Authors, Version links, Host, Unreleased, Release branches, Draft approval) as a Setting with no answer, and gives the words \"use the default changelog policy\"."
+            ]
+        },
+        {
+            "id": 22,
+            "name": "22-no-policy-use-defaults",
+            "prompt": "Use the default changelog policy. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "remove": ["docs/agents/changelog-policy.md"]
+            },
+            "assertions": [
+                "[22.1] After the run, `docs/agents/changelog-policy.md` holds exactly the title `# Changelog policy`, a blank line, and these 8 lines in this sequence: `- References: commits, pull requests`, `- Notice: required`, `- Authors: on`, `- Version links: release`, `- Host: auto`, `- Unreleased: on`, `- Release branches: release, hotfix`, `- Draft approval: off` (a final newline is permitted).",
+                "[22.2] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, has the linked reference `[#6](https://github.com/example/demo/pull/6)`, and has no commit reference.",
+                "[22.3] The final report names both `CHANGELOG.md` and `docs/agents/changelog-policy.md` as changed or new files.",
+                "[22.4] `docs/agents/changelog-policy.md` is not staged and not in a commit: `git status --porcelain` of the state after shows it as an untracked file."
+            ]
+        },
+        {
+            "id": 23,
+            "name": "23-no-policy-all-values",
+            "prompt": "Set up the changelog policy with these values: References: commits, pull requests. Notice: required. Authors: on. Version links: compare. Host: auto. Unreleased: off. Release branches: release. Draft approval: off. Then add a changelog entry for 1.3.0: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/23-policy-all-values",
+                "remove": ["docs/agents/changelog-policy.md"]
+            },
+            "assertions": [
+                "[23.1] After the run, `docs/agents/changelog-policy.md` holds exactly the title `# Changelog policy`, a blank line, and these 8 lines in this sequence: `- References: commits, pull requests`, `- Notice: required`, `- Authors: on`, `- Version links: compare`, `- Host: auto`, `- Unreleased: off`, `- Release branches: release`, `- Draft approval: off` (a final newline is permitted).",
+                "[23.2] `CHANGELOG.md` has no `## Unreleased` heading. Its first section after `# Changelog` is `## [1.3.0] - <run date>`, above `## [1.2.0] - 2026-09-01`.",
+                "[23.3] The 1.3.0 entry has a group `### Fixed` with an item about `slugify` and leading spaces. That item has a linked short SHA of a commit of pull request #6 in the form `https://github.com/example/demo/commit/<sha>`, the linked reference `[#6](https://github.com/example/demo/pull/6)`, and the author `(Bob)` after the references.",
+                "[23.4] The bottom of `CHANGELOG.md` has the definition `[1.3.0]: https://github.com/example/demo/compare/v1.2.0...v1.3.0`, and the old `## [1.2.0]` entry and its definition are unchanged.",
+                "[23.5] The final report names both `CHANGELOG.md` and `docs/agents/changelog-policy.md` as changed or new files."
+            ]
+        },
+        {
+            "id": 24,
+            "name": "24-policy-bad-lines",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/24-policy-bad-lines"
+            },
+            "assertions": [
+                "[24.1] `CHANGELOG.md` and `docs/agents/changelog-policy.md` are unchanged, and `git status --porcelain` of the state after is empty.",
+                "[24.2] The final report gives line 3 (the prose sentence) and line 6 (`- Notice: always`) as incorrect lines, and gives no other policy line as incorrect.",
+                "[24.3] The final report tells the Operator to correct the Changelog policy or to delete it so that a new Changelog policy is set up.",
+                "[24.4] The run record shows no question to the Operator: no question-tool call and no question in the final report."
+            ]
+        },
+        {
+            "id": 25,
+            "name": "25-policy-missing-settings",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/25-policy-missing-settings"
+            },
+            "assertions": [
+                "[25.1] After the run, `docs/agents/changelog-policy.md` holds exactly the title `# Changelog policy`, a blank line, and these 8 lines in this sequence: `- References: commits, pull requests`, `- Notice: required`, `- Authors: on`, `- Version links: release`, `- Host: auto`, `- Unreleased: on`, `- Release branches: release, hotfix`, `- Draft approval: off` (a final newline is permitted). The first 4 Settings are unchanged.",
+                "[25.2] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, has the linked reference `[#6](https://github.com/example/demo/pull/6)`, and has no commit reference.",
+                "[25.3] The final report names the change to `docs/agents/changelog-policy.md` and the 4 added Settings, and names `CHANGELOG.md`.",
+                "[25.4] The change to `docs/agents/changelog-policy.md` is not staged and not in a commit."
+            ]
+        },
+        {
+            "id": 26,
+            "name": "26-draft-branch",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search",
+                    "sed -i 's/\"type\": \"module\"/\"type\": \"module\",\\n    \"devDependencies\": { \"eslint\": \"^9.0.0\" }/' package.json && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'chore: bump eslint'"
+                ]
+            },
+            "assertions": [
+                "[26.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Added`, starts with an imperative verb, and is about the search option.",
+                "[26.2] The new item has the linked reference `[#7](https://github.com/example/demo/pull/7)`, no other pull-request reference, and no commit reference. No new item is about `truncate()` (#5) or `slugify()` (#6).",
+                "[26.3] The final report says that the item is a draft. It names the commits that the draft covers (pull request #7 or `feat: add search option`), and it names `test: search` and `chore: bump eslint` as skipped.",
+                "[26.4] The `## [1.2.0] - 2026-09-01` entry, its link definition, and the 2 old Unreleased items (`truncate()` with #5, accented letters with #6) are unchanged."
+            ]
+        },
+        {
+            "id": 27,
+            "name": "27-draft-uncommitted",
+            "prompt": "update CHANGELOG.md for this fix",
+            "setup": {
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search",
+                    "sed -i 's|/-\\$/g|/^-+\\|-+$/g|' src/strings.ts"
+                ]
+            },
+            "assertions": [
+                "[27.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Added`, and names the search option and the `slugify()` fix of leading dashes.",
+                "[27.2] The new item has the linked reference `[#7](https://github.com/example/demo/pull/7)` as its only reference, and no commit reference.",
+                "[27.3] `src/strings.ts` keeps its uncommitted change: it is listed as modified in `git status --porcelain` of both states.",
+                "[27.4] The final report says that the item is a draft. It names `src/strings.ts` as a covered uncommitted file."
+            ]
+        },
+        {
+            "id": 28,
+            "name": "28-draft-two-references",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search",
+                    "git switch -q -c slugify-dash && sed -i 's|/-\\$/g|/^-+\\|-+$/g|' src/strings.ts && git add -A && GIT_AUTHOR_NAME=Erin GIT_AUTHOR_EMAIL=erin@example.com git commit -qm 'fix: remove leading dashes in slugify' && git switch -q - && git merge -q --no-ff slugify-dash -m 'Merge pull request #9 from erin/slugify-dash' && git branch -qD slugify-dash",
+                    "git switch -q -c price-cents && sed -i 's|`\\$${amount}`|`\\$${amount.toFixed(2)}`|' src/price.ts && git add -A && GIT_AUTHOR_NAME=Frank GIT_AUTHOR_EMAIL=frank@example.com git commit -qm 'fix: show cents in formatPrice' && git switch -q - && git merge -q --no-ff price-cents -m 'Merge pull request #11 from frank/price-cents' && git branch -qD price-cents"
+                ]
+            },
+            "assertions": [
+                "[28.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Added`, and names the search option and the 2 fixes.",
+                "[28.2] The new item has exactly 2 references, `[#7](https://github.com/example/demo/pull/7)` and `[#9](https://github.com/example/demo/pull/9)`, and no commit reference.",
+                "[28.3] The final report names pull request #11 as a reference that the item leaves out."
+            ]
+        },
+        {
+            "id": 29,
+            "name": "29-draft-breaking",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "git switch -q -c node-20 && sed -i 's/\"type\": \"module\"/\"type\": \"module\",\\n    \"engines\": { \"node\": \">=20\" }/' package.json && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat!: drop Node 18' && git switch -q - && git merge -q --no-ff node-20 -m 'Merge pull request #7 from dave/node-20' && git branch -qD node-20",
+                    "git switch -q -c slugify-dash && sed -i 's|/-\\$/g|/^-+\\|-+$/g|' src/strings.ts && git add -A && GIT_AUTHOR_NAME=Erin GIT_AUTHOR_EMAIL=erin@example.com git commit -qm 'fix: remove leading dashes in slugify' && git switch -q - && git merge -q --no-ff slugify-dash -m 'Merge pull request #9 from erin/slugify-dash' && git branch -qD slugify-dash"
+                ]
+            },
+            "assertions": [
+                "[29.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Changed`, starts with `**Breaking:** `, and names the end of Node 18 support.",
+                "[29.2] The new item has the linked reference `[#7](https://github.com/example/demo/pull/7)` and no commit reference. The Unreleased groups are in the sequence `### Changed`, `### Added`, `### Fixed`."
+            ]
+        },
+        {
+            "id": 30,
+            "name": "30-draft-no-user-change",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "sed -i 's/\"type\": \"module\"/\"type\": \"module\",\\n    \"devDependencies\": { \"eslint\": \"^9.0.0\" }/' package.json && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'chore: bump eslint'"
+                ]
+            },
+            "assertions": [
+                "[30.1] `CHANGELOG.md` is unchanged.",
+                "[30.2] The final report says that it found no user change and names `chore: bump eslint` as skipped."
+            ]
+        },
+        {
+            "id": 31,
+            "name": "31-draft-caller-text",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[31.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[31.2] No line of `CHANGELOG.md` names the search option or pull request #7. The final report does not say that the item is a draft."
+            ]
+        },
+        {
+            "id": 32,
+            "name": "32-draft-no-tags",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "git tag -d v1.2.0",
+                    "printf '# Changelog\\n\\n## Unreleased\\n' > CHANGELOG.md && git add -A && GIT_AUTHOR_NAME=Carol GIT_AUTHOR_EMAIL=carol@example.com git commit -qm 'docs: restart the changelog'",
+                    "printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option'"
+                ]
+            },
+            "assertions": [
+                "[32.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Added`, and names the search option.",
+                "[32.2] The new item has a maximum of 2 references and no commit reference.",
+                "[32.3] The final report says that the draft covers the full Git history, because the repository has no release tag or the changelog has no release entry."
+            ]
+        },
+        {
+            "id": 33,
+            "name": "33-draft-missing-tag",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "git tag -d v1.2.0",
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[33.1] `CHANGELOG.md` is unchanged.",
+                "[33.2] The final report names the missing tag `v1.2.0` and asks for the change text or a start commit."
+            ]
+        },
+        {
+            "id": 34,
+            "name": "34-draft-approval-on",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "overlay": "fixtures/34-draft-approval-on",
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[34.1] `CHANGELOG.md` is unchanged.",
+                "[34.2] The final report shows the draft item about the search option with `[#7](https://github.com/example/demo/pull/7)`, and says that it waits for the approval of the Operator."
+            ]
+        },
+        {
+            "id": 35,
+            "name": "35-draft-approval-caller-text",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/34-draft-approval-on"
+            },
+            "assertions": [
+                "[35.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[35.2] The run asked no question and asked for no approval: the run record has no question tool call, and the final report asks for no approval."
+            ]
+        },
+        {
+            "id": 36,
+            "name": "36-release-keeps-unreleased",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[36.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[36.2] The 1.3.0 entry holds exactly the 2 old Unreleased items, about `truncate()` and accented letters. No line of `CHANGELOG.md` names the search option or pull request #7.",
+                "[36.3] The final report names pull request #7 (or `feat: add search option`) as a user change that the Unreleased section does not list."
+            ]
+        },
+        {
+            "id": 37,
+            "name": "37-release-draft",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "steps": [
+                    "s5=$(git log --format=%h -1 --grep='pull request #5') && s6=$(git log --format=%h -1 --grep='pull request #6') && cat > CHANGELOG.md <<EOF\n# Changelog\n\n## Unreleased\n\n## [1.2.1] - 2026-09-22\n\n### Added\n\n- Add \\`truncate()\\` to shorten long titles ([\\`$s5\\`](https://github.com/example/demo/commit/$s5)) ([#5](https://github.com/example/demo/pull/5)) (Alice)\n\n### Fixed\n\n- Fix \\`slugify()\\` dropping accented letters and keeping leading spaces ([\\`$s6\\`](https://github.com/example/demo/commit/$s6)) ([#6](https://github.com/example/demo/pull/6)) (Bob)\n\n## [1.2.0] - 2026-09-01\n\n### Added\n\n- Add \\`formatPrice()\\` ([\\`3f2a9c1\\`](https://github.com/example/demo/commit/3f2a9c1)) (Carol)\n- Add \\`slugify()\\` ([\\`8d4e7b2\\`](https://github.com/example/demo/commit/8d4e7b2)) (Carol)\n\n[1.2.1]: https://github.com/example/demo/releases/tag/v1.2.1\n[1.2.0]: https://github.com/example/demo/releases/tag/v1.2.0\nEOF\ngit add -A && GIT_AUTHOR_NAME=Carol GIT_AUTHOR_EMAIL=carol@example.com git commit -qm 'chore: release 1.2.1' && git tag v1.2.1",
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[37.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[37.2] The 1.3.0 entry holds exactly one item, under `### Added`, about the search option. It has a commit link (`/commit/<sha>`, link text the short SHA) to the merge commit of pull request #7, `[#7](https://github.com/example/demo/pull/7)`, and the author `(Dave)`.",
+                "[37.3] The link definition `[1.3.0]: https://github.com/example/demo/releases/tag/v1.3.0` is at the bottom of the file, above the `[1.2.1]` definition. The `## [1.2.1] - 2026-09-22` and `## [1.2.0] - 2026-09-01` entries are unchanged."
+            ]
+        },
+        {
+            "id": 38,
+            "name": "38-release-branch-draft",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "branch": "release/1.3.0",
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[38.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[38.2] The 1.3.0 entry has one new item under `### Added` about the search option, with a commit link (`/commit/<sha>`) to the merge commit of pull request #7 or to the commit `feat: add search option`, `[#7](https://github.com/example/demo/pull/7)`, and the author `(Dave)`.",
+                "[38.3] The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 39,
+            "name": "39-keep-a-changelog-write",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/39-keep-a-changelog",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ]
+            },
+            "assertions": [
+                "[39.1] The old heading `## [Unreleased]` on line 5 is now `## Unreleased`, with no link, and the link definition `[Unreleased]: https://github.com/example/demo/compare/v1.2.0...HEAD` is gone.",
+                "[39.2] Exactly one new item is in `CHANGELOG.md`. It is in a new group `### Fixed` of the Unreleased section, after `### Added`, starts with an imperative verb, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[39.3] The old lines are unchanged: the intro paragraph, `### Security` with \"Fixed XSS in search (#6)\", `### Added` with \"Added search option (#5)\", the full `## [1.2.0] - 2026-09-01` entry, and the link definition `[1.2.0]: https://github.com/example/demo/compare/v1.1.0...v1.2.0`.",
+                "[39.4] The report lists the findings in the old lines, one finding for each rule and fix with all its line numbers, for example one §2.4.1 finding for the items that are not in the imperative mood.",
+                "[39.5] The report gives the words \"convert the changelog\".",
+                "[39.6] No question was asked: the run record has no question-tool call, and the final report asks the Operator no question."
+            ]
+        },
+        {
+            "id": 40,
+            "name": "40-keep-a-changelog-release",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/39-keep-a-changelog",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ]
+            },
+            "assertions": [
+                "[40.1] The first section after `# Changelog` (and the intro paragraph, if it stays) is `## [1.3.0] - <run date>`. The file has no Unreleased section in any form, no `### Security` group, and no `[Unreleased]:` link definition.",
+                "[40.2] The 1.3.0 entry has `### Added` with an item \"Add search option\" and then `### Fixed` with an item \"Fix XSS in search\".",
+                "[40.3] The search-option item has a commit link to the merge commit of pull request #5 (`/commit/<sha>`, link text the short SHA), `[#5](https://github.com/example/demo/pull/5)`, and the author `(Alice)`. The XSS item has a commit link to the merge commit of pull request #6, `[#6](https://github.com/example/demo/pull/6)`, and the author `(Bob)`.",
+                "[40.4] The `## [1.2.0] - 2026-09-01` entry is unchanged, and `[1.3.0]: https://github.com/example/demo/releases/tag/v1.3.0` is a link definition at the bottom of the file.",
+                "[40.5] The report names the XSS item as moved from `Security` to `Fixed`."
+            ]
+        },
+        {
+            "id": 41,
+            "name": "41-keep-a-changelog-convert",
+            "prompt": "Convert CHANGELOG.md to Common Changelog.",
+            "setup": {
+                "overlay": "fixtures/39-keep-a-changelog",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ]
+            },
+            "assertions": [
+                "[41.1] Each heading follows §2: the title `# Changelog`, `## Unreleased` with no link, and `## [1.2.0] - 2026-09-01`. No `### Security` or `### Deprecated` group is left, and the groups of each section are in the sequence Changed, Added, Removed, Fixed.",
+                "[41.2] The item \"Deprecated the `--old` flag\" is now under `### Changed` of 1.2.0, in the imperative mood (\"Deprecate the `--old` flag\").",
+                "[41.3] The 1.2.0 item \"Add dark mode\" has a commit link to the merge commit of pull request #3 (`/commit/<sha>`, link text the short SHA) and the author `(Dave)`.",
+                "[41.4] The 1.2.0 item \"Add export\" is in the imperative mood and has no reference.",
+                "[41.5] The Unreleased items are in the imperative mood (\"Fix XSS in search\" under `### Fixed`, \"Add search option\" under `### Added`), with linked pull-request references `[#6](https://github.com/example/demo/pull/6)` and `[#5](https://github.com/example/demo/pull/5)` and no commit reference.",
+                "[41.6] The link definitions are only `[1.2.0]: https://github.com/example/demo/releases/tag/v1.2.0`: no `[Unreleased]:` definition and no `/compare/` link.",
+                "[41.7] The report lists \"Add export\" as an error finding of §2.4.2 (commit reference missing), with its line number."
+            ]
+        },
+        {
+            "id": 42,
+            "name": "42-keep-a-changelog-unreleased-off",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/42-keep-a-changelog-unreleased-off",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ]
+            },
+            "assertions": [
+                "[42.1] The first section after `# Changelog` (and the intro paragraph, if it stays) is `## [1.3.0] - <run date>`. The file has no Unreleased section in any form and no `[Unreleased]:` link definition.",
+                "[42.2] The 1.3.0 entry holds the 2 old Unreleased items in Common Changelog form: `### Added` \"Add search option\" with a commit link to the merge commit of pull request #5, `[#5](https://github.com/example/demo/pull/5)`, and `(Alice)`, then `### Fixed` \"Fix XSS in search\" with a commit link to the merge commit of pull request #6, `[#6](https://github.com/example/demo/pull/6)`, and `(Bob)`. No `### Security` group is left.",
+                "[42.3] The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 43,
+            "name": "43-keep-a-changelog-review",
+            "prompt": "Review the changelog. Do not change it.",
+            "setup": {
+                "overlay": "fixtures/39-keep-a-changelog",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ],
+                "branch": "main"
+            },
+            "assertions": [
+                "[43.1] `CHANGELOG.md` is unchanged: `git status --porcelain` and `git diff` show no change to it.",
+                "[43.2] The report gives the items that are not in the imperative mood (lines 9, 13, 19, 23, and 24) as one §2.4.1 error finding with all these line numbers, not as one finding for each line.",
+                "[43.3] The report gives the 1.2.0 items with no commit reference (lines 19, 23, and 24) as one §2.4.2 error finding with all these line numbers.",
+                "[43.4] The report gives the linked heading `## [Unreleased]` on line 5 and the groups `### Security` (line 7) and `### Deprecated` (line 17) as error findings.",
+                "[43.5] The report gives the words \"convert the changelog\"."
+            ]
+        },
+        {
+            "id": 44,
+            "name": "44-free-text-write",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/44-free-text"
+            },
+            "assertions": [
+                "[44.1] Line 1 of `CHANGELOG.md` is `# Changelog`. Then comes `## Unreleased` with `### Fixed` and exactly one new item: imperative, about `slugify` and leading spaces, with the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[44.2] After the new section, the 3 old lines \"History of changes\", \"Version 1.2 added dark mode (September 2026).\", and \"Version 0.9 was a beta for testers.\" are unchanged and in their old sequence.",
+                "[44.3] The report gives the words \"convert the changelog\".",
+                "[44.4] No question was asked: the run record has no question-tool call, and the final report asks the Operator no question."
+            ]
+        },
+        {
+            "id": 45,
+            "name": "45-free-text-convert",
+            "prompt": "Convert CHANGELOG.md to Common Changelog.",
+            "setup": {
+                "overlay": "fixtures/44-free-text",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ]
+            },
+            "assertions": [
+                "[45.1] Line 1 of `CHANGELOG.md` is `# Changelog`, and the file has a release entry `## [1.2.0] - 2026-09-01` (the date of the commit with tag `v1.2.0`) with exactly one item about dark mode, in a group, in the imperative mood, with a commit link to the merge commit of pull request #3 and the author `(Dave)`.",
+                "[45.2] The line \"Version 0.9 was a beta for testers.\" is in the file, unchanged, below the 1.2.0 entry. The file has no release entry for 0.9.",
+                "[45.3] The report lists the text that matches no tag, the 0.9 line included."
+            ]
+        },
+        {
+            "id": 46,
+            "name": "46-free-text-no-tags",
+            "prompt": "Convert CHANGELOG.md to Common Changelog.",
+            "setup": {
+                "overlay": "fixtures/44-free-text",
+                "steps": ["git tag -d v1.2.0"]
+            },
+            "assertions": [
+                "[46.1] `CHANGELOG.md` is unchanged, and `git status --porcelain` of the state after is empty.",
+                "[46.2] The report says that the repository has no Git tags, so the free text was not converted."
+            ]
+        },
+        {
+            "id": 47,
+            "name": "47-history-no-answer",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/47-history",
+                "remove": ["CHANGELOG.md"]
+            },
+            "assertions": [
+                "[47.1] No file changed: `HISTORY.md` is unchanged, there is no `CHANGELOG.md`, and `git status --porcelain` of the state after is empty.",
+                "[47.2] The report names `HISTORY.md` and gives the words \"rename HISTORY.md to CHANGELOG.md\"."
+            ]
+        },
+        {
+            "id": 48,
+            "name": "48-history-rename",
+            "prompt": "Rename HISTORY.md to CHANGELOG.md, then add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/47-history",
+                "remove": ["CHANGELOG.md"]
+            },
+            "assertions": [
+                "[48.1] `HISTORY.md` is gone, and `CHANGELOG.md` holds all old lines of `HISTORY.md`, unchanged.",
+                "[48.2] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[48.3] Nothing is staged: `git diff --cached` is empty, and `git status --porcelain` shows `HISTORY.md` as deleted and `CHANGELOG.md` as untracked."
+            ]
+        },
+        {
+            "id": 49,
+            "name": "49-create-existing",
+            "prompt": "create a changelog",
+            "setup": {},
+            "assertions": [
+                "[49.1] `CHANGELOG.md` is unchanged, and `git status --porcelain` of the state after is empty.",
+                "[49.2] The report says that `CHANGELOG.md` is already there."
+            ]
+        },
+        {
+            "id": 50,
+            "name": "50-policy-format-line",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/50-policy-format-line"
+            },
+            "assertions": [
+                "[50.1] `CHANGELOG.md` and `docs/agents/changelog-policy.md` are unchanged, and `git status --porcelain` of the state after is empty.",
+                "[50.2] The report gives line 11 (`- Format: keepachangelog`) as an incorrect line, and gives no other policy line as incorrect.",
+                "[50.3] The report tells the Operator to correct the Changelog policy or to delete it."
+            ]
+        },
+        {
+            "id": 51,
+            "name": "51-gitlab-subgroups",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/51-gitlab",
+                "origin": "git@gitlab.com:grp/sub/demo.git",
+                "mergeMessage": "Merge branch '{branch}' into 'main'\n\nSee merge request grp/sub/demo!{n}"
+            },
+            "assertions": [
+                "[51.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[51.2] The `truncate()` item has a commit link `https://gitlab.com/grp/sub/demo/-/commit/<sha>` to the merge commit of merge request !5 (link text the short SHA), the reference `([!5](https://gitlab.com/grp/sub/demo/-/merge_requests/5))`, and the author `(Alice)`. The accented-letters item has the same forms for merge request !6 and the author `(Bob)`.",
+                "[51.3] The link definition `[1.3.0]: https://gitlab.com/grp/sub/demo/-/releases/v1.3.0` is at the bottom of the file, above the `[1.2.0]:` definition. No new link uses `github.com`. The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 52,
+            "name": "52-bitbucket",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/52-bitbucket",
+                "origin": "https://bitbucket.org/example/demo.git",
+                "mergeMessage": "Merged in {branch} (pull request #{n})"
+            },
+            "assertions": [
+                "[52.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[52.2] The `truncate()` item has a commit link `https://bitbucket.org/example/demo/commits/<sha>` to the merge commit of pull request #5 (link text the short SHA), the reference `([#5](https://bitbucket.org/example/demo/pull-requests/5))`, and the author `(Alice)`. The accented-letters item has the same forms for pull request #6 and the author `(Bob)`.",
+                "[52.3] No item of the 1.3.0 entry has an issue reference.",
+                "[52.4] The link definition `[1.3.0]: https://bitbucket.org/example/demo/commits/tag/v1.3.0` is at the bottom of the file, above the `[1.2.0]:` definition. The `## [1.2.0] - 2026-09-01` entry is unchanged.",
+                "[52.5] No question was asked: the run record has no question-tool call, and the final report asks the Operator no question."
+            ]
+        },
+        {
+            "id": 53,
+            "name": "53-bitbucket-compare",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/53-bitbucket-compare",
+                "origin": "https://bitbucket.org/example/demo.git",
+                "mergeMessage": "Merged in {branch} (pull request #{n})"
+            },
+            "assertions": [
+                "[53.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`, and each of its items has a commit link `https://bitbucket.org/example/demo/commits/<sha>`.",
+                "[53.2] The link definition of 1.3.0 is the tag view `[1.3.0]: https://bitbucket.org/example/demo/commits/tag/v1.3.0`. The file has no compare URL, for example with `/compare/` or `/branches/compare/`."
+            ]
+        },
+        {
+            "id": 54,
+            "name": "54-github-scp-origin",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "origin": "git@github.com:example/demo.git"
+            },
+            "assertions": [
+                "[54.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[54.2] Each line of `CHANGELOG.md` that the run did not add is unchanged."
+            ]
+        },
+        {
+            "id": 55,
+            "name": "55-github-ssh-port-origin",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "origin": "ssh://git@ssh.github.com:443/example/demo.git"
+            },
+            "assertions": [
+                "[55.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference. No link in the file has `ssh.github.com`, `git@`, or `:443`.",
+                "[55.2] Each line of `CHANGELOG.md` that the run did not add is unchanged."
+            ]
+        },
+        {
+            "id": 56,
+            "name": "56-unknown-host",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "origin": "https://git.example.com/team/demo.git"
+            },
+            "assertions": [
+                "[56.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, and is about `slugify` and leading spaces. It has no reference: no link, no `#6`, and no commit SHA.",
+                "[56.2] `docs/agents/changelog-policy.md` is unchanged: it has `- Host: auto` and no other `Host` line.",
+                "[56.3] The final report names the host `git.example.com` as a host that the Skill does not know, and names the `Host` Setting as the way to get links."
+            ]
+        },
+        {
+            "id": 57,
+            "name": "57-host-gitlab-custom-domain",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/57-host-gitlab-custom-domain",
+                "origin": "https://git.example.com/team/demo.git",
+                "mergeMessage": "Merge branch '{branch}' into 'main'\n\nSee merge request team/demo!{n}"
+            },
+            "assertions": [
+                "[57.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[57.2] Each item of the 1.3.0 entry has a commit link `https://git.example.com/team/demo/-/commit/<sha>` to the merge commit of its merge request, and its merge-request reference in the form `([!5](https://git.example.com/team/demo/-/merge_requests/5))`.",
+                "[57.3] The link definition `[1.3.0]: https://git.example.com/team/demo/-/releases/v1.3.0` is at the bottom of the file, above the `[1.2.0]:` definition."
+            ]
+        },
+        {
+            "id": 58,
+            "name": "58-host-gitlab-github-origin",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/58-host-gitlab-github-origin",
+                "mergeMessage": "Merge branch '{branch}' into 'main'\n\nSee merge request example/demo!{n}"
+            },
+            "assertions": [
+                "[58.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[!6](https://github.com/example/demo/-/merge_requests/6)` and no commit reference. It has no `/pull/6` link.",
+                "[58.2] Each line of `CHANGELOG.md` that the run did not add is unchanged."
+            ]
+        },
+        {
+            "id": 59,
+            "name": "59-no-remote",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "origin": null
+            },
+            "assertions": [
+                "[59.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, and is about `slugify` and leading spaces. It has no reference: no link, no `#6`, and no commit SHA.",
+                "[59.2] `docs/agents/changelog-policy.md` is unchanged: it has `- Host: auto` and no other `Host` line.",
+                "[59.3] The final report tells that the repository has no remote `origin`."
+            ]
+        },
+        {
+            "id": 60,
+            "name": "60-host-none",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/60-host-none"
+            },
+            "assertions": [
+                "[60.1] The first section after `# Changelog` is `## 1.3.0 - <run date>`, with no brackets. The file has no `## Unreleased` section and no link definition.",
+                "[60.2] The 1.3.0 entry holds the `truncate()` item with the author `(Alice)` and the accented-letters item with the author `(Bob)`. No item of the file has a reference: no link, no `#5` or `#6`, and no commit SHA.",
+                "[60.3] The final report gives no finding about a missing reference or a missing version link.",
+                "[60.4] No question was asked: the run record has no question-tool call, and the final report asks the Operator no question."
+            ]
+        },
+        {
+            "id": 61,
+            "name": "61-old-link-form",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/61-old-link-form"
+            },
+            "assertions": [
+                "[61.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[61.2] The 1.2.0 item ``- Add `formatPrice()` ([`3f2a9c1`](https://github.com/example/demo/commits/3f2a9c1)) (Carol)`` is unchanged.",
+                "[61.3] The final report lists the `formatPrice()` line, with its line number, as a finding about the URL form of its commit link (`/commits/` in place of `/commit/`), and gives the words \"convert the changelog\"."
+            ]
+        },
+        {
+            "id": 62,
+            "name": "62-review-old-link-form",
+            "prompt": "Review the changelog. Do not change it.",
+            "setup": {
+                "overlay": "fixtures/61-old-link-form",
+                "branch": "main"
+            },
+            "assertions": [
+                "[62.1] `CHANGELOG.md` is unchanged: `git status --porcelain` and `git diff` show no change to it.",
+                "[62.2] The final report gives line 17, the commit link in the `/commits/` form, as an error finding with the fix `/commit/`.",
+                "[62.3] The final report gives no URL-form finding for line 18."
+            ]
+        },
+        {
+            "id": 63,
+            "name": "63-review-unknown-host",
+            "prompt": "Review the changelog. Do not change it.",
+            "setup": {
+                "overlay": "fixtures/63-unknown-host-no-references",
+                "origin": "https://git.example.com/team/demo.git"
+            },
+            "assertions": [
+                "[63.1] `CHANGELOG.md` is unchanged: `git status --porcelain` and `git diff` show no change to it.",
+                "[63.2] The final report gives lines 7, 11, and 18, the items with no reference, in findings with the severity warning. It gives none of these lines in a finding with the severity error.",
+                "[63.3] The final report gives no finding about the URL form of a link, for example on line 17 or line 20."
+            ]
+        },
+        {
+            "id": 64,
+            "name": "64-bitbucket-jira-no-human",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/52-bitbucket",
+                "origin": "https://bitbucket.org/example/demo.git",
+                "mergeMessage": "Merged in {branch} (pull request #{n})",
+                "branch": "feature/APP-42-login"
+            },
+            "assertions": [
+                "[64.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://bitbucket.org/example/demo/pull-requests/6)` and no commit reference. It has no issue reference: no `APP-42` and no Jira link.",
+                "[64.2] No question was asked: the run record has no question-tool call, and the final report asks the Operator no question."
+            ]
+        }
+    ]
+}
