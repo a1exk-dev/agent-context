@@ -4,11 +4,11 @@
 
 ### Changed
 
-- **Breaking:** Make `truncate()` require the `max` argument ([#5](https://github.com/example/demo/pull/5)) (Alice)
+- **Breaking:** Remove accents in `slugify()` output, so slugs of accented titles change ([#6](https://github.com/example/demo/pull/6)) (Bob)
 
-### Fixed
+### Added
 
-- Fix `slugify()` dropping accented letters ([#6](https://github.com/example/demo/pull/6)) (Bob)
+- Add `truncate()` to shorten long titles ([#5](https://github.com/example/demo/pull/5)) (Alice)
 
 ## [1.2.0] - 2026-09-01
 
