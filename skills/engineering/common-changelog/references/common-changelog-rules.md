@@ -1,6 +1,6 @@
 # Common Changelog rules
 
-The Write job and the Review job obey these rules. Each rule gives its § number in Common Changelog (https://common-changelog.org/) and its severity. In the Review job, a rule with the severity `error` is a "must" rule, and a rule with the severity `warning` is a "should" rule.
+The Write job and the Review job obey these rules. Each rule gives its § number in Common Changelog (https://common-changelog.org/) and its severity. In the Review job, a rule with the severity `error` is a "must" rule, and a rule with the severity `warning` is a "should" rule. For references and version links, "When you review links" in `references/links.md` can give a different severity or no finding. Then obey `references/links.md`.
 
 ## When you examine the file and the release entries
 

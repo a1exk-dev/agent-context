@@ -31,12 +31,12 @@ Do these steps before you put an item in a section. Never calculate a version, f
    - Else, add the release entry.
    - When you use a section that has a heading or a group in a different form, do "When a release converts a section" in `references/other-formats.md`.
 4. Put the item of the caller in its group of the release entry, as the Write job tells you for the Unreleased section.
-5. For each item of the release entry that has no commit reference, find its commit in the Git history. For a pull request, use its merge commit, for example the commit `Merge pull request #5 from alice/truncate`. Run `git log --oneline` from the newest release tag to find the merge commits.
+5. For each item of the release entry that has no commit reference, find its commit in the Git history. For a pull request, use its merge commit, for example the commit `Merge pull request #5 from alice/truncate`. `references/links.md` gives the merge commit message of each host. Run `git log --oneline` from the newest release tag to find the merge commits.
 6. Write the commit reference with the short SHA of 7 characters, as `references/links.md` tells you.
 7. Write the other references of each item as the `References` Setting tells you. Remove each reference of a kind that the Setting does not list.
 8. When an item has more than 2 references, keep the commit reference and the pull request. Remove the issue reference, because the pull request is the better starting point. In the report, give each reference that you removed.
 9. When `Authors` is `on`, write the author of each item. The author of a pull request is the author of its commits, not of the merge commit. Find the authors with `git log --format=%an <merge commit>^1..<merge commit>^2`. For the change of a bot, write the person who merged the change. When `Authors` is `off`, remove the authors from the items of the release entry.
-10. Write the version link as the `Version links` Setting tells you:
+10. If `references/links.md` tells you to write no version link, write no link definition and no brackets in the heading. Else, write the version link as the `Version links` Setting tells you:
     - `release`: the release URL of `references/links.md`.
     - `compare`: the compare URL of `references/links.md`. The previous tag is the tag of the newest release entry before this release.
     - `off`: no link definition and no brackets in the heading.
