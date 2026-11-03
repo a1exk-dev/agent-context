@@ -33,9 +33,14 @@ This skill obeys Common Changelog with 2 deviations. Each deviation is on or off
 ## Before each job
 
 1. Before the Create, Write, or Review job, run `cat -n docs/agents/changelog-policy.md` to read the Changelog policy and its line numbers.
-2. Examine each line. A correct line is the title `# Changelog policy`, a blank line, or a Setting with a name and a value from the table. Each other line is an incorrect line. When 2 or more Settings have the same name, each Setting after the first Setting is an incorrect line.
-3. If the Changelog policy is not there, has an incorrect line, or has no line for a Setting, stop. Do not change a file. In the report, give the cause and the line number of each incorrect line.
-4. Use the value of each Setting in each job.
+2. If the Changelog policy is not there, read `references/changelog-policy-setup.md`. Then do the steps in its section "When the Changelog policy is not there" before the job.
+3. Examine each line. A correct line is the title `# Changelog policy`, a blank line, or a Setting with a name and a value from the table. Each other line is an incorrect line. When 2 or more Settings have the same name, each Setting after the first Setting is an incorrect line.
+4. If the Changelog policy has an incorrect line, stop, also for the Review job. You cannot know which decision an incorrect line gives. When you stop in this step:
+   - Do not change a file, and do not ask a question.
+   - In the report, give the line number and the text of each incorrect line.
+   - Tell the Operator to correct the Changelog policy, or to delete it. When the file is not there, this skill sets up a new Changelog policy.
+5. If the Changelog policy has no incorrect line and a name in the table has no Setting, read `references/changelog-policy-setup.md`. Then do the steps in its section "When a Setting is not in the Changelog policy".
+6. Use the value of each Setting in each job.
 
 | Setting | Values | Default value |
 |---|---|---|
@@ -45,7 +50,7 @@ This skill obeys Common Changelog with 2 deviations. Each deviation is on or off
 | Version links | `release`, `compare`, or `off` | `release` |
 | Host | `auto`, `github`, `gitlab`, `bitbucket`, or `none` | `auto` |
 | Unreleased | `on` or `off` | `on` |
-| Release branches | `off`, or a list of branch prefixes. A comma is between each 2 prefixes. | `release, hotfix` |
+| Release branches | `off`, or a list of branch prefixes. A comma is between each 2 prefixes. A prefix has only letters, digits, `.`, `_`, and `-`. | `release, hotfix` |
 | Draft approval | `off` or `on` | `off` |
 
 The default Changelog policy is this file:
