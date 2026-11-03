@@ -2,6 +2,8 @@
 
 The Write job uses this file when the caller gives no change text, for example "add a changelog entry for this branch" or "Release the changelog as 1.3.0". A draft is an item that this skill writes from the Git history and the uncommitted changes, not from the change text of a caller. When the caller gives change text, do not make a draft.
 
+When this file tells you to ask the Operator, ask as "When you ask the Operator a question" in `SKILL.md` tells you. With no human, do the step of this file for that case.
+
 A request that points to a change but gives no text for it also has no change text, for example "update CHANGELOG.md for this fix". The draft covers all user changes that "When you find the changes" gives, not only the change that the request points to.
 
 ## When the caller asks for a release

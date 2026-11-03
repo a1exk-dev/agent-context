@@ -4,9 +4,9 @@ Read this file when the project has no Changelog policy. Also read this file whe
 
 ## When you ask a question in this file
 
-- Ask with the question tool of the platform. Ask only one question in each tool call, because one answer can change the next answer.
+- Ask as "When you ask the Operator a question" in `SKILL.md` tells you. Ask only one question in each tool call, because one answer can change the next answer.
 - Give the default value as the first answer. Tell the Operator that the default value is the recommended answer.
-- If the platform has no question tool, or the question tool gives an error, the Operator cannot give an answer. Then do the step of the section that is for no answer.
+- With no human, the Operator cannot give an answer. Then do the step of the section that is for no answer.
 
 ## When the Changelog policy is not there
 

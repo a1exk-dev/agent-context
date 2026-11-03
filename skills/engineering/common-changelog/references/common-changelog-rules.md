@@ -1,10 +1,10 @@
-# Common Changelog rules
+# Common Changelog requirements
 
-The Write job and the Review job obey these rules. Each rule gives its § number in Common Changelog (https://common-changelog.org/) and its severity. In the Review job, a rule with the severity `error` is a "must" rule, and a rule with the severity `warning` is a "should" rule. For references and version links, "When you review links" in `references/links.md` can give a different severity or no finding. Then obey `references/links.md`.
+The Write job and the Review job obey these requirements. Each requirement gives its § number in Common Changelog (https://common-changelog.org/) and its severity. In the Review job, a requirement with the severity `error` is a "must" requirement, and a requirement with the severity `warning` is a "should" requirement. For references and version links, "When you review links" in `references/links.md` can give a different severity or no finding. Then obey `references/links.md`.
 
 ## When you examine the file and the release entries
 
-| Rule | § | Severity |
+| Requirement | § | Severity |
 |---|---|---|
 | The file name is `CHANGELOG.md`. | §2.1 | error |
 | The first line is the title `# Changelog`. | §2.1 | error |
@@ -17,16 +17,16 @@ The Write job and the Review job obey these rules. Each rule gives its § number
 
 ## When you examine the Unreleased section
 
-| Rule | § | Severity |
+| Requirement | § | Severity |
 |---|---|---|
 | When `Unreleased` is `on`, the file has a maximum of one Unreleased section. It comes directly after `# Changelog`. | §6.2 | error |
 | The heading is `## Unreleased`, with no date and no link. | §6.2 | error |
 | When `Unreleased` is `off`, the file has no Unreleased section. | §6.2 | error |
-| The items of the Unreleased section obey the rules for groups and items, but have no commit reference. | §2.4.2 | error |
+| The items of the Unreleased section obey the requirements for groups and items, but have no commit reference. | §2.4.2 | error |
 
 ## When you examine the groups and the items
 
-| Rule | § | Severity |
+| Requirement | § | Severity |
 |---|---|---|
 | A group heading is `### Changed`, `### Added`, `### Removed`, or `### Fixed`. There is no `Deprecated` or `Security` group. | §2.4 | error |
 | The groups of a section are in the sequence `Changed`, `Added`, `Removed`, `Fixed`. | §2.4 | error |

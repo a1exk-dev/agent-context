@@ -9,13 +9,13 @@ This skill makes each change to the changelog obey Common Changelog (https://com
 
 ## Terms in this skill
 
-- The **Operator** is the person who controls a project and the agents that operate in it. Only the Operator answers the questions of an agent and gives approval. An agent never acts as the Operator.
+- The **Operator** is the human who controls a project and the agents that operate in it. Only the Operator answers the questions of an agent and gives approval. An agent never acts as the Operator.
 - The **changelog** is the file `CHANGELOG.md` of the project.
 - The **caller** is the Operator or the agent that starts this skill.
 - A **Policy** is a file `docs/agents/<name>-policy.md` of a project. It holds only the Settings that one skill obeys.
 - The **Changelog policy** is the Policy of this skill: `docs/agents/changelog-policy.md`.
 - A **Setting** is one line `- <name>: <value>` of a Policy. The skill that reads the Policy gives each name and the form of its value.
-- A **Commit review** is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message. The commit occurs only after the Operator approves that review.
+- A **Commit review** is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message. But for a diff of more than 500 lines, the Commit review gives the command that shows the diff, not the full diff. The commit occurs only after the Operator approves that review.
 - This skill has 3 jobs. The **Create** job makes the changelog. The **Write** job makes each change to the changelog. The **Review** job examines the changelog and changes no file.
 - The **Unreleased section** is the section `## Unreleased` directly after the title `# Changelog`. It collects the items that no release contains yet.
 - A **release entry** is a section `## [X.Y.Z] - YYYY-MM-DD` and its groups. A **group** is a section `### Changed`, `### Added`, `### Removed`, or `### Fixed`. An **item** is one list line in a group.
@@ -71,7 +71,7 @@ The default Changelog policy is this file:
 
 ## Rules for all jobs
 
-- Before the Write job or the Review job, read `references/common-changelog-rules.md`. That file gives each rule of Common Changelog that this skill obeys, with its § number.
+- Before the Write job or the Review job, read `references/common-changelog-rules.md`. That file gives each requirement of Common Changelog that this skill obeys, with its § number.
 - Before the Write job, read `references/release-entries.md`. That file tells you how to find the version, make a release entry, write a notice, and mark a yanked release.
 - Before the Create job or the Write job, read `references/other-formats.md` when one of these conditions is true:
   - The changelog is not there.
@@ -80,6 +80,18 @@ The default Changelog policy is this file:
 - Before the Write job or the Review job, read `references/links.md`. Take each URL form from that file, not from the links in the changelog.
 - Do not stage, commit, or push. The Operator approves the change in the Commit review of the commit that follows.
 - Do not ask for approval before a Write job. The Commit review gives the Operator the change. The only exception is a draft when `Draft approval` is `on`.
+
+## When you ask the Operator a question
+
+Each step of this skill that tells you to ask the Operator gives the action, not a tool. Do that action in this way:
+
+1. Do not ask a question when the caller gives the answer before the job, for example "use the default changelog policy".
+2. When the platform has a question tool, ask with that tool. Ask a maximum of 3 questions in one tool call. When one answer can change the next question, ask only one question in each tool call.
+3. Give 2 or 3 options for each question. The one exception is the unknown-host question of `references/links.md`, which has 4 options.
+4. When the platform has no question tool, ask the same question in plain text, with its options. Do not change a file for the step of that question.
+5. In that plain-text message, also give the text that the report gives with no human for that case. Examples are each Setting with no answer and the words "use the default changelog policy", or the words "convert the changelog". Then the caller can give the answer before the next job.
+6. After the plain-text message, end your turn. Do not continue the job before the Operator answers.
+7. There is no human only when the question tool gives an error, or when the caller tells you that there is no human. With no human, do not select an answer for the Operator. Do the no-human step that the reference file of the question gives for that case.
 
 ## When you do the Create job
 
@@ -99,7 +111,7 @@ Find each conflict in the changelog. A conflict is the lines from a line that st
 
 Do the Write job for each change to the changelog, for example a new item or a release entry.
 
-When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, and 11. In place of steps 2 to 7, do "When you mark a release as yanked" in `references/release-entries.md`.
+When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, 11, and 12. In place of steps 2 to 7, do "When you mark a release as yanked" in `references/release-entries.md`.
 
 1. If the changelog is not there, do "When the changelog has a different file name" in `references/other-formats.md`. If you do not stop in that section and the changelog is still not there, do the Create job.
 2. If the caller gives no change text, for example "update CHANGELOG.md for this fix", read `references/drafts.md` and do its steps. The draft gives the item and its group, or tells you to stop. Then continue at step 4.
@@ -125,12 +137,12 @@ When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, and 11
 
 Do the Review job when the caller asks for a review of the changelog, and after each Write job.
 
-1. Examine each line of the changelog for each rule in `references/common-changelog-rules.md` and for each Setting. Also do the steps of "When you review links" in `references/links.md`.
+1. Examine each line of the changelog for each requirement in `references/common-changelog-rules.md` and for each Setting. Also do the steps of "When you review links" in `references/links.md`.
 2. Do not change a file in the Review job.
-3. For each finding, record the line numbers, the rule and its § number, the severity, and a fix. A "must" rule gives the severity `error`. A "should" rule gives the severity `warning`.
-4. When 2 or more findings have the same rule and the same fix, make one finding with all their line numbers.
+3. For each finding, record the line numbers, the requirement and its § number, the severity, and a fix. A "must" requirement gives the severity `error`. A "should" requirement gives the severity `warning`.
+4. When 2 or more findings have the same requirement and the same fix, make one finding with all their line numbers.
 5. When `Unreleased` is `off` and the changelog has an Unreleased section, make one finding for the full section with §6.2. Make no finding for the commit references of its items, because the fix of the §6.2 finding adds them.
-6. Do not read the branch name in the Review job. The rules for the Unreleased section use only the `Unreleased` Setting.
+6. Do not read the branch name in the Review job. The requirements for the Unreleased section use only the `Unreleased` Setting.
 
 ## When you write the report
 
@@ -138,5 +150,5 @@ Write these parts in this sequence:
 
 1. Each file that you changed, for example `CHANGELOG.md`. If you changed no file, tell why.
 2. Each item that you wrote, as a quotation.
-3. The findings of the last Review job, as a table with the columns `Lines`, `Rule`, `Severity`, and `Fix`. If the Review job found no problem, tell that the Review job found no finding.
+3. The findings of the last Review job, as a table with the columns `Lines`, `Requirement`, `Severity`, and `Fix`. If the Review job found no problem, tell that the Review job found no finding.
 4. When a finding is in a line that this run did not write, tell that the caller can correct these lines with the words "convert the changelog".

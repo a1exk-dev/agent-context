@@ -464,7 +464,7 @@
     {
         "path": "skills/engineering/common-changelog/SKILL.md",
         "rule": "1.8",
-        "text": "The **Operator** is the person who controls a project and the agents that operate in it.",
+        "text": "The **Operator** is the human who controls a project and the agents that operate in it.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     },
     {
