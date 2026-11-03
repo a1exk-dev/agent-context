@@ -333,6 +333,206 @@
                 "[25.3] The final report names the change to `docs/agents/changelog-policy.md` and the 4 added Settings, and names `CHANGELOG.md`.",
                 "[25.4] The change to `docs/agents/changelog-policy.md` is not staged and not in a commit."
             ]
+        },
+        {
+            "id": 26,
+            "name": "26-draft-branch",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search",
+                    "sed -i 's/\"type\": \"module\"/\"type\": \"module\",\\n    \"devDependencies\": { \"eslint\": \"^9.0.0\" }/' package.json && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'chore: bump eslint'"
+                ]
+            },
+            "assertions": [
+                "[26.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Added`, starts with an imperative verb, and is about the search option.",
+                "[26.2] The new item has the linked reference `[#7](https://github.com/example/demo/pull/7)`, no other pull-request reference, and no commit reference. No new item is about `truncate()` (#5) or `slugify()` (#6).",
+                "[26.3] The final report says that the item is a draft. It names the commits that the draft covers (pull request #7 or `feat: add search option`), and it names `test: search` and `chore: bump eslint` as skipped.",
+                "[26.4] The `## [1.2.0] - 2026-09-01` entry, its link definition, and the 2 old Unreleased items (`truncate()` with #5, accented letters with #6) are unchanged."
+            ]
+        },
+        {
+            "id": 27,
+            "name": "27-draft-uncommitted",
+            "prompt": "update CHANGELOG.md for this fix",
+            "setup": {
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search",
+                    "sed -i 's|/-\\$/g|/^-+\\|-+$/g|' src/strings.ts"
+                ]
+            },
+            "assertions": [
+                "[27.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Added`, and names the search option and the `slugify()` fix of leading dashes.",
+                "[27.2] The new item has the linked reference `[#7](https://github.com/example/demo/pull/7)` as its only reference, and no commit reference.",
+                "[27.3] `src/strings.ts` keeps its uncommitted change: it is listed as modified in `git status --porcelain` of both states.",
+                "[27.4] The final report says that the item is a draft. It names `src/strings.ts` as a covered uncommitted file."
+            ]
+        },
+        {
+            "id": 28,
+            "name": "28-draft-two-references",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search",
+                    "git switch -q -c slugify-dash && sed -i 's|/-\\$/g|/^-+\\|-+$/g|' src/strings.ts && git add -A && GIT_AUTHOR_NAME=Erin GIT_AUTHOR_EMAIL=erin@example.com git commit -qm 'fix: remove leading dashes in slugify' && git switch -q - && git merge -q --no-ff slugify-dash -m 'Merge pull request #9 from erin/slugify-dash' && git branch -qD slugify-dash",
+                    "git switch -q -c price-cents && sed -i 's|`\\$${amount}`|`\\$${amount.toFixed(2)}`|' src/price.ts && git add -A && GIT_AUTHOR_NAME=Frank GIT_AUTHOR_EMAIL=frank@example.com git commit -qm 'fix: show cents in formatPrice' && git switch -q - && git merge -q --no-ff price-cents -m 'Merge pull request #11 from frank/price-cents' && git branch -qD price-cents"
+                ]
+            },
+            "assertions": [
+                "[28.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Added`, and names the search option and the 2 fixes.",
+                "[28.2] The new item has exactly 2 references, `[#7](https://github.com/example/demo/pull/7)` and `[#9](https://github.com/example/demo/pull/9)`, and no commit reference.",
+                "[28.3] The final report names pull request #11 as a reference that the item leaves out."
+            ]
+        },
+        {
+            "id": 29,
+            "name": "29-draft-breaking",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "git switch -q -c node-20 && sed -i 's/\"type\": \"module\"/\"type\": \"module\",\\n    \"engines\": { \"node\": \">=20\" }/' package.json && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat!: drop Node 18' && git switch -q - && git merge -q --no-ff node-20 -m 'Merge pull request #7 from dave/node-20' && git branch -qD node-20",
+                    "git switch -q -c slugify-dash && sed -i 's|/-\\$/g|/^-+\\|-+$/g|' src/strings.ts && git add -A && GIT_AUTHOR_NAME=Erin GIT_AUTHOR_EMAIL=erin@example.com git commit -qm 'fix: remove leading dashes in slugify' && git switch -q - && git merge -q --no-ff slugify-dash -m 'Merge pull request #9 from erin/slugify-dash' && git branch -qD slugify-dash"
+                ]
+            },
+            "assertions": [
+                "[29.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Changed`, starts with `**Breaking:** `, and names the end of Node 18 support.",
+                "[29.2] The new item has the linked reference `[#7](https://github.com/example/demo/pull/7)` and no commit reference. The Unreleased groups are in the sequence `### Changed`, `### Added`, `### Fixed`."
+            ]
+        },
+        {
+            "id": 30,
+            "name": "30-draft-no-user-change",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "sed -i 's/\"type\": \"module\"/\"type\": \"module\",\\n    \"devDependencies\": { \"eslint\": \"^9.0.0\" }/' package.json && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'chore: bump eslint'"
+                ]
+            },
+            "assertions": [
+                "[30.1] `CHANGELOG.md` is unchanged.",
+                "[30.2] The final report says that it found no user change and names `chore: bump eslint` as skipped."
+            ]
+        },
+        {
+            "id": 31,
+            "name": "31-draft-caller-text",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[31.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[31.2] No line of `CHANGELOG.md` names the search option or pull request #7. The final report does not say that the item is a draft."
+            ]
+        },
+        {
+            "id": 32,
+            "name": "32-draft-no-tags",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "git tag -d v1.2.0",
+                    "printf '# Changelog\\n\\n## Unreleased\\n' > CHANGELOG.md && git add -A && GIT_AUTHOR_NAME=Carol GIT_AUTHOR_EMAIL=carol@example.com git commit -qm 'docs: restart the changelog'",
+                    "printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option'"
+                ]
+            },
+            "assertions": [
+                "[32.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Added`, and names the search option.",
+                "[32.2] The new item has a maximum of 2 references and no commit reference.",
+                "[32.3] The final report says that the draft covers the full Git history, because the repository has no release tag or the changelog has no release entry."
+            ]
+        },
+        {
+            "id": 33,
+            "name": "33-draft-missing-tag",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "steps": [
+                    "git tag -d v1.2.0",
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[33.1] `CHANGELOG.md` is unchanged.",
+                "[33.2] The final report names the missing tag `v1.2.0` and asks for the change text or a start commit."
+            ]
+        },
+        {
+            "id": 34,
+            "name": "34-draft-approval-on",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "overlay": "fixtures/34-draft-approval-on",
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[34.1] `CHANGELOG.md` is unchanged.",
+                "[34.2] The final report shows the draft item about the search option with `[#7](https://github.com/example/demo/pull/7)`, and says that it waits for the approval of the Operator."
+            ]
+        },
+        {
+            "id": 35,
+            "name": "35-draft-approval-caller-text",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/34-draft-approval-on"
+            },
+            "assertions": [
+                "[35.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[35.2] The run asked no question and asked for no approval: the run record has no question tool call, and the final report asks for no approval."
+            ]
+        },
+        {
+            "id": 36,
+            "name": "36-release-keeps-unreleased",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[36.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[36.2] The 1.3.0 entry holds exactly the 2 old Unreleased items, about `truncate()` and accented letters. No line of `CHANGELOG.md` names the search option or pull request #7.",
+                "[36.3] The final report names pull request #7 (or `feat: add search option`) as a user change that the Unreleased section does not list."
+            ]
+        },
+        {
+            "id": 37,
+            "name": "37-release-draft",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "steps": [
+                    "s5=$(git log --format=%h -1 --grep='pull request #5') && s6=$(git log --format=%h -1 --grep='pull request #6') && cat > CHANGELOG.md <<EOF\n# Changelog\n\n## Unreleased\n\n## [1.2.1] - 2026-09-22\n\n### Added\n\n- Add \\`truncate()\\` to shorten long titles ([\\`$s5\\`](https://github.com/example/demo/commit/$s5)) ([#5](https://github.com/example/demo/pull/5)) (Alice)\n\n### Fixed\n\n- Fix \\`slugify()\\` dropping accented letters and keeping leading spaces ([\\`$s6\\`](https://github.com/example/demo/commit/$s6)) ([#6](https://github.com/example/demo/pull/6)) (Bob)\n\n## [1.2.0] - 2026-09-01\n\n### Added\n\n- Add \\`formatPrice()\\` ([\\`3f2a9c1\\`](https://github.com/example/demo/commit/3f2a9c1)) (Carol)\n- Add \\`slugify()\\` ([\\`8d4e7b2\\`](https://github.com/example/demo/commit/8d4e7b2)) (Carol)\n\n[1.2.1]: https://github.com/example/demo/releases/tag/v1.2.1\n[1.2.0]: https://github.com/example/demo/releases/tag/v1.2.0\nEOF\ngit add -A && GIT_AUTHOR_NAME=Carol GIT_AUTHOR_EMAIL=carol@example.com git commit -qm 'chore: release 1.2.1' && git tag v1.2.1",
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[37.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[37.2] The 1.3.0 entry holds exactly one item, under `### Added`, about the search option. It has a commit link (`/commit/<sha>`, link text the short SHA) to the merge commit of pull request #7, `[#7](https://github.com/example/demo/pull/7)`, and the author `(Dave)`.",
+                "[37.3] The link definition `[1.3.0]: https://github.com/example/demo/releases/tag/v1.3.0` is at the bottom of the file, above the `[1.2.1]` definition. The `## [1.2.1] - 2026-09-22` and `## [1.2.0] - 2026-09-01` entries are unchanged."
+            ]
+        },
+        {
+            "id": 38,
+            "name": "38-release-branch-draft",
+            "prompt": "add a changelog entry for this branch",
+            "setup": {
+                "branch": "release/1.3.0",
+                "steps": [
+                    "git switch -q -c search && printf 'export function search(items: string[], query: string): string[] {\\n    return items.filter((item) => item.includes(query));\\n}\\n' > src/search.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'feat: add search option' && printf 'import { search } from \"./search.ts\";\\nconsole.assert(search([\"a\"], \"a\").length === 1);\\n' > src/search.test.ts && git add -A && GIT_AUTHOR_NAME=Dave GIT_AUTHOR_EMAIL=dave@example.com git commit -qm 'test: search' && git switch -q - && git merge -q --no-ff search -m 'Merge pull request #7 from dave/search' && git branch -qD search"
+                ]
+            },
+            "assertions": [
+                "[38.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
+                "[38.2] The 1.3.0 entry has one new item under `### Added` about the search option, with a commit link (`/commit/<sha>`) to the merge commit of pull request #7 or to the commit `feat: add search option`, `[#7](https://github.com/example/demo/pull/7)`, and the author `(Dave)`.",
+                "[38.3] The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
         }
     ]
 }

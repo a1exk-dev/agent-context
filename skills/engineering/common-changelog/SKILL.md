@@ -74,7 +74,7 @@ The default Changelog policy is this file:
 - Before the Write job, read `references/release-entries.md`. That file tells you how to find the version, make a release entry, write a notice, and mark a yanked release.
 - Before you write a reference or a version link, read `references/links.md`. Take each URL form from that file, not from the links in the changelog.
 - Do not stage, commit, or push. The Operator approves the change in the Commit review of the commit that follows.
-- Do not ask for approval before a Write job. The Commit review gives the Operator the change.
+- Do not ask for approval before a Write job. The Commit review gives the Operator the change. The only exception is a draft when `Draft approval` is `on`.
 
 ## When you do the Create job
 
@@ -97,7 +97,8 @@ Do the Write job for each change to the changelog, for example a new item or a r
 When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, and 11. In place of steps 2 to 7, do "When you mark a release as yanked" in `references/release-entries.md`.
 
 1. If the changelog is not there, do the Create job first.
-2. Use the change text that the caller gives. Write it as one item in the imperative mood, for example "Fix `slugify()` keeping leading spaces". Keep the meaning of the change text.
+2. If the caller gives no change text, for example "update CHANGELOG.md for this fix", read `references/drafts.md` and do its steps. The draft gives the item and its group, or tells you to stop. Then continue at step 4.
+   Else, use the change text that the caller gives. Write it as one item in the imperative mood, for example "Fix `slugify()` keeping leading spaces". Keep the meaning of the change text.
 3. Find the group of the item from the change text: `Changed`, `Added`, `Removed`, or `Fixed`. A breaking change goes in `Changed` with the prefix `**Breaking:** `.
 4. Find the version as "When you find the version" in `references/release-entries.md` tells you. If that section tells you to put the item in the Unreleased section, do these steps:
    - If the file has no Unreleased section, add `## Unreleased` directly after `# Changelog`.
