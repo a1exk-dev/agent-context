@@ -5,6 +5,7 @@ import {
     isChangelogWrite,
     isPolicyRead,
     isSkillLoad,
+    loadDecision,
     readEvals,
 } from "./eval-lib.ts";
 
@@ -174,5 +175,27 @@ describe("changelogBefore", () => {
     it("keeps a changelog with no Unreleased section", () => {
         const text = "# Changelog\n\nFree text about #5.\n";
         expect(changelogBefore(text, [5])).toBe(text);
+    });
+});
+
+describe("loadDecision", () => {
+    const load = { name: "Skill", input: { skill: "common-changelog" } };
+    const write = { name: "Edit", input: { file_path: "/w/CHANGELOG.md" } };
+    const read = bash("cat -n CHANGELOG.md");
+
+    it("counts a load before the first change to CHANGELOG.md", () => {
+        expect(loadDecision([read, load, write])).toBe(true);
+    });
+
+    it("counts no load after the first change to CHANGELOG.md", () => {
+        expect(loadDecision([read, write, load])).toBe(false);
+    });
+
+    it("counts no load after the 8th tool call", () => {
+        expect(loadDecision([...Array(8).fill(read), load])).toBe(false);
+    });
+
+    it("waits while no load and no change occurred", () => {
+        expect(loadDecision(Array(7).fill(read))).toBeNull();
     });
 });

@@ -33,9 +33,14 @@ This skill obeys Common Changelog with 2 deviations. Each deviation is on or off
 ## Before each job
 
 1. Before the Create, Write, or Review job, run `cat -n docs/agents/changelog-policy.md` to read the Changelog policy and its line numbers.
-2. Examine each line. A correct line is the title `# Changelog policy`, a blank line, or a Setting with a name and a value from the table. Each other line is an incorrect line. When 2 or more Settings have the same name, each Setting after the first Setting is an incorrect line.
-3. If the Changelog policy is not there, has an incorrect line, or has no line for a Setting, stop. Do not change a file. In the report, give the cause and the line number of each incorrect line.
-4. Use the value of each Setting in each job.
+2. If the Changelog policy is not there, read `references/changelog-policy-setup.md`. Then do the steps in its section "When the Changelog policy is not there" before the job.
+3. Examine each line. A correct line is the title `# Changelog policy`, a blank line, or a Setting with a name and a value from the table. Each other line is an incorrect line. When 2 or more Settings have the same name, each Setting after the first Setting is an incorrect line.
+4. If the Changelog policy has an incorrect line, stop, also for the Review job. You cannot know which decision an incorrect line gives. When you stop in this step:
+   - Do not change a file, and do not ask a question.
+   - In the report, give the line number and the text of each incorrect line.
+   - Tell the Operator to correct the Changelog policy, or to delete it. When the file is not there, this skill sets up a new Changelog policy.
+5. If the Changelog policy has no incorrect line and a name in the table has no Setting, read `references/changelog-policy-setup.md`. Then do the steps in its section "When a Setting is not in the Changelog policy".
+6. Use the value of each Setting in each job.
 
 | Setting | Values | Default value |
 |---|---|---|
@@ -45,7 +50,7 @@ This skill obeys Common Changelog with 2 deviations. Each deviation is on or off
 | Version links | `release`, `compare`, or `off` | `release` |
 | Host | `auto`, `github`, `gitlab`, `bitbucket`, or `none` | `auto` |
 | Unreleased | `on` or `off` | `on` |
-| Release branches | `off`, or a list of branch prefixes. A comma is between each 2 prefixes. | `release, hotfix` |
+| Release branches | `off`, or a list of branch prefixes. A comma is between each 2 prefixes. A prefix has only letters, digits, `.`, `_`, and `-`. | `release, hotfix` |
 | Draft approval | `off` or `on` | `off` |
 
 The default Changelog policy is this file:
@@ -78,6 +83,13 @@ Do the Create job when the caller asks for a changelog, or when a Write job find
 1. If the changelog is there, do not change it. In the report, tell that the changelog is there.
 2. If the changelog is not there, write the file with only the line `# Changelog`. Do not add entries for old tags, because only a Write job adds entries.
 
+## Before the Write job changes the changelog
+
+Find each conflict in the changelog. A conflict is the lines from a line that starts with `<<<<<<<` to the next line that starts with `>>>>>>>`. Git writes these lines when it cannot merge 2 changes.
+
+- If a conflict is outside the Unreleased section, stop. Do not change a file, because only the Operator knows the correct text of a release entry. In the report, tell that the conflict is outside the Unreleased section, give its line numbers, and ask the Operator to resolve it.
+- If a conflict is in the Unreleased section, keep the items of the 2 sides. Remove the lines that start with `<<<<<<<`, `=======`, or `>>>>>>>`. Then put each item in its group, with one heading for each group, in the sequence `Changed`, `Added`, `Removed`, `Fixed`.
+
 ## When you do the Write job
 
 Do the Write job for each change to the changelog, for example a new item or a release entry.
@@ -104,11 +116,14 @@ When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, and 11
 
 ## When you do the Review job
 
+Do the Review job when the caller asks for a review of the changelog, and after each Write job.
+
 1. Examine each line of the changelog for each rule in `references/common-changelog-rules.md` and for each Setting.
 2. Do not change a file in the Review job.
 3. For each finding, record the line numbers, the rule and its § number, the severity, and a fix. A "must" rule gives the severity `error`. A "should" rule gives the severity `warning`.
 4. When 2 or more findings have the same rule and the same fix, make one finding with all their line numbers.
-5. Do not read the branch name in the Review job.
+5. When `Unreleased` is `off` and the changelog has an Unreleased section, make one finding for the full section with §6.2. Make no finding for the commit references of its items, because the fix of the §6.2 finding adds them.
+6. Do not read the branch name in the Review job. The rules for the Unreleased section use only the `Unreleased` Setting.
 
 ## When you write the report
 
