@@ -361,3 +361,24 @@ export function auditRun(calls: ToolCall[]): RunAudit {
             .map((command) => command.text),
     };
 }
+
+const MAX_LOAD_CALLS = 8;
+
+// The load-test decision for the tool calls of a run so far: true when the
+// Skill loaded before the first change to CHANGELOG.md and within the first
+// 8 calls, false when a change or the 8th call came first, and null when the
+// run must continue.
+export function loadDecision(calls: ToolCall[]): boolean | null {
+    const { firstSkillLoad, firstChangelogWrite } = auditRun(
+        calls.slice(0, MAX_LOAD_CALLS),
+    );
+    if (firstSkillLoad !== null) {
+        return (
+            firstChangelogWrite === null || firstSkillLoad < firstChangelogWrite
+        );
+    }
+    if (firstChangelogWrite !== null || calls.length >= MAX_LOAD_CALLS) {
+        return false;
+    }
+    return null;
+}
