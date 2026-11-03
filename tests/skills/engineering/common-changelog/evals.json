@@ -1,0 +1,46 @@
+{
+    "skill_name": "common-changelog",
+    "common_assertions": [
+        "[C1] The Skill was loaded (Skill call or `SKILL.md` read) before the first change to `CHANGELOG.md` or the Changelog policy, and before the final report.",
+        "[C2] When the policy file exists at the start, the run read it before it changed or reviewed `CHANGELOG.md`.",
+        "[C3] No new commit. `git diff --cached` is empty.",
+        "[C4] No file changed except `CHANGELOG.md` and the Changelog policy.",
+        "[C5] When `CHANGELOG.md` changed: the lines that this run wrote follow every §2 rule and each Setting of the run's policy (Unreleased items need no commit reference; `Host: none` items need no references). Old lines are unchanged unless the request asked for it.",
+        "[C6] The final report names each changed file and lists each Review finding with line numbers, rule and § number, severity, and a fix; findings with the same rule and fix are one finding with all their line numbers. Or it says why nothing changed."
+    ],
+    "evals": [
+        {
+            "id": 1,
+            "name": "01-create",
+            "prompt": "create a changelog",
+            "setup": {
+                "remove": ["CHANGELOG.md"]
+            },
+            "assertions": [
+                "[1.1] After the run, `CHANGELOG.md` holds only the line `# Changelog` (a final newline is permitted)."
+            ]
+        },
+        {
+            "id": 2,
+            "name": "02-write-unreleased",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {},
+            "assertions": [
+                "[2.1] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, starts with an imperative verb, and is about `slugify` and leading spaces.",
+                "[2.2] The new item has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[2.3] The `## [1.2.0] - 2026-09-01` entry, its link definition, and the 2 old Unreleased items are unchanged."
+            ]
+        },
+        {
+            "id": 3,
+            "name": "03-write-no-changelog",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "remove": ["CHANGELOG.md"]
+            },
+            "assertions": [
+                "[3.1] After the run, `CHANGELOG.md` holds, in this sequence: `# Changelog`, `## Unreleased`, `### Fixed`, and one item about `slugify` and leading spaces with the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference. It holds no other heading and no other item."
+            ]
+        }
+    ]
+}
