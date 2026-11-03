@@ -27,8 +27,9 @@ Do these steps before you put an item in a section. Never calculate a version, f
 2. Write the heading `## [X.Y.Z] - YYYY-MM-DD`. When there is no version link, write `## X.Y.Z - YYYY-MM-DD`, with no brackets.
 3. Put the release entry directly after `# Changelog`:
    - If the changelog has a release entry with the same version, use that entry.
-   - Else, when `Unreleased` is `on` and the changelog has an Unreleased section, change its heading into the release heading. Keep its groups and items.
+   - Else, when the changelog has an Unreleased section, change its heading into the release heading. Keep its groups and items. An Unreleased section in a different form, for example `## [Unreleased]`, is also in this group. When `Unreleased` is `off`, also use the Unreleased section, so that no Unreleased section stays.
    - Else, add the release entry.
+   - When you use a section that has a heading or a group in a different form, do "When a release converts a section" in `references/other-formats.md`.
 4. Put the item of the caller in its group of the release entry, as the Write job tells you for the Unreleased section.
 5. For each item of the release entry that has no commit reference, find its commit in the Git history. For a pull request, use its merge commit, for example the commit `Merge pull request #5 from alice/truncate`. Run `git log --oneline` from the newest release tag to find the merge commits.
 6. Write the commit reference with the short SHA of 7 characters, as `references/links.md` tells you.

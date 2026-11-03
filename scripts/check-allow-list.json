@@ -604,5 +604,11 @@
         "rule": "When you put the text in sections and lists",
         "text": "The file name is `CHANGELOG.md`.",
         "cause": "The path names a file of the project that installs the Skill, not a file of this repo."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "A **conversion** is a Write job that corrects each finding in the full changelog, also in the old lines.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     }
 ]

@@ -4,7 +4,7 @@
         "[C1] The Skill was loaded (Skill call or `SKILL.md` read) before the first change to `CHANGELOG.md` or the Changelog policy, and before the final report.",
         "[C2] When the policy file exists at the start, the run read it before it changed or reviewed `CHANGELOG.md`.",
         "[C3] No new commit. `git diff --cached` is empty.",
-        "[C4] No file changed except `CHANGELOG.md` and the Changelog policy.",
+        "[C4] No file changed except `CHANGELOG.md` and the Changelog policy; in test 48, `HISTORY.md` is renamed to `CHANGELOG.md`.",
         "[C5] When `CHANGELOG.md` changed: the lines that this run wrote follow every §2 rule and each Setting of the run's policy (Unreleased items need no commit reference; `Host: none` items need no references). Old lines are unchanged unless the request asked for it.",
         "[C6] The final report names each changed file and lists each Review finding with line numbers, rule and § number, severity, and a fix; findings with the same rule and fix are one finding with all their line numbers. Or it says why nothing changed."
     ],
@@ -532,6 +532,191 @@
                 "[38.1] The first section after `# Changelog` is `## [1.3.0] - <run date>`. The file has no `## Unreleased` section.",
                 "[38.2] The 1.3.0 entry has one new item under `### Added` about the search option, with a commit link (`/commit/<sha>`) to the merge commit of pull request #7 or to the commit `feat: add search option`, `[#7](https://github.com/example/demo/pull/7)`, and the author `(Dave)`.",
                 "[38.3] The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 39,
+            "name": "39-keep-a-changelog-write",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/39-keep-a-changelog",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ]
+            },
+            "assertions": [
+                "[39.1] The old heading `## [Unreleased]` on line 5 is now `## Unreleased`, with no link, and the link definition `[Unreleased]: https://github.com/example/demo/compare/v1.2.0...HEAD` is gone.",
+                "[39.2] Exactly one new item is in `CHANGELOG.md`. It is in a new group `### Fixed` of the Unreleased section, after `### Added`, starts with an imperative verb, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[39.3] The old lines are unchanged: the intro paragraph, `### Security` with \"Fixed XSS in search (#6)\", `### Added` with \"Added search option (#5)\", the full `## [1.2.0] - 2026-09-01` entry, and the link definition `[1.2.0]: https://github.com/example/demo/compare/v1.1.0...v1.2.0`.",
+                "[39.4] The report lists the findings in the old lines, one finding for each rule and fix with all its line numbers, for example one §2.4.1 finding for the items that are not in the imperative mood.",
+                "[39.5] The report gives the words \"convert the changelog\".",
+                "[39.6] No question was asked: the run record has no question-tool call, and the final report asks the Operator no question."
+            ]
+        },
+        {
+            "id": 40,
+            "name": "40-keep-a-changelog-release",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/39-keep-a-changelog",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ]
+            },
+            "assertions": [
+                "[40.1] The first section after `# Changelog` (and the intro paragraph, if it stays) is `## [1.3.0] - <run date>`. The file has no Unreleased section in any form, no `### Security` group, and no `[Unreleased]:` link definition.",
+                "[40.2] The 1.3.0 entry has `### Added` with an item \"Add search option\" and then `### Fixed` with an item \"Fix XSS in search\".",
+                "[40.3] The search-option item has a commit link to the merge commit of pull request #5 (`/commit/<sha>`, link text the short SHA), `[#5](https://github.com/example/demo/pull/5)`, and the author `(Alice)`. The XSS item has a commit link to the merge commit of pull request #6, `[#6](https://github.com/example/demo/pull/6)`, and the author `(Bob)`.",
+                "[40.4] The `## [1.2.0] - 2026-09-01` entry is unchanged, and `[1.3.0]: https://github.com/example/demo/releases/tag/v1.3.0` is a link definition at the bottom of the file.",
+                "[40.5] The report names the XSS item as moved from `Security` to `Fixed`."
+            ]
+        },
+        {
+            "id": 41,
+            "name": "41-keep-a-changelog-convert",
+            "prompt": "Convert CHANGELOG.md to Common Changelog.",
+            "setup": {
+                "overlay": "fixtures/39-keep-a-changelog",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ]
+            },
+            "assertions": [
+                "[41.1] Each heading follows §2: the title `# Changelog`, `## Unreleased` with no link, and `## [1.2.0] - 2026-09-01`. No `### Security` or `### Deprecated` group is left, and the groups of each section are in the sequence Changed, Added, Removed, Fixed.",
+                "[41.2] The item \"Deprecated the `--old` flag\" is now under `### Changed` of 1.2.0, in the imperative mood (\"Deprecate the `--old` flag\").",
+                "[41.3] The 1.2.0 item \"Add dark mode\" has a commit link to the merge commit of pull request #3 (`/commit/<sha>`, link text the short SHA) and the author `(Dave)`.",
+                "[41.4] The 1.2.0 item \"Add export\" is in the imperative mood and has no reference.",
+                "[41.5] The Unreleased items are in the imperative mood (\"Fix XSS in search\" under `### Fixed`, \"Add search option\" under `### Added`), with linked pull-request references `[#6](https://github.com/example/demo/pull/6)` and `[#5](https://github.com/example/demo/pull/5)` and no commit reference.",
+                "[41.6] The link definitions are only `[1.2.0]: https://github.com/example/demo/releases/tag/v1.2.0`: no `[Unreleased]:` definition and no `/compare/` link.",
+                "[41.7] The report lists \"Add export\" as an error finding of §2.4.2 (commit reference missing), with its line number."
+            ]
+        },
+        {
+            "id": 42,
+            "name": "42-keep-a-changelog-unreleased-off",
+            "prompt": "Release the changelog as 1.3.0.",
+            "setup": {
+                "overlay": "fixtures/42-keep-a-changelog-unreleased-off",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ]
+            },
+            "assertions": [
+                "[42.1] The first section after `# Changelog` (and the intro paragraph, if it stays) is `## [1.3.0] - <run date>`. The file has no Unreleased section in any form and no `[Unreleased]:` link definition.",
+                "[42.2] The 1.3.0 entry holds the 2 old Unreleased items in Common Changelog form: `### Added` \"Add search option\" with a commit link to the merge commit of pull request #5, `[#5](https://github.com/example/demo/pull/5)`, and `(Alice)`, then `### Fixed` \"Fix XSS in search\" with a commit link to the merge commit of pull request #6, `[#6](https://github.com/example/demo/pull/6)`, and `(Bob)`. No `### Security` group is left.",
+                "[42.3] The `## [1.2.0] - 2026-09-01` entry is unchanged."
+            ]
+        },
+        {
+            "id": 43,
+            "name": "43-keep-a-changelog-review",
+            "prompt": "Review the changelog. Do not change it.",
+            "setup": {
+                "overlay": "fixtures/39-keep-a-changelog",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ],
+                "branch": "main"
+            },
+            "assertions": [
+                "[43.1] `CHANGELOG.md` is unchanged: `git status --porcelain` and `git diff` show no change to it.",
+                "[43.2] The report gives the items that are not in the imperative mood (lines 9, 13, 19, 23, and 24) as one §2.4.1 error finding with all these line numbers, not as one finding for each line.",
+                "[43.3] The report gives the 1.2.0 items with no commit reference (lines 19, 23, and 24) as one §2.4.2 error finding with all these line numbers.",
+                "[43.4] The report gives the linked heading `## [Unreleased]` on line 5 and the groups `### Security` (line 7) and `### Deprecated` (line 17) as error findings.",
+                "[43.5] The report gives the words \"convert the changelog\"."
+            ]
+        },
+        {
+            "id": 44,
+            "name": "44-free-text-write",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/44-free-text"
+            },
+            "assertions": [
+                "[44.1] Line 1 of `CHANGELOG.md` is `# Changelog`. Then comes `## Unreleased` with `### Fixed` and exactly one new item: imperative, about `slugify` and leading spaces, with the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[44.2] After the new section, the 3 old lines \"History of changes\", \"Version 1.2 added dark mode (September 2026).\", and \"Version 0.9 was a beta for testers.\" are unchanged and in their old sequence.",
+                "[44.3] The report gives the words \"convert the changelog\".",
+                "[44.4] No question was asked: the run record has no question-tool call, and the final report asks the Operator no question."
+            ]
+        },
+        {
+            "id": 45,
+            "name": "45-free-text-convert",
+            "prompt": "Convert CHANGELOG.md to Common Changelog.",
+            "setup": {
+                "overlay": "fixtures/44-free-text",
+                "beforeTag": [
+                    "git commit -q --allow-empty -m 'chore: start project' && git switch -q -c dark-mode && printf 'export const theme = \"dark\";\\n' > src/theme.ts && git add src/theme.ts && git commit -q -m 'feat: add dark mode' --author 'Dave <dave@example.com>' && git switch -q main && git merge -q --no-ff dark-mode -m 'Merge pull request #3 from dave/dark-mode' && git branch -q -D dark-mode"
+                ]
+            },
+            "assertions": [
+                "[45.1] Line 1 of `CHANGELOG.md` is `# Changelog`, and the file has a release entry `## [1.2.0] - 2026-09-01` (the date of the commit with tag `v1.2.0`) with exactly one item about dark mode, in a group, in the imperative mood, with a commit link to the merge commit of pull request #3 and the author `(Dave)`.",
+                "[45.2] The line \"Version 0.9 was a beta for testers.\" is in the file, unchanged, below the 1.2.0 entry. The file has no release entry for 0.9.",
+                "[45.3] The report lists the text that matches no tag, the 0.9 line included."
+            ]
+        },
+        {
+            "id": 46,
+            "name": "46-free-text-no-tags",
+            "prompt": "Convert CHANGELOG.md to Common Changelog.",
+            "setup": {
+                "overlay": "fixtures/44-free-text",
+                "steps": ["git tag -d v1.2.0"]
+            },
+            "assertions": [
+                "[46.1] `CHANGELOG.md` is unchanged, and `git status --porcelain` of the state after is empty.",
+                "[46.2] The report says that the repository has no Git tags, so the free text was not converted."
+            ]
+        },
+        {
+            "id": 47,
+            "name": "47-history-no-answer",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/47-history",
+                "remove": ["CHANGELOG.md"]
+            },
+            "assertions": [
+                "[47.1] No file changed: `HISTORY.md` is unchanged, there is no `CHANGELOG.md`, and `git status --porcelain` of the state after is empty.",
+                "[47.2] The report names `HISTORY.md` and gives the words \"rename HISTORY.md to CHANGELOG.md\"."
+            ]
+        },
+        {
+            "id": 48,
+            "name": "48-history-rename",
+            "prompt": "Rename HISTORY.md to CHANGELOG.md, then add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/47-history",
+                "remove": ["CHANGELOG.md"]
+            },
+            "assertions": [
+                "[48.1] `HISTORY.md` is gone, and `CHANGELOG.md` holds all old lines of `HISTORY.md`, unchanged.",
+                "[48.2] Exactly one new item is in `CHANGELOG.md`. It is under `## Unreleased`, in the group `### Fixed`, is about `slugify` and leading spaces, and has the linked reference `[#6](https://github.com/example/demo/pull/6)` and no commit reference.",
+                "[48.3] Nothing is staged: `git diff --cached` is empty, and `git status --porcelain` shows `HISTORY.md` as deleted and `CHANGELOG.md` as untracked."
+            ]
+        },
+        {
+            "id": 49,
+            "name": "49-create-existing",
+            "prompt": "create a changelog",
+            "setup": {},
+            "assertions": [
+                "[49.1] `CHANGELOG.md` is unchanged, and `git status --porcelain` of the state after is empty.",
+                "[49.2] The report says that `CHANGELOG.md` is already there."
+            ]
+        },
+        {
+            "id": 50,
+            "name": "50-policy-format-line",
+            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "setup": {
+                "overlay": "fixtures/50-policy-format-line"
+            },
+            "assertions": [
+                "[50.1] `CHANGELOG.md` and `docs/agents/changelog-policy.md` are unchanged, and `git status --porcelain` of the state after is empty.",
+                "[50.2] The report gives line 11 (`- Format: keepachangelog`) as an incorrect line, and gives no other policy line as incorrect.",
+                "[50.3] The report tells the Operator to correct the Changelog policy or to delete it."
             ]
         }
     ]
