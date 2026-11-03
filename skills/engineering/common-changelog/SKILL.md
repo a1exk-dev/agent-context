@@ -77,6 +77,13 @@ Do the Create job when the caller asks for a changelog, or when a Write job find
 1. If the changelog is there, do not change it. In the report, tell that the changelog is there.
 2. If the changelog is not there, write the file with only the line `# Changelog`. Do not add entries for old tags, because only a Write job adds entries.
 
+## Before the Write job changes the changelog
+
+Find each conflict in the changelog. A conflict is the lines from a line that starts with `<<<<<<<` to the next line that starts with `>>>>>>>`. Git writes these lines when it cannot merge 2 changes.
+
+- If a conflict is outside the Unreleased section, stop. Do not change a file, because only the Operator knows the correct text of a release entry. In the report, tell that the conflict is outside the Unreleased section, give its line numbers, and ask the Operator to resolve it.
+- If a conflict is in the Unreleased section, keep the items of the 2 sides. Remove the lines that start with `<<<<<<<`, `=======`, or `>>>>>>>`. Then put each item in its group, with one heading for each group, in the sequence `Changed`, `Added`, `Removed`, `Fixed`.
+
 ## When you do the Write job
 
 Do the Write job for each change to the changelog, for example a new item or a release entry.
@@ -101,11 +108,14 @@ Do the Write job for each change to the changelog, for example a new item or a r
 
 ## When you do the Review job
 
+Do the Review job when the caller asks for a review of the changelog, and after each Write job.
+
 1. Examine each line of the changelog for each rule in `references/common-changelog-rules.md` and for each Setting.
 2. Do not change a file in the Review job.
 3. For each finding, record the line numbers, the rule and its § number, the severity, and a fix. A "must" rule gives the severity `error`. A "should" rule gives the severity `warning`.
 4. When 2 or more findings have the same rule and the same fix, make one finding with all their line numbers.
-5. Do not read the branch name in the Review job.
+5. When `Unreleased` is `off` and the changelog has an Unreleased section, make one finding for the full section with §6.2. Make no finding for the commit references of its items, because the fix of the §6.2 finding adds them.
+6. Do not read the branch name in the Review job. The rules for the Unreleased section use only the `Unreleased` Setting.
 
 ## When you write the report
 
