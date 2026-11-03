@@ -1,3 +1,4 @@
+// cspell:ignore pathlib yzxoz
 import { describe, expect, it } from "vitest";
 import {
     auditRun,
@@ -57,6 +58,19 @@ describe("isChangelogWrite", () => {
         bash("sed -i 's/a/b/' CHANGELOG.md"),
         bash("cat new.md | tee CHANGELOG.md"),
         bash("mv /tmp/new.md CHANGELOG.md"),
+        // From a saved run transcript.
+        bash(
+            "cd /tmp/cc-eval-17-with_skill-za8lf7/project; python3 - <<'EOF'\np='CHANGELOG.md'\ns=open(p).read()\nold=s[s.index('## Unreleased'):s.index('## [1.2.0]')]\nnew='''## Unreleased\n'''\nopen(p,'w').write(s.replace(old,new))\nEOF",
+        ),
+        bash(
+            "python3 -c \"from pathlib import Path; p = Path('CHANGELOG.md'); p.write_text(p.read_text().replace('a', 'b'))\"",
+        ),
+        bash(
+            "node -e \"const fs = require('fs'); const t = fs.readFileSync('CHANGELOG.md', 'utf8'); fs.writeFileSync('CHANGELOG.md', t + '- x\\n')\"",
+        ),
+        bash("perl -pi -e 's/a/b/' CHANGELOG.md"),
+        bash("cat >> CHANGELOG.md <<'EOF'\n\n### Added\nEOF"),
+        bash("cp /tmp/new.md ./CHANGELOG.md && git add CHANGELOG.md"),
     ])("counts %j as a change", (call) => {
         expect(isChangelogWrite(call)).toBe(true);
     });
@@ -67,6 +81,11 @@ describe("isChangelogWrite", () => {
         bash("cat -n CHANGELOG.md"),
         bash("git diff CHANGELOG.md"),
         bash("grep -n Unreleased CHANGELOG.md > /tmp/out.txt"),
+        bash("cat CHANGELOG.md > CHANGELOG.md.bak"),
+        bash("cp CHANGELOG.md /tmp/old.md"),
+        bash(
+            "python3 - <<'EOF'\ns=open('CHANGELOG.md').read()\nopen('/tmp/notes.md','w').write(s)\nEOF",
+        ),
     ])("counts %j as no change", (call) => {
         expect(isChangelogWrite(call)).toBe(false);
     });
@@ -85,6 +104,36 @@ describe("isPolicyRead", () => {
         ).toBe(true);
         expect(isPolicyRead(bash("cat -n CHANGELOG.md"))).toBe(false);
     });
+
+    // The first three commands come from saved run transcripts.
+    it.each([
+        "cat docs/agents/*; cat README.md package.json src/*",
+        "cd /tmp/cc-eval-34-without_skill-2yzxoz/project; ls docs/agents; cat docs/agents/* | head -80",
+        "ls -R docs/agents && cat docs/agents/*; cat README.md",
+        "head -n 40 docs/agents/*.md",
+        "tail /w/project/docs/agents/changelog-*.md",
+        "cat 'docs/agents/changelog-policy.md'",
+        'echo "$(cat docs/agents/changelog-policy.md)"',
+        "xargs cat docs/agents/{changelog,commit}-policy.md",
+        // From saved run transcripts.
+        "cd /tmp/cc-eval-28-without_skill-GijCQk/project; find docs -type f | xargs -I{} sh -c 'echo \"== {}\"; cat {}'; cat README.md",
+        "find docs -type f | xargs -I{} sh -c 'echo \"== {}\"; cat {}'; git show 9541c53 --stat",
+        "find docs/agents -name '*.md' -exec head {} +",
+    ])("counts the shell read %j", (command) => {
+        expect(isPolicyRead(bash(command))).toBe(true);
+    });
+
+    it.each([
+        "ls -R docs/agents",
+        "cat docs/*.md",
+        "cat docs/agents/commit-policy.md",
+        "rm docs/agents/changelog-policy.md",
+        "cat docs/agents/[z-a]*",
+        "find docs -name '*.ts' | xargs cat",
+        "find docs -type f | head",
+    ])("counts %j as no read", (command) => {
+        expect(isPolicyRead(bash(command))).toBe(false);
+    });
 });
 
 describe("auditRun", () => {
@@ -100,6 +149,8 @@ describe("auditRun", () => {
             firstSkillLoad: 1,
             firstPolicyRead: 2,
             firstChangelogWrite: 3,
+            possiblePolicyReads: [],
+            possibleChangelogWrites: [],
             gitWrites: ["git add CHANGELOG.md"],
         });
     });
@@ -109,8 +160,61 @@ describe("auditRun", () => {
             firstSkillLoad: null,
             firstPolicyRead: null,
             firstChangelogWrite: null,
+            possiblePolicyReads: [],
+            possibleChangelogWrites: [],
             gitWrites: [],
         });
+    });
+
+    it("lists the shell commands that can read the policy", () => {
+        const audit = auditRun([
+            bash("find docs/agents -name '*.md' | xargs wc -l"),
+            bash("grep -rn Unreleased docs/"),
+            bash("ls -R docs/agents"),
+            bash("cat docs/agents/changelog-policy.md"),
+            bash(
+                "python3 -c \"print(open('docs/agents/changelog-policy.md').read())\"",
+            ),
+            // From saved run transcripts. `cat` gets the folder docs/agents,
+            // not the files in it.
+            bash(
+                "ls -R docs src && cat docs/* README.md; git show --stat 9541c53",
+            ),
+            bash(
+                "python3 - <<'EOF'\nold=s[s.index('## Unreleased'):s.index('## [1.2.0]')]\nEOF",
+            ),
+        ]);
+        expect(audit.firstPolicyRead).toBe(3);
+        expect(audit.possiblePolicyReads).toEqual([
+            { call: 0, command: "find docs/agents -name '*.md' | xargs wc -l" },
+            { call: 1, command: "grep -rn Unreleased docs/" },
+            {
+                call: 4,
+                command:
+                    "python3 -c \"print(open('docs/agents/changelog-policy.md').read())\"",
+            },
+        ]);
+    });
+
+    it("lists the shell commands that can change CHANGELOG.md", () => {
+        const audit = auditRun([
+            bash("git checkout -- CHANGELOG.md"),
+            bash("python3 fix.py CHANGELOG.md"),
+            bash("F=CHANGELOG.md; ed -s $F < fix.ed"),
+            // From saved run transcripts.
+            bash(
+                "cd /tmp/cc-eval-13-with_skill-Kst7GB/project; cat -n CHANGELOG.md; git log --oneline v1.2.0 | head",
+            ),
+            bash(
+                "cd /tmp/cc-eval-37-with_skill-E6zx1y/project; git rev-parse v1.2.0^{commit}; git show dbcc682:CHANGELOG.md",
+            ),
+            bash('git commit -m "docs: update CHANGELOG.md"'),
+            bash("wc -l CHANGELOG.md && diff CHANGELOG.md /tmp/old.md"),
+        ]);
+        expect(audit.firstChangelogWrite).toBeNull();
+        expect(audit.possibleChangelogWrites.map(({ call }) => call)).toEqual([
+            0, 1, 2,
+        ]);
     });
 });
 
