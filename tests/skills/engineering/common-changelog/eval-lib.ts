@@ -45,6 +45,9 @@ export type Eval = {
         branch?: string;
         // The URL of `origin`, or null for no remote.
         origin?: string | null;
+        // Shell commands that run on `main` after `git init`, before the
+        // commit with tag `v1.2.0`. Their commits get the committer Maintainer.
+        beforeTag?: string[];
         // Shell commands that run on the branch after the history.
         steps?: string[];
     };
@@ -112,7 +115,8 @@ export function truncate(text: string, max: number): string {
 `;
 
 // Makes the fixed history in a copy of project/ with the overlay of the test:
-// a start commit with tag `v1.2.0` on `main`, then the merge commits of pull
+// the `beforeTag` steps of the test and a start commit with tag `v1.2.0` on
+// `main`, then the merge commits of pull
 // requests #5 (Alice) and #6 (Bob). Each pull request adds its Unreleased item
 // to `CHANGELOG.md`. Pull request #6 has a second fix, leading spaces in
 // `slugify()`, with no item, so that output tests can add that item. Then the run branch and the setup steps of the test.
@@ -167,6 +171,20 @@ export async function prepare(
     await git(work, ["init", "-q", "-b", "main"]);
     await git(work, ["config", "commit.gpgsign", "false"]);
     await git(work, ["config", "tag.gpgsign", "false"]);
+    for (const step of ev.setup.beforeTag ?? []) {
+        await Bun.$`sh -c ${step}`
+            .cwd(work)
+            .env({
+                ...process.env,
+                GIT_AUTHOR_NAME: "Maintainer",
+                GIT_AUTHOR_EMAIL: "maintainer@example.com",
+                GIT_COMMITTER_NAME: "Maintainer",
+                GIT_COMMITTER_EMAIL: "maintainer@example.com",
+                GIT_AUTHOR_DATE: "2026-08-20T10:00:00Z",
+                GIT_COMMITTER_DATE: "2026-08-20T10:00:00Z",
+            })
+            .quiet();
+    }
     await git(work, ["add", "-A"]);
     await commit("chore: release 1.2.0", "2026-09-01T10:00:00Z", "Carol", [
         "commit",
