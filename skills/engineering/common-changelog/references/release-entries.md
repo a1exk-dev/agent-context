@@ -4,8 +4,7 @@ The Write job uses this file to find the version, to make a release entry, to wr
 
 ## When you ask the Operator a question
 
-- Ask with the question tool of the platform. Give 2 or 3 options.
-- There is no human when the platform has no question tool or the question tool gives an error. This file tells you what to do in each case with no human.
+Ask each question of this file as "When you ask the Operator a question" in `SKILL.md` tells you. That section also gives the meaning of no human. This file tells you what to do in each case with no human.
 
 ## When you find the version
 

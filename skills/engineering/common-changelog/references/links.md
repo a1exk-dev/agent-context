@@ -27,8 +27,8 @@ This skill knows 3 hosts: GitHub, GitLab, and Bitbucket Cloud. Each other host i
 
 Do these steps only in a Write job that writes a reference or a version link. The Review job asks no question.
 
-1. Ask the Operator one question, as "When you ask the Operator a question" in `references/release-entries.md` tells you:
-   - For an unknown host, give the options `github`, `gitlab`, `bitbucket`, and `No references`.
+1. Ask the Operator one question, as "When you ask the Operator a question" in `SKILL.md` tells you. That section also tells you when there is no human. Give these options:
+   - For an unknown host, give the 4 options `github`, `gitlab`, `bitbucket`, and `No references`.
    - For no remote, give the options `No references` and `Stop`.
 2. When the Operator selects a host, change the line `- Host: auto` in the Changelog policy to `- Host: <host>`, for example `- Host: gitlab`. Then use the URL forms of that host.
 3. When the Operator selects `No references`, change the line to `- Host: none`. Then do step 1 of "When you find the host".

@@ -4,7 +4,7 @@ The Create job and the Write job use this file for a changelog in a different fo
 
 ## When you ask the Operator a question
 
-Ask as "When you ask the Operator a question" in `references/release-entries.md` tells you. Each section of this file tells you what to do with no human.
+The section "When you ask the Operator a question" in `SKILL.md` tells you how to ask and when there is no human. Each section of this file tells you what to do with no human.
 
 ## When the changelog has a different file name
 
@@ -80,4 +80,4 @@ Do these steps after a Write job that is not a conversion.
 2. If the Operator answered "No" to a conversion offer in this session, do not offer a conversion again.
 3. Ask the Operator one question: "Convert the old lines to Common Changelog form?" Give the options `Yes` and `No`.
 4. When the Operator answers `Yes`, do a conversion.
-5. If the platform has no question tool, there is no human. Do not ask, and do not do a conversion. In the report, tell that the caller can correct the old lines with the words "convert the changelog".
+5. With no human, do not do a conversion. In the report, tell that the caller can correct the old lines with the words "convert the changelog".
