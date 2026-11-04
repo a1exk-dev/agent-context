@@ -89,9 +89,12 @@ Each step of this skill that tells you to ask the Operator gives the action, not
 2. Ask only the questions that the steps of this skill give. Do not ask a different question, for example about the scope of a draft.
 3. When the platform has a question tool, ask with that tool. Ask a maximum of 3 questions in one tool call. When one answer can change the next question, ask only one question in each tool call.
 4. Give 2 or 3 options for each question. The one exception is the unknown-host question of `references/links.md`, which has 4 options.
-5. There is no Operator when the platform has no question tool, or when the question tool gives an error. There is also no Operator when the caller tells you that no Operator can answer.
-6. When there is no Operator, do not select an answer in place of the Operator. Do the step for no Operator that the reference file of the question gives for that case. That reference file is `references/changelog-policy-setup.md`, `references/drafts.md`, `references/links.md`, `references/other-formats.md`, or `references/release-entries.md`.
-7. When there is no Operator, write in the report the text that the step for no Operator gives. Add no other question to the report. Examples are each Setting with no answer and the words "use the default changelog policy", or the words "convert the changelog". With this text, the caller can give the answer before the next job.
+5. When the platform has no question tool and there is an Operator (see step 8), ask the same question in plain text, with its options. Do not change a file for the step of that question.
+6. In that plain-text message, also give the text that the report gives in that case when there is no Operator. Examples are each Setting with no answer and the words "use the default changelog policy", or the words "convert the changelog". Then the caller can give the answer before the next job.
+7. After the plain-text message, end your turn. Do not continue the job before the Operator answers.
+8. There is no Operator only in 2 cases: the question tool gives an error, or the caller tells you that no human answers questions.
+9. When there is no Operator, do not select an answer in place of the Operator. Do the step for no Operator that the reference file of the question gives for that case. That reference file is `references/changelog-policy-setup.md`, `references/drafts.md`, `references/links.md`, `references/other-formats.md`, or `references/release-entries.md`.
+10. When there is no Operator, write in the report the text that the step for no Operator gives. Add no other question to the report.
 
 ## When you do the Create job
 

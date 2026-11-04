@@ -69,7 +69,7 @@
         {
             "id": 6,
             "name": "06-version-mismatch",
-            "prompt": "Release the changelog as 1.4.0.",
+            "prompt": "No human answers questions in this run. Release the changelog as 1.4.0.",
             "setup": {
                 "branch": "release/1.3.0"
             },
@@ -81,7 +81,7 @@
         {
             "id": 7,
             "name": "07-hotfix-no-version",
-            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "prompt": "No human answers questions in this run. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
             "setup": {
                 "branch": "hotfix/login"
             },
@@ -106,7 +106,7 @@
         {
             "id": 9,
             "name": "09-unreleased-off-no-version",
-            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "prompt": "No human answers questions in this run. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
             "setup": {
                 "overlay": "fixtures/08-unreleased-off"
             },
@@ -145,7 +145,7 @@
         {
             "id": 12,
             "name": "12-notice-major",
-            "prompt": "Release the changelog as 2.0.0.",
+            "prompt": "No human answers questions in this run. Release the changelog as 2.0.0.",
             "setup": {
                 "overlay": "fixtures/12-notice-major"
             },
@@ -243,7 +243,7 @@
         {
             "id": 19,
             "name": "19-no-policy-write",
-            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "prompt": "No human answers questions in this run. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
             "setup": {
                 "remove": ["docs/agents/changelog-policy.md"]
             },
@@ -255,7 +255,7 @@
         {
             "id": 20,
             "name": "20-no-policy-review",
-            "prompt": "review the changelog",
+            "prompt": "No human answers questions in this run. review the changelog",
             "setup": {
                 "remove": ["docs/agents/changelog-policy.md"]
             },
@@ -267,7 +267,7 @@
         {
             "id": 21,
             "name": "21-no-policy-create",
-            "prompt": "create a changelog",
+            "prompt": "No human answers questions in this run. create a changelog",
             "setup": {
                 "remove": ["docs/agents/changelog-policy.md", "CHANGELOG.md"]
             },
@@ -323,7 +323,7 @@
         {
             "id": 25,
             "name": "25-policy-missing-settings",
-            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "prompt": "No human answers questions in this run. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
             "setup": {
                 "overlay": "fixtures/25-policy-missing-settings"
             },
@@ -448,7 +448,7 @@
         {
             "id": 33,
             "name": "33-draft-missing-tag",
-            "prompt": "add a changelog entry for this branch",
+            "prompt": "No human answers questions in this run. add a changelog entry for this branch",
             "setup": {
                 "steps": [
                     "git tag -d v1.2.0",
@@ -463,7 +463,7 @@
         {
             "id": 34,
             "name": "34-draft-approval-on",
-            "prompt": "add a changelog entry for this branch",
+            "prompt": "No human answers questions in this run. add a changelog entry for this branch",
             "setup": {
                 "overlay": "fixtures/34-draft-approval-on",
                 "steps": [
@@ -537,7 +537,7 @@
         {
             "id": 39,
             "name": "39-keep-a-changelog-write",
-            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "prompt": "No human answers questions in this run. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
             "setup": {
                 "overlay": "fixtures/39-keep-a-changelog",
                 "beforeTag": [
@@ -629,7 +629,7 @@
         {
             "id": 44,
             "name": "44-free-text-write",
-            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "prompt": "No human answers questions in this run. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
             "setup": {
                 "overlay": "fixtures/44-free-text"
             },
@@ -672,7 +672,7 @@
         {
             "id": 47,
             "name": "47-history-no-answer",
-            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "prompt": "No human answers questions in this run. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
             "setup": {
                 "overlay": "fixtures/47-history",
                 "remove": ["CHANGELOG.md"]
@@ -792,7 +792,7 @@
         {
             "id": 56,
             "name": "56-unknown-host",
-            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "prompt": "No human answers questions in this run. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
             "setup": {
                 "origin": "https://git.example.com/team/demo.git"
             },
@@ -833,7 +833,7 @@
         {
             "id": 59,
             "name": "59-no-remote",
-            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "prompt": "No human answers questions in this run. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
             "setup": {
                 "origin": null
             },
@@ -860,7 +860,7 @@
         {
             "id": 61,
             "name": "61-old-link-form",
-            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "prompt": "No human answers questions in this run. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
             "setup": {
                 "overlay": "fixtures/61-old-link-form"
             },
@@ -901,7 +901,7 @@
         {
             "id": 64,
             "name": "64-bitbucket-jira-no-human",
-            "prompt": "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
+            "prompt": "No human answers questions in this run. Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6).",
             "setup": {
                 "overlay": "fixtures/52-bitbucket",
                 "origin": "https://bitbucket.org/example/demo.git",
