@@ -28,8 +28,8 @@ This skill makes each change to the changelog obey Common Changelog (https://com
 
 This skill obeys Common Changelog with 2 deviations. Each deviation is on or off in the Changelog policy.
 
-- The Unreleased section breaks §2.1, §2.2, and §6.2. It is on when `Unreleased` is `on`.
-- An item with no references breaks §2.4.2. Items have no references only when `Host` is `none`, or when `references/links.md` finds no URL forms and there is no human.
+- The Unreleased section breaks §2.1, §2.2, and §6.2. This deviation is on when `Unreleased` is `on`.
+- An item with no references breaks §2.4.2. Items have no references only when `Host` is `none`, or when `references/links.md` finds no URL forms and there is no Operator.
 
 ## Before each job
 
@@ -69,7 +69,7 @@ The default Changelog policy is this file:
 - Draft approval: off
 ```
 
-## Rules for all jobs
+## In each job
 
 - Before the Write job or the Review job, read `references/common-changelog-rules.md`. That file gives each requirement of Common Changelog that this skill obeys, with its § number.
 - Before the Write job, read `references/release-entries.md`. That file tells you how to find the version, make a release entry, write a notice, and mark a yanked release.
@@ -89,22 +89,22 @@ Each step of this skill that tells you to ask the Operator gives the action, not
 2. When the platform has a question tool, ask with that tool. Ask a maximum of 3 questions in one tool call. When one answer can change the next question, ask only one question in each tool call.
 3. Give 2 or 3 options for each question. The one exception is the unknown-host question of `references/links.md`, which has 4 options.
 4. When the platform has no question tool, ask the same question in plain text, with its options. Do not change a file for the step of that question.
-5. In that plain-text message, also give the text that the report gives with no human for that case. Examples are each Setting with no answer and the words "use the default changelog policy", or the words "convert the changelog". Then the caller can give the answer before the next job.
+5. In that plain-text message, also give the text that the report gives in that case when there is no Operator. Examples are each Setting with no answer and the words "use the default changelog policy", or the words "convert the changelog". Then the caller can give the answer before the next job.
 6. After the plain-text message, end your turn. Do not continue the job before the Operator answers.
-7. There is no human only when the question tool gives an error, or when the caller tells you that there is no human. With no human, do not select an answer for the Operator. Do the no-human step that the reference file of the question gives for that case.
+7. There is no Operator only when the question tool gives an error, or when the caller tells you that no Operator can answer. When there is no Operator, do not select an answer in place of the Operator. Do the step for no Operator that the reference file of the question gives for that case. That reference file is `references/changelog-policy-setup.md`, `references/drafts.md`, `references/links.md`, `references/other-formats.md`, or `references/release-entries.md`.
 
 ## When you do the Create job
 
 Do the Create job when the caller asks for a changelog, or when a Write job finds no changelog.
 
-1. If the changelog is there, do not change it. Do the Review job. In the report, tell that the changelog is there, and give the findings.
-2. If the changelog is not there, write the file with only the line `# Changelog`. Do not add entries for old tags, because only a Write job adds entries.
+1. If the changelog is there, do not change it. Do the Review job. In the report, tell that the changelog is there. Also give the findings in the report.
+2. If the changelog is not there, write the file with only the line `# Changelog`. Do not add release entries for old tags, because only a Write job adds release entries.
 
 ## Before the Write job changes the changelog
 
 Find each conflict in the changelog. A conflict is the lines from a line that starts with `<<<<<<<` to the next line that starts with `>>>>>>>`. Git writes these lines when it cannot merge 2 changes.
 
-- If a conflict is outside the Unreleased section, stop. Do not change a file, because only the Operator knows the correct text of a release entry. In the report, tell that the conflict is outside the Unreleased section, give its line numbers, and ask the Operator to resolve it.
+- If a conflict is outside the Unreleased section, stop. Do not change a file, because only the Operator knows the correct text of a release entry. In the report, tell that the conflict is outside the Unreleased section. Give the line numbers of the conflict. Ask the Operator to resolve the conflict.
 - If a conflict is in the Unreleased section, keep the items of the 2 sides. Remove the lines that start with `<<<<<<<`, `=======`, or `>>>>>>>`. Then put each item in its group, with one heading for each group, in the sequence `Changed`, `Added`, `Removed`, `Fixed`.
 
 ## When you do the Write job
@@ -114,9 +114,9 @@ Do the Write job for each change to the changelog, for example a new item or a r
 When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, 11, and 12. In place of steps 2 to 7, do "When you mark a release as yanked" in `references/release-entries.md`.
 
 1. If the changelog is not there, do "When the changelog has a different file name" in `references/other-formats.md`. If you do not stop in that section and the changelog is still not there, do the Create job.
-2. If the caller gives no change text, for example "update CHANGELOG.md for this fix", read `references/drafts.md` and do its steps. The draft gives the item and its group, or tells you to stop. Then continue at step 4.
+2. If the caller gives no change text, for example "update CHANGELOG.md for this fix", read `references/drafts.md`. Then do the steps of `references/drafts.md`. The draft gives the item and its group, or tells you to stop. Then continue at step 4.
    Else, use the change text that the caller gives. Write it as one item in the imperative mood, for example "Fix `slugify()` keeping leading spaces". Keep the meaning of the change text.
-3. Find the group of the item from the change text: `Changed`, `Added`, `Removed`, or `Fixed`. A breaking change goes in `Changed` with the prefix `**Breaking:** `.
+3. Find the group of the item from the change text: `Changed`, `Added`, `Removed`, or `Fixed`. Put a breaking change in `Changed` with the prefix `**Breaking:** `.
 4. Find the version as "When you find the version" in `references/release-entries.md` tells you. If that section tells you to put the item in the Unreleased section, do these steps:
    - If the file has no Unreleased section, add `## Unreleased` directly after `# Changelog`.
    - If the Unreleased section has no group for the item, add the group in the sequence `Changed`, `Added`, `Removed`, `Fixed`.
@@ -126,7 +126,7 @@ When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, 11, an
    - Under the Unreleased section, write no commit reference, because the merge commit is not there yet.
    - In a release entry, always write the commit reference.
    - Write a pull-request or issue reference only when the `References` Setting has that kind and the change has one.
-7. When `Authors` is `on`, write the author after the references, in parentheses, for example `(Bob)`. Find the author in the Git history, for example the author of the commits of the pull request. If you cannot find the author, write no author and tell it in the report.
+7. When `Authors` is `on`, write the author after the references, in parentheses, for example `(Bob)`. Find the author in the Git history, for example the author of the commits of the pull request. If you cannot find the author, write no author. In the report, tell that the item has no author.
 8. Change only the lines of this Write job. Keep each other line as it is.
 9. After the change, do the Review job on the full file.
 10. Correct each finding in a line that this Write job wrote. Then do the Review job again on these lines.
@@ -141,7 +141,7 @@ Do the Review job when the caller asks for a review of the changelog, and after 
 2. Do not change a file in the Review job.
 3. For each finding, record the line numbers, the requirement and its § number, the severity, and a fix. A "must" requirement gives the severity `error`. A "should" requirement gives the severity `warning`.
 4. When 2 or more findings have the same requirement and the same fix, make one finding with all their line numbers.
-5. When `Unreleased` is `off` and the changelog has an Unreleased section, make one finding for the full section with §6.2. Make no finding for the commit references of its items, because the fix of the §6.2 finding adds them.
+5. When `Unreleased` is `off` and the changelog has an Unreleased section, make one §6.2 finding for the full section. Make no finding for the commit references of its items, because the fix of the §6.2 finding adds them.
 6. Do not read the branch name in the Review job. The requirements for the Unreleased section use only the `Unreleased` Setting.
 
 ## When you write the report
@@ -151,4 +151,4 @@ Write these parts in this sequence:
 1. Each file that you changed, for example `CHANGELOG.md`. If you changed no file, tell why.
 2. Each item that you wrote, as a quotation.
 3. The findings of the last Review job, as a table with the columns `Lines`, `Requirement`, `Severity`, and `Fix`. If the Review job found no problem, tell that the Review job found no finding.
-4. When a finding is in a line that this run did not write, tell that the caller can correct these lines with the words "convert the changelog".
+4. When a finding is in an old line, tell that the caller can say "convert the changelog" to correct these lines. An old line is a line that the Write job of this request did not write.
