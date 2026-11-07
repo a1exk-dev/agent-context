@@ -23,10 +23,6 @@ This skill gives versions by Semantic Versioning 2.0.0 and makes branches by Git
   - **Start** makes a branch from the correct base, with the correct name, and checks it out.
   - **Finish** merges a branch into its targets, or opens a pull request for each target. It also makes the tag and the Back-merge, and deletes the branches that are safe to delete.
 
-## Which jobs this version of the skill does
-
-This version of the skill does Pick, Check, Start, and Finish with `Finish mode: local`. For Finish with `Finish mode: pull request`, stop before you read `references/finish.md` and before you change the repository. Tell the caller in the report that this version of the skill does not do Finish in `pull request` mode.
-
 ## Rules for each job
 
 - Change no file of the project except the Semver policy. Do not edit the changelog, a version file, or other project files, because these files belong to the project and its other work.
@@ -36,7 +32,7 @@ This version of the skill does Pick, Check, Start, and Finish with `Finish mode:
 
 ## Before each job
 
-Do these steps before each of the 4 jobs, also before a job that this version of the skill cannot do.
+Do these steps before each of the 4 jobs.
 
 1. Read `references/policy-setup.md` in the folder of this skill. It tells you how to set up, examine, and complete the Semver policy.
 2. Run `cat -n docs/agents/semver-policy.md` to read the Semver policy and its line numbers.

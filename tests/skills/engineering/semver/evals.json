@@ -1037,6 +1037,316 @@
             ]
         },
         {
+            "id": 29,
+            "name": "29-finish-feature-pull-request",
+            "prompt": "Finish feature/search.",
+            "setup": {
+                "steps": [
+                    "git switch -q -c feature/search develop && echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search' && git push -q -u origin feature/search",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "29.1",
+                    "text": "One new pull request has the base `develop` and the head `feature/search`.",
+                    "grader": "script",
+                    "check": "prCreated",
+                    "args": {
+                        "base": "develop",
+                        "head": "feature/search"
+                    }
+                },
+                {
+                    "id": "29.2",
+                    "text": "No `gh pr merge` call.",
+                    "grader": "script",
+                    "check": "noGhCall",
+                    "args": {
+                        "commands": ["merge"]
+                    }
+                },
+                {
+                    "id": "29.3",
+                    "text": "The run made no new commit: no local merge.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 0
+                    }
+                }
+            ]
+        },
+        {
+            "id": 30,
+            "name": "30-production-auto-merge",
+            "prompt": "Finish the release.",
+            "setup": {
+                "overlay": "fixtures/30-production-auto-merge",
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "30.1",
+                    "text": "One new pull request has the base `main` and the head `release/1.3.0`, with auto-merge by merge commit (`gh pr merge` with `--auto` and `--merge`).",
+                    "grader": "script",
+                    "check": "prCreated",
+                    "args": {
+                        "base": "main",
+                        "head": "release/1.3.0",
+                        "autoMerge": "MERGE"
+                    }
+                },
+                {
+                    "id": "30.2",
+                    "text": "No new tag, local or on `origin`.",
+                    "grader": "script",
+                    "check": "noNewTag"
+                },
+                {
+                    "id": "30.3",
+                    "text": "The run made no new commit: no local merge.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 0
+                    }
+                }
+            ]
+        },
+        {
+            "id": 31,
+            "name": "31-ci-tag-missing",
+            "prompt": "Finish the release.",
+            "setup": {
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main && git merge -q --no-ff -m 'Merge pull request #12 from example/release/1.3.0' release/1.3.0 && git push -q origin main"
+                ],
+                "prs": [
+                    {
+                        "number": 12,
+                        "headRefName": "release/1.3.0",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "main"
+                    }
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "31.1",
+                    "text": "No new tag, local or on `origin`.",
+                    "grader": "script",
+                    "check": "noNewTag"
+                },
+                {
+                    "id": "31.2",
+                    "text": "No `gh pr create`, `gh pr merge`, or `gh pr close` call.",
+                    "grader": "script",
+                    "check": "noGhCall",
+                    "args": {
+                        "commands": ["create", "merge", "close"]
+                    }
+                },
+                {
+                    "id": "31.3",
+                    "text": "The report says that the tag `v1.3.0` is missing, and that the Back-merge pull request from `main` into `develop` is missing.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 32,
+            "name": "32-skill-tags-and-back-merges",
+            "prompt": "Finish the release.",
+            "setup": {
+                "overlay": "fixtures/32-tag-skill",
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main && git merge -q --no-ff -m 'Merge pull request #12 from example/release/1.3.0' release/1.3.0 && git push -q origin main"
+                ],
+                "prs": [
+                    {
+                        "number": 12,
+                        "headRefName": "release/1.3.0",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "main"
+                    }
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "32.1",
+                    "text": "The tag `v1.3.0`, local and on `origin`, is on the merge commit of `main`.",
+                    "grader": "script",
+                    "check": "tagAt",
+                    "args": {
+                        "tag": "v1.3.0",
+                        "branch": "main"
+                    }
+                },
+                {
+                    "id": "32.2",
+                    "text": "One new pull request has the base `develop` and the head `main`.",
+                    "grader": "script",
+                    "check": "prCreated",
+                    "args": {
+                        "base": "develop",
+                        "head": "main"
+                    }
+                },
+                {
+                    "id": "32.3",
+                    "text": "The run made no new commit.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 0
+                    }
+                }
+            ]
+        },
+        {
+            "id": 33,
+            "name": "33-finish-confirm-no-human",
+            "prompt": "Finish the release.",
+            "setup": {
+                "overlay": "fixtures/33-finish-confirm",
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "33.1",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "33.2",
+                    "text": "The report gives the plan: a pull request from `release/1.3.0` into `main`, the tag `v1.3.0`, and the Back-merge into `develop`.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 38,
+            "name": "38-branch-cleanup",
+            "prompt": "Finish feature/search.",
+            "setup": {
+                "steps": [
+                    "git switch -q -c feature/search develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search' && git push -q -u origin feature/search",
+                    "git switch -q -c feature/a develop && printf 'export const a = 1;\\n' > src/a.ts && git add src/a.ts && git commit -qm 'feat: add a' && git push -q -u origin feature/a",
+                    "git switch -q -c feature/b develop && printf 'export const b = 1;\\n' > src/b.ts && git add src/b.ts && git commit -qm 'feat: add b' && printf 'export const b = 2;\\n' > src/b.ts && git commit -qam 'feat: change b' && git push -q -u origin feature/b",
+                    "git switch -q -c feature/open develop && printf 'export const open = 1;\\n' > src/open.ts && git add src/open.ts && git commit -qm 'feat: add open' && git push -q -u origin feature/open",
+                    "git switch -q -c hotfix/old main && echo '// Rejects an old token.' >> src/login.ts && git commit -qam 'fix: reject an old token' && git push -q -u origin hotfix/old",
+                    "git switch -q -c release/1.1.0 develop && printf 'export const version = \"1.1.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.1.0' && git push -q -u origin release/1.1.0",
+                    "git switch -q main && git merge -q --no-ff -m 'Merge pull request #13 from example/release/1.1.0' release/1.1.0 && git tag v1.1.0 && git switch -q develop && git merge -q --no-ff -m \"Merge tag 'v1.1.0' into develop\" v1.1.0 && git push -q origin main develop v1.1.0",
+                    "git switch -q develop && git merge -q --squash feature/a && git commit -qm 'feat: add a (#11)' && git push -q origin develop && git reset -q --hard HEAD~1",
+                    "git switch -q main"
+                ],
+                "prs": [
+                    {
+                        "number": 11,
+                        "headRefName": "feature/a",
+                        "baseRefName": "develop",
+                        "state": "MERGED",
+                        "mergeCommit": "origin/develop"
+                    },
+                    {
+                        "number": 12,
+                        "headRefName": "feature/b",
+                        "baseRefName": "develop",
+                        "state": "MERGED",
+                        "headRefOid": "feature/b~1"
+                    },
+                    {
+                        "number": 13,
+                        "headRefName": "release/1.1.0",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "v1.1.0"
+                    },
+                    {
+                        "number": 14,
+                        "headRefName": "hotfix/old",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "hotfix/old"
+                    },
+                    {
+                        "number": 15,
+                        "headRefName": "feature/open",
+                        "baseRefName": "develop",
+                        "state": "OPEN"
+                    }
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "38.1",
+                    "text": "`feature/a` is deleted, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchDeleted",
+                    "args": {
+                        "branch": "feature/a"
+                    }
+                },
+                {
+                    "id": "38.2",
+                    "text": "`release/1.1.0` is deleted, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchDeleted",
+                    "args": {
+                        "branch": "release/1.1.0"
+                    }
+                },
+                {
+                    "id": "38.3",
+                    "text": "`feature/b`, `hotfix/old`, and `feature/open` stay at their start commits, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchesKept",
+                    "args": {
+                        "branches": ["feature/b", "hotfix/old", "feature/open"]
+                    }
+                },
+                {
+                    "id": "38.4",
+                    "text": "The report names `feature/b`, `hotfix/old`, and `feature/open` as kept, each with its cause: the head commit of the pull request is not the branch tip, the tag is missing, and the pull request is open.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "38.5",
+                    "text": "The run used `git fetch --prune`.",
+                    "grader": "script",
+                    "check": "ranCommand",
+                    "args": {
+                        "pattern": "git\\s+fetch\\b[^\\n]*(--prune|\\s-p\\b)"
+                    }
+                },
+                {
+                    "id": "38.6",
+                    "text": "The local `develop` is at the same commit as `origin/develop`.",
+                    "grader": "script",
+                    "check": "pushed",
+                    "args": {
+                        "refs": ["develop"]
+                    }
+                }
+            ]
+        },
+        {
             "id": 39,
             "name": "39-no-policy-pick",
             "prompt": "What is the next version?",
@@ -1455,6 +1765,41 @@
                 {
                     "id": "48.3",
                     "text": "The report names the change of the policy file: the 2 added lines.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 49,
+            "name": "49-no-host-tool",
+            "prompt": "Finish the release.",
+            "setup": {
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main"
+                ],
+                "gh": false
+            },
+            "assertions": [
+                {
+                    "id": "49.1",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "49.2",
+                    "text": "The report gives the Setting `Finish mode`.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["Finish mode"]
+                    }
+                },
+                {
+                    "id": "49.3",
+                    "text": "The report says that the agent has no tool for the host of the project.",
                     "grader": "llm"
                 }
             ]

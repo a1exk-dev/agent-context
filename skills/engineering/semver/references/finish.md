@@ -6,11 +6,13 @@ Do the sections of this file in this sequence:
 
 1. "When you find the branch to finish"
 2. "When you find the targets"
-3. "When you find the version"
-4. "When you make the plan"
-5. "When you ask for approval"
-6. "When Finish mode is local"
-7. "When you report Finish"
+3. "Before you finish in pull request mode", only when `Finish mode` is `pull request`
+4. "When you find the version"
+5. "When you make the plan"
+6. "When you ask for approval"
+7. "When Finish mode is local" or "When Finish mode is pull request", as the Setting `Finish mode` tells you
+8. "When you clean up branches"
+9. "When you report Finish"
 
 ## When you find the branch to finish
 
@@ -38,12 +40,31 @@ A target is a branch that Finish merges into. Find the targets in this table:
 - The merge kind into the Development branch is the value of `Development merge`. The merge kind into the Production branch is the value of `Production merge`.
 - A merge into a tag target is always a merge commit, for each value of `Development merge`. A merge commit keeps the tag commit in the history of the target. Then the next Back-merge has no conflict from the same changes.
 
+## Before you finish in pull request mode
+
+In `pull request` mode, Finish uses a host tool. A host tool is a tool for the host of the project, for example `gh` for GitHub, or an MCP tool of the platform. This file gives the commands of `gh`. With a different host tool, use its commands that do the same work.
+
+1. Run `git remote get-url origin`. If the project has no `origin` remote, stop. In the report, tell that the project has no remote, and give the Setting `Finish mode`. Tell the Operator to add the remote or to set `Finish mode: local`.
+2. Find the host tool that you have. For `gh`, run `command -v gh`. Do not install, set up, or sign in to a host tool, because the Operator controls the host tools of the project.
+3. If you have no host tool, stop. In the report, tell that you have no tool for the host of the project, and give the Setting `Finish mode`. Tell the Operator to give you a host tool or to set `Finish mode: local`.
+4. Run `git fetch --tags origin`.
+5. Find the pull requests of the branch into the first target:
+
+   ```sh
+   gh pr list --head <branch> --base <first target> --state all --json number,state,headRefOid,mergeCommit,autoMergeRequest,url
+   ```
+
+6. If the host tool gives an error, stop. In the report, give the error.
+7. The pull request of the branch is its OPEN or MERGED pull request. A CLOSED pull request does not count. If the list has no OPEN or MERGED pull request, the branch has no pull request.
+8. If the branch has no MERGED pull request, and the branch is local and on `origin`, run `git rev-list --count <branch>..origin/<branch>`. If the result is not 0, stop. In the report, give the branch and the number of commits that only `origin` has.
+
 ## When you find the version
 
 Do these steps only for a `release/*` branch and a `hotfix/*` branch. A `feature/*` branch and a `bugfix/*` branch get no version and no tag.
 
-- For a `release/X.Y.Z` branch, the version is `X.Y.Z`. Examine the version with the `release` form of the check script and the value of `Tag prefix`. When the script gives `invalid:`, stop and give its cause in the report.
-- For a `hotfix/*` branch, the version is the next patch of the last release. Read `references/pick.md` in the folder of this skill. Then do the steps in its sections "When you find the last release" and "When the version is for a hotfix".
+- For a `release/X.Y.Z` branch, the version is `X.Y.Z`. If the tag of the version exists already, do not run the check script. An earlier Finish run or CI made that tag. If not, examine the version with the `release` form of the check script and the value of `Tag prefix`. When the script gives `invalid:`, stop and give its cause in the report.
+- For a `hotfix/*` branch with a MERGED pull request, run `git tag --points-at <merge commit>`. The merge commit is the `mergeCommit` of the pull request. If a tag `<Tag prefix>X.Y.Z` is on the merge commit, the version is `X.Y.Z`.
+- For a `hotfix/*` branch with no such tag, the version is the next patch of the last release. Read `references/pick.md` in the folder of this skill. Then do the steps in its sections "When you find the last release" and "When the version is for a hotfix".
 - The tag is `<Tag prefix><version>`. When `Tag prefix` is `none`, the tag is the version.
 
 ## When you make the plan
@@ -53,8 +74,9 @@ The plan gives each change that Finish will make, before Finish makes a change. 
 - The branch to finish, and its version and tag, if it has a version.
 - The value of `Finish mode`.
 - Each target, in sequence, with the merge kind.
+- In `pull request` mode, each pull request that Finish will open, with its base, its head, and its auto-merge. Also give the tag and each merge into a tag target, and who makes them: CI, this Finish run, or a later Finish run.
 - Each branch and tag that Finish will push.
-- The branch that Finish will delete, local and on `origin`.
+- Each branch that Finish will delete, local and on `origin`: the finished branch, and each other branch that passes the test in "When a branch is safe to delete".
 
 ## When you ask for approval
 
@@ -70,11 +92,13 @@ Only Finish asks for approval, because Finish changes the long-lived branches of
 
 ## When you write a merge message
 
-Finish writes the message of each merge commit and of each squash commit. The project can have rules for these messages.
+Finish writes the message of each merge commit and of each squash commit. In `pull request` mode, Finish also writes the title and the body of each pull request. The project can have rules for these texts.
 
-1. Find the rules of the project for commit messages. Look in the instructions that you have, and in `AGENTS.md` and `CLAUDE.md` in the root folder of the project.
+1. Find the rules of the project for commit messages and for pull requests. Look in the instructions that you have, and in `AGENTS.md` and `CLAUDE.md` in the root folder of the project.
 2. If you find rules, write each message by these rules. Give the message with `-m`.
 3. If you find no rule, use the default message of Git: give `--no-edit`. This skill has no rules for commit messages.
+4. In `pull request` mode, give the title and the body of a pull request to `gh pr create` with `--title` and `--body`. If you find no rule, give `--fill`, so that the host writes its default text.
+5. In `pull request` mode, when the project has rules for merge messages, give the message to `gh pr merge` with `--subject` and `--body`. If not, give no message, so that the host writes its default message.
 
 ## When Finish mode is local
 
@@ -86,7 +110,6 @@ In `local` mode, Finish does each merge, the tag, and the push with Git. If the 
 4. Do the steps in "When you push the first target".
 5. For each tag target, in the sequence of the table in "When you find the targets", do the steps in "When you merge the tag in local mode".
 6. Do the steps in "When you delete the finished branch".
-7. Run `git switch <development>`. When `Development branch` is `none`, run `git switch <production>`.
 
 ## Before you merge in local mode
 
@@ -151,12 +174,103 @@ Delete the finished branch only when its work is in the targets. A deleted branc
 5. Run `git branch -D <branch>`. After a squash merge, `git branch -d` refuses to delete the branch, because the target does not contain its commits.
 6. If `origin/<branch>` is there, run `git push origin --delete <branch>`.
 
+## When Finish mode is pull request
+
+In `pull request` mode, the host merges each pull request. After the merge, a new Finish run of the same branch does the next steps. For example, a new "Finish the release" makes or examines the tag and the Back-merge.
+
+1. If the branch has no pull request, do the steps in "When you open the pull request".
+2. If the pull request is OPEN, do the steps in "When the pull request is open".
+3. If the pull request is MERGED, and the branch is a `release/*` or `hotfix/*` branch, examine the Setting `Tag and back-merge`. For `CI`, do the steps in "When Tag and back-merge is CI". For `Skill`, do the steps in "When Tag and back-merge is Skill".
+4. If the pull request is MERGED, and the branch is a `feature/*` or `bugfix/*` branch, continue with "When you clean up branches".
+
+## When you open the pull request
+
+1. If `origin/<branch>` is not there, or the local branch has commits that `origin/<branch>` does not have, run `git push -u origin <branch>`. The host opens a pull request only from a branch on `origin`.
+2. Find the title and the body, as "When you write a merge message" tells you.
+3. Run `gh pr create --base <first target> --head <branch>` with `--title` and `--body`, or with `--fill`.
+4. Do the steps in "When you turn on auto-merge".
+
+## When the pull request is open
+
+1. If the local branch has commits that `origin/<branch>` does not have, run `git push origin <branch>`. The pull request then gets these commits.
+2. If the pull request has no `autoMergeRequest`, do the steps in "When you turn on auto-merge".
+
+## When you turn on auto-merge
+
+1. Find the Setting of the base branch of the pull request. For the Production branch, it is `Production auto-merge`. For the Development branch and for a `release/*` branch, it is `Development auto-merge`.
+2. If the Setting is `off`, do not turn on auto-merge. Then the Operator merges the pull request.
+3. If the Setting is `on`, find the merge kind of the target, as "When you find the targets" tells you. A pull request into a tag target always has the merge kind `merge commit`.
+4. Find the message, as "When you write a merge message" tells you.
+5. When the Setting is `on`, run `gh pr merge <number> --auto` with `--merge` for `merge commit`, or with `--squash` for `squash`. The host merges the pull request when its required checks pass.
+
+## When you find the merge into a tag target
+
+The merge commit is the commit on the Production branch that gets the tag. In `pull request` mode, it is the `mergeCommit` of the MERGED pull request. The merge of the tag into a tag target exists when one of these conditions is true:
+
+- `git merge-base --is-ancestor <merge commit> origin/<tag target>` gives exit code 0.
+- An OPEN pull request from the Production branch into the tag target exists. Find it with `gh pr list --head <production> --base <tag target> --state open --json number,mergeable,url`.
+
+If that OPEN pull request has the `mergeable` value `CONFLICTING`, give it in the report, with its number and URL.
+
+## When Tag and back-merge is CI
+
+A CI job of the project makes the tag and opens the pull request of the Back-merge. Finish only examines them, because the CI job and Finish must not make the same tag.
+
+1. Run `git rev-parse --verify --quiet 'refs/tags/<tag>^{commit}'`. If the command gives no commit, the tag is missing.
+2. For each tag target, find the merge of the tag, as "When you find the merge into a tag target" tells you.
+3. Do not make a missing tag or a missing pull request.
+4. In the report, give each missing item: the tag, and the merge into each tag target. Tell the Operator to examine the CI job.
+
+## When Tag and back-merge is Skill
+
+1. Run `git merge-base --is-ancestor <merge commit> origin/<production>`. If the exit code is not 0, stop. In the report, tell that `origin/<production>` does not contain the merge commit.
+2. Run `git rev-parse --verify --quiet 'refs/tags/<tag>^{commit}'`. If the tag exists, do not make it again. Do not move or delete a tag. A released version does not change.
+3. If the tag is missing, run `git tag <tag> <merge commit>`.
+4. Then run `git push origin <tag>`.
+5. For each tag target, in the sequence of the table in "When you find the targets", find the merge of the tag. "When you find the merge into a tag target" tells you how. If the merge exists, do not open a pull request into that tag target.
+6. If `git rev-parse origin/<production>` does not give the commit of the tag, do not open a pull request into the tag target. In the report, tell that the Production branch has commits after the tag. A pull request from the Production branch then brings changes that the version does not have.
+7. If not, find the title and the body, as "When you write a merge message" tells you.
+8. Run `gh pr create --base <tag target> --head <production>` with `--title` and `--body`, or with `--fill`.
+9. Do the steps in "When you turn on auto-merge".
+
+## When you clean up branches
+
+Do this section at the end of each Finish that did not stop, in the two modes. It deletes each branch that is safe to delete, so that no old branch stays. If the project has no `origin` remote, do the steps without the fetch, the merge from `origin`, and the delete on `origin`.
+
+1. Run `git fetch --prune --tags origin`. This command also removes the refs of the branches that `origin` deleted.
+2. Run `git switch <development>`. When `Development branch` is `none`, run `git switch <production>`.
+3. If the local branch of HEAD has fewer commits than its `origin` branch, run `git merge --ff-only origin/<branch of HEAD>`. If this command fails, do not change the branch. In the report, give the branch and the cause.
+4. Find each `feature/*`, `bugfix/*`, `release/*`, and `hotfix/*` branch, local and on `origin`:
+
+   ```sh
+   git for-each-ref --format='%(refname) %(objectname)' refs/heads/feature refs/heads/bugfix refs/heads/release refs/heads/hotfix refs/remotes/origin/feature refs/remotes/origin/bugfix refs/remotes/origin/release refs/remotes/origin/hotfix
+   ```
+
+5. For each branch, do the test in "When a branch is safe to delete". Do the test for the local branch and for the `origin` branch separately, each with its own commit.
+6. CAUTION: Delete a branch only when it passes the test. A deleted branch can have commits that no other branch contains.
+7. For each local branch that passes the test, run `git branch -D <branch>`. After a squash merge, `git branch -d` refuses to delete the branch, because the target does not contain its commits.
+8. For each `origin` branch that passes the test, run `git push origin --delete <branch>`.
+9. For each branch that does not pass the test, record the branch and the cause for the report.
+
+## When a branch is safe to delete
+
+A branch passes the test only when each of these steps gives a pass. The commit of the branch is the commit of the local branch or of the `origin` branch that you examine.
+
+1. In `pull request` mode, run `gh pr list --head <branch> --state merged --json number,headRefOid,mergeCommit`. The branch passes this step only when a MERGED pull request has the commit of the branch as its `headRefOid`. Then the pull request has all the commits of the branch.
+2. In `local` mode, find the target of the branch type, as "When you find the targets" tells you. The branch passes this step only when `git merge-base --is-ancestor <commit> <target>` gives exit code 0.
+3. For a `release/X.Y.Z` branch, the tag `<Tag prefix>X.Y.Z` must exist.
+4. For a `hotfix/*` branch in `pull request` mode, a tag `<Tag prefix>X.Y.Z` must be on the `mergeCommit` of its pull request. Find it with `git tag --points-at <merge commit>`.
+5. For a `hotfix/*` branch in `local` mode, a tag `<Tag prefix>X.Y.Z` must contain the commit of the branch. Find it with `git tag --contains <commit>`.
+6. For a `release/*` or `hotfix/*` branch, when the project has a Development branch, the Back-merge must exist. Find it as "When you find the merge into a tag target" tells you, with the commit of the tag as the merge commit.
+
 ## When you report Finish
 
 Give these items:
 
 - The branch that Finish merged, and its version and tag, if it has a version.
 - Each merge: the target, the merge kind, and the short SHA of the new commit.
+- Each pull request that Finish opened or found: its number, URL, base, head, state, and auto-merge. When a pull request waits for its merge, tell the caller to finish the branch again after the merge.
+- In `pull request` mode, each missing tag and each missing merge into a tag target.
 - Each branch and tag that Finish pushed, and each branch that stays local only.
 - Each deleted branch, local and on `origin`. Give each branch that Finish did not delete, with the cause.
 - The branch of HEAD at the end.
