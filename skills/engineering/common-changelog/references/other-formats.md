@@ -32,7 +32,7 @@ Do these steps in step 1 of the Write job, when the changelog is not there.
 
 The Write job adds new lines in Common Changelog form. Keep the old lines as they are, also when they have findings. The Review job lists the findings in the old lines.
 
-1. If the changelog has no `# ` title, it has no structure. If the changelog has text that is not a release entry or an Unreleased section in any form, it also has no structure. Examples of a release heading in a different form are `## [1.1.0]`, `## v1.1`, and a heading with a different date form.
+1. If the changelog has no `# ` title, it has no structure. If the changelog has no `## ` section that is a release entry or an Unreleased section in any form, it also has no structure. The title, an introduction paragraph, and link definitions do not change this. Examples of a release heading in a different form are `## [1.1.0]`, `## v1.1`, and a heading with a different date form.
 2. When the changelog has no structure, put the line `# Changelog`, a blank line, and the new section at the top of the file. The new section is the Unreleased section or the release entry of the Write job. Keep the old text below the new section, with no change.
 3. When `Unreleased` is `on`, the Unreleased section is the first `## ` section whose heading text is "Unreleased" in any form, for example `## [Unreleased]`. This step also applies to a heading with a link.
 4. When the Write job puts an item in that section, change the heading of that section to `## Unreleased`. Remove the link definition of the heading, for example `[Unreleased]: https://github.com/example/demo/compare/v1.2.0...HEAD`.
