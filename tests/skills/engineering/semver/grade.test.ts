@@ -426,6 +426,51 @@ describe("branchStarted, noVersionInName, and originUnchanged", () => {
     });
 });
 
+describe("noChange", () => {
+    it("passes when the run changed no ref, file, or pull request", () => {
+        expect(check("noChange", run())).toBe(true);
+    });
+
+    it("fails for a new branch, tag, commit, file change, or HEAD move", () => {
+        const after = (fields: Partial<GitState>) =>
+            run({ after: state(fields) });
+        expect(
+            check(
+                "noChange",
+                after({
+                    refs: { ...state().refs, "refs/heads/release/1.1.0": S },
+                }),
+            ),
+        ).toBe(false);
+        expect(
+            check(
+                "noChange",
+                after({ refs: { ...state().refs, "refs/tags/v1.1.0": S } }),
+            ),
+        ).toBe(false);
+        expect(
+            check("noChange", after({ commits: [start, commit(X, [S])] })),
+        ).toBe(false);
+        expect(check("noChange", after({ status: [" M src/a.ts"] }))).toBe(
+            false,
+        );
+        expect(check("noChange", after({ head: "develop" }))).toBe(false);
+    });
+
+    it("fails for a pull request change or a gh write call", () => {
+        expect(check("noChange", run({ prsAfter: [pr({})] }))).toBe(false);
+        expect(
+            check(
+                "noChange",
+                run({ ghCalls: [["pr", "create", "--base", "main"]] }),
+            ),
+        ).toBe(false);
+        expect(check("noChange", run({ ghCalls: [["pr", "list"]] }))).toBe(
+            true,
+        );
+    });
+});
+
 // Saves a run folder as run-evals.ts saves it.
 function runFolder(
     statements: object[],

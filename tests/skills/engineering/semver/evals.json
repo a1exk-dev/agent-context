@@ -39,6 +39,54 @@
     ],
     "evals": [
         {
+            "id": 15,
+            "name": "15-check-versions-and-branches",
+            "prompt": "Are `1.3.0-rc.1+build.5`, `01.2.3`, `release/1.3`, and `hotfix/login` valid here?",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "15.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "15.2",
+                    "text": "The report says that `1.3.0-rc.1+build.5` and `hotfix/login` are valid.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "15.3",
+                    "text": "The report says that `01.2.3` is not valid, because a number of a version has no leading zero.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "15.4",
+                    "text": "The report says that `release/1.3` is not valid, because a release branch name needs an `X.Y.Z` version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 16,
+            "name": "16-start-release-not-above",
+            "prompt": "Start release 1.1.0.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "16.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "16.2",
+                    "text": "The report says that the job stopped because 1.1.0 is not above the last release 1.2.0.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
             "id": 17,
             "name": "17-start-feature",
             "prompt": "Start a feature branch for search.",
@@ -49,7 +97,10 @@
                     "text": "There is exactly one new local branch. Its name is `feature/<name>`, it points at the commit of `develop`, and it is checked out.",
                     "grader": "script",
                     "check": "branchStarted",
-                    "args": { "prefix": "feature/", "base": "develop" }
+                    "args": {
+                        "prefix": "feature/",
+                        "base": "develop"
+                    }
                 },
                 {
                     "id": "17.2",
@@ -75,7 +126,10 @@
                     "text": "There is exactly one new local branch. Its name is `bugfix/<name>`, it points at the commit of `main`, and it is checked out.",
                     "grader": "script",
                     "check": "branchStarted",
-                    "args": { "prefix": "bugfix/", "base": "main" }
+                    "args": {
+                        "prefix": "bugfix/",
+                        "base": "main"
+                    }
                 },
                 {
                     "id": "18.2",
@@ -98,20 +152,44 @@
                     "text": "There is exactly one new local branch. Its name is `hotfix/<name>`, it points at the commit of `main`, and it is checked out.",
                     "grader": "script",
                     "check": "branchStarted",
-                    "args": { "prefix": "hotfix/", "base": "main" }
+                    "args": {
+                        "prefix": "hotfix/",
+                        "base": "main"
+                    }
                 },
                 {
                     "id": "21.2",
                     "text": "The name of the new `hotfix/*` branch has no version.",
                     "grader": "script",
                     "check": "noVersionInName",
-                    "args": { "prefix": "hotfix/" }
+                    "args": {
+                        "prefix": "hotfix/"
+                    }
                 },
                 {
                     "id": "21.3",
                     "text": "The new branch is not pushed: the refs of `origin` are unchanged.",
                     "grader": "script",
                     "check": "originUnchanged"
+                }
+            ]
+        },
+        {
+            "id": 22,
+            "name": "22-start-release-not-xyz",
+            "prompt": "Start release 1.3.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "22.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "22.2",
+                    "text": "The report says that the job stopped because 1.3 is not an `X.Y.Z` version.",
+                    "grader": "llm"
                 }
             ]
         }
