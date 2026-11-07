@@ -80,7 +80,7 @@
     {
         "path": "MEMORY.md",
         "rule": "When you put the text in sections and lists",
-        "text": "In `SKILL.md`, state \"Requires Node.js 22.18 or later\" and call the script with `node`, not a shebang.",
+        "text": "For a TypeScript script, state \"Requires Node.js 22.18 or later\" in `SKILL.md` and call the script with `node`.",
         "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
     },
     {

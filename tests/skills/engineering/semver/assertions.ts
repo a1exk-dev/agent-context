@@ -412,6 +412,53 @@ function reportNames(run: Run, args: Record<string, unknown>): Verdict {
     );
 }
 
+// A job that stops: no new or moved ref, local or on origin, no new commit,
+// no file change, the same HEAD, and no pull request change or gh write.
+function noChange(run: Run): Verdict {
+    const problems: string[] = [];
+    for (const [place, before, after] of [
+        ["local", run.before.refs, run.after.refs],
+        ["origin", run.before.origin, run.after.origin],
+    ] as const) {
+        for (const ref of new Set([
+            ...Object.keys(before),
+            ...Object.keys(after),
+        ])) {
+            if (before[ref] !== after[ref])
+                problems.push(
+                    `${place} ${ref}: ${before[ref] ?? "none"} -> ${after[ref] ?? "none"}`,
+                );
+        }
+    }
+    const old = new Set(run.before.commits.map((commit) => commit.sha));
+    for (const commit of run.after.commits)
+        if (!old.has(commit.sha))
+            problems.push(`New commit ${commit.sha.slice(0, 7)}.`);
+    if (run.after.head !== run.before.head)
+        problems.push(
+            `HEAD moved from ${run.before.head} to ${run.after.head}.`,
+        );
+    if (
+        JSON.stringify([
+            run.after.status,
+            run.after.staged,
+            run.after.policy,
+        ]) !==
+        JSON.stringify([
+            run.before.status,
+            run.before.staged,
+            run.before.policy,
+        ])
+    )
+        problems.push("The working tree changed.");
+    if (JSON.stringify(run.prsAfter) !== JSON.stringify(run.prsBefore))
+        problems.push("The pull requests changed.");
+    for (const args of run.ghCalls)
+        if (["create", "merge", "close"].includes(args[1] ?? ""))
+            problems.push(`gh write call: gh ${args.join(" ")}`);
+    return verdict(problems, "The run changed nothing.");
+}
+
 export const checks: Record<string, Check> = {
     skillLoadedFirst,
     policyReadFirst,
@@ -425,4 +472,5 @@ export const checks: Record<string, Check> = {
     policyFile,
     policyUnchanged,
     reportNames,
+    noChange,
 };
