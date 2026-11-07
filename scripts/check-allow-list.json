@@ -80,7 +80,7 @@
     {
         "path": "MEMORY.md",
         "rule": "When you put the text in sections and lists",
-        "text": "For a TypeScript script, state \"Requires Node.js 22.18 or later\" in `SKILL.md` and call the script with `node`.",
+        "text": "In `SKILL.md`, state \"Requires Node.js 22.18 or later\" and call the script with `node`, not a shebang.",
         "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
     },
     {
@@ -361,12 +361,6 @@
     },
     {
         "path": "skills/writing/agent-instructions/references/plain-language-checks.md",
-        "rule": "When you put the text in sections and lists",
-        "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
-        "cause": "The path is an example of a file or folder in a project that installs the Skill."
-    },
-    {
-        "path": "skills/writing/agent-instructions/references/plain-language-checks.md",
         "rule": "When you select the text",
         "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
@@ -400,12 +394,6 @@
         "rule": "Before a step with a risk",
         "text": "Do not use the signal word WARNING.",
         "cause": "The sentence gives the word as an example or as the name of a modal verb."
-    },
-    {
-        "path": "skills/writing/agent-instructions/references/ste-rules.md",
-        "rule": "When you put the text in sections and lists",
-        "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
-        "cause": "The path is an example of a file or folder in a project that installs the Skill."
     },
     {
         "path": "skills/writing/agent-instructions/references/ste-rules.md",
@@ -454,6 +442,144 @@
         "rule": "When you put the text in sections and lists",
         "text": "If the project has a glossary, read `GLOSSARY.md` or `CONTEXT.md`, as \"Terms in this skill\" tells you.",
         "cause": "The path is a file in a project that installs the Skill."
+    },
+    {
+        "path": "docs/agents/commit-policy.md",
+        "rule": "6.2",
+        "text": "Commit policy",
+        "cause": "Commit policy is the name that the git-commit Skill gives its Policy, and the git-commit Skill reads the title `# Commit policy`."
+    },
+    {
+        "path": "docs/agents/changelog-policy.md",
+        "rule": "6.2",
+        "text": "Changelog policy",
+        "cause": "Changelog policy is the name that the common-changelog Skill gives its Policy, and the common-changelog Skill reads the title `# Changelog policy`."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Operator** is the human who controls a project and the agents that operate in it.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "The **changelog** is the file `CHANGELOG.md` of the project.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "The **caller** is the Operator or the agent that starts this Skill.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "A **Policy** is a file `docs/agents/<name>-policy.md` of a project.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Changelog policy** is the Policy of this Skill: `docs/agents/changelog-policy.md`.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "A **Setting** is one line `- <name>: <value>` of a Policy.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "A **Commit review** is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Create** job makes the changelog.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Write** job makes each change to the changelog.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Review** job examines the changelog and changes no file.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Unreleased section** is the section `## Unreleased` directly after the title `# Changelog`.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "A **release entry** is a section `## [X.Y.Z] - YYYY-MM-DD` and its groups.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "A **group** is a section `### Changed`, `### Added`, `### Removed`, or `### Fixed`.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "An **item** is one list line in a group.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "A **reference** is a link after an item to a commit, a pull request, or an issue.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Release branches** Setting gives branch prefixes.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "A **finding** is one problem that the Review job finds.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/common-changelog/SKILL.md",
+        "rule": "1.8",
+        "text": "A **conversion** is a Write job that corrects each finding in the full changelog, also in the old lines.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "MEMORY.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "For a TypeScript script, state \"Requires Node.js 22.18 or later\" in `SKILL.md` and call the script with `node`.",
+        "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/plain-language-checks.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/ste-rules.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
     },
     {
         "path": "skills/engineering/semver/SKILL.md",
@@ -532,12 +658,6 @@
         "rule": "When you put the text in sections and lists",
         "text": "The **Semver policy** is the Policy of this skill: `docs/agents/semver-policy.md`.",
         "cause": "The project that installs the Skill holds this file. Setup writes it when it is missing."
-    },
-    {
-        "path": "docs/agents/commit-policy.md",
-        "rule": "6.2",
-        "text": "Commit policy",
-        "cause": "The title is the fixed first line of the Policy file. Its Skill accepts only this title."
     },
     {
         "path": "docs/agents/semver-policy.md",

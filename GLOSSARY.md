@@ -24,7 +24,7 @@ The Operator is the human who controls a project and the agents that work in it.
 _Avoid_: user, owner, maintainer
 
 **Policy**:
-A Policy is a file `docs/agents/<name>-policy.md` of a project. It holds its title and the Settings that one Skill obeys, and no other text.
+A Policy is a file `docs/agents/<name>-policy.md` of a project. It holds only the Settings that one Skill obeys.
 _Avoid_: config, settings file
 
 **Setting**:
