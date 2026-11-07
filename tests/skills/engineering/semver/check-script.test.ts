@@ -14,9 +14,11 @@ const root = join(import.meta.dirname, "../../../..");
 const skillFolder = join(root, "skills/engineering/semver");
 const script = join(skillFolder, "scripts/check.sh");
 
-// The check container has no Git. A fake `git` first on PATH answers the 2
+// The check container has no Git. A fake `git` first on PATH answers the 3
 // Git commands of the script: `check-ref-format --branch` accepts each name
-// without `..`, and `tag --list` prints FAKE_TAGS.
+// without `..`, `tag --list` prints FAKE_TAGS, and `merge-base --is-ancestor`
+// gives exit code 0 for each "<commit> <branch>" line of FAKE_ANCESTORS, and
+// 128 for the commit `missing`.
 const fakeBin = mkdtempSync(join(tmpdir(), "semver-check-"));
 writeFileSync(
     join(fakeBin, "git"),
@@ -26,19 +28,24 @@ check-ref-format)
     case "$3" in *..*) echo "fatal: '$3' is not a valid branch name" >&2; exit 128 ;; esac
     printf '%s\\n' "$3" ;;
 tag) printf '%s' "$FAKE_TAGS" ;;
+merge-base)
+    [ "$2" = --is-ancestor ] || exit 99
+    [ "$3" = missing ] && { echo "fatal: Not a valid object name missing" >&2; exit 128; }
+    printf '%s\n' "$FAKE_ANCESTORS" | grep -qxF "$3 $4" ;;
 *) exit 99 ;;
 esac
 `,
 );
 chmodSync(join(fakeBin, "git"), 0o755);
 
-function run(args: string[], tags = "") {
+function run(args: string[], tags = "", ancestors = "") {
     const result = spawnSync("sh", [script, ...args], {
         encoding: "utf8",
         env: {
             ...process.env,
             PATH: `${fakeBin}:${process.env.PATH}`,
             FAKE_TAGS: tags,
+            FAKE_ANCESTORS: ancestors,
         },
     });
     return {
@@ -147,6 +154,39 @@ describe("check.sh release", () => {
     });
 });
 
+describe("check.sh ancestor", () => {
+    it("accepts a commit that the branch contains", () => {
+        const result = run(
+            ["ancestor", "v1.2.0", "origin/develop"],
+            "",
+            "v1.2.0 origin/develop",
+        );
+        expect(result.code).toBe(0);
+        expect(result.stdout).toMatch(
+            /^valid: origin\/develop contains v1\.2\.0/,
+        );
+    });
+
+    it("rejects a commit that the branch does not contain", () => {
+        const result = run(
+            ["ancestor", "v1.2.0", "HEAD"],
+            "",
+            "v1.2.0 origin/develop",
+        );
+        expect(result.code).toBe(1);
+        expect(result.stdout).toMatch(
+            /^invalid: HEAD does not contain v1\.2\.0/,
+        );
+    });
+
+    it("exits 2 when Git cannot find the commit", () => {
+        const result = run(["ancestor", "missing", "HEAD"]);
+        expect(result.code).toBe(2);
+        expect(result.stdout).toBe("");
+        expect(result.stderr).toMatch(/merge-base/);
+    });
+});
+
 describe("check.sh usage", () => {
     it.each([
         [[]],
@@ -154,6 +194,7 @@ describe("check.sh usage", () => {
         [["version"]],
         [["release", "1.2.3"]],
         [["release", "1.2.3", "x"]],
+        [["ancestor", "abc"]],
     ])("exits 2 for %j", (args) => {
         const result = run(args);
         expect(result.code).toBe(2);

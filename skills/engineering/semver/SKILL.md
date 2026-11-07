@@ -47,7 +47,7 @@ Do these steps before each of the 4 jobs.
 | Hotfix branches | `on` or `off`. | `on` |
 | Tag prefix | `v` or `none`. | `v` |
 | Development merge | `merge commit` or `squash`. | `squash` |
-| Production merge | `merge commit` or `squash`. | `merge commit` |
+| Production merge | `merge commit` or `squash`. CAUTION: `squash` makes the release commits not ancestors of the Production branch. Then Back-merges can have conflicts. | `merge commit` |
 | Finish mode | `pull request` or `local`. | `pull request` |
 | Tag and back-merge | `CI` or `Skill`. | `CI` |
 | Back-merge conflicts | `confirm`, `automatic`, or `report`. | `confirm` |
@@ -99,19 +99,21 @@ The default Semver policy has the title, a blank line, and one Setting for each 
 
 ## When you run the check script
 
-The check script `scripts/check.sh` is in the folder of this `SKILL.md` file. It requires `sh` and Git. Run it in the project folder with `sh`, in one of these 3 forms:
+The check script `scripts/check.sh` is in the folder of this `SKILL.md` file. It requires `sh` and Git. Run it in the project folder with `sh`, in one of these 4 forms:
 
 ```sh
 sh <skill folder>/scripts/check.sh version <version>
 sh <skill folder>/scripts/check.sh branch <branch name>
 sh <skill folder>/scripts/check.sh release <version> <Tag prefix>
+sh <skill folder>/scripts/check.sh ancestor <commit> <branch>
 ```
 
 - Replace `<skill folder>` with the absolute path of the folder of this `SKILL.md` file.
 - The `version` form examines the Semantic Versioning 2.0.0 syntax. It accepts a pre-release part and a build part.
 - The `branch` form examines the name of a `feature/*`, `bugfix/*`, `release/*`, or `hotfix/*` branch.
 - The `release` form examines a version for a new release: `X.Y.Z`, and higher than the last release tag. Give the value of the Setting `Tag prefix`: `v` or `none`.
-- The script gives one line. `valid:` with exit code 0 shows a correct version or name. `invalid:` with exit code 1 gives the cause of the problem.
+- The `ancestor` form examines if the branch contains the commit. Give a commit, a tag, or `HEAD` as `<commit>`, and a local or `origin` branch, or `HEAD`, as `<branch>`.
+- The script gives one line. `valid:` with exit code 0 shows a correct version or name, or a branch that contains the commit. `invalid:` with exit code 1 gives the cause of the problem.
 - Exit code 2 shows that the script did not run. Then stop, and give the error message in the report.
 
 ## When you check a version or a branch name

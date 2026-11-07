@@ -168,7 +168,7 @@ The Setting `Back-merge conflicts` tells how Finish handles a Back-merge with a 
 
 1. For `report`, stop. Do not make a branch. In the report, give each file with a conflict, the tag, and the replaced pull request with its number and URL. Tell the Operator to correct the conflict, or to set `Back-merge conflicts` to `confirm` or `automatic`.
 2. For `confirm` and `automatic`, the resolution branch is `bugfix/back-merge-v<version>`, for example `bugfix/back-merge-v1.2.1`. The name has the letter `v` also when `Tag prefix` is `none`.
-3. If the resolution branch exists, local or on `origin`, an earlier Finish run made it. Run `git switch <resolution branch>`. If `git merge-base --is-ancestor <tag> HEAD` gives exit code 0, go to step 9. If not, stop. In the report, give the resolution branch, and tell that it does not contain the tag.
+3. If the resolution branch exists, local or on `origin`, an earlier Finish run made it. Run `git switch <resolution branch>`. If the `ancestor` form of the check script gives `valid:` for `<tag> HEAD`, go to step 9. If not, stop. In the report, give the resolution branch, and tell that it does not contain the tag.
 4. Run `git switch -c <resolution branch> <base>`. In local mode, the base is the local Development branch. In `pull request` mode, the base is `origin/<development>`.
 5. Find the message, as "When you write a merge message" tells you. Run `git merge --no-ff <tag>` with `--no-edit` or `-m '<message>'`. The merge gets the same conflict.
 6. Correct each file with a conflict. Read the two sides of each conflict, and edit the file so that it keeps the changes of the two sides. Do not use `-X ours`, `-X theirs`, `git checkout --ours`, or `git checkout --theirs`, because they remove the changes of one side.
@@ -239,7 +239,7 @@ In `pull request` mode, the host merges each pull request. After the merge, a ne
 
 The merge commit is the commit on the Production branch that gets the tag. In `pull request` mode, it is the `mergeCommit` of the MERGED pull request. The merge of the tag into a tag target exists when one of these conditions is true:
 
-- `git merge-base --is-ancestor <merge commit> origin/<tag target>` gives exit code 0.
+- The `ancestor` form of the check script gives `valid:` for `<merge commit> origin/<tag target>`.
 - An OPEN pull request from the Production branch into the tag target exists, and its `mergeable` value is not `CONFLICTING`. Find it with `gh pr list --head <production> --base <tag target> --state open --json number,mergeable,url`.
 - The tag target is the Development branch, and an OPEN pull request from the resolution branch `bugfix/back-merge-v<version>` into the Development branch exists. Find it with `gh pr list --head bugfix/back-merge-v<version> --base <development> --state open --json number,url`.
 
@@ -257,7 +257,7 @@ A CI job of the project makes the tag and opens the pull request of the Back-mer
 
 ## When Tag and back-merge is Skill
 
-1. Run `git merge-base --is-ancestor <merge commit> origin/<production>`. If the exit code is not 0, stop. In the report, tell that `origin/<production>` does not contain the merge commit.
+1. Run the `ancestor` form of the check script for `<merge commit> origin/<production>`. If it does not give `valid:`, stop. In the report, tell that `origin/<production>` does not contain the merge commit.
 2. Run `git rev-parse --verify --quiet 'refs/tags/<tag>^{commit}'`. If the tag exists, do not make it again. Do not move or delete a tag. A released version does not change.
 3. If the tag is missing, run `git tag <tag> <merge commit>`.
 4. Then run `git push origin <tag>`.
@@ -293,7 +293,7 @@ Do this section at the end of each Finish that did not stop, in the two modes. I
 A branch passes the test only when each of these steps gives a pass. The commit of the branch is the commit of the local branch or of the `origin` branch that you examine.
 
 1. In `pull request` mode, run `gh pr list --head <branch> --state merged --json number,headRefOid,mergeCommit`. The branch passes this step only when a MERGED pull request has the commit of the branch as its `headRefOid`. Then the pull request has all the commits of the branch.
-2. In `local` mode, find the target of the branch type, as "When you find the targets" tells you. The branch passes this step only when `git merge-base --is-ancestor <commit> <target>` gives exit code 0.
+2. In `local` mode, find the target of the branch type, as "When you find the targets" tells you. The branch passes this step only when the `ancestor` form of the check script gives `valid:` for `<commit> <target>`.
 3. For a `release/X.Y.Z` branch, the tag `<Tag prefix>X.Y.Z` must exist.
 4. For a `hotfix/*` branch in `pull request` mode, a tag `<Tag prefix>X.Y.Z` must be on the `mergeCommit` of its pull request. Find it with `git tag --points-at <merge commit>`.
 5. For a `hotfix/*` branch in `local` mode, a tag `<Tag prefix>X.Y.Z` must contain the commit of the branch. Find it with `git tag --contains <commit>`.
