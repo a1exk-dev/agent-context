@@ -1,6 +1,6 @@
 # Links
 
-The Write job and the Review job use these URL forms. This skill knows 3 hosts: GitHub, GitLab, and Bitbucket Cloud. Each other host is an unknown host, for example Gitea, Forgejo, and Codeberg.
+The Write job and the Review job use these URL forms. This Skill knows 3 hosts: GitHub, GitLab, and Bitbucket Cloud. Each other host is an unknown host, for example Gitea, Forgejo, and Codeberg.
 
 ## When you use a URL form
 
@@ -11,12 +11,12 @@ The Write job and the Review job use these URL forms. This skill knows 3 hosts: 
 ## When you find the host
 
 1. If `Host` is `none`, do not run `git remote`. Write no reference and no version link. Ask no question about links. Write each release heading with no brackets, for example `## 1.3.0 - 2026-10-01`.
-2. Run `git remote get-url origin`. Use only the remote `origin`. If the command gives an error, the project has no remote, also when it has a different remote.
+2. Run `git remote get-url origin`. Use only the remote `origin`, because a different remote can be a fork or a mirror with a different URL. If the command gives an error, the project has no remote `origin`. Do the steps for no remote, also when the project has a different remote.
 3. Find the hostname and the path in the URL. The URL has one of these forms:
    - `https://<hostname>/<path>`, for example `https://bitbucket.org/example/demo.git`.
    - `ssh://<user>@<hostname>:<port>/<path>`, for example `ssh://git@ssh.github.com:443/example/demo.git`.
    - `<user>@<hostname>:<path>`, for example `git@gitlab.com:grp/sub/demo.git`. This form has no `/` before the first `:`.
-4. Remove the user part and the port. From the path, remove a `/` at the start or at the end, and one `.git` at the end. Keep each level of the path. For example, `git@gitlab.com:grp/sub/demo.git` gives the hostname `gitlab.com` and the path `grp/sub/demo`.
+4. Remove the part before `@` and the port. From the path, remove a `/` at the start or at the end, and one `.git` at the end. Keep each level of the path. For example, `git@gitlab.com:grp/sub/demo.git` gives the hostname `gitlab.com` and the path `grp/sub/demo`.
 5. Change the hostname `ssh.github.com` to `github.com`. Change the hostname `ssh.bitbucket.org` to `bitbucket.org`.
 6. The base URL is `https://<hostname>/<path>`.
 7. When `Host` is `github`, `gitlab`, or `bitbucket`, use the URL forms of that host, also for a different hostname. For example, `Host: gitlab` with the base URL `https://github.com/example/demo` gives the GitLab forms.
@@ -38,7 +38,7 @@ Do these steps only in a Write job that writes a reference or a version link. Th
 3. When the Operator selects `No references`, change the line to `- Host: none`. Then do step 1 of "When you find the host".
 4. When the Operator selects `Stop`, stop and do not change a file.
 5. Do not stage or commit the change to the Changelog policy. In the report, give the changed line.
-6. If there is no Operator, do not change the Changelog policy. Write the items with no references, and write no version link. Write each release heading with no brackets. In the report, give the cause:
+6. If there is no Operator, do not change the Changelog policy. Write the items with no references. Write no version link. Write each release heading with no brackets. In the report, give the cause:
    - For an unknown host, give the hostname. Tell the Operator that the `Host` Setting gives the URL forms of a host, for example `- Host: gitlab`.
    - For no remote, tell that the project has no remote `origin`.
 
@@ -57,7 +57,7 @@ Write each link after the base URL in these forms:
 - The text of a commit link is the short SHA in a code span, for example `` [`3f2a9c1`](https://github.com/example/demo/commit/3f2a9c1) ``.
 - On GitLab, a merge request is the pull request. Its text is `!<n>`, for example `[!6](https://gitlab.com/grp/sub/demo/-/merge_requests/6)`, also when the caller says "pull request #6".
 - On Bitbucket Cloud, both values of `Version links` give the tag view `/commits/tag/<tag>`. Do not write a compare URL for Bitbucket Cloud.
-- `<tag>` is the exact Git tag, for example `v1.3.0`. Put each link definition at the bottom of the file, with the latest version first.
+- `<tag>` is the exact Git tag, for example `v1.3.0`. Put each link definition at the bottom of the changelog, with the latest version first.
 
 Each host writes a different message in the merge commit of a pull request. Use this message to find the merge commit and the number of a pull request:
 
@@ -74,16 +74,16 @@ Do these steps only when the URL forms are the Bitbucket Cloud forms and the `Re
 1. Find a Jira key in the branch name and in the commit messages of the change. A Jira key has the form `[A-Z][A-Z0-9]+-\d+`, for example `APP-42` in `feature/APP-42-login`.
 2. If you find no Jira key, write no issue reference.
 3. If the session has a Jira MCP tool, get the URL of the issue from that tool.
-4. Else, ask the Operator for the URL of the issue, with the option `Skip`. Tell the Operator that a Jira MCP server removes this question.
+4. Else, ask the Operator for the URL of the issue. Give `Skip` as an option of that question. Tell the Operator that a Jira MCP server removes this question.
 5. If the Operator selects `Skip`, or there is no Operator, write no issue reference.
-6. Write the reference as `([APP-42](<URL>))`. Do not write the Jira site URL in the Changelog policy.
+6. Write the reference as `([APP-42](<URL>))`. Do not write the Jira site URL in the Changelog policy, because the Changelog policy has no Setting for it.
 
 ## When you review links
 
 Do these steps in the Review job. Use the host that "When you find the host" gives. Do not ask a question.
 
-1. When the host is known, each link in a different URL form is a finding with the severity `error` and §2.4.2. A known host is a host of GitHub, GitLab, or Bitbucket Cloud, or a host that the `Host` Setting gives. The fix gives the correct form, for example `/commit/<sha>`.
-2. When `Host` is `auto` and the host is unknown, or the project has no remote, do not examine the URL forms. Each item with no reference is one finding with the severity `warning` and §2.4.2, also in a release entry.
+1. When the host is known, give a finding for each link in a different URL form, with the severity `error` and §2.4.2. A known host is a host of GitHub, GitLab, or Bitbucket Cloud, or a host that the `Host` Setting gives. The fix gives the correct form, for example `/commit/<sha>`.
+2. When `Host` is `auto` and the host is unknown, or the project has no remote, do not examine the URL forms. Give one finding for each item with no reference, also in a release entry. Give it the severity `warning` and §2.4.2.
 3. When `Host` is `none`, make no finding about a missing reference or a missing version link. A release heading with no brackets is correct.
-4. For each value of `Host`, a reference that is not a Markdown link is a finding of §2.4.2, for example `(#6)` with no URL.
-5. A missing Jira issue reference is not a finding.
+4. For each value of `Host`, give a finding of §2.4.2 for each reference that is not a Markdown link, for example `(#6)` with no URL.
+5. Make no finding about a missing Jira issue reference.
