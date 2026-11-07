@@ -26,6 +26,8 @@ export type Commit = {
 // commit, with tags peeled. `trees` maps each commit of these refs to its
 // files and blobs. `status` has the lines of `git status --porcelain
 // --untracked-files=all`, and `staged` the paths of the index changes.
+// `markers` has `<commit>:<path>` for each file of a ref commit with a
+// conflict marker line.
 export type GitState = {
     head: string;
     refs: Record<string, string>;
@@ -35,6 +37,7 @@ export type GitState = {
     status: string[];
     staged: string[];
     policy: string | null;
+    markers: string[];
 };
 
 // The raw output of each git command of a snapshot.
@@ -47,6 +50,7 @@ export type RawGitState = {
     status: string;
     staged: string;
     policy: string | null;
+    markers: string;
 };
 
 const lines = (text: string) => text.split("\n").filter(Boolean);
@@ -126,6 +130,7 @@ export function parseGitState(
         status: lines(raw.status),
         staged: lines(raw.staged),
         policy: raw.policy,
+        markers: lines(raw.markers),
     };
 }
 
@@ -180,6 +185,7 @@ export function renderGitState(state: GitState): string {
         ["git status --porcelain", block(state.status)],
         ["git diff --cached --name-only", block(state.staged)],
         [POLICY, state.policy ?? "(missing)\n"],
+        ["Conflict markers in ref files", block(state.markers)],
     ];
     return sections.map(([title, text]) => `## ${title}\n\n${text}`).join("\n");
 }
@@ -214,11 +220,19 @@ export function collectGitState(work: string): GitState {
         status: git(work, ["status", "--porcelain", "--untracked-files=all"]),
         staged: git(work, ["diff", "--cached", "--name-only"]),
         policy: existsSync(policy) ? readFileSync(policy, "utf8") : null,
+        markers: "",
     };
     const state = parseGitState(raw, {});
     const tips = new Set([
         ...Object.values(state.refs),
         ...Object.values(state.origin),
+    ]);
+    raw.markers = git(work, [
+        "grep",
+        "-l",
+        "-E",
+        "^(<<<<<<<|>>>>>>>)( |$)",
+        ...tips,
     ]);
     const trees = Object.fromEntries(
         [...tips].map((sha) => [sha, git(work, ["ls-tree", "-r", sha])]),

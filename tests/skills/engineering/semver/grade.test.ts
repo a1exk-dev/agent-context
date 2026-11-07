@@ -67,6 +67,7 @@ function state(fields: Partial<GitState> = {}): GitState {
         status: [],
         staged: [],
         policy: POLICY,
+        markers: [],
         ...fields,
     };
 }
@@ -328,6 +329,37 @@ describe("V4 safeHistory", () => {
             check("safeHistory", run({ before, after: tagged(Y), prsAfter })),
         ).toBe(true);
     });
+    it("accepts the tag of an earlier run and a resolution pull request for a hotfix", () => {
+        const refs = heads({ main: Y, develop: S, "v1.2.0": S, "v1.2.1": Y });
+        const commits = [start, commit(X, [S]), commit(Y, [S, X])];
+        const before = state({
+            refs: { ...refs, "refs/heads/hotfix/login": X },
+            origin: { ...refs, "refs/heads/hotfix/login": X },
+            commits,
+        });
+        const after = state({ refs, origin: refs, commits });
+        const hotfixPr = pr({
+            headRefName: "hotfix/login",
+            baseRefName: "main",
+            mergeCommit: { oid: Y },
+        });
+        const resolution = pr({
+            number: 2,
+            state: "OPEN",
+            headRefName: "bugfix/back-merge-v1.2.1",
+            headRefOid: Z,
+        });
+        expect(
+            check(
+                "safeHistory",
+                run({ before, after, prsAfter: [hotfixPr, resolution] }),
+            ),
+        ).toBe(true);
+        expect(
+            check("safeHistory", run({ before, after, prsAfter: [hotfixPr] })),
+        ).toBe(false);
+    });
+
     it("passes for a deleted branch that a new squash commit of its target holds", () => {
         const before = state({
             refs: heads({ main: S, develop: S, "v1.2.0": S, "feature/a": Y }),
@@ -581,6 +613,29 @@ describe("Finish checks", () => {
         ).toBe(false);
     });
 
+    it("mergedWith takes the first parent from `first` for a new branch", () => {
+        const after = state({
+            refs: heads({ main: S, develop: S, "v1.2.0": S, "bugfix/x": B }),
+            commits: [start, message(B, [S, X], "Merge tag")],
+        });
+        const value = run({ before, after });
+        const args = { target: "bugfix/x", second: "release/1.3.0" };
+        expect(check("mergedWith", value, { ...args, first: "develop" })).toBe(
+            true,
+        );
+        expect(check("mergedWith", value, args)).toBe(false);
+    });
+
+    it("noConflictMarkers fails for a ref file with a conflict marker", () => {
+        expect(check("noConflictMarkers", run())).toBe(true);
+        expect(
+            check(
+                "noConflictMarkers",
+                run({ after: state({ markers: [`${X}:src/login.ts`] }) }),
+            ),
+        ).toBe(false);
+    });
+
     it("mergedWith fails for a fast-forward or a squash", () => {
         const after = finished({
             refs: heads({ main: X, develop: B, "v1.2.0": S, "v1.3.0": X }),
@@ -777,6 +832,54 @@ describe("pull request mode checks", () => {
                 }),
             ),
         ).toBe(false);
+    });
+
+    it("noNewBranch fails for a new branch with the prefix, local or on origin", () => {
+        const args = { prefix: "bugfix/back-merge-" };
+        const made = (place: "refs" | "origin") =>
+            run({
+                after: state({
+                    [place]: heads({ main: S, "bugfix/back-merge-v1.2.1": S }),
+                }),
+            });
+        expect(check("noNewBranch", run(), args)).toBe(true);
+        expect(check("noNewBranch", made("refs"), args)).toBe(false);
+        expect(check("noNewBranch", made("origin"), args)).toBe(false);
+    });
+
+    it("branchWhere examines the local branch and the origin branch at the end", () => {
+        const after = state({
+            refs: heads({ main: S, "bugfix/x": S }),
+            origin: heads({ main: S }),
+        });
+        const value = run({ after });
+        expect(
+            check("branchWhere", value, {
+                branch: "bugfix/x",
+                local: true,
+                origin: false,
+            }),
+        ).toBe(true);
+        expect(
+            check("branchWhere", value, {
+                branch: "bugfix/x",
+                local: true,
+                origin: true,
+            }),
+        ).toBe(false);
+    });
+
+    it("prState passes when the pull request has the state at the end", () => {
+        const value = run({ prsAfter: [{ ...open, state: "CLOSED" }] });
+        expect(check("prState", value, { number: 2, state: "CLOSED" })).toBe(
+            true,
+        );
+        expect(check("prState", value, { number: 2, state: "OPEN" })).toBe(
+            false,
+        );
+        expect(check("prState", value, { number: 3, state: "CLOSED" })).toBe(
+            false,
+        );
     });
 
     it("branchesKept fails when a branch is gone or moved, local or on origin", () => {

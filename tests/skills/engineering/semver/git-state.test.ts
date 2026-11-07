@@ -43,6 +43,7 @@ const raw = {
     status: " M src/a.ts\n?? docs/agents/semver-policy.md\n",
     staged: "src/a.ts\n",
     policy: "# Semver policy\n",
+    markers: `${B}:src/a.ts\n`,
 };
 
 const trees = {
@@ -110,6 +111,13 @@ describe("parseGitState", () => {
         expect(state.policy).toBe("# Semver policy\n");
     });
 
+    it("gives each ref file with a conflict marker, and none without output", () => {
+        expect(state.markers).toEqual([`${B}:src/a.ts`]);
+        expect(parseGitState({ ...raw, markers: "" }, trees).markers).toEqual(
+            [],
+        );
+    });
+
     it("gives a detached HEAD as its commit and a missing policy as null", () => {
         const detached = parseGitState(
             { ...raw, head: "", headCommit: `${A}\n`, policy: null },
@@ -142,6 +150,9 @@ describe("renderGitState", () => {
         expect(text).toContain("## git status --porcelain\n\n M src/a.ts");
         expect(text).toContain(
             "## docs/agents/semver-policy.md\n\n# Semver policy",
+        );
+        expect(text).toContain(
+            `## Conflict markers in ref files\n\n${B}:src/a.ts`,
         );
     });
 });

@@ -38,6 +38,7 @@ Do these steps before each of the 4 jobs.
 2. Run `cat -n docs/agents/semver-policy.md` to read the Semver policy and its line numbers.
 3. If the file is not there, do the setup in the section "When the Semver policy is not there" of `references/policy-setup.md`.
 4. If the file is there, examine each line as `references/policy-setup.md` tells you. If a Setting has no line, add it as `references/policy-setup.md` tells you.
+5. Find each open Back-merge pull request with a conflict. Do the steps in "When you find a Back-merge pull request with a conflict".
 
 | Setting | Values | Default |
 |---|---|---|
@@ -138,6 +139,16 @@ Pick does not find deprecations. When the caller asks how to mark a deprecation,
 7. Run `git switch -c release/<version> <base>` to make the branch and check it out.
 8. Do not push the new branch.
 
+## When you find a Back-merge pull request with a conflict
+
+Do these steps in each job, Check too, so that the Operator learns about the conflict. Do them only when the project has a Development branch and an `origin` remote. You must also have a tool for the host, for example `gh` for GitHub. Do not install or set up a host tool for these steps.
+
+1. Run `gh pr list --base <development> --state open --json number,headRefName,mergeable,url`, or the command of your host tool that does the same work.
+2. A Back-merge pull request has the head `<production>` or a branch `bugfix/back-merge-v<version>`. Record each Back-merge pull request with the `mergeable` value `CONFLICTING` for the report.
+3. If the command gives an error, continue the job, and give the error in the report.
+
+These steps change nothing. Finish resolves the conflict as the Setting `Back-merge conflicts` tells you.
+
 ## When you finish a branch
 
 Before Finish, read `references/finish.md` in the folder of this skill. Then do its steps. Finish is the only job that asks for approval, because it changes the long-lived branches and `origin`.
@@ -149,3 +160,5 @@ Ask with the question tool of the platform. If the platform has no question tool
 ## When you write the report
 
 Give the result of the job. For Pick, give the items that `references/pick.md` tells you to give. For Start, give the new branch, its base branch, and the short SHA of the commit where the new branch starts. Also tell that the new branch is not pushed. For Finish, give the items that `references/finish.md` tells you to give. When you stop, give the cause and what the job needs to continue.
+
+In each job, also give each open Back-merge pull request with a conflict, with its number and URL. Tell the Operator that Finish of the release or the hotfix of that version handles the conflict.
