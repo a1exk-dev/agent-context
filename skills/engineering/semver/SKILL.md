@@ -25,7 +25,7 @@ This skill gives versions by Semantic Versioning 2.0.0 and makes branches by Git
 
 ## Which jobs this version of the skill does
 
-This version of the skill does Check, and Start for `feature/*`, `bugfix/*`, and `hotfix/*` branches. For Start of a `release/*` branch, it only examines the version that the request gives. For each other job, stop before you change the repository. In the report, tell the caller that this version of the skill cannot do that job yet.
+This version of the skill does Pick, Check, and Start. For Finish, stop before you change the repository. In the report, tell the caller that this version of the skill cannot do Finish yet.
 
 ## Rules for each job
 
@@ -84,7 +84,8 @@ The default Semver policy has the title, a blank line, and one Setting for each 
 ## When you start a feature, bugfix, or hotfix branch
 
 1. Find the branch type from the request: `feature`, `bugfix`, or `hotfix`.
-2. Find the base branch in this table:
+2. If the branch type is `hotfix` and the Setting `Hotfix branches` is `off`, stop. In the report, give the Setting `Hotfix branches: off`. The project then ships its changes only through `release/*` branches.
+3. Find the base branch in this table:
 
    | Branch type | Base branch |
    |---|---|
@@ -92,12 +93,12 @@ The default Semver policy has the title, a blank line, and one Setting for each 
    | `bugfix` | The Development branch. When `Development branch` is `none`, the Production branch. |
    | `hotfix` | The Production branch. |
 
-3. Make sure that the base branch exists: `git rev-parse --verify --quiet refs/heads/<base>`. If the local branch is not there, use `origin/<base>` when it exists. If the two are not there, stop and give the name of the base branch in the report.
-4. Find the name part from the request, in lowercase words with hyphens. For example, "Start a feature branch for search" gives `feature/search`. A hotfix name has no version, because a hotfix gets its version only at Finish.
-5. If the request gives no subject for the name, ask the caller for the name. If no person can answer, stop.
-6. Make sure that `git check-ref-format --branch <type>/<name>` accepts the full name. Also make sure that no local branch and no `origin` branch has that name. If one of these checks fails, stop and give the cause in the report.
-7. Run `git switch -c <type>/<name> <base>` to make the branch and check it out.
-8. Do not push the new branch. The new branch stays local until work starts on it.
+4. Make sure that the base branch exists: `git rev-parse --verify --quiet refs/heads/<base>`. If the local branch is not there, use `origin/<base>` when it exists. If the two are not there, stop and give the name of the base branch in the report.
+5. Find the name part from the request, in lowercase words with hyphens. For example, "Start a feature branch for search" gives `feature/search`. A hotfix name has no version, because a hotfix gets its version only at Finish.
+6. If the request gives no subject for the name, ask the caller for the name. If no person can answer, stop.
+7. Make sure that `git check-ref-format --branch <type>/<name>` accepts the full name. Also make sure that no local branch and no `origin` branch has that name. If one of these checks fails, stop and give the cause in the report.
+8. Run `git switch -c <type>/<name> <base>` to make the branch and check it out.
+9. Do not push the new branch. The new branch stays local until work starts on it.
 
 ## When you run the check script
 
@@ -124,11 +125,22 @@ sh <skill folder>/scripts/check.sh release <version> <Tag prefix>
 4. Do not change the repository.
 5. In the report, give each version and branch name, and tell if it is correct. For each name or version that is not correct, give the cause from the script.
 
-## When the request gives the version of a new release branch
+## When you pick the next version
 
-1. Run the `release` form of the check script with that version and the Setting `Tag prefix`.
-2. If the script gives `invalid:`, stop. In the report, give the cause from the script.
-3. If the script gives `valid:`, stop. In the report, tell the caller that this version of the skill cannot start a release branch yet.
+Before Pick, read `references/pick.md` in the folder of this skill. Then do its steps. Pick changes nothing. Pick asks no question, except when Start of a `release/*` branch uses Pick.
+
+Pick does not find deprecations. When the caller asks how to mark a deprecation, tell the caller to make it on a `feature/*` branch. With `Development merge: squash`, tell the caller to make it in a `feat` commit. Then Pick gives minor, as Semantic Versioning 2.0.0 rule 7 tells.
+
+## When you start a release branch
+
+1. Find each `release/*` branch, local and on `origin`: `git branch --all --list 'release/*' '*/release/*'`.
+2. A `release/X.Y.Z` branch is open when no tag `<Tag prefix>X.Y.Z` exists. If a `release/*` branch is open, stop. In the report, give the name of that branch. Only one release at a time gets ready, so that two releases do not compete for the same version.
+3. If the request gives the version, use that version. If not, before you find the version, read `references/pick.md` in the folder of this skill. Then do its steps to pick the version. These steps can ask the Operator for the version.
+4. Run the `release` form of the check script with the version and the Setting `Tag prefix`.
+5. If the script gives `invalid:`, stop. In the report, give the cause from the script.
+6. The base branch is the Development branch. When `Development branch` is `none`, the base branch is the Production branch. Make sure that the base branch exists, as step 4 of "When you start a feature, bugfix, or hotfix branch" tells you.
+7. Run `git switch -c release/<version> <base>` to make the branch and check it out.
+8. Do not push the new branch.
 
 ## When you ask a question
 
@@ -136,4 +148,4 @@ Ask with the question tool of the platform. If the platform has no question tool
 
 ## When you write the report
 
-Give the result of the job. For Start, give the new branch, its base branch, and the short SHA of the commit where the new branch starts. Also tell that the new branch is not pushed. When you stop, give the cause and what the job needs to continue.
+Give the result of the job. For Pick, give the items that `references/pick.md` tells you to give. For Start, give the new branch, its base branch, and the short SHA of the commit where the new branch starts. Also tell that the new branch is not pushed. When you stop, give the cause and what the job needs to continue.
