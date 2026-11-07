@@ -426,6 +426,75 @@ describe("branchStarted, noVersionInName, and originUnchanged", () => {
     });
 });
 
+describe("stopped, policyFile, policyUnchanged, and reportNames", () => {
+    it("passes a stop with no ref, HEAD, or gh write change", () => {
+        expect(
+            check(
+                "stopped",
+                run({ ghCalls: [["pr", "list", "--json", "number"]] }),
+            ),
+        ).toBe(true);
+    });
+
+    it("fails a stop with a new branch, another HEAD, a push, or a gh write", () => {
+        const branch = state({
+            refs: { ...state().refs, "refs/heads/feature/x": S },
+        });
+        const pushed = state({
+            origin: { ...state().origin, "refs/heads/feature/x": S },
+        });
+        expect(check("stopped", run({ after: branch }))).toBe(false);
+        expect(
+            check("stopped", run({ after: state({ head: "develop" }) })),
+        ).toBe(false);
+        expect(check("stopped", run({ after: pushed }))).toBe(false);
+        expect(
+            check(
+                "stopped",
+                run({ ghCalls: [["pr", "create", "--base", "develop"]] }),
+            ),
+        ).toBe(false);
+    });
+
+    it("compares the policy file with the expected text and its staged state", () => {
+        expect(check("policyFile", run(), { text: POLICY })).toBe(true);
+        expect(
+            check("policyFile", run(), {
+                text: POLICY.replace("main", "master"),
+            }),
+        ).toBe(false);
+        const staged = state({ staged: ["docs/agents/semver-policy.md"] });
+        expect(
+            check("policyFile", run({ after: staged }), { text: POLICY }),
+        ).toBe(false);
+        const missing = run({ after: state({ policy: null }) });
+        expect(check("policyFile", missing, { text: null })).toBe(true);
+        expect(check("policyFile", run(), { text: null })).toBe(false);
+    });
+
+    it("ignores blank lines at the end of the policy file", () => {
+        const after = state({ policy: `${POLICY}\n` });
+        expect(check("policyFile", run({ after }), { text: POLICY })).toBe(
+            true,
+        );
+    });
+
+    it("finds a changed policy file", () => {
+        expect(check("policyUnchanged", run())).toBe(true);
+        const after = state({ policy: `${POLICY}- Hotfix branches: on\n` });
+        expect(check("policyUnchanged", run({ after }))).toBe(false);
+    });
+
+    it("finds each word in the report, in any case", () => {
+        const args = { words: ["Tag prefix", "use the default semver policy"] };
+        const report = "Give `tag prefix` or Use the default semver policy.";
+        expect(check("reportNames", run({ report }), args)).toBe(true);
+        expect(check("reportNames", run({ report: "Tag prefix" }), args)).toBe(
+            false,
+        );
+    });
+});
+
 // Saves a run folder as run-evals.ts saves it.
 function runFolder(
     statements: object[],

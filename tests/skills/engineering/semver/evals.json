@@ -49,7 +49,10 @@
                     "text": "There is exactly one new local branch. Its name is `feature/<name>`, it points at the commit of `develop`, and it is checked out.",
                     "grader": "script",
                     "check": "branchStarted",
-                    "args": { "prefix": "feature/", "base": "develop" }
+                    "args": {
+                        "prefix": "feature/",
+                        "base": "develop"
+                    }
                 },
                 {
                     "id": "17.2",
@@ -75,7 +78,10 @@
                     "text": "There is exactly one new local branch. Its name is `bugfix/<name>`, it points at the commit of `main`, and it is checked out.",
                     "grader": "script",
                     "check": "branchStarted",
-                    "args": { "prefix": "bugfix/", "base": "main" }
+                    "args": {
+                        "prefix": "bugfix/",
+                        "base": "main"
+                    }
                 },
                 {
                     "id": "18.2",
@@ -98,20 +104,448 @@
                     "text": "There is exactly one new local branch. Its name is `hotfix/<name>`, it points at the commit of `main`, and it is checked out.",
                     "grader": "script",
                     "check": "branchStarted",
-                    "args": { "prefix": "hotfix/", "base": "main" }
+                    "args": {
+                        "prefix": "hotfix/",
+                        "base": "main"
+                    }
                 },
                 {
                     "id": "21.2",
                     "text": "The name of the new `hotfix/*` branch has no version.",
                     "grader": "script",
                     "check": "noVersionInName",
-                    "args": { "prefix": "hotfix/" }
+                    "args": {
+                        "prefix": "hotfix/"
+                    }
                 },
                 {
                     "id": "21.3",
                     "text": "The new branch is not pushed: the refs of `origin` are unchanged.",
                     "grader": "script",
                     "check": "originUnchanged"
+                }
+            ]
+        },
+        {
+            "id": 39,
+            "name": "39-no-policy-pick",
+            "prompt": "What is the next version?",
+            "setup": {
+                "remove": ["docs"]
+            },
+            "assertions": [
+                {
+                    "id": "39.1",
+                    "text": "No policy file exists after the run.",
+                    "grader": "script",
+                    "check": "policyFile",
+                    "args": {
+                        "text": null
+                    }
+                },
+                {
+                    "id": "39.2",
+                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
+                    "grader": "script",
+                    "check": "stopped"
+                },
+                {
+                    "id": "39.3",
+                    "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": [
+                            "Production branch",
+                            "Development branch",
+                            "Hotfix branches",
+                            "Tag prefix",
+                            "Development merge",
+                            "Production merge",
+                            "Finish mode",
+                            "Tag and back-merge",
+                            "Back-merge conflicts",
+                            "Development auto-merge",
+                            "Production auto-merge",
+                            "Finish approval",
+                            "Breaking before 1.0.0",
+                            "Breaking definition",
+                            "use the default semver policy"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 40,
+            "name": "40-no-policy-check",
+            "prompt": "Is 1.3.0 a valid version?",
+            "setup": {
+                "remove": ["docs"]
+            },
+            "assertions": [
+                {
+                    "id": "40.1",
+                    "text": "No policy file exists after the run.",
+                    "grader": "script",
+                    "check": "policyFile",
+                    "args": {
+                        "text": null
+                    }
+                },
+                {
+                    "id": "40.2",
+                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
+                    "grader": "script",
+                    "check": "stopped"
+                },
+                {
+                    "id": "40.3",
+                    "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": [
+                            "Production branch",
+                            "Development branch",
+                            "Hotfix branches",
+                            "Tag prefix",
+                            "Development merge",
+                            "Production merge",
+                            "Finish mode",
+                            "Tag and back-merge",
+                            "Back-merge conflicts",
+                            "Development auto-merge",
+                            "Production auto-merge",
+                            "Finish approval",
+                            "Breaking before 1.0.0",
+                            "Breaking definition",
+                            "use the default semver policy"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 41,
+            "name": "41-no-policy-start",
+            "prompt": "Start a feature branch for search.",
+            "setup": {
+                "remove": ["docs"]
+            },
+            "assertions": [
+                {
+                    "id": "41.1",
+                    "text": "No policy file exists after the run.",
+                    "grader": "script",
+                    "check": "policyFile",
+                    "args": {
+                        "text": null
+                    }
+                },
+                {
+                    "id": "41.2",
+                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
+                    "grader": "script",
+                    "check": "stopped"
+                },
+                {
+                    "id": "41.3",
+                    "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": [
+                            "Production branch",
+                            "Development branch",
+                            "Hotfix branches",
+                            "Tag prefix",
+                            "Development merge",
+                            "Production merge",
+                            "Finish mode",
+                            "Tag and back-merge",
+                            "Back-merge conflicts",
+                            "Development auto-merge",
+                            "Production auto-merge",
+                            "Finish approval",
+                            "Breaking before 1.0.0",
+                            "Breaking definition",
+                            "use the default semver policy"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 42,
+            "name": "42-no-policy-finish",
+            "prompt": "Finish feature/search.",
+            "setup": {
+                "remove": ["docs"],
+                "steps": [
+                    "git switch -q -c feature/search develop && echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search' && git push -q -u origin feature/search && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "42.1",
+                    "text": "No policy file exists after the run.",
+                    "grader": "script",
+                    "check": "policyFile",
+                    "args": {
+                        "text": null
+                    }
+                },
+                {
+                    "id": "42.2",
+                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
+                    "grader": "script",
+                    "check": "stopped"
+                },
+                {
+                    "id": "42.3",
+                    "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": [
+                            "Production branch",
+                            "Development branch",
+                            "Hotfix branches",
+                            "Tag prefix",
+                            "Development merge",
+                            "Production merge",
+                            "Finish mode",
+                            "Tag and back-merge",
+                            "Back-merge conflicts",
+                            "Development auto-merge",
+                            "Production auto-merge",
+                            "Finish approval",
+                            "Breaking before 1.0.0",
+                            "Breaking definition",
+                            "use the default semver policy"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 43,
+            "name": "43-default-policy-master",
+            "prompt": "Use the default semver policy. Start a hotfix for the login crash.",
+            "setup": {
+                "remove": ["docs"],
+                "steps": [
+                    "git branch -m main master && git push -q -u origin master && git --git-dir=\"$(git remote get-url origin)\" symbolic-ref HEAD refs/heads/master && git push -q origin --delete main develop && git branch -q -D develop && git remote set-head origin master"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "43.1",
+                    "text": "The new policy file has the default values with `Production branch: master` and `Development branch: none`, in table order, and is not staged.",
+                    "grader": "script",
+                    "check": "policyFile",
+                    "args": {
+                        "text": "# Semver policy\n\n- Production branch: master\n- Development branch: none\n- Hotfix branches: on\n- Tag prefix: v\n- Development merge: squash\n- Production merge: merge commit\n- Finish mode: pull request\n- Tag and back-merge: CI\n- Back-merge conflicts: confirm\n- Development auto-merge: off\n- Production auto-merge: off\n- Finish approval: confirm\n- Breaking before 1.0.0: major\n- Breaking definition: default\n"
+                    }
+                },
+                {
+                    "id": "43.2",
+                    "text": "There is exactly one new local branch. Its name is `hotfix/<name>`, it points at the commit of `master`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": {
+                        "prefix": "hotfix/",
+                        "base": "master"
+                    }
+                },
+                {
+                    "id": "43.3",
+                    "text": "The name of the new `hotfix/*` branch has no version.",
+                    "grader": "script",
+                    "check": "noVersionInName",
+                    "args": {
+                        "prefix": "hotfix/"
+                    }
+                },
+                {
+                    "id": "43.4",
+                    "text": "The report gives the new policy file `docs/agents/semver-policy.md`.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 44,
+            "name": "44-policy-values-given",
+            "prompt": "Start a feature branch for search. There is no semver policy yet. Use these values for it:\n\n- Production branch: main\n- Development branch: develop\n- Hotfix branches: on\n- Tag prefix: v\n- Development merge: merge commit\n- Production merge: merge commit\n- Finish mode: local\n- Tag and back-merge: CI\n- Back-merge conflicts: report\n- Development auto-merge: off\n- Production auto-merge: off\n- Finish approval: confirm\n- Breaking before 1.0.0: major\n- Breaking definition: default",
+            "setup": {
+                "remove": ["docs"]
+            },
+            "assertions": [
+                {
+                    "id": "44.1",
+                    "text": "The new policy file holds exactly the 14 given values in table order, and is not staged.",
+                    "grader": "script",
+                    "check": "policyFile",
+                    "args": {
+                        "text": "# Semver policy\n\n- Production branch: main\n- Development branch: develop\n- Hotfix branches: on\n- Tag prefix: v\n- Development merge: merge commit\n- Production merge: merge commit\n- Finish mode: local\n- Tag and back-merge: CI\n- Back-merge conflicts: report\n- Development auto-merge: off\n- Production auto-merge: off\n- Finish approval: confirm\n- Breaking before 1.0.0: major\n- Breaking definition: default\n"
+                    }
+                },
+                {
+                    "id": "44.2",
+                    "text": "There is exactly one new local branch. Its name is `feature/<name>`, it points at the commit of `develop`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": {
+                        "prefix": "feature/",
+                        "base": "develop"
+                    }
+                },
+                {
+                    "id": "44.3",
+                    "text": "The report gives the new policy file `docs/agents/semver-policy.md`.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 45,
+            "name": "45-incorrect-lines",
+            "prompt": "Is 1.3.0 a valid version?",
+            "setup": {
+                "overlay": "fixtures/45-incorrect-lines"
+            },
+            "assertions": [
+                {
+                    "id": "45.1",
+                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
+                    "grader": "script",
+                    "check": "stopped"
+                },
+                {
+                    "id": "45.2",
+                    "text": "The policy file is unchanged.",
+                    "grader": "script",
+                    "check": "policyUnchanged"
+                },
+                {
+                    "id": "45.3",
+                    "text": "The report gives line 3 (the prose line) and line 6 (`Development branch: main`) as incorrect lines, each with its line number. It can also give line 5 (`Production branch: main`).",
+                    "grader": "llm"
+                },
+                {
+                    "id": "45.4",
+                    "text": "The report tells the Operator to correct the incorrect lines or to delete the policy file.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "45.5",
+                    "text": "The report does not say whether 1.3.0 is a valid version: the Check job stopped too.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 46,
+            "name": "46-invalid-branch-name",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/46-invalid-branch-name"
+            },
+            "assertions": [
+                {
+                    "id": "46.1",
+                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
+                    "grader": "script",
+                    "check": "stopped"
+                },
+                {
+                    "id": "46.2",
+                    "text": "The policy file is unchanged.",
+                    "grader": "script",
+                    "check": "policyUnchanged"
+                },
+                {
+                    "id": "46.3",
+                    "text": "The report gives line 4 (`Development branch: feature..x`) as an incorrect line, with its line number.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "46.4",
+                    "text": "The report tells the Operator to correct the incorrect line or to delete the policy file.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "46.5",
+                    "text": "The report gives no next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 47,
+            "name": "47-missing-branch",
+            "prompt": "Is 1.3.0 a valid version? Then start a feature branch for search.",
+            "setup": {
+                "overlay": "fixtures/47-missing-branch"
+            },
+            "assertions": [
+                {
+                    "id": "47.1",
+                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
+                    "grader": "script",
+                    "check": "stopped"
+                },
+                {
+                    "id": "47.2",
+                    "text": "The policy file is unchanged.",
+                    "grader": "script",
+                    "check": "policyUnchanged"
+                },
+                {
+                    "id": "47.3",
+                    "text": "The report says that 1.3.0 is a valid version.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "47.4",
+                    "text": "The report says that the feature branch was not started because the repository has no branch `dev`, and names `dev`.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 48,
+            "name": "48-old-policy",
+            "prompt": "Start a feature branch for search.",
+            "setup": {
+                "overlay": "fixtures/48-old-policy"
+            },
+            "assertions": [
+                {
+                    "id": "48.1",
+                    "text": "The policy file has the 2 missing lines `Back-merge conflicts: confirm` and `Breaking definition: default` added in table order, the other lines unchanged, and is not staged.",
+                    "grader": "script",
+                    "check": "policyFile",
+                    "args": {
+                        "text": "# Semver policy\n\n- Production branch: main\n- Development branch: develop\n- Hotfix branches: on\n- Tag prefix: v\n- Development merge: squash\n- Production merge: merge commit\n- Finish mode: pull request\n- Tag and back-merge: CI\n- Back-merge conflicts: confirm\n- Development auto-merge: off\n- Production auto-merge: off\n- Finish approval: automatic\n- Breaking before 1.0.0: major\n- Breaking definition: default\n"
+                    }
+                },
+                {
+                    "id": "48.2",
+                    "text": "There is exactly one new local branch. Its name is `feature/<name>`, it points at the commit of `develop`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": {
+                        "prefix": "feature/",
+                        "base": "develop"
+                    }
+                },
+                {
+                    "id": "48.3",
+                    "text": "The report names the change of the policy file: the 2 added lines.",
+                    "grader": "llm"
                 }
             ]
         }
