@@ -23,12 +23,12 @@ _Avoid_: prompt file, instruction file
 The Operator is the human who controls a project and the agents that work in it. Only the Operator answers the questions of an agent and gives approval. An agent never acts as the Operator.
 _Avoid_: user, owner, maintainer
 
-**Commit policy**:
-A Commit policy is the file `docs/agents/commit-policy.md` of a project. It holds the title `# Commit policy` and the Settings that each commit by the git-commit Skill obeys, and no other text.
-_Avoid_: commit rules, commit conventions, commit config
+**Policy**:
+A Policy is a file `docs/agents/<name>-policy.md` of a project. It holds only the Settings that one Skill obeys.
+_Avoid_: config, settings file
 
 **Setting**:
-A Setting is one line `- <name>: <value>` of a Commit policy. The git-commit Skill fixes each name and its possible values.
+A Setting is one line `- <name>: <value>` of a Policy. The Skill that reads the Policy fixes each name and the form of its value.
 _Avoid_: option, rule
 
 **Commit review**:
