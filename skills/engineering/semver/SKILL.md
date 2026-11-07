@@ -36,11 +36,12 @@ This version of the skill does only Start for `feature/*`, `bugfix/*`, and `hotf
 
 ## Before each job
 
-1. Run `cat -n docs/agents/semver-policy.md` to read the Semver policy and its line numbers.
-2. If the file is not there, stop. In the report, tell the Operator to add the Semver policy. Give the default Semver policy in the report.
-3. Examine each line. A correct line is the title `# Semver policy`, a blank line, or one Setting with a name and a value from the table.
-4. If the Semver policy has a different line, or 2 Settings with the same name, stop. In the report, give the line number and the text of each incorrect line. You cannot know which decision of the Operator an incorrect line gives.
-5. If a name of the table has no Setting, stop. In the report, give each name that has no Setting.
+Do these steps before each of the 4 jobs, also before a job that this version of the skill cannot do.
+
+1. Read `references/policy-setup.md` in the folder of this skill. It tells you how to set up, examine, and complete the Semver policy.
+2. Run `cat -n docs/agents/semver-policy.md` to read the Semver policy and its line numbers.
+3. If the file is not there, do the setup in the section "When the Semver policy is not there" of `references/policy-setup.md`.
+4. If the file is there, examine each line as `references/policy-setup.md` tells you. If a Setting has no line, add it as `references/policy-setup.md` tells you.
 
 | Setting | Values | Default |
 |---|---|---|
