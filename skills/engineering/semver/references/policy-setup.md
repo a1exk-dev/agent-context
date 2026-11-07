@@ -61,7 +61,7 @@ Each other line is an incorrect line. Examples are these lines:
 
 ## When the Semver policy has an incorrect line
 
-When the Semver policy has one or more incorrect lines, stop the job, also Check. Do not change the Semver policy. Do not ask a question. Do not try to correct a line. You cannot know which decision of the Operator an incorrect line gives. Do the same when no person can answer.
+When the Semver policy has one or more incorrect lines, stop the job, also Check. In the report, do not give a result of the job, also not a result that you found before you read the Semver policy. Do not change the Semver policy. Do not ask a question. Do not try to correct a line. You cannot know which decision of the Operator an incorrect line gives. Do the same when no person can answer.
 
 In the report, give the line number and the text of each incorrect line. Tell the Operator to correct these lines, or to delete the file so that the setup runs at the next job.
 

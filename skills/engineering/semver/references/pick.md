@@ -99,7 +99,7 @@ Do these steps only when the bump is not unclear.
 Give no version, because Pick never guesses. A released version cannot change, so an incorrect version stays in the history.
 
 - For Pick alone, do not ask a question. In the report, give the cause and each unclear commit with its short SHA and its first line. Tell the caller that Start of a `release/*` branch asks the Operator for the version.
-- For Start of a `release/*` branch, ask the Operator for the version. In the question, give the cause and each unclear commit with its short SHA and its first line. Also give the value of `Breaking definition`. When the value is `default`, give the default definition: "users or other programs must change what they do to keep working". Give the next patch, the next minor, and the next major version of the last release as answers. The Operator can also type a different version.
+- For Start of a `release/*` branch, ask the Operator for the version. In the question, give the cause and each unclear commit with its short SHA and its first line. Also give the value of `Breaking definition` word for word, in a code span. Do not change its words. When the value is `default`, give the default definition: "users or other programs must change what they do to keep working". Give the next patch, the next minor, and the next major version of the last release as answers. The Operator can also type a different version.
 - When the platform has no question tool, or the question tool gives an error, stop. In the report, give the text of the question and its answers. Tell the caller to give the version in a new request, for example "Start release 1.3.0".
 
 ## When the project has no release

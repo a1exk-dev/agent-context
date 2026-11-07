@@ -34,6 +34,8 @@ This skill gives versions by Semantic Versioning 2.0.0 and makes branches by Git
 
 ## Before each job
 
+Do these steps first, before the check script or another step of the job.
+
 1. Read `references/policy-setup.md` in the folder of this skill. It tells you how to set up, examine, and complete the Semver policy.
 2. Run `cat -n docs/agents/semver-policy.md` to read the Semver policy and its line numbers.
 3. If the file is not there, do the setup in the section "When the Semver policy is not there" of `references/policy-setup.md`.
@@ -134,7 +136,7 @@ Pick does not find deprecations. When the caller asks how to mark a deprecation,
 
 1. Find each `release/*` branch, local and on `origin`: `git branch --all --list 'release/*' '*/release/*'`.
 2. A `release/X.Y.Z` branch is open when no tag `<Tag prefix>X.Y.Z` exists. If a `release/*` branch is open, stop. In the report, give the name of that branch. Only one release at a time gets ready, so that two releases do not compete for the same version.
-3. If the request gives the version, use that version. If not, before you find the version, read `references/pick.md` in the folder of this skill. Then do its steps to pick the version. These steps can ask the Operator for the version.
+3. If the request gives the version, use that version exactly as the request gives it. Do not add a part to the version or remove a part from it. For example, do not change `1.3` to `1.3.0`. If the request gives no version, before you find the version, read `references/pick.md` in the folder of this skill. Then do its steps to pick the version. These steps can ask the Operator for the version.
 4. Run the `release` form of the check script with the version and the Setting `Tag prefix`.
 5. If the script gives `invalid:`, stop. In the report, give the cause from the script.
 6. The base branch is the Development branch. When `Development branch` is `none`, the base branch is the Production branch. Make sure that the base branch exists, as step 4 of "When you start a feature, bugfix, or hotfix branch" tells you.
