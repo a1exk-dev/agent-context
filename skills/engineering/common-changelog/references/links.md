@@ -11,7 +11,7 @@ The Write job and the Review job use these URL forms. This Skill knows 3 hosts: 
 ## When you find the host
 
 1. If `Host` is `none`, do not run `git remote`. Write no reference and no version link. Ask no question about links. Write each release heading with no brackets, for example `## 1.3.0 - 2026-10-01`.
-2. Run `git remote get-url origin`. Use only the remote `origin`, because a different remote can be a fork or a mirror with a different URL. If the command gives an error, the project has no remote `origin`. Do the steps for no remote, also when the project has a different remote.
+2. Run `git remote get-url origin`. Use only the remote `origin`, because a different remote can be a fork or a mirror with a different URL. If the command gives an error, the project has no remote `origin`. Skip steps 3 to 8 and do step 9, also when the project has a different remote.
 3. Find the hostname and the path in the URL. The URL has one of these forms:
    - `https://<hostname>/<path>`, for example `https://bitbucket.org/example/demo.git`.
    - `ssh://<user>@<hostname>:<port>/<path>`, for example `ssh://git@ssh.github.com:443/example/demo.git`.
@@ -24,7 +24,7 @@ The Write job and the Review job use these URL forms. This Skill knows 3 hosts: 
    - `github.com`, or a hostname that ends with `.ghe.com`: the GitHub forms.
    - `gitlab.com`: the GitLab forms.
    - `bitbucket.org`: the Bitbucket Cloud forms.
-   - Each other hostname is an unknown host. Examples are a custom domain such as `git.example.com`, a hostname that contains "gitlab" such as `gitlab.example.com`, and an SSH alias such as `github-work`.
+   - Each other hostname is an unknown host. Examples are a different hostname such as `git.example.com`, a hostname that contains "gitlab" such as `gitlab.example.com`, and an SSH alias such as `github-work`.
 9. When the project has no remote `origin`, or `Host` is `auto` and the host is unknown, do "When you cannot make links".
 
 ## When you cannot make links
@@ -35,12 +35,12 @@ Do these steps only in a Write job that writes a reference or a version link. Th
    - For an unknown host, give the 4 options `github`, `gitlab`, `bitbucket`, and `No references`.
    - When the project has no remote `origin`, give the options `No references` and `Stop`.
 2. When the Operator selects a host, change the line `- Host: auto` in the Changelog policy to `- Host: <host>`, for example `- Host: gitlab`. Then use the URL forms of that host.
-3. When the Operator selects `No references`, change the line to `- Host: none`. Then do step 1 of "When you find the host".
+3. When the Operator selects `No references`, change the `Host` line in the Changelog policy to `- Host: none`. Then do step 1 of "When you find the host".
 4. When the Operator selects `Stop`, stop and do not change a file.
 5. Do not stage or commit the change to the Changelog policy. In the report, give the changed line.
 6. If there is no Operator, do not change the Changelog policy. Write each item, but write no reference. Write no version link. Write each release heading with no brackets. In the report, give the cause:
    - For an unknown host, give the hostname. Tell the Operator that the `Host` Setting gives the URL forms of a host, for example `- Host: gitlab`.
-   - For no remote, tell that the project has no remote `origin`.
+   - When the project has no remote `origin`, tell the Operator that the project has no remote `origin`.
 
 ## When you write a link
 
@@ -55,8 +55,8 @@ Write each link after the base URL in these forms:
 | Version link, `Version links: compare` | `/compare/<previous tag>...<tag>` | `/-/compare/<previous tag>...<tag>` | `/commits/tag/<tag>` |
 
 - As the text of a commit link, write the short SHA in a code span, for example `` [`3f2a9c1`](https://github.com/example/demo/commit/3f2a9c1) ``.
-- On GitLab, a merge request is the pull request. Write `!<n>` as the text of its link, for example `[!6](https://gitlab.com/grp/sub/demo/-/merge_requests/6)`. Write this text also when the caller says "pull request #6".
-- On Bitbucket Cloud, both values of `Version links` give the tag view `/commits/tag/<tag>`. Do not write a compare URL for Bitbucket Cloud.
+- On GitLab, write `!<n>` as the text of a pull request link, for example `[!6](https://gitlab.com/grp/sub/demo/-/merge_requests/6)`. Write this text also when the caller says "pull request #6".
+- On Bitbucket Cloud, the values `release` and `compare` of `Version links` both give the tag view `/commits/tag/<tag>`. Do not write a compare URL for Bitbucket Cloud.
 - `<tag>` is the exact Git tag, for example `v1.3.0`. Put each link definition at the bottom of the changelog. Write the link definitions in sequence from the latest version to the oldest version.
 
 Each host writes a different message in the merge commit of a pull request. Use this message to find the merge commit and the number of a pull request:

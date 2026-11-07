@@ -13,7 +13,7 @@ Do these steps before you put an item in a section. Never calculate a version, f
 1. Find the version that the caller gives, for example `1.3.0` in "Release the changelog as 1.3.0".
 2. When `Release branches` is not `off`, run `git branch --show-current`. Find if the current branch is a branch that the Release branches Setting lists. Do not read a different branch name, for example `develop`, `main`, or `feature/x`.
 3. On a branch that the Release branches Setting lists, `<rest>` can be a semver version, for example `1.3.0` in `release/1.3.0`. That version is the branch version.
-4. If the caller gives a version and the branch version is different, stop. Do not change a file. Ask the Operator which version to use, and give the 2 versions. When there is no Operator, stop. Do not change a file. In the report, ask which version to use, and give the 2 versions.
+4. When the caller gives a version and the branch version is different, ask the Operator which version to use, and give the 2 versions. Do not change a file before the Operator answers. When there is no Operator, stop. Do not change a file. In the report, ask which version to use, and give the 2 versions.
 5. On a branch that the Release branches Setting lists, there can be no branch version and no version that the caller gives. Then ask the Operator for the version. When there is no Operator, stop. Do not change a file. In the report, ask for the version.
 6. Else, on a branch that the Release branches Setting lists, make a release entry in each Write job. Do this also for a request to add an item. Use the branch version. If there is no branch version, use the version that the caller gives.
 7. On a branch that the Release branches Setting does not list, or when `Release branches` is `off`, do these steps:
@@ -32,12 +32,12 @@ Do these steps before you put an item in a section. Never calculate a version, f
    - Else, add the release entry.
    - When you use a section that has a heading or a group in a different form, do "When a release converts a section" in `references/other-formats.md`.
 5. Put the item of the caller in its group of the release entry. Do this as step 4 of "When you do the Write job" in `SKILL.md` tells you for the Unreleased section.
-6. For each item of the release entry that has no commit reference, find its commit in the Git history. For a pull request, use its merge commit, for example the commit `Merge pull request #5 from alice/truncate`. `references/links.md` gives the merge commit message of each host. Run `git log --oneline` from the tag of the newest release entry to find the merge commits.
+6. For each item of the release entry that has no commit reference, find its commit in the Git history. For a pull request, use its merge commit, for example the commit `Merge pull request #5 from alice/truncate`. `references/links.md` gives the merge commit message of each host. Run `git log --oneline` from the tag of the newest release entry before this release to find the merge commits.
 7. Write the commit reference with the short SHA of 7 characters, as `references/links.md` tells you.
 8. Write the other references of each item as the `References` Setting tells you. Remove each reference of a kind that the Setting does not list.
 9. When an item has more than 2 references, keep the commit reference and the pull-request reference. Remove the issue reference, because the pull request is the better starting point. In the report, give each reference that you removed.
 10. When `Authors` is `on`, write the author of each item. The author of a pull request is the author of its commits, not of the merge commit. Find the authors with `git log --format=%an <merge commit>^1..<merge commit>^2`. For a pull request of an automated account, for example Dependabot, write the person who merged the pull request. When `Authors` is `off`, remove the authors from the items of the release entry.
-11. If the release entry has no version link, write no link definition. Else, find the tag form in `git tag`. For example, when the tag of 1.2.0 is `v1.2.0`, the tag of 1.3.0 is `v1.3.0`. Then write the version link as the `Version links` Setting tells you:
+11. If the release entry has no version link, write no link definition. Else, find the tag form in `git tag`. For example, when the tag of 1.2.0 is `v1.2.0`, the tag of 1.3.0 is `v1.3.0`. Then write the link definition as the `Version links` Setting tells you:
     - `release`: the release URL of `references/links.md`.
     - `compare`: the compare URL of `references/links.md`. The previous tag is the tag of the newest release entry before this release.
 12. Put the link definition at the bottom of the file, above the link definitions of older versions.

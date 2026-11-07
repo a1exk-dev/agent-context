@@ -40,7 +40,7 @@ In the Review job, a requirement with the severity `error` is a "must" requireme
 | The description starts with a verb in the imperative mood, for example "Add" or "Fix". The description is clear without its group heading. | §2.4.1 | error |
 | In a release entry, each item has a reference to each commit of the change. | §2.4.2 | error |
 | Each item has a pull-request reference when the `References` Setting has `pull requests` and the change has a pull request. Each item has an issue reference when the `References` Setting has `issues` and the change has an issue. | §2.4.2 | warning |
-| Each reference is a Markdown link. References are in parentheses after the description, for example `([#6](<URL>))`. References of one kind share one pair of parentheses with a comma between them. | §2.4.2 | error |
+| Each reference is a Markdown link. References are in parentheses after the description, for example `([#6](<URL>))`. References of one kind share one pair of parentheses. A comma is between 2 references. | §2.4.2 | error |
 | An item has a maximum of 2 references. When an item has more than 2 references, keep only the best starting point, for example the pull request and not its issue. | §2.4.2 | warning |
 | When `Authors` is `on`, the authors come after the references, in their own parentheses, for example `([#42](<URL>)) (Alice)`. For the change of a bot, the author is the person who merged the change. When `Authors` is `off`, the item has no authors. | §2.4.3 | warning |
 | The item of a breaking change starts with `**Breaking:** ` and comes first in its group. | §2.4.4 | error |

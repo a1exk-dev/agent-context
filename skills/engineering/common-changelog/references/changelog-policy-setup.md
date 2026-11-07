@@ -8,7 +8,7 @@ If `SKILL.md` is not in your context window, read it.
 
 ## When you ask a question in this file
 
-- Ask as "When you ask the Operator a question" in `SKILL.md` tells you. Ask only one question in each tool call, because one answer can change the next answer.
+- Ask as "When you ask the Operator a question" in `SKILL.md` tells you. Ask only one question in each tool call, because one answer can change the next question.
 - Give the default value as the first option. Tell the Operator that the default value is the recommended option.
 - When there is no Operator, the Operator cannot give an answer. Then do the step for no Operator in the section of that question.
 
