@@ -25,7 +25,7 @@ This skill gives versions by Semantic Versioning 2.0.0 and makes branches by Git
 
 ## Which jobs this version of the skill does
 
-This version of the skill does only Start for `feature/*`, `bugfix/*`, and `hotfix/*` branches. For each other job, stop before you change the repository. In the report, tell the caller that this version of the skill cannot do that job yet.
+This version of the skill does Check, and Start for `feature/*`, `bugfix/*`, and `hotfix/*` branches. For Start of a `release/*` branch, it only examines the version that the request gives. For each other job, stop before you change the repository. In the report, tell the caller that this version of the skill cannot do that job yet.
 
 ## Rules for each job
 
@@ -97,6 +97,37 @@ The default Semver policy has the title, a blank line, and one Setting for each 
 6. Make sure that `git check-ref-format --branch <type>/<name>` accepts the full name. Also make sure that no local branch and no `origin` branch has that name. If one of these checks fails, stop and give the cause in the report.
 7. Run `git switch -c <type>/<name> <base>` to make the branch and check it out.
 8. Do not push the new branch. The new branch stays local until work starts on it.
+
+## When you run the check script
+
+The check script `scripts/check.sh` is in the folder of this `SKILL.md` file. It requires `sh` and Git. Run it in the project folder with `sh`, in one of these 3 forms:
+
+```sh
+sh <skill folder>/scripts/check.sh version <version>
+sh <skill folder>/scripts/check.sh branch <branch name>
+sh <skill folder>/scripts/check.sh release <version> <Tag prefix>
+```
+
+- Replace `<skill folder>` with the absolute path of the folder of this `SKILL.md` file.
+- The `version` form examines the Semantic Versioning 2.0.0 syntax. It accepts a pre-release part and a build part.
+- The `branch` form examines the name of a `feature/*`, `bugfix/*`, `release/*`, or `hotfix/*` branch.
+- The `release` form examines a version for a new release: `X.Y.Z`, and higher than the last release tag. Give the value of the Setting `Tag prefix`: `v` or `none`.
+- The script gives one line. `valid:` with exit code 0 shows a correct version or name. `invalid:` with exit code 1 gives the cause of the problem.
+- Exit code 2 shows that the script did not run. Then stop, and give the error message in the report.
+
+## When you check a version or a branch name
+
+1. For each version in the request, run the `version` form of the check script.
+2. For each branch name in the request, run the `branch` form of the check script. Do not run it for the name of the Production branch or the Development branch. Compare that name with the Semver policy.
+3. When the Setting `Hotfix branches` is `off`, a `hotfix/*` name is not correct for the project. This is also true when the script gives `valid:`.
+4. Do not change the repository.
+5. In the report, give each version and branch name, and tell if it is correct. For each name or version that is not correct, give the cause from the script.
+
+## When the request gives the version of a new release branch
+
+1. Run the `release` form of the check script with that version and the Setting `Tag prefix`.
+2. If the script gives `invalid:`, stop. In the report, give the cause from the script.
+3. If the script gives `valid:`, stop. In the report, tell the caller that this version of the skill cannot start a release branch yet.
 
 ## When you ask a question
 

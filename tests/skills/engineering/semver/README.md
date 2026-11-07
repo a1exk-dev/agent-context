@@ -13,6 +13,7 @@ The eval plan is in the "Testing Decisions" section of issue #164. These files r
 | `git-state.ts` | The Git state before and after a run. |
 | `assertions.ts` | The script checks. |
 | `grade.ts` | Grades the script statements of one run, and merges the llm results into `grading.json`. |
+| `check-script.test.ts` | Runs the check script of the skill with `sh` and a fake `git` on `PATH`, and makes sure that the Agent instructions of the skill name no other skill. |
 | `grader.md` | Instructions for the grader subagent of the llm statements, and the confirmer prompt. |
 
 The unit tests (`*.test.ts`) test the fake `gh`, the Git state parser, the audit, and the checks. The test container has no Git, so they test the parsers with saved Git output.
