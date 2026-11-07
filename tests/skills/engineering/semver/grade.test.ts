@@ -407,6 +407,20 @@ describe("branchStarted, noVersionInName, and originUnchanged", () => {
         expect(check("branchStarted", run(), args)).toBe(false);
     });
 
+    it("compares the full name when the args give one", () => {
+        const args = {
+            prefix: "release/",
+            base: "develop",
+            name: "release/0.1.0",
+        };
+        expect(check("branchStarted", started("release/0.1.0", S), args)).toBe(
+            true,
+        );
+        expect(check("branchStarted", started("release/0.2.0", S), args)).toBe(
+            false,
+        );
+    });
+
     it("finds a version in a hotfix name", () => {
         const args = { prefix: "hotfix/" };
         expect(check("noVersionInName", started("hotfix/login", S), args)).toBe(

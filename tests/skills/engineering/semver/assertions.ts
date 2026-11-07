@@ -290,7 +290,8 @@ function policyNames(run: Run): Verdict {
 }
 
 // One new local branch with the prefix, at the commit of `base` at the
-// start, and checked out.
+// start, and checked out. When `args.name` gives the full name, the new
+// branch has that name.
 function branchStarted(run: Run, args: Record<string, unknown>): Verdict {
     const prefix = String(args.prefix);
     const base = String(args.base);
@@ -309,6 +310,8 @@ function branchStarted(run: Run, args: Record<string, unknown>): Verdict {
     const problems: string[] = [];
     if (!name.startsWith(prefix) || name.length === prefix.length)
         problems.push(`${name} is not ${prefix}<name>.`);
+    if (args.name !== undefined && name !== args.name)
+        problems.push(`${name} is not ${String(args.name)}.`);
     if (run.after.refs[`${HEADS}${name}`] !== baseSha)
         problems.push(`${name} is not at the commit of ${base} (${baseSha}).`);
     if (run.after.head !== name)
