@@ -251,6 +251,23 @@ export function auditCalls(calls: ToolCall[]): Audit {
     return audit;
 }
 
+const MAX_LOAD_CALLS = 8;
+
+// The load-test decision for the tool calls of a run so far: true when the
+// Skill loaded before the first action and within the first 8 calls, false
+// when an action or the 8th call came first, and null while the run must go
+// on. The runner counts a run that ends with null as no load.
+export function loadDecision(calls: ToolCall[]): boolean | null {
+    const { firstSkillLoad, firstAction } = auditCalls(
+        calls.slice(0, MAX_LOAD_CALLS),
+    );
+    if (firstSkillLoad !== null) {
+        return firstAction === null || firstSkillLoad < firstAction;
+    }
+    if (firstAction !== null || calls.length >= MAX_LOAD_CALLS) return false;
+    return null;
+}
+
 // Gives a PATH without the command `name`: each folder that has it becomes
 // a new folder in `shadow` with a link to each other file of that folder.
 export function hideCommand(
