@@ -11,7 +11,7 @@
 // A request is correct when the load rate is on the correct side of 0.5.
 // cspell:ignore smal
 
-import { readFileSync, rmSync } from "node:fs";
+import { mkdirSync, readFileSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import {
     type ClaudeEvent,
@@ -155,6 +155,9 @@ if (import.meta.main) {
         model: values.model,
         timeout: integerOption(USAGE, "timeout", values.timeout),
     };
+    // Make the folder of --out first, so that a missing folder does not lose
+    // the results of all runs at the end.
+    mkdirSync(dirname(values.out), { recursive: true });
     // --ids selects requests by their position in load-requests.json, from 1.
     const wanted = values.ids.split(",").filter(Boolean).map(Number);
     const requests = (
