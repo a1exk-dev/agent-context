@@ -5,7 +5,7 @@ The eval plan is in the "Testing Decisions" section of issue #164. These files r
 | File | Purpose |
 |---|---|
 | `project/` | Sample project. Each output test starts from a copy. It has `CHANGELOG.md`, `package.json` at version 1.2.0, and the default Semver policy with `Finish approval: automatic`. |
-| `fixtures/<name>/` | Files that replace or add project files for one or more tests. `fixtures/merge-commit/` has the policy with `Development merge: merge commit`. |
+| `fixtures/<name>/` | Files that replace or add project files for one or more tests. `fixtures/merge-commit/` has the policy with `Development merge: merge commit`. `fixtures/finish-local/` has the policy with `Finish mode: local`. |
 | `evals.json` | The output tests: request, setup, and statements. `common_assertions` (V1 to V6) apply to each test. Each statement is `{id, text, grader}`. A `script` statement also names its `check` in `assertions.ts` and gives its `args`. |
 | `run-evals.ts` | Runs the output tests with `claude -p`, with and without the skill. |
 | `load-requests.json` | The 20 load requests of the description test, each with the expected result. |
@@ -67,3 +67,4 @@ The Operator runs these checks once on Claude Code, in an interactive session, b
 - [ ] M3. A policy with no `Back-merge conflicts` line: one question with `confirm` first, and the line is added. A second job asks nothing.
 - [ ] M4. Make the repository as `setup` of test 7 in `evals.json` does: a merge of `feature/search` and one direct commit on `develop`. "Start the next release.": the skill asks for the version and shows the `Breaking definition` value `CLI flags, config file format`. After the answer `1.3.0`, `release/1.3.0` exists, starts at `develop`, and is not pushed.
 - [ ] M5. Make the repository as `setup` of test 13 in `evals.json` does: no tag. "Start the next release.": the skill asks one question for the first version, with `0.1.0` recommended and `1.0.0`.
+- [ ] M6. Make the repository as `setup` of test 24 in `evals.json` does, and set `Finish approval: confirm` in `docs/agents/semver-policy.md`. "Finish the release.": the skill shows the plan first, then asks one question with `Finish`, `Request changes`, and `Reject`. After `Request changes`, it shows a new plan and asks again. After `Reject`, the branches, the tags, and the refs of `origin` are unchanged.

@@ -25,7 +25,7 @@ This skill gives versions by Semantic Versioning 2.0.0 and makes branches by Git
 
 ## Which jobs this version of the skill does
 
-This version of the skill does Pick, Check, and Start. For Finish, stop before you change the repository. In the report, tell the caller that this version of the skill cannot do Finish yet.
+This version of the skill does Pick, Check, Start, and Finish with `Finish mode: local`. For Finish with `Finish mode: pull request`, stop before you read `references/finish.md` and before you change the repository. Tell the caller in the report that this version of the skill does not do Finish in `pull request` mode.
 
 ## Rules for each job
 
@@ -142,10 +142,14 @@ Pick does not find deprecations. When the caller asks how to mark a deprecation,
 7. Run `git switch -c release/<version> <base>` to make the branch and check it out.
 8. Do not push the new branch.
 
+## When you finish a branch
+
+Before Finish, read `references/finish.md` in the folder of this skill. Then do its steps. Finish is the only job that asks for approval, because it changes the long-lived branches and `origin`.
+
 ## When you ask a question
 
 Ask with the question tool of the platform. If the platform has no question tool, ask in plain text and end your turn. No answer is not approval. When the request gives the answer before the question, use that answer and do not ask.
 
 ## When you write the report
 
-Give the result of the job. For Pick, give the items that `references/pick.md` tells you to give. For Start, give the new branch, its base branch, and the short SHA of the commit where the new branch starts. Also tell that the new branch is not pushed. When you stop, give the cause and what the job needs to continue.
+Give the result of the job. For Pick, give the items that `references/pick.md` tells you to give. For Start, give the new branch, its base branch, and the short SHA of the commit where the new branch starts. Also tell that the new branch is not pushed. For Finish, give the items that `references/finish.md` tells you to give. When you stop, give the cause and what the job needs to continue.

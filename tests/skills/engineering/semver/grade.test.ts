@@ -328,6 +328,33 @@ describe("V4 safeHistory", () => {
             check("safeHistory", run({ before, after: tagged(Y), prsAfter })),
         ).toBe(true);
     });
+    it("passes for a deleted branch that a new squash commit of its target holds", () => {
+        const before = state({
+            refs: heads({ main: S, develop: S, "v1.2.0": S, "feature/a": Y }),
+            origin: heads({ main: S, develop: S, "v1.2.0": S, "feature/a": Y }),
+            commits: [start, commit(X, [S]), commit(Y, [X])],
+            trees: {
+                [S]: startTree,
+                [Y]: { ...startTree, "src/a.ts": SRC, "src/b.ts": SRC2 },
+            },
+        });
+        const squash = (files: Record<string, string>) =>
+            state({
+                refs: heads({ main: S, develop: Z, "v1.2.0": S }),
+                origin: heads({ main: S, develop: Z, "v1.2.0": S }),
+                commits: [start, commit(Z, [S], files)],
+            });
+        const full = { "src/a.ts": SRC, "src/b.ts": SRC2 };
+        expect(check("safeHistory", run({ before, after: squash(full) }))).toBe(
+            true,
+        );
+        expect(
+            check(
+                "safeHistory",
+                run({ before, after: squash({ "src/a.ts": SRC2 }) }),
+            ),
+        ).toBe(false);
+    });
 });
 
 describe("V5 policyNames", () => {
@@ -506,6 +533,170 @@ describe("stopped, policyFile, policyUnchanged, and reportNames", () => {
         expect(check("reportNames", run({ report: "Tag prefix" }), args)).toBe(
             false,
         );
+    });
+});
+
+describe("Finish checks", () => {
+    const M = "d".repeat(40);
+    const B = "e".repeat(40);
+    const message = (sha: string, parents: string[], text: string): Commit => ({
+        ...commit(sha, parents),
+        message: text,
+    });
+    // Before: release/1.3.0 at X, local and on origin. After: main at the
+    // merge M of X, tag v1.3.0 at M, develop at the Back-merge B of the tag,
+    // all pushed, and release/1.3.0 deleted.
+    const before = state({
+        refs: heads({ main: S, develop: S, "v1.2.0": S, "release/1.3.0": X }),
+        origin: heads({ main: S, develop: S, "v1.2.0": S, "release/1.3.0": X }),
+        commits: [start, commit(X, [S])],
+    });
+    const finished = (fields: Partial<GitState> = {}) =>
+        state({
+            head: "develop",
+            refs: heads({ main: M, develop: B, "v1.2.0": S, "v1.3.0": M }),
+            origin: heads({ main: M, develop: B, "v1.2.0": S, "v1.3.0": M }),
+            commits: [
+                start,
+                commit(X, [S]),
+                message(M, [S, X], "Merge branch 'release/1.3.0'"),
+                message(B, [S, M], "Merge tag 'v1.3.0' into develop"),
+            ],
+            ...fields,
+        });
+
+    it("mergedWith passes for a merge commit of the branch or the tag", () => {
+        const value = run({ before, after: finished() });
+        expect(
+            check("mergedWith", value, {
+                target: "main",
+                second: "release/1.3.0",
+            }),
+        ).toBe(true);
+        expect(
+            check("mergedWith", value, { target: "develop", second: "v1.3.0" }),
+        ).toBe(true);
+        expect(
+            check("mergedWith", value, { target: "develop", second: "main" }),
+        ).toBe(false);
+    });
+
+    it("mergedWith fails for a fast-forward or a squash", () => {
+        const after = finished({
+            refs: heads({ main: X, develop: B, "v1.2.0": S, "v1.3.0": X }),
+        });
+        expect(
+            check("mergedWith", run({ before, after }), {
+                target: "main",
+                second: "release/1.3.0",
+            }),
+        ).toBe(false);
+    });
+
+    it("tagAt passes when the local and origin tag are at the branch", () => {
+        expect(
+            check("tagAt", run({ before, after: finished() }), {
+                tag: "v1.3.0",
+                branch: "main",
+            }),
+        ).toBe(true);
+        const after = finished({
+            origin: heads({ main: M, develop: B, "v1.2.0": S }),
+        });
+        expect(
+            check("tagAt", run({ before, after }), {
+                tag: "v1.3.0",
+                branch: "main",
+            }),
+        ).toBe(false);
+    });
+
+    it("pushed passes when origin has each local branch and tag", () => {
+        const args = { refs: ["main", "develop", "v1.3.0"] };
+        expect(check("pushed", run({ before, after: finished() }), args)).toBe(
+            true,
+        );
+        const after = finished({
+            origin: heads({ main: M, develop: S, "v1.2.0": S, "v1.3.0": M }),
+        });
+        expect(check("pushed", run({ before, after }), args)).toBe(false);
+    });
+
+    it("branchDeleted fails while the local or the origin branch exists", () => {
+        const args = { branch: "release/1.3.0" };
+        expect(
+            check("branchDeleted", run({ before, after: finished() }), args),
+        ).toBe(true);
+        const after = finished({
+            origin: {
+                ...finished().origin,
+                "refs/heads/release/1.3.0": X,
+            },
+        });
+        expect(check("branchDeleted", run({ before, after }), args)).toBe(
+            false,
+        );
+    });
+
+    it("newCommits counts the new commits and matches their first lines", () => {
+        const value = run({ before, after: finished() });
+        expect(
+            check("newCommits", value, {
+                count: 2,
+                patterns: ["^Merge branch 'release/1\\.3\\.0'", "^Merge tag "],
+            }),
+        ).toBe(true);
+        expect(check("newCommits", value, { count: 3 })).toBe(false);
+        expect(check("newCommits", value, { patterns: ["^merge: "] })).toBe(
+            false,
+        );
+        expect(
+            check("newCommits", value, { patterns: ["^Merge branch "] }),
+        ).toBe(false);
+    });
+
+    it("squashMerged passes for one commit with the changes of the branch", () => {
+        const squashBefore = state({
+            refs: heads({ main: S, develop: S, "v1.2.0": S, "feature/a": Y }),
+            origin: heads({ main: S, develop: S, "v1.2.0": S, "feature/a": Y }),
+            commits: [start, commit(X, [S]), commit(Y, [X])],
+            trees: {
+                [S]: startTree,
+                [Y]: { ...startTree, "src/a.ts": SRC, "src/b.ts": SRC2 },
+            },
+        });
+        const squashed = (parents: string[], files: Record<string, string>) =>
+            state({
+                refs: heads({ main: S, develop: Z, "v1.2.0": S }),
+                origin: heads({ main: S, develop: Z, "v1.2.0": S }),
+                commits: [start, commit(Z, parents, files)],
+            });
+        const args = { branch: "feature/a", target: "develop" };
+        const full = { "src/a.ts": SRC, "src/b.ts": SRC2 };
+        expect(
+            check(
+                "squashMerged",
+                run({ before: squashBefore, after: squashed([S], full) }),
+                args,
+            ),
+        ).toBe(true);
+        expect(
+            check(
+                "squashMerged",
+                run({
+                    before: squashBefore,
+                    after: squashed([S], { "src/a.ts": SRC }),
+                }),
+                args,
+            ),
+        ).toBe(false);
+        expect(
+            check(
+                "squashMerged",
+                run({ before: squashBefore, after: squashed([S, Y], full) }),
+                args,
+            ),
+        ).toBe(false);
     });
 });
 

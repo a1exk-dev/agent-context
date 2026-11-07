@@ -191,7 +191,11 @@ function deleteProblem(run: Run, branch: string, tip: string): string | null {
                 pr.headRefName === branch &&
                 pr.state === "MERGED" &&
                 pr.headRefOid === tip,
-        ) || targetTips.some((sha) => isAncestor(commits, tip, sha));
+        ) ||
+        targetTips.some(
+            (sha) =>
+                isAncestor(commits, tip, sha) || squashedInto(run, tip, sha),
+        );
     if (!merged)
         return `${branch} has no MERGED pull request with its tip, and ${target} does not contain it.`;
     if (!["release", "hotfix"].includes(type)) return null;
@@ -222,6 +226,25 @@ function deleteProblem(run: Run, branch: string, tip: string): string | null {
     return backMerged
         ? null
         : `${branch} was deleted before its Back-merge existed.`;
+}
+
+// True when `target` contains a new commit with 1 parent whose changed
+// files each have the blob of the tree of `tip`: a squash merge of `tip`.
+function squashedInto(run: Run, tip: string, target: string): boolean {
+    const tree = run.before.trees[tip];
+    if (!tree) return false;
+    const old = new Set(run.before.commits.map((commit) => commit.sha));
+    const commits = allCommits(run);
+    return run.after.commits.some(
+        (commit) =>
+            !old.has(commit.sha) &&
+            commit.parents.length === 1 &&
+            commit.files.length > 0 &&
+            commit.files.every(
+                (file) => (tree[file.path] ?? null) === file.blob,
+            ) &&
+            isAncestor(commits, commit.sha, target),
+    );
 }
 
 function safeHistory(run: Run): Verdict {
@@ -462,6 +485,160 @@ function noChange(run: Run): Verdict {
     return verdict(problems, "The run changed nothing.");
 }
 
+// The commit of a branch or a tag: a local branch, else an origin branch,
+// at the start of the run, else a tag at the end of the run.
+function commitOf(run: Run, name: string): string | undefined {
+    return (
+        run.before.refs[`${HEADS}${name}`] ??
+        run.before.origin[`${HEADS}${name}`] ??
+        run.after.refs[`${TAGS}${name}`] ??
+        run.after.origin[`${TAGS}${name}`]
+    );
+}
+
+const newCommitList = (run: Run): Commit[] => {
+    const old = new Set(run.before.commits.map((commit) => commit.sha));
+    return run.after.commits.filter((commit) => !old.has(commit.sha));
+};
+
+// The local `args.target` at the end is a new merge commit. Its first
+// parent is the target at the start, and its second parent is the commit
+// of `args.second`, a branch or a tag.
+function mergedWith(run: Run, args: Record<string, unknown>): Verdict {
+    const target = String(args.target);
+    const second = String(args.second);
+    const tip = run.after.refs[`${HEADS}${target}`];
+    const commit = run.after.commits.find((item) => item.sha === tip);
+    const parents = [commitOf(run, target), commitOf(run, second)];
+    if (!commit)
+        return { passed: false, evidence: `No local ${target} at the end.` };
+    if (run.before.commits.some((item) => item.sha === tip))
+        return { passed: false, evidence: `${target} has no new commit.` };
+    return verdict(
+        JSON.stringify(commit.parents) === JSON.stringify(parents)
+            ? []
+            : [
+                  `${target} is at ${tip?.slice(0, 7)} with the parents ${commit.parents.join(", ") || "none"}, not ${parents.join(", ")}.`,
+              ],
+        `${target} is a merge commit of ${second}.`,
+    );
+}
+
+// The tag `args.tag`, local and on origin, is at the local `args.branch` at
+// the end.
+function tagAt(run: Run, args: Record<string, unknown>): Verdict {
+    const tag = `${TAGS}${String(args.tag)}`;
+    const branch = run.after.refs[`${HEADS}${String(args.branch)}`];
+    const problems: string[] = [];
+    for (const [place, refs] of [
+        ["local", run.after.refs],
+        ["origin", run.after.origin],
+    ] as const) {
+        if (branch === undefined || refs[tag] !== branch)
+            problems.push(
+                `The ${place} tag ${String(args.tag)} is at ${refs[tag] ?? "none"}, not at ${String(args.branch)} (${branch ?? "none"}).`,
+            );
+    }
+    return verdict(
+        problems,
+        `${String(args.tag)} is at ${String(args.branch)}.`,
+    );
+}
+
+// Each of `args.refs`, a branch or a tag, has the same commit local and on
+// origin at the end.
+function pushed(run: Run, args: Record<string, unknown>): Verdict {
+    const problems = (args.refs as string[]).flatMap((name) => {
+        const local =
+            run.after.refs[`${HEADS}${name}`] ??
+            run.after.refs[`${TAGS}${name}`];
+        const remote =
+            run.after.origin[`${HEADS}${name}`] ??
+            run.after.origin[`${TAGS}${name}`];
+        return local !== undefined && local === remote
+            ? []
+            : [
+                  `${name}: local ${local ?? "none"}, origin ${remote ?? "none"}.`,
+              ];
+    });
+    return verdict(problems, "origin has each branch and tag.");
+}
+
+function branchDeleted(run: Run, args: Record<string, unknown>): Verdict {
+    const ref = `${HEADS}${String(args.branch)}`;
+    return verdict(
+        [
+            ref in run.after.refs ? "The local branch exists." : null,
+            ref in run.after.origin ? "The origin branch exists." : null,
+        ].filter((problem): problem is string => problem !== null),
+        `${String(args.branch)} is deleted, local and on origin.`,
+    );
+}
+
+// The new commits of the run: `args.count` of them, when given. With
+// `args.patterns`, the first line of each new commit matches a pattern, and
+// each pattern matches a new commit.
+function newCommits(run: Run, args: Record<string, unknown>): Verdict {
+    const subjects = newCommitList(run).map(
+        (commit) => commit.message.split("\n")[0] ?? "",
+    );
+    const problems: string[] = [];
+    if (args.count !== undefined && subjects.length !== Number(args.count))
+        problems.push(
+            `${subjects.length} new commits, not ${String(args.count)}: ${subjects.join(" | ")}`,
+        );
+    const patterns = ((args.patterns as string[] | undefined) ?? []).map(
+        (pattern) => new RegExp(pattern),
+    );
+    if (patterns.length > 0) {
+        for (const subject of subjects)
+            if (!patterns.some((pattern) => pattern.test(subject)))
+                problems.push(`No pattern matches "${subject}".`);
+        for (const pattern of patterns)
+            if (!subjects.some((subject) => pattern.test(subject)))
+                problems.push(`No new commit matches ${pattern}.`);
+    }
+    return verdict(problems, `New commits: ${subjects.join(" | ")}`);
+}
+
+// The local `args.target` at the end is one new commit on the target at
+// the start. It changes exactly the files that `args.branch` at the start
+// changes against that target, with the same blobs.
+function squashMerged(run: Run, args: Record<string, unknown>): Verdict {
+    const target = String(args.target);
+    const base = commitOf(run, target) ?? "";
+    const tip = commitOf(run, String(args.branch)) ?? "";
+    const commit = run.after.commits.find(
+        (item) => item.sha === run.after.refs[`${HEADS}${target}`],
+    );
+    const baseTree = run.before.trees[base] ?? {};
+    const tipTree = run.before.trees[tip] ?? {};
+    if (!commit || run.before.commits.some((item) => item.sha === commit.sha))
+        return { passed: false, evidence: `${target} has no new commit.` };
+    const problems: string[] = [];
+    if (JSON.stringify(commit.parents) !== JSON.stringify([base]))
+        problems.push(
+            `The parents are ${commit.parents.join(", ")}, not ${base}.`,
+        );
+    const expected = [
+        ...new Set([...Object.keys(baseTree), ...Object.keys(tipTree)]),
+    ]
+        .filter((path) => baseTree[path] !== tipTree[path])
+        .map((path) => `${path} ${tipTree[path] ?? "deleted"}`)
+        .sort();
+    const actual = commit.files
+        .map((file) => `${file.path} ${file.blob ?? "deleted"}`)
+        .sort();
+    if (JSON.stringify(actual) !== JSON.stringify(expected))
+        problems.push(
+            `The commit changes ${actual.join(", ")}, not ${expected.join(", ")}.`,
+        );
+    return verdict(
+        problems,
+        `${target} is one squash commit of ${String(args.branch)}.`,
+    );
+}
+
 export const checks: Record<string, Check> = {
     skillLoadedFirst,
     policyReadFirst,
@@ -476,4 +653,10 @@ export const checks: Record<string, Check> = {
     policyUnchanged,
     reportNames,
     noChange,
+    mergedWith,
+    tagAt,
+    pushed,
+    branchDeleted,
+    newCommits,
+    squashMerged,
 };
