@@ -639,6 +639,89 @@ function squashMerged(run: Run, args: Record<string, unknown>): Verdict {
     );
 }
 
+// One new pull request with the base `args.base` and the head `args.head`.
+// When `args` has `autoMerge`, its auto-merge method is that value: for
+// example "MERGE" or "SQUASH", or null for no auto-merge.
+function prCreated(run: Run, args: Record<string, unknown>): Verdict {
+    const old = new Set(run.prsBefore.map((pr) => pr.number));
+    const created = run.prsAfter.filter((pr) => !old.has(pr.number));
+    const matches = created.filter(
+        (pr) => pr.baseRefName === args.base && pr.headRefName === args.head,
+    );
+    const list = created
+        .map((pr) => `#${pr.number} ${pr.headRefName} -> ${pr.baseRefName}`)
+        .join(", ");
+    if (matches.length !== 1)
+        return {
+            passed: false,
+            evidence: `New pull requests: ${list || "none"}.`,
+        };
+    const method = (matches[0] as Pr).autoMergeRequest?.mergeMethod ?? null;
+    return verdict(
+        "autoMerge" in args && method !== args.autoMerge
+            ? [
+                  `The auto-merge method is ${method ?? "none"}, not ${String(args.autoMerge ?? "none")}.`,
+              ]
+            : [],
+        `New pull requests: ${list}.`,
+    );
+}
+
+// No `gh pr <command>` call for each of `args.commands`.
+function noGhCall(run: Run, args: Record<string, unknown>): Verdict {
+    const commands = args.commands as string[];
+    return verdict(
+        run.ghCalls
+            .filter(
+                (call) => call[0] === "pr" && commands.includes(call[1] ?? ""),
+            )
+            .map((call) => `gh call: gh ${call.join(" ")}`),
+        `No gh pr ${commands.join(", ")} call.`,
+    );
+}
+
+function noNewTag(run: Run): Verdict {
+    return verdict(
+        newNames(run, TAGS).map((name) => `New tag: ${name}`),
+        "No new tag, local or on origin.",
+    );
+}
+
+// Each of `args.branches` is at its start commit at the end, local and on
+// origin.
+function branchesKept(run: Run, args: Record<string, unknown>): Verdict {
+    const problems = (args.branches as string[]).flatMap((name) => {
+        const ref = `${HEADS}${name}`;
+        return [
+            ["local", run.before.refs, run.after.refs],
+            ["origin", run.before.origin, run.after.origin],
+        ].flatMap(([place, before, after]) => {
+            const was = (before as Record<string, string>)[ref];
+            const now = (after as Record<string, string>)[ref];
+            return was !== undefined && was === now
+                ? []
+                : [`${name} (${place}): ${was ?? "none"} -> ${now ?? "none"}`];
+        });
+    });
+    return verdict(problems, "Each branch stays, local and on origin.");
+}
+
+// A shell command of the run matches the regular expression `args.pattern`.
+function ranCommand(run: Run, args: Record<string, unknown>): Verdict {
+    const pattern = new RegExp(String(args.pattern));
+    const found = run.calls.find(
+        (call) =>
+            call.name.toLowerCase() === "bash" &&
+            pattern.test(String(call.input.command ?? "")),
+    );
+    return found
+        ? {
+              passed: true,
+              evidence: `Command: ${String(found.input.command)}`,
+          }
+        : { passed: false, evidence: `No command matches ${pattern}.` };
+}
+
 export const checks: Record<string, Check> = {
     skillLoadedFirst,
     policyReadFirst,
@@ -659,4 +742,9 @@ export const checks: Record<string, Check> = {
     branchDeleted,
     newCommits,
     squashMerged,
+    prCreated,
+    noGhCall,
+    noNewTag,
+    branchesKept,
+    ranCommand,
 };

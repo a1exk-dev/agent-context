@@ -700,6 +700,136 @@ describe("Finish checks", () => {
     });
 });
 
+describe("pull request mode checks", () => {
+    const open = pr({
+        number: 2,
+        state: "OPEN",
+        headRefName: "feature/search",
+        baseRefName: "develop",
+    });
+
+    it("prCreated passes for one new pull request with its base and head", () => {
+        const value = run({ prsAfter: [open] });
+        expect(
+            check("prCreated", value, {
+                base: "develop",
+                head: "feature/search",
+            }),
+        ).toBe(true);
+        expect(
+            check("prCreated", value, { base: "main", head: "feature/search" }),
+        ).toBe(false);
+        expect(
+            check("prCreated", run({ prsBefore: [open], prsAfter: [open] }), {
+                base: "develop",
+                head: "feature/search",
+            }),
+        ).toBe(false);
+    });
+
+    it("prCreated examines the auto-merge method when args give it", () => {
+        const auto = { ...open, autoMergeRequest: { mergeMethod: "MERGE" } };
+        const args = { base: "develop", head: "feature/search" };
+        expect(
+            check("prCreated", run({ prsAfter: [auto] }), {
+                ...args,
+                autoMerge: "MERGE",
+            }),
+        ).toBe(true);
+        expect(
+            check("prCreated", run({ prsAfter: [open] }), {
+                ...args,
+                autoMerge: "MERGE",
+            }),
+        ).toBe(false);
+        expect(
+            check("prCreated", run({ prsAfter: [auto] }), {
+                ...args,
+                autoMerge: null,
+            }),
+        ).toBe(false);
+    });
+
+    it("noGhCall fails for a gh pr call with a named command", () => {
+        const value = run({
+            ghCalls: [
+                ["pr", "list"],
+                ["pr", "merge", "2", "--auto"],
+            ],
+        });
+        expect(check("noGhCall", value, { commands: ["create"] })).toBe(true);
+        expect(check("noGhCall", value, { commands: ["merge"] })).toBe(false);
+    });
+
+    it("noNewTag fails for a new tag, local or on origin", () => {
+        const tagged = state({
+            refs: heads({ main: S, develop: S, "v1.2.0": S, "v1.3.0": S }),
+        });
+        expect(check("noNewTag", run())).toBe(true);
+        expect(check("noNewTag", run({ after: tagged }))).toBe(false);
+        expect(
+            check(
+                "noNewTag",
+                run({
+                    after: state({
+                        origin: heads({ main: S, "v1.3.0": S }),
+                    }),
+                }),
+            ),
+        ).toBe(false);
+    });
+
+    it("branchesKept fails when a branch is gone or moved, local or on origin", () => {
+        const refs = heads({ main: S, develop: S, "feature/b": X });
+        const before = state({ refs, origin: refs });
+        const args = { branches: ["feature/b"] };
+        expect(
+            check("branchesKept", run({ before, after: before }), args),
+        ).toBe(true);
+        expect(
+            check(
+                "branchesKept",
+                run({
+                    before,
+                    after: state({ refs, origin: heads({ main: S }) }),
+                }),
+                args,
+            ),
+        ).toBe(false);
+        expect(
+            check(
+                "branchesKept",
+                run({
+                    before,
+                    after: state({
+                        refs: heads({ main: S, develop: S, "feature/b": Y }),
+                        origin: refs,
+                    }),
+                }),
+                args,
+            ),
+        ).toBe(false);
+    });
+
+    it("ranCommand passes when a shell command matches the pattern", () => {
+        const args = { pattern: "git\\s+fetch\\b.*(--prune|\\s-p\\b)" };
+        expect(
+            check(
+                "ranCommand",
+                run({ calls: [skill, bash("git fetch --prune origin")] }),
+                args,
+            ),
+        ).toBe(true);
+        expect(
+            check(
+                "ranCommand",
+                run({ calls: [skill, bash("git fetch origin")] }),
+                args,
+            ),
+        ).toBe(false);
+    });
+});
+
 describe("noChange", () => {
     it("passes when the run changed no ref, file, or pull request", () => {
         expect(check("noChange", run())).toBe(true);
