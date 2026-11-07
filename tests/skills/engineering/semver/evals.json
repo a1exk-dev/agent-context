@@ -1,0 +1,2038 @@
+{
+    "skill_name": "semver",
+    "common_assertions": [
+        {
+            "id": "V1",
+            "text": "The Skill was loaded (Skill call or `SKILL.md` read) before the first `git switch -c`, `git checkout -b`, `git branch <name>`, `git merge`, `git tag`, `git push`, `gh pr create`, `gh pr merge`, or `gh pr close`, and before the final report.",
+            "grader": "script",
+            "check": "skillLoadedFirst"
+        },
+        {
+            "id": "V2",
+            "text": "When the policy file exists at the start, the run read it before the first command of V1 and before the final report.",
+            "grader": "script",
+            "check": "policyReadFirst"
+        },
+        {
+            "id": "V3",
+            "text": "No file changed in the working tree except `docs/agents/semver-policy.md`, and that file is not staged. `CHANGELOG.md` and `package.json` are unchanged on every branch. Finish merges and Back-merge resolutions are the only new commits.",
+            "grader": "script",
+            "check": "onlyAllowedChanges"
+        },
+        {
+            "id": "V4",
+            "text": "No force push, no `--no-verify`, no `-X ours` or `-X theirs`, no rewrite of a commit that `origin` contains, and no deleted branch that fails the cleanup test.",
+            "grader": "script",
+            "check": "safeHistory"
+        },
+        {
+            "id": "V5",
+            "text": "Each new branch and tag follows the policy: the prefixes `feature/`, `bugfix/`, `release/X.Y.Z`, `hotfix/<name>`, the Tag prefix, and `X.Y.Z` versions with no pre-release or build part.",
+            "grader": "script",
+            "check": "policyNames"
+        },
+        {
+            "id": "V6",
+            "text": "The final report gives the result (version, branch, merges, tags, pull requests, deleted and kept branches), or the reason that the job stopped and what it needs.",
+            "grader": "llm"
+        }
+    ],
+    "evals": [
+        {
+            "id": 1,
+            "name": "01-pick-feature-and-bugfix",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git switch -q develop",
+                    "git switch -q -c feature/search develop && echo 'export const search = true;' >> src/login.ts && git commit -qam 'Add search' && git switch -q develop && git merge -q --no-ff --no-edit feature/search && git branch -q -d feature/search",
+                    "git switch -q -c bugfix/typo develop && echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'Fix the typo in the login check' && git switch -q develop && git merge -q --no-ff --no-edit bugfix/typo && git branch -q -d bugfix/typo",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "1.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "1.2",
+                    "text": "The report gives 1.3.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "02-pick-only-bugfix",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git switch -q develop",
+                    "git switch -q -c bugfix/typo develop && echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'Fix the typo in the login check' && git switch -q develop && git merge -q --no-ff --no-edit bugfix/typo && git branch -q -d bugfix/typo",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "2.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "2.2",
+                    "text": "The report gives 1.2.1 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "03-pick-breaking",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git switch -q develop",
+                    "git switch -q -c feature/api develop && echo 'export const apiVersion = 2;' >> src/login.ts && git commit -qam 'feat!: remove the v1 API' && git switch -q develop && git merge -q --no-ff --no-edit feature/api && git branch -q -d feature/api",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "3.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "3.2",
+                    "text": "The report gives 2.0.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "04-pick-breaking-before-1-minor",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/04-breaking-before-1-minor",
+                "steps": [
+                    "git tag -d v1.2.0 && git push -q origin :refs/tags/v1.2.0 && git tag v0.4.0 && git push -q origin v0.4.0",
+                    "git switch -q develop",
+                    "git switch -q -c feature/api develop && echo 'export const apiVersion = 2;' >> src/login.ts && git commit -qam 'feat!: remove the v1 API' && git switch -q develop && git merge -q --no-ff --no-edit feature/api && git branch -q -d feature/api",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "4.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "4.2",
+                    "text": "The report gives 0.5.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "05-pick-breaking-before-1-major",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git tag -d v1.2.0 && git push -q origin :refs/tags/v1.2.0 && git tag v0.4.0 && git push -q origin v0.4.0",
+                    "git switch -q develop",
+                    "git switch -q -c feature/api develop && echo 'export const apiVersion = 2;' >> src/login.ts && git commit -qam 'feat!: remove the v1 API' && git switch -q develop && git merge -q --no-ff --no-edit feature/api && git branch -q -d feature/api",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "5.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "5.2",
+                    "text": "The report gives 1.0.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "name": "06-pick-github-and-header-messages",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git switch -q develop",
+                    "git switch -q -c feature/search develop && echo 'export const search = true;' >> src/login.ts && git commit -qam 'Add search' && git switch -q develop && git merge -q --no-ff -m 'Merge pull request #5 from example/feature/search' -m 'Add search' feature/search && git branch -q -d feature/search",
+                    "git switch -q -c bugfix/typo develop && echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'Fix the typo in the login check' && git switch -q develop && git merge -q --no-ff -m 'chore: merge bugfix/typo into develop (#6)' bugfix/typo && git branch -q -d bugfix/typo",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "6.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "6.2",
+                    "text": "The report gives 1.3.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "name": "07-start-release-direct-commit",
+            "prompt": "Start the next release.",
+            "setup": {
+                "overlay": "fixtures/07-direct-commit",
+                "steps": [
+                    "git switch -q develop",
+                    "git switch -q -c feature/search develop && echo 'export const search = true;' >> src/login.ts && git commit -qam 'Add search' && git switch -q develop && git merge -q --no-ff --no-edit feature/search && git branch -q -d feature/search",
+                    "echo '// Rejects an empty password.' >> src/login.ts && git commit -qam 'Correct the login check'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "7.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "7.2",
+                    "text": "The report says that a commit on `develop` came from no merged branch, and names that commit (`Correct the login check` or its SHA).",
+                    "grader": "llm"
+                },
+                {
+                    "id": "7.3",
+                    "text": "The report gives no next version as the result of Pick, and asks the caller for the version of the release.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "7.4",
+                    "text": "The report gives the `Breaking definition` value `CLI flags, config file format`.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["CLI flags, config file format"]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "name": "08-pick-skips-back-merge",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git tag -d v1.2.0 && echo 'export const version = \"1.2.0\";' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.2.0' && git tag v1.2.0 && git push -q origin main && git push -q -f origin refs/tags/v1.2.0",
+                    "git switch -q develop",
+                    "git merge -q --no-ff --no-edit v1.2.0",
+                    "git switch -q -c bugfix/typo develop && echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'Fix the typo in the login check' && git switch -q develop && git merge -q --no-ff --no-edit bugfix/typo && git branch -q -d bugfix/typo",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "8.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "8.2",
+                    "text": "The report gives 1.2.1 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "name": "09-pick-squash-highest-bump",
+            "prompt": "What is the next version?",
+            "setup": {
+                "steps": [
+                    "git tag v1.2.3 && git push -q origin v1.2.3",
+                    "git switch -q develop",
+                    "echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'fix: correct the comment of the login check (#6)'",
+                    "echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search (#7)'",
+                    "printf '# Usage\\n' > docs/usage.md && git add docs/usage.md && git commit -qm 'docs: add the usage guide (#8)'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "9.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "9.2",
+                    "text": "The report gives 1.3.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "name": "10-pick-squash-breaking-footer",
+            "prompt": "What is the next version?",
+            "setup": {
+                "steps": [
+                    "git switch -q develop",
+                    "echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'fix: correct the comment of the login check (#6)'",
+                    "echo 'export type LoginOptions = { user: string; password: string };' >> src/login.ts && git commit -qam 'feat: accept login options (#7)' -m 'BREAKING CHANGE: login takes a LoginOptions object.'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "10.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "10.2",
+                    "text": "The report gives 2.0.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "name": "11-start-release-no-bump",
+            "prompt": "Start the next release.",
+            "setup": {
+                "overlay": "fixtures/11-no-bump",
+                "steps": [
+                    "git switch -q develop",
+                    "printf '# Usage\\n' > docs/usage.md && git add docs/usage.md && git commit -qm 'docs: add the usage guide (#6)'",
+                    "printf 'root = true\\n' > .editorconfig && git add .editorconfig && git commit -qm 'chore: add the editor settings (#7)'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "11.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "11.2",
+                    "text": "The report says that no commit since the last release gives a bump (no `feat`, `fix`, or breaking commit).",
+                    "grader": "llm"
+                },
+                {
+                    "id": "11.3",
+                    "text": "The report gives no next version as the result of Pick, and asks the caller for the version of the release.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "11.4",
+                    "text": "The report gives the `Breaking definition` value `CLI flags, config file format`.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["CLI flags, config file format"]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "name": "12-pick-hotfix",
+            "prompt": "Which version does this hotfix get?",
+            "setup": {
+                "steps": [
+                    "git switch -q develop",
+                    "echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search (#7)'",
+                    "git push -q origin develop",
+                    "git switch -q -c hotfix/login main && echo '// Rejects an empty user name.' >> src/login.ts && git commit -qam 'fix: reject an empty user name'"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "12.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "12.2",
+                    "text": "The report gives 1.2.1 as the next version of the hotfix.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 13,
+            "name": "13-start-release-no-tag",
+            "prompt": "Start the next release.",
+            "setup": {
+                "steps": [
+                    "git tag -d v1.2.0 && git push -q origin :refs/tags/v1.2.0",
+                    "git switch -q develop",
+                    "echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search (#7)'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "13.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "13.2",
+                    "text": "The report says that no release tag exists, and asks the caller for the first version.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "13.3",
+                    "text": "The report gives the 2 first versions 0.1.0 and 1.0.0.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["0.1.0", "1.0.0"]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 14,
+            "name": "14-start-first-release",
+            "prompt": "Start release 0.1.0.",
+            "setup": {
+                "steps": [
+                    "git tag -d v1.2.0 && git push -q origin :refs/tags/v1.2.0",
+                    "git switch -q develop",
+                    "echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search (#7)'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "14.1",
+                    "text": "There is exactly one new local branch. Its name is `release/0.1.0`, it points at the commit of `develop`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": {
+                        "prefix": "release/",
+                        "base": "develop",
+                        "name": "release/0.1.0"
+                    }
+                },
+                {
+                    "id": "14.2",
+                    "text": "The new branch is not pushed: the refs of `origin` are unchanged.",
+                    "grader": "script",
+                    "check": "originUnchanged"
+                }
+            ]
+        },
+        {
+            "id": 15,
+            "name": "15-check-versions-and-branches",
+            "prompt": "Are `1.3.0-rc.1+build.5`, `01.2.3`, `release/1.3`, and `hotfix/login` valid here?",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "15.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "15.2",
+                    "text": "The report says that `1.3.0-rc.1+build.5` and `hotfix/login` are valid.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "15.3",
+                    "text": "The report says that `01.2.3` is not valid, because a number of a version has no leading zero.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "15.4",
+                    "text": "The report says that `release/1.3` is not valid, because a release branch name needs an `X.Y.Z` version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 16,
+            "name": "16-start-release-not-above",
+            "prompt": "Start release 1.1.0.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "16.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "16.2",
+                    "text": "The report says that the job stopped because 1.1.0 is not above the last release 1.2.0.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 17,
+            "name": "17-start-feature",
+            "prompt": "Start a feature branch for search.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "17.1",
+                    "text": "There is exactly one new local branch. Its name is `feature/<name>`, it points at the commit of `develop`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": {
+                        "prefix": "feature/",
+                        "base": "develop"
+                    }
+                },
+                {
+                    "id": "17.2",
+                    "text": "The new branch is not pushed: the refs of `origin` are unchanged.",
+                    "grader": "script",
+                    "check": "originUnchanged"
+                }
+            ]
+        },
+        {
+            "id": 18,
+            "name": "18-start-bugfix-no-development",
+            "prompt": "Start a bugfix branch for the login crash.",
+            "setup": {
+                "overlay": "fixtures/18-no-development-branch",
+                "steps": [
+                    "git branch -D develop && git push -q origin --delete develop"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "18.1",
+                    "text": "There is exactly one new local branch. Its name is `bugfix/<name>`, it points at the commit of `main`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": {
+                        "prefix": "bugfix/",
+                        "base": "main"
+                    }
+                },
+                {
+                    "id": "18.2",
+                    "text": "The new branch is not pushed: the refs of `origin` are unchanged.",
+                    "grader": "script",
+                    "check": "originUnchanged"
+                }
+            ]
+        },
+        {
+            "id": 19,
+            "name": "19-start-second-release",
+            "prompt": "Start release 1.4.0.",
+            "setup": {
+                "steps": [
+                    "git switch -q develop",
+                    "echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search (#7)'",
+                    "git push -q origin develop",
+                    "git branch release/1.3.0 develop && git push -q origin release/1.3.0 && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "19.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "19.2",
+                    "text": "The report names the open branch `release/1.3.0`.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["release/1.3.0"]
+                    }
+                },
+                {
+                    "id": "19.3",
+                    "text": "The report says that the job stopped because the release branch `release/1.3.0` is still open.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 20,
+            "name": "20-start-hotfix-off",
+            "prompt": "Start a hotfix for the login crash.",
+            "setup": {
+                "overlay": "fixtures/20-hotfix-off"
+            },
+            "assertions": [
+                {
+                    "id": "20.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "20.2",
+                    "text": "The report names the Setting `Hotfix branches`.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["Hotfix branches"]
+                    }
+                },
+                {
+                    "id": "20.3",
+                    "text": "The report says that the job stopped because the Semver policy has `Hotfix branches: off`.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 21,
+            "name": "21-start-hotfix",
+            "prompt": "Start a hotfix for the login crash.",
+            "setup": {
+                "steps": ["git switch -q develop"]
+            },
+            "assertions": [
+                {
+                    "id": "21.1",
+                    "text": "There is exactly one new local branch. Its name is `hotfix/<name>`, it points at the commit of `main`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": {
+                        "prefix": "hotfix/",
+                        "base": "main"
+                    }
+                },
+                {
+                    "id": "21.2",
+                    "text": "The name of the new `hotfix/*` branch has no version.",
+                    "grader": "script",
+                    "check": "noVersionInName",
+                    "args": {
+                        "prefix": "hotfix/"
+                    }
+                },
+                {
+                    "id": "21.3",
+                    "text": "The new branch is not pushed: the refs of `origin` are unchanged.",
+                    "grader": "script",
+                    "check": "originUnchanged"
+                }
+            ]
+        },
+        {
+            "id": 22,
+            "name": "22-start-release-not-xyz",
+            "prompt": "Start release 1.3.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "22.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "22.2",
+                    "text": "The report says that the job stopped because 1.3 is not an `X.Y.Z` version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 23,
+            "name": "23-finish-feature-local",
+            "prompt": "Finish feature/search.",
+            "setup": {
+                "overlay": "fixtures/finish-local",
+                "steps": [
+                    "git switch -q -c feature/search develop && echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search' && printf 'export const searchLimit = 10;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add the search limit' && git push -q -u origin feature/search",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "23.1",
+                    "text": "The local `develop` is one new commit with one parent, the `develop` of the start. It holds the changes of the 2 commits of `feature/search`, and no other change.",
+                    "grader": "script",
+                    "check": "squashMerged",
+                    "args": {
+                        "branch": "feature/search",
+                        "target": "develop"
+                    }
+                },
+                {
+                    "id": "23.2",
+                    "text": "The run made exactly 1 new commit.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 1
+                    }
+                },
+                {
+                    "id": "23.3",
+                    "text": "`origin` has the same commit as the local repository for `develop`.",
+                    "grader": "script",
+                    "check": "pushed",
+                    "args": {
+                        "refs": ["develop"]
+                    }
+                },
+                {
+                    "id": "23.4",
+                    "text": "`feature/search` is deleted, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchDeleted",
+                    "args": {
+                        "branch": "feature/search"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 24,
+            "name": "24-finish-release-local",
+            "prompt": "Finish the release.",
+            "setup": {
+                "overlay": "fixtures/finish-local",
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "24.1",
+                    "text": "The local `main` is a new merge commit. Its first parent is `main` at the start, and its second parent is the branch `release/1.3.0`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "main",
+                        "second": "release/1.3.0"
+                    }
+                },
+                {
+                    "id": "24.2",
+                    "text": "The tag `v1.3.0`, local and on `origin`, is on the new commit of `main`.",
+                    "grader": "script",
+                    "check": "tagAt",
+                    "args": {
+                        "tag": "v1.3.0",
+                        "branch": "main"
+                    }
+                },
+                {
+                    "id": "24.3",
+                    "text": "The local `develop` is a new merge commit. Its first parent is `develop` at the start, and its second parent is the tag `v1.3.0`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "develop",
+                        "second": "v1.3.0"
+                    }
+                },
+                {
+                    "id": "24.4",
+                    "text": "The run made exactly 2 new commits.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 2
+                    }
+                },
+                {
+                    "id": "24.5",
+                    "text": "`origin` has the same commit as the local repository for `main`, `develop`, `v1.3.0`.",
+                    "grader": "script",
+                    "check": "pushed",
+                    "args": {
+                        "refs": ["main", "develop", "v1.3.0"]
+                    }
+                },
+                {
+                    "id": "24.6",
+                    "text": "`release/1.3.0` is deleted, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchDeleted",
+                    "args": {
+                        "branch": "release/1.3.0"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 25,
+            "name": "25-finish-hotfix-open-release",
+            "prompt": "Finish the hotfix.",
+            "setup": {
+                "overlay": "fixtures/finish-local",
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q -c hotfix/login main && echo '// Rejects an empty user name.' >> src/login.ts && git commit -qam 'fix: reject an empty user name' && git push -q -u origin hotfix/login",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "25.1",
+                    "text": "The local `main` is a new merge commit. Its first parent is `main` at the start, and its second parent is the branch `hotfix/login`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "main",
+                        "second": "hotfix/login"
+                    }
+                },
+                {
+                    "id": "25.2",
+                    "text": "The tag `v1.2.1`, local and on `origin`, is on the new commit of `main`.",
+                    "grader": "script",
+                    "check": "tagAt",
+                    "args": {
+                        "tag": "v1.2.1",
+                        "branch": "main"
+                    }
+                },
+                {
+                    "id": "25.3",
+                    "text": "The local `develop` is a new merge commit. Its first parent is `develop` at the start, and its second parent is the tag `v1.2.1`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "develop",
+                        "second": "v1.2.1"
+                    }
+                },
+                {
+                    "id": "25.4",
+                    "text": "The local `release/1.3.0` is a new merge commit. Its first parent is `release/1.3.0` at the start, and its second parent is the tag `v1.2.1`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "release/1.3.0",
+                        "second": "v1.2.1"
+                    }
+                },
+                {
+                    "id": "25.5",
+                    "text": "The run made exactly 3 new commits.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 3
+                    }
+                },
+                {
+                    "id": "25.6",
+                    "text": "`origin` has the same commit as the local repository for `main`, `develop`, `release/1.3.0`, `v1.2.1`.",
+                    "grader": "script",
+                    "check": "pushed",
+                    "args": {
+                        "refs": ["main", "develop", "release/1.3.0", "v1.2.1"]
+                    }
+                },
+                {
+                    "id": "25.7",
+                    "text": "`hotfix/login` is deleted, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchDeleted",
+                    "args": {
+                        "branch": "hotfix/login"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 26,
+            "name": "26-finish-hotfix-no-development",
+            "prompt": "Finish the hotfix.",
+            "setup": {
+                "overlay": "fixtures/26-finish-no-development",
+                "steps": [
+                    "git branch -D develop && git push -q origin --delete develop",
+                    "git switch -q -c hotfix/login main && echo '// Rejects an empty user name.' >> src/login.ts && git commit -qam 'fix: reject an empty user name' && git push -q -u origin hotfix/login",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "26.1",
+                    "text": "The local `main` is a new merge commit. Its first parent is `main` at the start, and its second parent is the branch `hotfix/login`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "main",
+                        "second": "hotfix/login"
+                    }
+                },
+                {
+                    "id": "26.2",
+                    "text": "The tag `v1.2.1`, local and on `origin`, is on the new commit of `main`.",
+                    "grader": "script",
+                    "check": "tagAt",
+                    "args": {
+                        "tag": "v1.2.1",
+                        "branch": "main"
+                    }
+                },
+                {
+                    "id": "26.3",
+                    "text": "The run made exactly 1 new commit: no Back-merge.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 1
+                    }
+                },
+                {
+                    "id": "26.4",
+                    "text": "`origin` has the same commit as the local repository for `main`, `v1.2.1`.",
+                    "grader": "script",
+                    "check": "pushed",
+                    "args": {
+                        "refs": ["main", "v1.2.1"]
+                    }
+                },
+                {
+                    "id": "26.5",
+                    "text": "`hotfix/login` is deleted, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchDeleted",
+                    "args": {
+                        "branch": "hotfix/login"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 27,
+            "name": "27-finish-merge-message-rule",
+            "prompt": "Finish release/1.3.0.",
+            "setup": {
+                "overlay": "fixtures/27-merge-message-rule",
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "27.1",
+                    "text": "The local `main` is a new merge commit. Its first parent is `main` at the start, and its second parent is the branch `release/1.3.0`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "main",
+                        "second": "release/1.3.0"
+                    }
+                },
+                {
+                    "id": "27.2",
+                    "text": "The local `develop` is a new merge commit. Its first parent is `develop` at the start, and its second parent is the tag `v1.3.0`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "develop",
+                        "second": "v1.3.0"
+                    }
+                },
+                {
+                    "id": "27.3",
+                    "text": "The run made exactly 2 new commits, and the message of each starts with `merge: `.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 2,
+                        "patterns": ["^merge: "]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 28,
+            "name": "28-finish-default-messages",
+            "prompt": "Finish release/1.3.0.",
+            "setup": {
+                "overlay": "fixtures/finish-local",
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "28.1",
+                    "text": "The local `main` is a new merge commit. Its first parent is `main` at the start, and its second parent is the branch `release/1.3.0`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "main",
+                        "second": "release/1.3.0"
+                    }
+                },
+                {
+                    "id": "28.2",
+                    "text": "The local `develop` is a new merge commit. Its first parent is `develop` at the start, and its second parent is the tag `v1.3.0`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "develop",
+                        "second": "v1.3.0"
+                    }
+                },
+                {
+                    "id": "28.3",
+                    "text": "The run made exactly 2 new commits with the default Git messages: `Merge branch 'release/1.3.0'` and `Merge tag 'v1.3.0' into develop`.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 2,
+                        "patterns": [
+                            "^Merge branch 'release/1\\.3\\.0'",
+                            "^Merge tag 'v1\\.3\\.0' into develop$"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 29,
+            "name": "29-finish-feature-pull-request",
+            "prompt": "Finish feature/search.",
+            "setup": {
+                "steps": [
+                    "git switch -q -c feature/search develop && echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search' && git push -q -u origin feature/search",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "29.1",
+                    "text": "One new pull request has the base `develop` and the head `feature/search`.",
+                    "grader": "script",
+                    "check": "prCreated",
+                    "args": {
+                        "base": "develop",
+                        "head": "feature/search"
+                    }
+                },
+                {
+                    "id": "29.2",
+                    "text": "No `gh pr merge` call.",
+                    "grader": "script",
+                    "check": "noGhCall",
+                    "args": {
+                        "commands": ["merge"]
+                    }
+                },
+                {
+                    "id": "29.3",
+                    "text": "The run made no new commit: no local merge.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 0
+                    }
+                }
+            ]
+        },
+        {
+            "id": 30,
+            "name": "30-production-auto-merge",
+            "prompt": "Finish the release.",
+            "setup": {
+                "overlay": "fixtures/30-production-auto-merge",
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "30.1",
+                    "text": "One new pull request has the base `main` and the head `release/1.3.0`, with auto-merge by merge commit (`gh pr merge` with `--auto` and `--merge`).",
+                    "grader": "script",
+                    "check": "prCreated",
+                    "args": {
+                        "base": "main",
+                        "head": "release/1.3.0",
+                        "autoMerge": "MERGE"
+                    }
+                },
+                {
+                    "id": "30.2",
+                    "text": "No new tag, local or on `origin`.",
+                    "grader": "script",
+                    "check": "noNewTag"
+                },
+                {
+                    "id": "30.3",
+                    "text": "The run made no new commit: no local merge.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 0
+                    }
+                }
+            ]
+        },
+        {
+            "id": 31,
+            "name": "31-ci-tag-missing",
+            "prompt": "Finish the release.",
+            "setup": {
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main && git merge -q --no-ff -m 'Merge pull request #12 from example/release/1.3.0' release/1.3.0 && git push -q origin main"
+                ],
+                "prs": [
+                    {
+                        "number": 12,
+                        "headRefName": "release/1.3.0",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "main"
+                    }
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "31.1",
+                    "text": "No new tag, local or on `origin`.",
+                    "grader": "script",
+                    "check": "noNewTag"
+                },
+                {
+                    "id": "31.2",
+                    "text": "No `gh pr create`, `gh pr merge`, or `gh pr close` call.",
+                    "grader": "script",
+                    "check": "noGhCall",
+                    "args": {
+                        "commands": ["create", "merge", "close"]
+                    }
+                },
+                {
+                    "id": "31.3",
+                    "text": "The report says that the tag `v1.3.0` is missing, and that the Back-merge pull request from `main` into `develop` is missing.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 32,
+            "name": "32-skill-tags-and-back-merges",
+            "prompt": "Finish the release.",
+            "setup": {
+                "overlay": "fixtures/32-tag-skill",
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main && git merge -q --no-ff -m 'Merge pull request #12 from example/release/1.3.0' release/1.3.0 && git push -q origin main"
+                ],
+                "prs": [
+                    {
+                        "number": 12,
+                        "headRefName": "release/1.3.0",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "main"
+                    }
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "32.1",
+                    "text": "The tag `v1.3.0`, local and on `origin`, is on the merge commit of `main`.",
+                    "grader": "script",
+                    "check": "tagAt",
+                    "args": {
+                        "tag": "v1.3.0",
+                        "branch": "main"
+                    }
+                },
+                {
+                    "id": "32.2",
+                    "text": "One new pull request has the base `develop` and the head `main`.",
+                    "grader": "script",
+                    "check": "prCreated",
+                    "args": {
+                        "base": "develop",
+                        "head": "main"
+                    }
+                },
+                {
+                    "id": "32.3",
+                    "text": "The run made no new commit.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 0
+                    }
+                }
+            ]
+        },
+        {
+            "id": 33,
+            "name": "33-finish-confirm-no-human",
+            "prompt": "Finish the release.",
+            "setup": {
+                "overlay": "fixtures/33-finish-confirm",
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "33.1",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "33.2",
+                    "text": "The report gives the plan: a pull request from `release/1.3.0` into `main`, the tag `v1.3.0`, and the Back-merge into `develop`.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 34,
+            "name": "34-back-merge-conflict-confirm",
+            "prompt": "Finish the hotfix.",
+            "setup": {
+                "overlay": "fixtures/finish-local",
+                "steps": [
+                    "git switch -q develop && printf 'export function login(user: string, password: string): boolean {\\n    return user.length > 0 && password.length >= 8;\\n}\\n' > src/login.ts && git commit -qam 'feat: require 8 characters in a password (#7)' && git push -q origin develop",
+                    "git switch -q -c hotfix/login main && printf 'export function login(user: string, password: string): boolean {\\n    return user.trim().length > 0 && password.length > 0;\\n}\\n' > src/login.ts && git commit -qam 'fix: reject a blank user name' && git push -q -u origin hotfix/login",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "34.1",
+                    "text": "The local `main` is a new merge commit. Its first parent is `main` at the start, and its second parent is the branch `hotfix/login`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "main",
+                        "second": "hotfix/login"
+                    }
+                },
+                {
+                    "id": "34.2",
+                    "text": "The tag `v1.2.1`, local and on `origin`, is on the new commit of `main`.",
+                    "grader": "script",
+                    "check": "tagAt",
+                    "args": {
+                        "tag": "v1.2.1",
+                        "branch": "main"
+                    }
+                },
+                {
+                    "id": "34.3",
+                    "text": "The local `bugfix/back-merge-v1.2.1` is a new merge commit. Its first parent is `develop` at the start, and its second parent is the tag `v1.2.1`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "bugfix/back-merge-v1.2.1",
+                        "first": "develop",
+                        "second": "v1.2.1"
+                    }
+                },
+                {
+                    "id": "34.4",
+                    "text": "No file of a branch or tag commit has a conflict marker line.",
+                    "grader": "script",
+                    "check": "noConflictMarkers"
+                },
+                {
+                    "id": "34.5",
+                    "text": "`bugfix/back-merge-v1.2.1` exists as a local branch and not on `origin`.",
+                    "grader": "script",
+                    "check": "branchWhere",
+                    "args": {
+                        "branch": "bugfix/back-merge-v1.2.1",
+                        "local": true,
+                        "origin": false
+                    }
+                },
+                {
+                    "id": "34.6",
+                    "text": "`develop` stays at its start commit, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchesKept",
+                    "args": {
+                        "branches": ["develop"]
+                    }
+                },
+                {
+                    "id": "34.7",
+                    "text": "The report gives `src/login.ts` as the file with a conflict, and tells that `bugfix/back-merge-v1.2.1` is not pushed.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 35,
+            "name": "35-back-merge-conflict-automatic",
+            "prompt": "Finish the hotfix.",
+            "setup": {
+                "overlay": "fixtures/35-back-merge-automatic",
+                "steps": [
+                    "git switch -q develop && printf 'export function login(user: string, password: string): boolean {\\n    return user.length > 0 && password.length >= 8;\\n}\\n' > src/login.ts && git commit -qam 'feat: require 8 characters in a password (#7)' && git push -q origin develop",
+                    "git switch -q -c hotfix/login main && printf 'export function login(user: string, password: string): boolean {\\n    return user.trim().length > 0 && password.length > 0;\\n}\\n' > src/login.ts && git commit -qam 'fix: reject a blank user name' && git push -q -u origin hotfix/login",
+                    "git switch -q main && git merge -q --no-ff -m 'Merge pull request #12 from example/hotfix/login' hotfix/login && git tag v1.2.1 && git push -q origin main v1.2.1"
+                ],
+                "prs": [
+                    {
+                        "number": 12,
+                        "headRefName": "hotfix/login",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "main"
+                    },
+                    {
+                        "number": 13,
+                        "title": "Merge tag v1.2.1 into develop",
+                        "headRefName": "main",
+                        "baseRefName": "develop",
+                        "state": "OPEN",
+                        "mergeable": "CONFLICTING"
+                    }
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "35.1",
+                    "text": "The local `bugfix/back-merge-v1.2.1` is a new merge commit. Its first parent is `develop` at the start, and its second parent is the tag `v1.2.1`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "bugfix/back-merge-v1.2.1",
+                        "first": "develop",
+                        "second": "v1.2.1"
+                    }
+                },
+                {
+                    "id": "35.2",
+                    "text": "No file of a branch or tag commit has a conflict marker line.",
+                    "grader": "script",
+                    "check": "noConflictMarkers"
+                },
+                {
+                    "id": "35.3",
+                    "text": "`origin` has the same commit as the local repository for `bugfix/back-merge-v1.2.1`.",
+                    "grader": "script",
+                    "check": "pushed",
+                    "args": {
+                        "refs": ["bugfix/back-merge-v1.2.1"]
+                    }
+                },
+                {
+                    "id": "35.4",
+                    "text": "One new pull request has the base `develop` and the head `bugfix/back-merge-v1.2.1`, with auto-merge by merge commit.",
+                    "grader": "script",
+                    "check": "prCreated",
+                    "args": {
+                        "base": "develop",
+                        "head": "bugfix/back-merge-v1.2.1",
+                        "autoMerge": "MERGE"
+                    }
+                },
+                {
+                    "id": "35.5",
+                    "text": "The old Back-merge pull request #13 is closed.",
+                    "grader": "script",
+                    "check": "prState",
+                    "args": {
+                        "number": 13,
+                        "state": "CLOSED"
+                    }
+                },
+                {
+                    "id": "35.6",
+                    "text": "The run made exactly 1 new commit.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 1
+                    }
+                },
+                {
+                    "id": "35.7",
+                    "text": "The report gives `src/login.ts` as the file with a conflict, the new pull request from `bugfix/back-merge-v1.2.1`, and the closed pull request #13.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 36,
+            "name": "36-back-merge-conflict-report",
+            "prompt": "Finish the hotfix.",
+            "setup": {
+                "overlay": "fixtures/36-back-merge-report",
+                "steps": [
+                    "git switch -q develop && printf 'export function login(user: string, password: string): boolean {\\n    return user.length > 0 && password.length >= 8;\\n}\\n' > src/login.ts && git commit -qam 'feat: require 8 characters in a password (#7)' && git push -q origin develop",
+                    "git switch -q -c hotfix/login main && printf 'export function login(user: string, password: string): boolean {\\n    return user.trim().length > 0 && password.length > 0;\\n}\\n' > src/login.ts && git commit -qam 'fix: reject a blank user name' && git push -q -u origin hotfix/login",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "36.1",
+                    "text": "The local `main` is a new merge commit. Its first parent is `main` at the start, and its second parent is the branch `hotfix/login`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "main",
+                        "second": "hotfix/login"
+                    }
+                },
+                {
+                    "id": "36.2",
+                    "text": "The tag `v1.2.1`, local and on `origin`, is on the new commit of `main`.",
+                    "grader": "script",
+                    "check": "tagAt",
+                    "args": {
+                        "tag": "v1.2.1",
+                        "branch": "main"
+                    }
+                },
+                {
+                    "id": "36.3",
+                    "text": "No new `bugfix/back-merge-` branch, local or on `origin`.",
+                    "grader": "script",
+                    "check": "noNewBranch",
+                    "args": {
+                        "prefix": "bugfix/back-merge-"
+                    }
+                },
+                {
+                    "id": "36.4",
+                    "text": "`develop` stays at its start commit, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchesKept",
+                    "args": {
+                        "branches": ["develop"]
+                    }
+                },
+                {
+                    "id": "36.5",
+                    "text": "The run made exactly 1 new commit.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 1
+                    }
+                },
+                {
+                    "id": "36.6",
+                    "text": "The report gives `src/login.ts` as the file with a conflict.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 37,
+            "name": "37-pick-reports-conflicting-back-merge",
+            "prompt": "What is the next version?",
+            "setup": {
+                "steps": [
+                    "git switch -q develop && printf 'export function login(user: string, password: string): boolean {\\n    return user.length > 0 && password.length >= 8;\\n}\\n' > src/login.ts && git commit -qam 'feat: require 8 characters in a password (#7)' && git push -q origin develop",
+                    "git switch -q -c hotfix/login main && printf 'export function login(user: string, password: string): boolean {\\n    return user.trim().length > 0 && password.length > 0;\\n}\\n' > src/login.ts && git commit -qam 'fix: reject a blank user name' && git push -q -u origin hotfix/login",
+                    "git switch -q main && git merge -q --no-ff -m 'Merge pull request #12 from example/hotfix/login' hotfix/login && git tag v1.2.1 && git push -q origin main v1.2.1"
+                ],
+                "prs": [
+                    {
+                        "number": 12,
+                        "headRefName": "hotfix/login",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "main"
+                    },
+                    {
+                        "number": 13,
+                        "title": "Merge tag v1.2.1 into develop",
+                        "headRefName": "main",
+                        "baseRefName": "develop",
+                        "state": "OPEN",
+                        "mergeable": "CONFLICTING"
+                    }
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "37.1",
+                    "text": "The job changed nothing: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "37.2",
+                    "text": "The report gives 1.3.0 as the next version.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "37.3",
+                    "text": "The report names the open Back-merge pull request #13 from `main` into `develop`, and tells that it has a conflict.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 38,
+            "name": "38-branch-cleanup",
+            "prompt": "Finish feature/search.",
+            "setup": {
+                "steps": [
+                    "git switch -q -c feature/search develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search' && git push -q -u origin feature/search",
+                    "git switch -q -c feature/a develop && printf 'export const a = 1;\\n' > src/a.ts && git add src/a.ts && git commit -qm 'feat: add a' && git push -q -u origin feature/a",
+                    "git switch -q -c feature/b develop && printf 'export const b = 1;\\n' > src/b.ts && git add src/b.ts && git commit -qm 'feat: add b' && printf 'export const b = 2;\\n' > src/b.ts && git commit -qam 'feat: change b' && git push -q -u origin feature/b",
+                    "git switch -q -c feature/open develop && printf 'export const open = 1;\\n' > src/open.ts && git add src/open.ts && git commit -qm 'feat: add open' && git push -q -u origin feature/open",
+                    "git switch -q -c hotfix/old main && echo '// Rejects an old token.' >> src/login.ts && git commit -qam 'fix: reject an old token' && git push -q -u origin hotfix/old",
+                    "git switch -q -c release/1.1.0 develop && printf 'export const version = \"1.1.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.1.0' && git push -q -u origin release/1.1.0",
+                    "git switch -q main && git merge -q --no-ff -m 'Merge pull request #13 from example/release/1.1.0' release/1.1.0 && git tag v1.1.0 && git switch -q develop && git merge -q --no-ff -m \"Merge tag 'v1.1.0' into develop\" v1.1.0 && git push -q origin main develop v1.1.0",
+                    "git switch -q develop && git merge -q --squash feature/a && git commit -qm 'feat: add a (#11)' && git push -q origin develop && git reset -q --hard HEAD~1",
+                    "git switch -q main"
+                ],
+                "prs": [
+                    {
+                        "number": 11,
+                        "headRefName": "feature/a",
+                        "baseRefName": "develop",
+                        "state": "MERGED",
+                        "mergeCommit": "origin/develop"
+                    },
+                    {
+                        "number": 12,
+                        "headRefName": "feature/b",
+                        "baseRefName": "develop",
+                        "state": "MERGED",
+                        "headRefOid": "feature/b~1"
+                    },
+                    {
+                        "number": 13,
+                        "headRefName": "release/1.1.0",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "v1.1.0"
+                    },
+                    {
+                        "number": 14,
+                        "headRefName": "hotfix/old",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "hotfix/old"
+                    },
+                    {
+                        "number": 15,
+                        "headRefName": "feature/open",
+                        "baseRefName": "develop",
+                        "state": "OPEN"
+                    }
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "38.1",
+                    "text": "`feature/a` is deleted, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchDeleted",
+                    "args": {
+                        "branch": "feature/a"
+                    }
+                },
+                {
+                    "id": "38.2",
+                    "text": "`release/1.1.0` is deleted, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchDeleted",
+                    "args": {
+                        "branch": "release/1.1.0"
+                    }
+                },
+                {
+                    "id": "38.3",
+                    "text": "`feature/b`, `hotfix/old`, and `feature/open` stay at their start commits, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchesKept",
+                    "args": {
+                        "branches": ["feature/b", "hotfix/old", "feature/open"]
+                    }
+                },
+                {
+                    "id": "38.4",
+                    "text": "The report names `feature/b`, `hotfix/old`, and `feature/open` as kept, each with its cause: the head commit of the pull request is not the branch tip, the tag is missing, and the pull request is open.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "38.5",
+                    "text": "The run used `git fetch --prune`.",
+                    "grader": "script",
+                    "check": "ranCommand",
+                    "args": {
+                        "pattern": "git\\s+fetch\\b[^\\n]*(--prune|\\s-p\\b)"
+                    }
+                },
+                {
+                    "id": "38.6",
+                    "text": "The local `develop` is at the same commit as `origin/develop`.",
+                    "grader": "script",
+                    "check": "pushed",
+                    "args": {
+                        "refs": ["develop"]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 39,
+            "name": "39-no-policy-pick",
+            "prompt": "What is the next version?",
+            "setup": {
+                "remove": ["docs"]
+            },
+            "assertions": [
+                {
+                    "id": "39.1",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "39.2",
+                    "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": [
+                            "Production branch",
+                            "Development branch",
+                            "Hotfix branches",
+                            "Tag prefix",
+                            "Development merge",
+                            "Production merge",
+                            "Finish mode",
+                            "Tag and back-merge",
+                            "Back-merge conflicts",
+                            "Development auto-merge",
+                            "Production auto-merge",
+                            "Finish approval",
+                            "Breaking before 1.0.0",
+                            "Breaking definition",
+                            "use the default semver policy"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 40,
+            "name": "40-no-policy-check",
+            "prompt": "Is 1.3.0 a valid version?",
+            "setup": {
+                "remove": ["docs"]
+            },
+            "assertions": [
+                {
+                    "id": "40.1",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "40.2",
+                    "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": [
+                            "Production branch",
+                            "Development branch",
+                            "Hotfix branches",
+                            "Tag prefix",
+                            "Development merge",
+                            "Production merge",
+                            "Finish mode",
+                            "Tag and back-merge",
+                            "Back-merge conflicts",
+                            "Development auto-merge",
+                            "Production auto-merge",
+                            "Finish approval",
+                            "Breaking before 1.0.0",
+                            "Breaking definition",
+                            "use the default semver policy"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 41,
+            "name": "41-no-policy-start",
+            "prompt": "Start a feature branch for search.",
+            "setup": {
+                "remove": ["docs"]
+            },
+            "assertions": [
+                {
+                    "id": "41.1",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "41.2",
+                    "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": [
+                            "Production branch",
+                            "Development branch",
+                            "Hotfix branches",
+                            "Tag prefix",
+                            "Development merge",
+                            "Production merge",
+                            "Finish mode",
+                            "Tag and back-merge",
+                            "Back-merge conflicts",
+                            "Development auto-merge",
+                            "Production auto-merge",
+                            "Finish approval",
+                            "Breaking before 1.0.0",
+                            "Breaking definition",
+                            "use the default semver policy"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 42,
+            "name": "42-no-policy-finish",
+            "prompt": "Finish feature/search.",
+            "setup": {
+                "remove": ["docs"],
+                "steps": [
+                    "git switch -q -c feature/search develop && echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search' && git push -q -u origin feature/search && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "42.1",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "42.2",
+                    "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": [
+                            "Production branch",
+                            "Development branch",
+                            "Hotfix branches",
+                            "Tag prefix",
+                            "Development merge",
+                            "Production merge",
+                            "Finish mode",
+                            "Tag and back-merge",
+                            "Back-merge conflicts",
+                            "Development auto-merge",
+                            "Production auto-merge",
+                            "Finish approval",
+                            "Breaking before 1.0.0",
+                            "Breaking definition",
+                            "use the default semver policy"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 43,
+            "name": "43-default-policy-master",
+            "prompt": "Use the default semver policy. Start a hotfix for the login crash.",
+            "setup": {
+                "remove": ["docs"],
+                "steps": [
+                    "git branch -m main master && git push -q -u origin master && git --git-dir=\"$(git remote get-url origin)\" symbolic-ref HEAD refs/heads/master && git push -q origin --delete main develop && git branch -q -D develop && git remote set-head origin master"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "43.1",
+                    "text": "The new policy file has the default values with `Production branch: master` and `Development branch: none`, in table order, and is not staged.",
+                    "grader": "script",
+                    "check": "policyFile",
+                    "args": {
+                        "text": "# Semver policy\n\n- Production branch: master\n- Development branch: none\n- Hotfix branches: on\n- Tag prefix: v\n- Development merge: squash\n- Production merge: merge commit\n- Finish mode: pull request\n- Tag and back-merge: CI\n- Back-merge conflicts: confirm\n- Development auto-merge: off\n- Production auto-merge: off\n- Finish approval: confirm\n- Breaking before 1.0.0: major\n- Breaking definition: default\n"
+                    }
+                },
+                {
+                    "id": "43.2",
+                    "text": "There is exactly one new local branch. Its name is `hotfix/<name>`, it points at the commit of `master`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": {
+                        "prefix": "hotfix/",
+                        "base": "master"
+                    }
+                },
+                {
+                    "id": "43.3",
+                    "text": "The name of the new `hotfix/*` branch has no version.",
+                    "grader": "script",
+                    "check": "noVersionInName",
+                    "args": {
+                        "prefix": "hotfix/"
+                    }
+                },
+                {
+                    "id": "43.4",
+                    "text": "The report gives the new policy file `docs/agents/semver-policy.md`.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 44,
+            "name": "44-policy-values-given",
+            "prompt": "Start a feature branch for search. There is no semver policy yet. Use these values for it:\n\n- Production branch: main\n- Development branch: develop\n- Hotfix branches: on\n- Tag prefix: v\n- Development merge: merge commit\n- Production merge: merge commit\n- Finish mode: local\n- Tag and back-merge: CI\n- Back-merge conflicts: report\n- Development auto-merge: off\n- Production auto-merge: off\n- Finish approval: confirm\n- Breaking before 1.0.0: major\n- Breaking definition: default",
+            "setup": {
+                "remove": ["docs"]
+            },
+            "assertions": [
+                {
+                    "id": "44.1",
+                    "text": "The new policy file holds exactly the 14 given values in table order, and is not staged.",
+                    "grader": "script",
+                    "check": "policyFile",
+                    "args": {
+                        "text": "# Semver policy\n\n- Production branch: main\n- Development branch: develop\n- Hotfix branches: on\n- Tag prefix: v\n- Development merge: merge commit\n- Production merge: merge commit\n- Finish mode: local\n- Tag and back-merge: CI\n- Back-merge conflicts: report\n- Development auto-merge: off\n- Production auto-merge: off\n- Finish approval: confirm\n- Breaking before 1.0.0: major\n- Breaking definition: default\n"
+                    }
+                },
+                {
+                    "id": "44.2",
+                    "text": "There is exactly one new local branch. Its name is `feature/<name>`, it points at the commit of `develop`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": {
+                        "prefix": "feature/",
+                        "base": "develop"
+                    }
+                },
+                {
+                    "id": "44.3",
+                    "text": "The report gives the new policy file `docs/agents/semver-policy.md`.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 45,
+            "name": "45-incorrect-lines",
+            "prompt": "Is 1.3.0 a valid version?",
+            "setup": {
+                "overlay": "fixtures/45-incorrect-lines"
+            },
+            "assertions": [
+                {
+                    "id": "45.1",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "45.2",
+                    "text": "The report gives each of these 3 incorrect lines with its line number: line 3 (the prose line), line 5 (`Production branch: main`), and line 6 (`Development branch: main`). Lines 5 and 6 are incorrect because the 2 branches have the same name.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "45.3",
+                    "text": "The report tells the Operator to correct the incorrect lines or to delete the policy file.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "45.4",
+                    "text": "The report does not say whether 1.3.0 is a valid version: the Check job stopped too.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 46,
+            "name": "46-invalid-branch-name",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/46-invalid-branch-name"
+            },
+            "assertions": [
+                {
+                    "id": "46.1",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "46.2",
+                    "text": "The report gives line 4 (`Development branch: feature..x`) as an incorrect line, with its line number.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "46.3",
+                    "text": "The report tells the Operator to correct the incorrect line or to delete the policy file.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "46.4",
+                    "text": "The report gives no next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 47,
+            "name": "47-missing-branch",
+            "prompt": "Is 1.3.0 a valid version? Then start a feature branch for search.",
+            "setup": {
+                "overlay": "fixtures/47-missing-branch"
+            },
+            "assertions": [
+                {
+                    "id": "47.1",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "47.2",
+                    "text": "The report says that 1.3.0 is a valid version.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "47.3",
+                    "text": "The report says that the feature branch was not started because the repository has no branch `dev`, and names `dev`.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 48,
+            "name": "48-old-policy",
+            "prompt": "Start a feature branch for search.",
+            "setup": {
+                "overlay": "fixtures/48-old-policy"
+            },
+            "assertions": [
+                {
+                    "id": "48.1",
+                    "text": "The policy file has the 2 missing lines `Back-merge conflicts: confirm` and `Breaking definition: default` added in table order, the other lines unchanged, and is not staged.",
+                    "grader": "script",
+                    "check": "policyFile",
+                    "args": {
+                        "text": "# Semver policy\n\n- Production branch: main\n- Development branch: develop\n- Hotfix branches: on\n- Tag prefix: v\n- Development merge: squash\n- Production merge: merge commit\n- Finish mode: pull request\n- Tag and back-merge: CI\n- Back-merge conflicts: confirm\n- Development auto-merge: off\n- Production auto-merge: off\n- Finish approval: automatic\n- Breaking before 1.0.0: major\n- Breaking definition: default\n"
+                    }
+                },
+                {
+                    "id": "48.2",
+                    "text": "There is exactly one new local branch. Its name is `feature/<name>`, it points at the commit of `develop`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": {
+                        "prefix": "feature/",
+                        "base": "develop"
+                    }
+                },
+                {
+                    "id": "48.3",
+                    "text": "The report names the change of the policy file: the 2 added lines.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 49,
+            "name": "49-no-host-tool",
+            "prompt": "Finish the release.",
+            "setup": {
+                "steps": [
+                    "git switch -q develop && printf 'export const search = true;\\n' > src/search.ts && git add src/search.ts && git commit -qm 'feat: add search (#7)' && git push -q origin develop",
+                    "git switch -q -c release/1.3.0 develop && printf 'export const version = \"1.3.0\";\\n' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.3.0' && git push -q -u origin release/1.3.0",
+                    "git switch -q main"
+                ],
+                "gh": false
+            },
+            "assertions": [
+                {
+                    "id": "49.1",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "49.2",
+                    "text": "The report gives the Setting `Finish mode`.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["Finish mode"]
+                    }
+                },
+                {
+                    "id": "49.3",
+                    "text": "The report says that the agent has no tool for the host of the project.",
+                    "grader": "llm"
+                }
+            ]
+        }
+    ]
+}

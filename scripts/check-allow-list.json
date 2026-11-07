@@ -444,12 +444,6 @@
         "cause": "The path is a file in a project that installs the Skill."
     },
     {
-        "path": "AGENTS.md",
-        "rule": "6.2",
-        "text": "When you write this message, obey each Setting of the Commit policy, `docs/agents/commit-policy.md`, that controls the message.",
-        "cause": "Commit policy is the name that the git-commit Skill gives its Policy, and the git-commit Skill reads the title `# Commit policy`."
-    },
-    {
         "path": "docs/agents/commit-policy.md",
         "rule": "6.2",
         "text": "Commit policy",
@@ -568,5 +562,107 @@
         "rule": "1.8",
         "text": "A **conversion** is a Write job that corrects each finding in the full changelog, also in the old lines.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "MEMORY.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "For a TypeScript script, state \"Requires Node.js 22.18 or later\" in `SKILL.md` and call the script with `node`.",
+        "cause": "The path names a kind of file or a folder of other projects, not a file of this repo."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/plain-language-checks.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/ste-rules.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Operator** is the person who controls a project and the agents that operate in it.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "The **caller** is the Operator or the agent that starts this skill.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "A **Policy** is a file in `docs/agents/` that holds the decisions of the Operator for one skill.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Semver policy** is the Policy of this skill: `docs/agents/semver-policy.md`.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "A **Setting** is one line `- <name>: <value>` of a Policy.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Production branch** is the branch that holds the released versions.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "The **Development branch** is the branch that collects the work for the next release.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "A **Back-merge** is the merge from the Production branch into the Development branch after a release or a hotfix.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "**Pick** gives the next version.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "**Check** tells whether a version or a branch name is correct for Semantic Versioning 2.0.0 and the Semver policy.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "**Start** makes a branch from the correct base, with the correct name, and checks it out.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "1.8",
+        "text": "**Finish** merges a branch into its targets, or opens a pull request for each target.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/engineering/semver/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "The **Semver policy** is the Policy of this skill: `docs/agents/semver-policy.md`.",
+        "cause": "The project that installs the Skill holds this file. Setup writes it when it is missing."
+    },
+    {
+        "path": "docs/agents/semver-policy.md",
+        "rule": "6.2",
+        "text": "Semver policy",
+        "cause": "The title is the fixed first line of the Policy file. Its Skill accepts only this title."
     }
 ]

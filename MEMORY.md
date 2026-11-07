@@ -100,9 +100,9 @@ Reason: The `skills` CLI installs and tracks updates for each Skill folder alone
 
 Applies when: adding a file to a Skill or Rule, or making a Skill run a script to do its own work.
 
-Guidance: A Skill can contain code files in any language, and a Rule can contain code blocks. A code file can be an example or a file that the agent copies into the project that installs the Skill. A Skill can also ship a script that does the countable checks of its own work. An example is `scripts/check.ts` of the agent-instructions Skill. Write the script as erasable TypeScript that runs with `node`. Import only `node:` built-ins and files inside the Skill folder. In `SKILL.md`, state "Requires Node.js 22.18 or later" and call the script with `node`, not a shebang. Leave each check that needs judgment to the agent. A Rule runs no script.
+Guidance: A Skill can contain code files in any language, and a Rule can contain code blocks. A code file can be an example or a file that the agent copies into the project that installs the Skill. A Skill can also ship a script that does the countable checks of its own work. An example is `scripts/check.ts` of the agent-instructions Skill. Write the script as erasable TypeScript that runs with `node`, or as a POSIX `sh` script. A TypeScript script imports only `node:` built-ins and files inside the Skill folder. For a TypeScript script, state "Requires Node.js 22.18 or later" in `SKILL.md` and call the script with `node`. Call a `sh` script with `sh`. Do not call a script through its shebang. Leave each check that needs judgment to the agent. A Rule runs no script.
 
-Reason: An LLM reviewer gives different verdicts for the same countable check in different runs, and a script gives the same verdict each time. See "Spec: deterministic agent-instructions reviewers and evals" (#130). No platform puts `bun` on the PATH, and the `skills` CLI runs no install step. See "How does a TypeScript script that a Skill ships run on the user's machine?" (#21). An example file gets its TypeScript configuration from the project that installs the Skill, so the TypeScript check of this repository skips Skills and Rules. It examines only the `scripts/` folders of Skills.
+Reason: An LLM reviewer gives different verdicts for the same countable check in different runs, and a script gives the same verdict each time. See "Spec: deterministic agent-instructions reviewers and evals" (#130). No platform puts `bun` on the PATH, and the `skills` CLI runs no install step. A `sh` script that only runs Git needs no Node.js, so the semver Skill ships its Check script in `sh`. See "Which jobs does the semver Skill do?" (#155) item 11. See "How does a TypeScript script that a Skill ships run on the user's machine?" (#21). An example file gets its TypeScript configuration from the project that installs the Skill, so the TypeScript check of this repository skips Skills and Rules. It examines only the `scripts/` folders of Skills.
 
 ## The check and source-branch job names stay
 
@@ -111,3 +111,11 @@ Applies when: an agent edits the `check` job or the `source-branch` job in `.git
 Guidance: Keep the job IDs `check` and `source-branch`. Add no `name:` value to these jobs. Before you change these IDs or add a `name:` value, ask the Operator, because only the Operator changes the rulesets.
 
 Reason: The `main` ruleset waits for the jobs `check` and `source-branch` to pass, and the `develop` ruleset waits for `check`. GitHub finds each job by its `name:` value, or by its job ID when the job has no `name:` value. When that name changes, no pull request can merge into a branch if its ruleset contains the old name. See "What happens to gitflow.yml's inline bash step?" (#36).
+
+## The check container has no Git
+
+Applies when: writing a unit test that `docker compose run --rm bun run check` runs.
+
+Guidance: Do not run `git` in a unit test. Keep the code that runs Git small, and test its parsers with saved Git output. The eval runners run Git on the host.
+
+Reason: The `oven/bun` image of `Dockerfile` has no Git, so a unit test that runs `git` fails in the check. The semver eval frame (#165) tests its Git state parser with saved output.
