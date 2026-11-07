@@ -9,7 +9,12 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { auditCalls, hideCommand, readEvals } from "./eval-lib.ts";
+import {
+    auditCalls,
+    hideCommand,
+    loadDecision,
+    readEvals,
+} from "./eval-lib.ts";
 
 const bash = (command: string) => ({ name: "Bash", input: { command } });
 const skill = { name: "Skill", input: { skill: "semver" } };
@@ -144,5 +149,33 @@ describe("hideCommand", () => {
         expect(first).not.toBe(withGh);
         expect(readdirSync(first as string)).toEqual(["git"]);
         expect(existsSync(join(first as string, "gh"))).toBe(false);
+    });
+});
+
+describe("loadDecision", () => {
+    const status = bash("git status");
+
+    it("counts a load before the first branch, tag, merge, push, or gh write", () => {
+        expect(loadDecision([status, skill, bash("git tag v1.3.0")])).toBe(
+            true,
+        );
+    });
+
+    it("counts no load after the first action", () => {
+        expect(loadDecision([bash("git switch -c bugfix/login"), skill])).toBe(
+            false,
+        );
+    });
+
+    it("counts no load after the 8th tool call", () => {
+        expect(loadDecision([...Array(8).fill(status), skill])).toBe(false);
+    });
+
+    it("waits while no load and no action occurred", () => {
+        expect(loadDecision(Array(7).fill(status))).toBeNull();
+    });
+
+    it("does not count a git commit as an action", () => {
+        expect(loadDecision([bash("git commit -m 'fix: typo'")])).toBeNull();
     });
 });

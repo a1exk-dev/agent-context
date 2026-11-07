@@ -8,6 +8,8 @@ The eval plan is in the "Testing Decisions" section of issue #164. These files r
 | `fixtures/<test>/` | Files that replace or add project files for one test. |
 | `evals.json` | The output tests: request, setup, and statements. `common_assertions` (V1 to V6) apply to each test. Each statement is `{id, text, grader}`. A `script` statement also names its `check` in `assertions.ts` and gives its `args`. |
 | `run-evals.ts` | Runs the output tests with `claude -p`, with and without the skill. |
+| `load-requests.json` | The 20 load requests of the description test, each with the expected result. |
+| `run-load-test.ts` | Runs the load test with `claude -p`. `eval-lib.ts` gives the load decision. |
 | `eval-lib.ts` | The test repository, the fake `gh` on `PATH`, and the audit of the commands of a run. |
 | `fake-gh.ts` | The fake `gh`. `gh pr list` and `gh pr view` answer from `prs.json`. `gh pr create`, `gh pr merge`, and `gh pr close` change `prs.json` only, never Git refs. |
 | `git-state.ts` | The Git state before and after a run. |
@@ -15,7 +17,7 @@ The eval plan is in the "Testing Decisions" section of issue #164. These files r
 | `grade.ts` | Grades the script statements of one run, and merges the llm results into `grading.json`. |
 | `grader.md` | Instructions for the grader subagent of the llm statements, and the confirmer prompt. |
 
-The unit tests (`*.test.ts`) test the fake `gh`, the Git state parser, the audit, and the checks. The test container has no Git, so they test the parsers with saved Git output.
+The unit tests (`*.test.ts`) test the fake `gh`, the Git state parser, the audit, the load decision, and the checks. The test container has no Git, so they test the parsers with saved Git output.
 
 ## Run
 
@@ -33,6 +35,14 @@ Then grade each run folder (`<iteration>/eval-<name>/<configuration>/run-1`) in 
 2. Give `grader.md` and the run folder to a fresh grader subagent, one grader for each run. It writes `llm-grading.json`.
 3. For each `llm` statement with a "no", start 2 confirmers with the prompt in `grader.md`, and write `confirmers.json`. A failed statement counts only when at least 1 confirmer agrees.
 4. `bun tests/skills/engineering/semver/grade.ts merge <run-dir>` writes `grading.json`.
+
+## Load test
+
+```sh
+bun tests/skills/engineering/semver/run-load-test.ts --out /tmp/semver-load/round-1.json
+```
+
+The load test runs each request 3 times (`--runs 3`), a maximum of 5 runs at the same time. Each run starts from the test repository with the skill in `.claude/skills/semver/`, but with no system prompt that names the skill. Before the run, the repository gets a lodash dependency, a `README.md` with a typo, the branch `feature/search` merged into `develop` (pull request #1), the branch `release/1.3.0` with the open pull request #42 into `main`, a file `src/app.ts` with conflict markers, and one staged change. HEAD is on `develop`. So each request fits the repository. A run counts as a load when the agent calls the skill or reads its `SKILL.md` before its first command that makes a branch, merges, makes a tag, pushes, or writes through `gh`, and within its first 8 tool calls. A final answer before a load counts as no load. Then the runner stops the run. A request is correct when its load rate is on the correct side of 0.5. `--ids 1,11` runs only the requests at these positions in `load-requests.json`, for example the requests that failed.
 
 ## The test repository
 

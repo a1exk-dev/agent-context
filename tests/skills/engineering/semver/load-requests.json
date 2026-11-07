@@ -1,0 +1,55 @@
+[
+    { "query": "what should the next version be?", "should_trigger": true },
+    { "query": "start a release", "should_trigger": true },
+    { "query": "create a branch bugfix/login", "should_trigger": true },
+    {
+        "query": "start a hotfix for the login crash",
+        "should_trigger": true
+    },
+    { "query": "finish the release branch", "should_trigger": true },
+    { "query": "is 1.4.0-rc.1 a valid version?", "should_trigger": true },
+    { "query": "tag the release v1.3.0", "should_trigger": true },
+    {
+        "query": "open a PR from feature/search into develop",
+        "should_trigger": true
+    },
+    { "query": "merge PR #42 into main", "should_trigger": true },
+    {
+        "query": "set up a semver policy for this repo",
+        "should_trigger": true
+    },
+    { "query": "commit this", "should_trigger": false },
+    {
+        "query": "write the commit message for these staged changes",
+        "should_trigger": false
+    },
+    {
+        "query": "add a changelog entry for the new search option",
+        "should_trigger": false
+    },
+    {
+        "query": "write the PR description for this branch",
+        "should_trigger": false
+    },
+    {
+        "query": "show me the commits since v1.2.0",
+        "should_trigger": false
+    },
+    {
+        "query": "rebase feature/search onto develop",
+        "should_trigger": false
+    },
+    {
+        "query": "bump lodash to 4.17.21 in package.json",
+        "should_trigger": false
+    },
+    {
+        "query": "resolve the merge conflict in src/app.ts",
+        "should_trigger": false
+    },
+    {
+        "query": "review the code in the last commit for bugs",
+        "should_trigger": false
+    },
+    { "query": "fix the typo in README.md", "should_trigger": false }
+]
