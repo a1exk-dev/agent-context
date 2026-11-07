@@ -12,7 +12,7 @@ The section "When you ask the Operator a question" in `SKILL.md` tells you how t
 
 ## When the changelog has a different file name
 
-Do these steps before a Write job, when the changelog is not there.
+Do these steps in step 1 of the Write job, when the changelog is not there.
 
 1. In the root folder of the project, find a file with one of these names. For the last name, find only a name with one or more lowercase letters, because the Write job found no changelog.
 
@@ -54,10 +54,10 @@ Do these steps when the Write job changes a section in a different form into the
 
 A conversion is a Write job that corrects each finding in the full changelog. Common Changelog §6.5 permits a change to old entries. Do a conversion when the caller asks for it, for example with the words "convert the changelog". Also do a conversion when the Operator answers "Yes" to the conversion offer. A conversion needs no separate approval, because the Operator approves it in the Commit review.
 
-1. Write the title `# Changelog` as the first line.
-2. If the changelog has no structure, do "When you convert free text".
-3. Change each release heading to `## [X.Y.Z] - YYYY-MM-DD`, with no `v`.
-4. When the heading has the text `[YANKED]`, remove that text. Write a yanked notice as "When you mark a release as yanked" in `references/release-entries.md` tells you.
+1. If the changelog has no structure, do "When you convert free text". If that section tells you not to change a file, stop.
+2. Write the title `# Changelog` as the first line.
+3. When a release heading has the text `[YANKED]`, remove that text. Write a yanked notice as "When you mark a release as yanked" in `references/release-entries.md` tells you.
+4. Change each release heading to `## [X.Y.Z] - YYYY-MM-DD`, with no `v`.
 5. Change the groups and the items of each release entry as steps 3 to 5 of "When a release converts a section" tell you.
 6. When `Unreleased` is `on`, change the heading of the Unreleased section to `## Unreleased`. Change its groups and items as steps 3 to 5 of "When a release converts a section" tell you.
 7. An item can give a pull request or a commit that the Git history has. For each such item, write the references and the author of the item as "When you make a release entry" in `references/release-entries.md` tells you. Write no commit reference in the Unreleased section.
@@ -85,4 +85,4 @@ Do these steps after a Write job that is not a conversion.
 2. If the Operator answered "No" to a conversion offer in this session, do not offer a conversion again.
 3. Ask the Operator one question: "Convert the old lines to Common Changelog form?" Give the options `Yes` and `No`.
 4. When the Operator answers `Yes`, do a conversion.
-5. When there is no Operator, do not do a conversion. In the report, tell that the caller can correct the old lines with the words "convert the changelog".
+5. When there is no Operator, do not do a conversion. In the report, tell that the caller can say "convert the changelog" to correct the old lines.

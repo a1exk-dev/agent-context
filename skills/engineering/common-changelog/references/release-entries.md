@@ -14,11 +14,12 @@ Do these steps before you put an item in a section. Never calculate a version, f
 2. When `Release branches` is not `off`, run `git branch --show-current`. Find if the current branch is a branch that the Release branches Setting lists. Do not read a different branch name, for example `develop`, `main`, or `feature/x`.
 3. On a branch that the Release branches Setting lists, `<rest>` can be a semver version, for example `1.3.0` in `release/1.3.0`. That version is the branch version.
 4. If the caller gives a version and the branch version is different, stop. Do not change a file. Ask the Operator which version to use, and give the 2 versions. When there is no Operator, stop. Do not change a file. In the report, ask which version to use, and give the 2 versions.
-5. On a branch that the Release branches Setting lists, make a release entry in each Write job, also for a request to add an item. Use the branch version. If there is no branch version, use the version that the caller gives.
-6. On a branch that the Release branches Setting lists, there can be no branch version and no version that the caller gives. Then ask the Operator for the version. When there is no Operator, stop. Do not change a file. In the report, ask for the version.
-7. On a different branch, when the caller gives a version, make a release entry with that version.
-8. On a different branch, when the caller gives no version and `Unreleased` is `on`, put the item in the Unreleased section.
-9. On a different branch, when the caller gives no version and `Unreleased` is `off`, ask the Operator for the version. When there is no Operator, stop. Do not change a file. In the report, ask for the version.
+5. On a branch that the Release branches Setting lists, there can be no branch version and no version that the caller gives. Then ask the Operator for the version. When there is no Operator, stop. Do not change a file. In the report, ask for the version.
+6. Else, on a branch that the Release branches Setting lists, make a release entry in each Write job. Do this also for a request to add an item. Use the branch version. If there is no branch version, use the version that the caller gives.
+7. On a branch that the Release branches Setting does not list, or when `Release branches` is `off`, do these steps:
+   - When the caller gives a version, make a release entry with that version.
+   - When the caller gives no version and `Unreleased` is `on`, put the item in the Unreleased section.
+   - When the caller gives no version and `Unreleased` is `off`, ask the Operator for the version. When there is no Operator, stop. Do not change a file. In the report, ask for the version.
 
 ## When you make a release entry
 
@@ -31,7 +32,7 @@ Do these steps before you put an item in a section. Never calculate a version, f
    - Else, add the release entry.
    - When you use a section that has a heading or a group in a different form, do "When a release converts a section" in `references/other-formats.md`.
 5. Put the item of the caller in its group of the release entry. Do this as step 4 of "When you do the Write job" in `SKILL.md` tells you for the Unreleased section.
-6. For each item of the release entry that has no commit reference, find its commit in the Git history. For a pull request, use its merge commit, for example the commit `Merge pull request #5 from alice/truncate`. `references/links.md` gives the merge commit message of each host. Run `git log --oneline` from the newest release tag to find the merge commits.
+6. For each item of the release entry that has no commit reference, find its commit in the Git history. For a pull request, use its merge commit, for example the commit `Merge pull request #5 from alice/truncate`. `references/links.md` gives the merge commit message of each host. Run `git log --oneline` from the tag of the newest release entry to find the merge commits.
 7. Write the commit reference with the short SHA of 7 characters, as `references/links.md` tells you.
 8. Write the other references of each item as the `References` Setting tells you. Remove each reference of a kind that the Setting does not list.
 9. When an item has more than 2 references, keep the commit reference and the pull-request reference. Remove the issue reference, because the pull request is the better starting point. In the report, give each reference that you removed.

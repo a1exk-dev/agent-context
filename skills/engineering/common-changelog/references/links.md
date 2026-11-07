@@ -25,20 +25,20 @@ The Write job and the Review job use these URL forms. This Skill knows 3 hosts: 
    - `gitlab.com`: the GitLab forms.
    - `bitbucket.org`: the Bitbucket Cloud forms.
    - Each other hostname is an unknown host. Examples are a custom domain such as `git.example.com`, a hostname that contains "gitlab" such as `gitlab.example.com`, and an SSH alias such as `github-work`.
-9. When the project has no remote, or `Host` is `auto` and the host is unknown, do "When you cannot make links".
+9. When the project has no remote `origin`, or `Host` is `auto` and the host is unknown, do "When you cannot make links".
 
 ## When you cannot make links
 
 Do these steps only in a Write job that writes a reference or a version link. The Review job asks no question.
 
-1. Ask the Operator one question, as "When you ask the Operator a question" in `SKILL.md` tells you. That section also tells you when there is no Operator. Give these options:
+1. Ask the Operator one question, as "When you ask the Operator a question" in `SKILL.md` tells you. The section "When you ask the Operator a question" in `SKILL.md` also gives the cases with no Operator. Give these options:
    - For an unknown host, give the 4 options `github`, `gitlab`, `bitbucket`, and `No references`.
-   - For no remote, give the options `No references` and `Stop`.
+   - When the project has no remote `origin`, give the options `No references` and `Stop`.
 2. When the Operator selects a host, change the line `- Host: auto` in the Changelog policy to `- Host: <host>`, for example `- Host: gitlab`. Then use the URL forms of that host.
 3. When the Operator selects `No references`, change the line to `- Host: none`. Then do step 1 of "When you find the host".
 4. When the Operator selects `Stop`, stop and do not change a file.
 5. Do not stage or commit the change to the Changelog policy. In the report, give the changed line.
-6. If there is no Operator, do not change the Changelog policy. Write the items with no references. Write no version link. Write each release heading with no brackets. In the report, give the cause:
+6. If there is no Operator, do not change the Changelog policy. Write each item, but write no reference. Write no version link. Write each release heading with no brackets. In the report, give the cause:
    - For an unknown host, give the hostname. Tell the Operator that the `Host` Setting gives the URL forms of a host, for example `- Host: gitlab`.
    - For no remote, tell that the project has no remote `origin`.
 
@@ -54,10 +54,10 @@ Write each link after the base URL in these forms:
 | Version link, `Version links: release` | `/releases/tag/<tag>` | `/-/releases/<tag>` | `/commits/tag/<tag>` |
 | Version link, `Version links: compare` | `/compare/<previous tag>...<tag>` | `/-/compare/<previous tag>...<tag>` | `/commits/tag/<tag>` |
 
-- The text of a commit link is the short SHA in a code span, for example `` [`3f2a9c1`](https://github.com/example/demo/commit/3f2a9c1) ``.
-- On GitLab, a merge request is the pull request. Its text is `!<n>`, for example `[!6](https://gitlab.com/grp/sub/demo/-/merge_requests/6)`, also when the caller says "pull request #6".
+- As the text of a commit link, write the short SHA in a code span, for example `` [`3f2a9c1`](https://github.com/example/demo/commit/3f2a9c1) ``.
+- On GitLab, a merge request is the pull request. Write `!<n>` as the text of its link, for example `[!6](https://gitlab.com/grp/sub/demo/-/merge_requests/6)`. Write this text also when the caller says "pull request #6".
 - On Bitbucket Cloud, both values of `Version links` give the tag view `/commits/tag/<tag>`. Do not write a compare URL for Bitbucket Cloud.
-- `<tag>` is the exact Git tag, for example `v1.3.0`. Put each link definition at the bottom of the changelog, with the latest version first.
+- `<tag>` is the exact Git tag, for example `v1.3.0`. Put each link definition at the bottom of the changelog. Write the link definitions in sequence from the latest version to the oldest version.
 
 Each host writes a different message in the merge commit of a pull request. Use this message to find the merge commit and the number of a pull request:
 
@@ -82,8 +82,8 @@ Do these steps only when the URL forms are the Bitbucket Cloud forms and the `Re
 
 Do these steps in the Review job. Use the host that "When you find the host" gives. Do not ask a question.
 
-1. When the host is known, give a finding for each link in a different URL form, with the severity `error` and §2.4.2. A known host is a host of GitHub, GitLab, or Bitbucket Cloud, or a host that the `Host` Setting gives. The fix gives the correct form, for example `/commit/<sha>`.
-2. When `Host` is `auto` and the host is unknown, or the project has no remote, do not examine the URL forms. Give one finding for each item with no reference, also in a release entry. Give it the severity `warning` and §2.4.2.
-3. When `Host` is `none`, make no finding about a missing reference or a missing version link. A release heading with no brackets is correct.
+1. When the host is known, give a finding for each link in a different URL form, with the severity `error` and §2.4.2. A known host is GitHub, GitLab, Bitbucket Cloud, or the host that the `Host` Setting gives. In the fix, give the correct form, for example `/commit/<sha>`.
+2. When `Host` is `auto` and the host is unknown, or the project has no remote `origin`, do not examine the URL forms. Give one finding for each item with no reference, also in a release entry. Give each of these findings the severity `warning` and §2.4.2.
+3. When `Host` is `none`, give no finding about a missing reference or a missing version link. A release heading with no brackets is correct.
 4. For each value of `Host`, give a finding of §2.4.2 for each reference that is not a Markdown link, for example `(#6)` with no URL.
-5. Make no finding about a missing Jira issue reference.
+5. Give no finding about a missing Jira issue reference.
