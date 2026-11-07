@@ -6,7 +6,7 @@ Read this file when the project has no Changelog policy. Also read this file whe
 
 - Ask as "When you ask the Operator a question" in `SKILL.md` tells you. Ask only one question in each tool call, because one answer can change the next answer.
 - Give the default value as the first answer. Tell the Operator that the default value is the recommended answer.
-- With no human, the Operator cannot give an answer. Then do the step of the section that is for no answer.
+- When there is no Operator, the Operator cannot give an answer. Then do the step for no answer in the section of that question.
 
 ## When the Changelog policy is not there
 
@@ -15,14 +15,14 @@ Do these steps before the Create, Write, or Review job:
 1. Find the answers for the new Changelog policy in the prompt. The prompt can tell you to "use the default changelog policy". The prompt can also give a value for each name in the table.
 2. If the prompt gives one of these answers, go to step 6. Do not ask a question, because the prompt gives the answers.
 3. Show the default Changelog policy to the Operator in a code block. Then the Operator can see the default values before the answer.
-4. Ask the Operator one question with the answers `Use defaults` and `Choose each setting`. Give `Use defaults` as the first answer, and tell the Operator that it is the recommended answer.
+4. Ask the Operator one question with the answers `Use defaults` and `Choose each setting`. Give `Use defaults` as the first answer. Tell the Operator that `Use defaults` is the recommended answer.
 
-   When the Operator cannot give an answer in steps 4 to 6, do not write a file, and do not do the job. The changelog does not change. Only the Operator selects the values of a new Changelog policy. In the report, give each name in the table that has no answer. Tell the Operator to give a value for each of these names, or to tell you to "use the default changelog policy". Then stop.
+   When the Operator cannot give an answer in steps 4 to 6, do not write a file. Do not do the job. The changelog does not change. Only the Operator selects the values of a new Changelog policy. In the report, give each name in the table that has no answer. Tell the Operator to give a value for each of these names, or to tell you to "use the default changelog policy". Then stop.
 5. When the Operator answers `Choose each setting`, ask one question for each name in the table, in the sequence of the table. For `Release branches`, the Operator can also give a different value as text.
 6. Make sure that each name in the table has a value from the Values column. The answer `Use defaults` and the words "use the default changelog policy" give the default values. If a name has no value, or its value is not in that column, ask the question of step 5 for that name. For example, `release/*, x y` is not a list of branch prefixes, so ask the `Release branches` question again.
 7. If the folder `docs/agents/` is not there, make the folder.
-8. Write the Changelog policy file. Write the title `# Changelog policy`, a blank line, and one Setting for each name in the sequence of the table. Use the values of step 6.
-9. Do not stage or commit the Changelog policy. The Operator approves it in the Commit review, together with the change to the changelog. In the report, give the new file next to the changelog.
+8. Write the Changelog policy. Write the title `# Changelog policy`, a blank line, and one Setting for each name in the sequence of the table. Use the values of step 6.
+9. Do not stage or commit the Changelog policy. The Operator approves it in the Commit review, together with the change to the changelog. In the report, give the path of the new Changelog policy together with the change to the changelog.
 10. Do the job with the new Changelog policy.
 
 ## When a Setting is not in the Changelog policy
