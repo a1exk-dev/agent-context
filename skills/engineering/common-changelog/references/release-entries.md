@@ -8,7 +8,7 @@ Ask each question of this file as "When you ask the Operator a question" in `SKI
 
 ## When you find the version
 
-Do these steps before you put an item in a section. Never calculate a version, for example from the last tag or from the type of the changes.
+Do these steps before you put an item in a section. Never calculate a version, for example from the last tag or from the type of the changes. Also do not give a calculated version as an example, in a question or in the report.
 
 1. Find the version that the caller gives, for example `1.3.0` in "Release the changelog as 1.3.0".
 2. When `Release branches` is not `off`, run `git branch --show-current`. Find if the current branch is a branch that the Release branches Setting lists. Do not read a different branch name, for example `develop`, `main`, or `feature/x`.

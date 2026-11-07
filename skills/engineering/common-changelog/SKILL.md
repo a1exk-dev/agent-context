@@ -140,7 +140,7 @@ When the caller tells you that a release is yanked, do steps 1, 8, 9, 10, and 11
 
 Do the Review job when the caller asks for a review of the changelog, and after each Write job.
 
-1. Examine each line of the changelog for each requirement in `references/common-changelog-rules.md` and for each Setting. Do not read the branch name, because the requirements for the Unreleased section use only the `Unreleased` Setting. Also do "When you review links" in `references/links.md`.
+1. Run `cat -n CHANGELOG.md` to read the changelog and its line numbers. After each change to the file, run it again, and use only these line numbers in the findings. Examine each line of the changelog for each requirement in `references/common-changelog-rules.md` and for each Setting. Do not read the branch name, because the requirements for the Unreleased section use only the `Unreleased` Setting. Also do "When you review links" in `references/links.md`.
 2. Do not change a file.
 3. For each finding, record the line numbers, the requirement and its § number, the severity, and a fix. A "must" requirement gives the severity `error`. A "should" requirement gives the severity `warning`.
 4. When 2 or more findings have the same requirement and the same fix, make one finding with all their line numbers.
