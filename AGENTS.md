@@ -15,19 +15,7 @@
 
 # Workflow
 
-- Branches: Before you create a branch, or open or merge a pull request, obey Git Flow. Open pull requests into `main` only from `release/<semver>` or `hotfix/<name>`. Send all other changes, for example `feature/<name>` and `bugfix/<name>`, through a pull request into `develop`. Change `main` and `develop` only through pull requests with merge commits, because other projects install Skills from `main`.
-- Merging: When all required checks pass, merge a pull request into `develop` yourself. For this merge commit, start the message with the line `<type>[(<scope>)]: merge <branch> into develop (#<n>)`. When you write this message, obey each Setting of the Commit policy, `docs/agents/commit-policy.md`, that controls the message. Leave pull requests into `main` for the Operator to merge. GitHub deletes the remote branch of a merged pull request, but your local branch stays. After you merge a pull request from a `feature/<name>` or `bugfix/<name>` branch into `develop`, do these steps:
-  1. Run `git switch develop`.
-  2. Run `git pull`.
-  3. Run `git fetch --prune`.
-  4. CAUTION: Delete a local branch only with `git branch -d`, not `git branch -D`. `git branch -D` deletes commits that no other branch contains.
-  5. Delete the local branch of that pull request with `git branch -d <branch>`.
 - Checks: Before each commit, run `docker compose run --rm bun run check`. Correct all errors that it reports, until it exits 0. To correct the format, run `docker compose run --rm bun run fix`.
-- Back-merges: After the Operator merges a pull request into `main`, `.github/workflows/release.yml` opens the back-merge pull request from `main` into `develop`. If the `back-merge` job stops because Git cannot merge `main` into `develop`, do not change that pull request. If you change that pull request, you push commits to `main`. Run `git fetch`. Then do these steps:
-  1. Make the branch `bugfix/back-merge-v<semver>` from `origin/develop`. The title of the back-merge pull request gives `<semver>`.
-  2. On that branch, run `git merge origin/main` and correct the files that Git cannot merge.
-  3. Open a pull request from that branch into `develop`.
-  4. Close the back-merge pull request, because the new pull request replaces it.
 
 # Agent Skills
 

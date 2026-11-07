@@ -532,5 +532,17 @@
         "rule": "When you put the text in sections and lists",
         "text": "The **Semver policy** is the Policy of this skill: `docs/agents/semver-policy.md`.",
         "cause": "The project that installs the Skill holds this file. Setup writes it when it is missing."
+    },
+    {
+        "path": "docs/agents/commit-policy.md",
+        "rule": "6.2",
+        "text": "Commit policy",
+        "cause": "The title is the fixed first line of the Policy file. Its Skill accepts only this title."
+    },
+    {
+        "path": "docs/agents/semver-policy.md",
+        "rule": "6.2",
+        "text": "Semver policy",
+        "cause": "The title is the fixed first line of the Policy file. Its Skill accepts only this title."
     }
 ]
