@@ -111,3 +111,11 @@ Applies when: an agent edits the `check` job or the `source-branch` job in `.git
 Guidance: Keep the job IDs `check` and `source-branch`. Add no `name:` value to these jobs. Before you change these IDs or add a `name:` value, ask the Operator, because only the Operator changes the rulesets.
 
 Reason: The `main` ruleset waits for the jobs `check` and `source-branch` to pass, and the `develop` ruleset waits for `check`. GitHub finds each job by its `name:` value, or by its job ID when the job has no `name:` value. When that name changes, no pull request can merge into a branch if its ruleset contains the old name. See "What happens to gitflow.yml's inline bash step?" (#36).
+
+## The check container has no Git
+
+Applies when: writing a unit test that `docker compose run --rm bun run check` runs.
+
+Guidance: Do not run `git` in a unit test. Keep the code that runs Git small, and test its parsers with saved Git output. The eval runners run Git on the host.
+
+Reason: The `oven/bun` image of `Dockerfile` has no Git, so a unit test that runs `git` fails in the check. The semver eval frame (#165) tests its Git state parser with saved output.
