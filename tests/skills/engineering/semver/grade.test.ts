@@ -296,16 +296,37 @@ describe("V4 safeHistory", () => {
         ).toBe(false);
     });
 
-    it("passes for a deleted branch that its target contains (local mode)", () => {
-        const after = state({
-            refs: heads({ main: S, develop: Y, "v1.2.0": S }),
-            origin: heads({ main: S, develop: Y, "v1.2.0": S }),
-            commits: [start, commit(X, [S]), commit(Y, [X])],
+    const LOCAL = `${POLICY}- Finish mode: local\n`;
+    const contained = (policy: string) =>
+        run({
+            before: { ...withBranch("feature/a", X), policy },
+            after: state({
+                refs: heads({ main: S, develop: Y, "v1.2.0": S }),
+                origin: heads({ main: S, develop: Y, "v1.2.0": S }),
+                commits: [start, commit(X, [S]), commit(Y, [X])],
+                policy,
+            }),
         });
+
+    it("passes for a deleted branch that its target contains (local mode)", () => {
+        expect(check("safeHistory", contained(LOCAL))).toBe(true);
+    });
+
+    it("fails for a deleted branch without a merged pull request (pull request mode)", () => {
+        expect(check("safeHistory", contained(POLICY))).toBe(false);
+    });
+
+    it("fails for a deleted branch with a merged pull request that its target does not contain (local mode)", () => {
+        const before = { ...withBranch("feature/a", X), policy: LOCAL };
+        const after = state({ policy: LOCAL });
+        const prsAfter = [pr({ headRefOid: X })];
+        expect(check("safeHistory", run({ before, after, prsAfter }))).toBe(
+            false,
+        );
         expect(
             check(
                 "safeHistory",
-                run({ before: withBranch("feature/a", X), after }),
+                run({ before: withBranch("feature/a", X), prsAfter }),
             ),
         ).toBe(true);
     });
@@ -360,8 +381,9 @@ describe("V4 safeHistory", () => {
         ).toBe(false);
     });
 
-    it("passes for a deleted branch that a new squash commit of its target holds", () => {
+    it("passes for a deleted branch that a new squash commit of its target holds (local mode)", () => {
         const before = state({
+            policy: LOCAL,
             refs: heads({ main: S, develop: S, "v1.2.0": S, "feature/a": Y }),
             origin: heads({ main: S, develop: S, "v1.2.0": S, "feature/a": Y }),
             commits: [start, commit(X, [S]), commit(Y, [X])],
@@ -375,6 +397,7 @@ describe("V4 safeHistory", () => {
                 refs: heads({ main: S, develop: Z, "v1.2.0": S }),
                 origin: heads({ main: S, develop: Z, "v1.2.0": S }),
                 commits: [start, commit(Z, [S], files)],
+                policy: LOCAL,
             });
         const full = { "src/a.ts": SRC, "src/b.ts": SRC2 };
         expect(check("safeHistory", run({ before, after: squash(full) }))).toBe(
@@ -499,36 +522,7 @@ describe("branchStarted, noVersionInName, and originUnchanged", () => {
     });
 });
 
-describe("stopped, policyFile, policyUnchanged, and reportNames", () => {
-    it("passes a stop with no ref, HEAD, or gh write change", () => {
-        expect(
-            check(
-                "stopped",
-                run({ ghCalls: [["pr", "list", "--json", "number"]] }),
-            ),
-        ).toBe(true);
-    });
-
-    it("fails a stop with a new branch, another HEAD, a push, or a gh write", () => {
-        const branch = state({
-            refs: { ...state().refs, "refs/heads/feature/x": S },
-        });
-        const pushed = state({
-            origin: { ...state().origin, "refs/heads/feature/x": S },
-        });
-        expect(check("stopped", run({ after: branch }))).toBe(false);
-        expect(
-            check("stopped", run({ after: state({ head: "develop" }) })),
-        ).toBe(false);
-        expect(check("stopped", run({ after: pushed }))).toBe(false);
-        expect(
-            check(
-                "stopped",
-                run({ ghCalls: [["pr", "create", "--base", "develop"]] }),
-            ),
-        ).toBe(false);
-    });
-
+describe("policyFile and reportNames", () => {
     it("compares the policy file with the expected text and its staged state", () => {
         expect(check("policyFile", run(), { text: POLICY })).toBe(true);
         expect(
@@ -550,12 +544,6 @@ describe("stopped, policyFile, policyUnchanged, and reportNames", () => {
         expect(check("policyFile", run({ after }), { text: POLICY })).toBe(
             true,
         );
-    });
-
-    it("finds a changed policy file", () => {
-        expect(check("policyUnchanged", run())).toBe(true);
-        const after = state({ policy: `${POLICY}- Hotfix branches: on\n` });
-        expect(check("policyUnchanged", run({ after }))).toBe(false);
     });
 
     it("finds each word in the report, in any case", () => {
@@ -962,6 +950,20 @@ describe("noChange", () => {
             false,
         );
         expect(check("noChange", after({ head: "develop" }))).toBe(false);
+        expect(
+            check(
+                "noChange",
+                after({
+                    origin: { ...state().origin, "refs/heads/feature/x": S },
+                }),
+            ),
+        ).toBe(false);
+        expect(
+            check(
+                "noChange",
+                after({ policy: `${POLICY}- Hotfix branches: on\n` }),
+            ),
+        ).toBe(false);
     });
 
     it("fails for a pull request change or a gh write call", () => {
@@ -975,6 +977,9 @@ describe("noChange", () => {
         expect(check("noChange", run({ ghCalls: [["pr", "list"]] }))).toBe(
             true,
         );
+        expect(
+            check("noChange", run({ ghCalls: [["issue", "close", "3"]] })),
+        ).toBe(true);
     });
 });
 

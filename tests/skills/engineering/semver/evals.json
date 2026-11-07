@@ -1640,21 +1640,12 @@
             "assertions": [
                 {
                     "id": "39.1",
-                    "text": "No policy file exists after the run.",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
                     "grader": "script",
-                    "check": "policyFile",
-                    "args": {
-                        "text": null
-                    }
+                    "check": "noChange"
                 },
                 {
                     "id": "39.2",
-                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
-                    "grader": "script",
-                    "check": "stopped"
-                },
-                {
-                    "id": "39.3",
                     "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
                     "grader": "script",
                     "check": "reportNames",
@@ -1690,21 +1681,12 @@
             "assertions": [
                 {
                     "id": "40.1",
-                    "text": "No policy file exists after the run.",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
                     "grader": "script",
-                    "check": "policyFile",
-                    "args": {
-                        "text": null
-                    }
+                    "check": "noChange"
                 },
                 {
                     "id": "40.2",
-                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
-                    "grader": "script",
-                    "check": "stopped"
-                },
-                {
-                    "id": "40.3",
                     "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
                     "grader": "script",
                     "check": "reportNames",
@@ -1740,21 +1722,12 @@
             "assertions": [
                 {
                     "id": "41.1",
-                    "text": "No policy file exists after the run.",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
                     "grader": "script",
-                    "check": "policyFile",
-                    "args": {
-                        "text": null
-                    }
+                    "check": "noChange"
                 },
                 {
                     "id": "41.2",
-                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
-                    "grader": "script",
-                    "check": "stopped"
-                },
-                {
-                    "id": "41.3",
                     "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
                     "grader": "script",
                     "check": "reportNames",
@@ -1793,21 +1766,12 @@
             "assertions": [
                 {
                     "id": "42.1",
-                    "text": "No policy file exists after the run.",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
                     "grader": "script",
-                    "check": "policyFile",
-                    "args": {
-                        "text": null
-                    }
+                    "check": "noChange"
                 },
                 {
                     "id": "42.2",
-                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
-                    "grader": "script",
-                    "check": "stopped"
-                },
-                {
-                    "id": "42.3",
                     "text": "The report gives each of the 14 Setting names and the words \"use the default semver policy\".",
                     "grader": "script",
                     "check": "reportNames",
@@ -1923,28 +1887,22 @@
             "assertions": [
                 {
                     "id": "45.1",
-                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
                     "grader": "script",
-                    "check": "stopped"
+                    "check": "noChange"
                 },
                 {
                     "id": "45.2",
-                    "text": "The policy file is unchanged.",
-                    "grader": "script",
-                    "check": "policyUnchanged"
-                },
-                {
-                    "id": "45.3",
-                    "text": "The report gives line 3 (the prose line) and line 6 (`Development branch: main`) as incorrect lines, each with its line number. It can also give line 5 (`Production branch: main`).",
+                    "text": "The report gives each of these 3 incorrect lines with its line number: line 3 (the prose line), line 5 (`Production branch: main`), and line 6 (`Development branch: main`). Lines 5 and 6 are incorrect because the 2 branches have the same name.",
                     "grader": "llm"
                 },
                 {
-                    "id": "45.4",
+                    "id": "45.3",
                     "text": "The report tells the Operator to correct the incorrect lines or to delete the policy file.",
                     "grader": "llm"
                 },
                 {
-                    "id": "45.5",
+                    "id": "45.4",
                     "text": "The report does not say whether 1.3.0 is a valid version: the Check job stopped too.",
                     "grader": "llm"
                 }
@@ -1960,28 +1918,22 @@
             "assertions": [
                 {
                     "id": "46.1",
-                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
                     "grader": "script",
-                    "check": "stopped"
+                    "check": "noChange"
                 },
                 {
                     "id": "46.2",
-                    "text": "The policy file is unchanged.",
-                    "grader": "script",
-                    "check": "policyUnchanged"
-                },
-                {
-                    "id": "46.3",
                     "text": "The report gives line 4 (`Development branch: feature..x`) as an incorrect line, with its line number.",
                     "grader": "llm"
                 },
                 {
-                    "id": "46.4",
+                    "id": "46.3",
                     "text": "The report tells the Operator to correct the incorrect line or to delete the policy file.",
                     "grader": "llm"
                 },
                 {
-                    "id": "46.5",
+                    "id": "46.4",
                     "text": "The report gives no next version.",
                     "grader": "llm"
                 }
@@ -1997,23 +1949,17 @@
             "assertions": [
                 {
                     "id": "47.1",
-                    "text": "The job stopped: the local branches and tags, HEAD, and the refs of `origin` are unchanged, and no `gh` call wrote a pull request.",
+                    "text": "The job stopped: no ref, commit, file, or pull request changed, and no `gh` write call.",
                     "grader": "script",
-                    "check": "stopped"
+                    "check": "noChange"
                 },
                 {
                     "id": "47.2",
-                    "text": "The policy file is unchanged.",
-                    "grader": "script",
-                    "check": "policyUnchanged"
-                },
-                {
-                    "id": "47.3",
                     "text": "The report says that 1.3.0 is a valid version.",
                     "grader": "llm"
                 },
                 {
-                    "id": "47.4",
+                    "id": "47.3",
                     "text": "The report says that the feature branch was not started because the repository has no branch `dev`, and names `dev`.",
                     "grader": "llm"
                 }

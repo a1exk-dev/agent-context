@@ -4,7 +4,7 @@
 // only when no check fits with other `args`.
 
 import type { ToolCall } from "../../writing/agent-instructions/eval-lib.ts";
-import { auditCalls } from "./eval-lib.ts";
+import { auditCalls, GH_WRITES } from "./eval-lib.ts";
 import type { Pr } from "./fake-gh.ts";
 import { type Commit, type GitState, isAncestor, POLICY } from "./git-state.ts";
 
@@ -41,6 +41,7 @@ export function policyOf(run: Run): {
     production: string;
     development: string | null;
     tagPrefix: string;
+    finishMode: string;
 } {
     const text = run.after.policy ?? run.before.policy ?? "";
     const setting = (name: string, fallback: string) =>
@@ -51,10 +52,11 @@ export function policyOf(run: Run): {
         production: setting("Production branch", "main"),
         development: development === "none" ? null : development,
         tagPrefix: setting("Tag prefix", "v") === "none" ? "" : "v",
+        finishMode: setting("Finish mode", "pull request"),
     };
 }
 
-const named = (refs: Record<string, string>, prefix: string) =>
+const named = (refs: Refs, prefix: string) =>
     Object.fromEntries(
         Object.entries(refs)
             .filter(([ref]) => ref.startsWith(prefix))
@@ -65,6 +67,39 @@ const allCommits = (run: Run): Commit[] => [
     ...run.before.commits,
     ...run.after.commits,
 ];
+
+const newCommitList = (run: Run): Commit[] => {
+    const old = new Set(run.before.commits.map((commit) => commit.sha));
+    return run.after.commits.filter((commit) => !old.has(commit.sha));
+};
+
+type Refs = Record<string, string>;
+
+// The local refs and the refs of origin, each at the start and at the end.
+type Place = { place: "local" | "origin"; before: Refs; after: Refs };
+const places = (run: Run): Place[] => [
+    { place: "local", before: run.before.refs, after: run.after.refs },
+    { place: "origin", before: run.before.origin, after: run.after.origin },
+];
+
+// Each of `refs` with another commit at the end, as "<ref>: <old> -> <new>".
+// By default, `refs` are all refs at the start and at the end.
+function refChanges(
+    before: Refs,
+    after: Refs,
+    refs = [...new Set([...Object.keys(before), ...Object.keys(after)])],
+): string[] {
+    return refs
+        .filter((ref) => before[ref] !== after[ref])
+        .map(
+            (ref) =>
+                `${ref}: ${before[ref] ?? "none"} -> ${after[ref] ?? "none"}`,
+        );
+}
+
+// The squash rule: each changed file of the commit has the blob of `tree`.
+const filesFrom = (commit: Commit, tree: Record<string, string>) =>
+    commit.files.every((file) => (tree[file.path] ?? null) === file.blob);
 
 const newNames = (run: Run, prefix: string) => {
     const before = new Set([
@@ -115,7 +150,7 @@ function policyReadFirst(run: Run): Verdict {
 // start has each changed file with the same blob.
 function isSquash(run: Run, commit: Commit): boolean {
     return Object.values(run.before.trees).some((tree) =>
-        commit.files.every((file) => (tree[file.path] ?? null) === file.blob),
+        filesFrom(commit, tree),
     );
 }
 
@@ -155,9 +190,8 @@ function onlyAllowedChanges(run: Run): Verdict {
                 problems.push(`${path} changed on ${branch}.`);
         }
     }
-    const old = new Set(run.before.commits.map((commit) => commit.sha));
-    for (const commit of run.after.commits) {
-        if (old.has(commit.sha) || commit.parents.length >= 2) continue;
+    for (const commit of newCommitList(run)) {
+        if (commit.parents.length >= 2) continue;
         if (!isSquash(run, commit))
             problems.push(
                 `New commit ${commit.sha.slice(0, 7)} is no merge: ${commit.message.split("\n")[0]}`,
@@ -169,12 +203,14 @@ function onlyAllowedChanges(run: Run): Verdict {
     );
 }
 
-// The cleanup test of a deleted branch: its pull request is MERGED with the
-// branch tip as head, or its target contains the tip. A release or hotfix
-// branch also needs its tag and its Back-merge. A hotfix tag is any tag that
-// contains the tip, also one of an earlier run. An OPEN or MERGED pull
-// request from the Production branch or a `bugfix/back-merge-*` branch into
-// the Development branch counts as the Back-merge.
+// The cleanup test of a deleted branch, by the Finish mode of the policy. In
+// `pull request` mode, its pull request is MERGED with the branch tip as
+// head. In `local` mode, its target contains the tip, or a new squash commit
+// of its target holds the tip. A release or hotfix branch also needs its tag
+// and its Back-merge. A hotfix tag is any tag that contains the tip, also one
+// of an earlier run. An OPEN or MERGED pull request from the Production
+// branch or a `bugfix/back-merge-*` branch into the Development branch counts
+// as the Back-merge.
 function deleteProblem(run: Run, branch: string, tip: string): string | null {
     const policy = policyOf(run);
     const commits = allCommits(run);
@@ -188,19 +224,22 @@ function deleteProblem(run: Run, branch: string, tip: string): string | null {
         run.after.refs[`${HEADS}${target}`],
         run.after.origin[`${HEADS}${target}`],
     ].filter((sha): sha is string => sha !== undefined);
-    const merged =
-        run.prsAfter.some(
+    if (policy.finishMode === "local") {
+        const contained = targetTips.some(
+            (sha) =>
+                isAncestor(commits, tip, sha) || squashedInto(run, tip, sha),
+        );
+        if (!contained) return `${target} does not contain ${branch}.`;
+    } else {
+        const merged = run.prsAfter.some(
             (pr) =>
                 pr.headRefName === branch &&
                 pr.state === "MERGED" &&
                 pr.headRefOid === tip,
-        ) ||
-        targetTips.some(
-            (sha) =>
-                isAncestor(commits, tip, sha) || squashedInto(run, tip, sha),
         );
-    if (!merged)
-        return `${branch} has no MERGED pull request with its tip, and ${target} does not contain it.`;
+        if (!merged)
+            return `${branch} has no MERGED pull request with its tip.`;
+    }
     if (!["release", "hotfix"].includes(type)) return null;
     const tags = {
         ...named(run.after.origin, TAGS),
@@ -235,16 +274,12 @@ function deleteProblem(run: Run, branch: string, tip: string): string | null {
 function squashedInto(run: Run, tip: string, target: string): boolean {
     const tree = run.before.trees[tip];
     if (!tree) return false;
-    const old = new Set(run.before.commits.map((commit) => commit.sha));
     const commits = allCommits(run);
-    return run.after.commits.some(
+    return newCommitList(run).some(
         (commit) =>
-            !old.has(commit.sha) &&
             commit.parents.length === 1 &&
             commit.files.length > 0 &&
-            commit.files.every(
-                (file) => (tree[file.path] ?? null) === file.blob,
-            ) &&
+            filesFrom(commit, tree) &&
             isAncestor(commits, commit.sha, target),
     );
 }
@@ -273,10 +308,7 @@ function safeHistory(run: Run): Verdict {
                 `${ref} lost the commit ${sha}, which origin contains.`,
             );
     }
-    for (const [place, before, after] of [
-        ["local", run.before.refs, run.after.refs],
-        ["origin", run.before.origin, run.after.origin],
-    ] as const) {
+    for (const { place, before, after } of places(run)) {
         for (const [branch, tip] of Object.entries(named(before, HEADS))) {
             if (`${HEADS}${branch}` in after) continue;
             const problem = deleteProblem(run, branch, tip);
@@ -360,45 +392,12 @@ function noVersionInName(run: Run, args: Record<string, unknown>): Verdict {
 }
 
 function originUnchanged(run: Run): Verdict {
-    const refs = new Set([
-        ...Object.keys(run.before.origin),
-        ...Object.keys(run.after.origin),
-    ]);
     return verdict(
-        [...refs]
-            .filter((ref) => run.before.origin[ref] !== run.after.origin[ref])
-            .map(
-                (ref) =>
-                    `origin ${ref}: ${run.before.origin[ref] ?? "none"} -> ${run.after.origin[ref] ?? "none"}`,
-            ),
+        refChanges(run.before.origin, run.after.origin).map(
+            (change) => `origin ${change}`,
+        ),
         "The refs of origin are unchanged.",
     );
-}
-
-const GH_WRITES = ["create", "merge", "close"];
-
-// A stopped job: the local refs, HEAD, and the refs of origin are unchanged,
-// and no gh call wrote a pull request.
-function stopped(run: Run): Verdict {
-    const origin = originUnchanged(run);
-    const problems = origin.passed ? [] : [origin.evidence];
-    const refs = new Set([
-        ...Object.keys(run.before.refs),
-        ...Object.keys(run.after.refs),
-    ]);
-    for (const ref of refs) {
-        if (run.before.refs[ref] !== run.after.refs[ref])
-            problems.push(
-                `${ref}: ${run.before.refs[ref] ?? "none"} -> ${run.after.refs[ref] ?? "none"}`,
-            );
-    }
-    if (run.before.head !== run.after.head)
-        problems.push(`HEAD: ${run.before.head} -> ${run.after.head}`);
-    for (const args of run.ghCalls) {
-        if (args[0] === "pr" && GH_WRITES.includes(args[1] ?? ""))
-            problems.push(`gh write call: gh ${args.join(" ")}`);
-    }
-    return verdict(problems, "No ref, HEAD, or pull request changed.");
 }
 
 const endTrimmed = (text: string | null) =>
@@ -419,15 +418,6 @@ function policyFile(run: Run, args: Record<string, unknown>): Verdict {
     return verdict(problems, "The policy file is as expected and not staged.");
 }
 
-function policyUnchanged(run: Run): Verdict {
-    return run.before.policy === run.after.policy
-        ? { passed: true, evidence: "The policy file is unchanged." }
-        : {
-              passed: false,
-              evidence: `The policy file changed to:\n${run.after.policy ?? "(missing)"}`,
-          };
-}
-
 // Each of `args.words` is in the report, in any case.
 function reportNames(run: Run, args: Record<string, unknown>): Verdict {
     const report = run.report.toLowerCase();
@@ -443,25 +433,11 @@ function reportNames(run: Run, args: Record<string, unknown>): Verdict {
 // A job that stops: no new or moved ref, local or on origin, no new commit,
 // no file change, the same HEAD, and no pull request change or gh write.
 function noChange(run: Run): Verdict {
-    const problems: string[] = [];
-    for (const [place, before, after] of [
-        ["local", run.before.refs, run.after.refs],
-        ["origin", run.before.origin, run.after.origin],
-    ] as const) {
-        for (const ref of new Set([
-            ...Object.keys(before),
-            ...Object.keys(after),
-        ])) {
-            if (before[ref] !== after[ref])
-                problems.push(
-                    `${place} ${ref}: ${before[ref] ?? "none"} -> ${after[ref] ?? "none"}`,
-                );
-        }
-    }
-    const old = new Set(run.before.commits.map((commit) => commit.sha));
-    for (const commit of run.after.commits)
-        if (!old.has(commit.sha))
-            problems.push(`New commit ${commit.sha.slice(0, 7)}.`);
+    const problems = places(run).flatMap(({ place, before, after }) =>
+        refChanges(before, after).map((change) => `${place} ${change}`),
+    );
+    for (const commit of newCommitList(run))
+        problems.push(`New commit ${commit.sha.slice(0, 7)}.`);
     if (run.after.head !== run.before.head)
         problems.push(
             `HEAD moved from ${run.before.head} to ${run.after.head}.`,
@@ -482,7 +458,7 @@ function noChange(run: Run): Verdict {
     if (JSON.stringify(run.prsAfter) !== JSON.stringify(run.prsBefore))
         problems.push("The pull requests changed.");
     for (const args of run.ghCalls)
-        if (["create", "merge", "close"].includes(args[1] ?? ""))
+        if (args[0] === "pr" && GH_WRITES.has(args[1] ?? ""))
             problems.push(`gh write call: gh ${args.join(" ")}`);
     return verdict(problems, "The run changed nothing.");
 }
@@ -497,11 +473,6 @@ function commitOf(run: Run, name: string): string | undefined {
         run.after.origin[`${TAGS}${name}`]
     );
 }
-
-const newCommitList = (run: Run): Commit[] => {
-    const old = new Set(run.before.commits.map((commit) => commit.sha));
-    return run.after.commits.filter((commit) => !old.has(commit.sha));
-};
 
 // The local `args.target` at the end is a new merge commit. Its first
 // parent is the target at the start, or `args.first` at the start for a new
@@ -529,10 +500,9 @@ function mergedWith(run: Run, args: Record<string, unknown>): Verdict {
 }
 
 // No file of a branch or tag commit at the end has a conflict marker line.
-// A saved state without `markers` has none.
 function noConflictMarkers(run: Run): Verdict {
     return verdict(
-        (run.after.markers ?? []).map((file) => `Conflict marker in ${file}.`),
+        run.after.markers.map((file) => `Conflict marker in ${file}.`),
         "No ref file has a conflict marker.",
     );
 }
@@ -543,10 +513,7 @@ function tagAt(run: Run, args: Record<string, unknown>): Verdict {
     const tag = `${TAGS}${String(args.tag)}`;
     const branch = run.after.refs[`${HEADS}${String(args.branch)}`];
     const problems: string[] = [];
-    for (const [place, refs] of [
-        ["local", run.after.refs],
-        ["origin", run.after.origin],
-    ] as const) {
+    for (const { place, after: refs } of places(run)) {
         if (branch === undefined || refs[tag] !== branch)
             problems.push(
                 `The ${place} tag ${String(args.tag)} is at ${refs[tag] ?? "none"}, not at ${String(args.branch)} (${branch ?? "none"}).`,
@@ -715,15 +682,11 @@ function noNewBranch(run: Run, args: Record<string, unknown>): Verdict {
 // true, and the origin branch exists when `args.origin` is true.
 function branchWhere(run: Run, args: Record<string, unknown>): Verdict {
     const ref = `${HEADS}${String(args.branch)}`;
-    const problems = (
-        [
-            ["local", run.after.refs, args.local],
-            ["origin", run.after.origin, args.origin],
-        ] as const
-    )
-        .filter(([, refs, wanted]) => ref in refs !== Boolean(wanted))
+    const problems = places(run)
+        .map(({ place, after }) => ({ place, after, wanted: args[place] }))
+        .filter(({ after, wanted }) => ref in after !== Boolean(wanted))
         .map(
-            ([place, , wanted]) =>
+            ({ place, wanted }) =>
                 `The ${place} branch ${String(args.branch)} ${wanted ? "is missing" : "exists"}.`,
         );
     return verdict(problems, `${String(args.branch)} is where expected.`);
@@ -747,16 +710,13 @@ function prState(run: Run, args: Record<string, unknown>): Verdict {
 function branchesKept(run: Run, args: Record<string, unknown>): Verdict {
     const problems = (args.branches as string[]).flatMap((name) => {
         const ref = `${HEADS}${name}`;
-        return [
-            ["local", run.before.refs, run.after.refs],
-            ["origin", run.before.origin, run.after.origin],
-        ].flatMap(([place, before, after]) => {
-            const was = (before as Record<string, string>)[ref];
-            const now = (after as Record<string, string>)[ref];
-            return was !== undefined && was === now
-                ? []
-                : [`${name} (${place}): ${was ?? "none"} -> ${now ?? "none"}`];
-        });
+        return places(run).flatMap(({ place, before, after }) =>
+            before[ref] === undefined
+                ? [`${name} (${place}) is missing at the start.`]
+                : refChanges(before, after, [ref]).map(
+                      (change) => `${name} (${place}) ${change}`,
+                  ),
+        );
     });
     return verdict(problems, "Each branch stays, local and on origin.");
 }
@@ -786,9 +746,7 @@ export const checks: Record<string, Check> = {
     branchStarted,
     noVersionInName,
     originUnchanged,
-    stopped,
     policyFile,
-    policyUnchanged,
     reportNames,
     noChange,
     mergedWith,

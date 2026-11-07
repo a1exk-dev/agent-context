@@ -223,7 +223,8 @@ function ghCommands(shell: string): string[][] {
     });
 }
 
-const GH_WRITES = new Set(["create", "merge", "close"]);
+// The `gh pr` commands that write a pull request.
+export const GH_WRITES = new Set(["create", "merge", "close"]);
 
 export function auditCalls(calls: ToolCall[]): Audit {
     const audit: Audit = {

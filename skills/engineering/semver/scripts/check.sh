@@ -1,6 +1,6 @@
 #!/bin/sh
 # The Check script of the semver Skill. It does the countable checks of a
-# version or a branch name, and prints one line:
+# version, a branch name, or the ancestry of a commit, and prints one line:
 #   valid: <what it found>      exit 0
 #   invalid: <reason>           exit 1
 # A usage or Git error goes to stderr with exit 2.
@@ -9,13 +9,15 @@
 #   sh check.sh branch <name>            branch-name form of the 4 branch types
 #   sh check.sh release <version> <v|none>
 #       a version for a new release: X.Y.Z, above the last release tag
+#   sh check.sh ancestor <commit> <branch>
+#       the branch contains the commit
 
 LC_ALL=C
 export LC_ALL
 set -f
 
 usage() {
-    echo "usage: sh check.sh version <version> | branch <name> | release <version> <v|none>" >&2
+    echo "usage: sh check.sh version <version> | branch <name> | release <version> <v|none> | ancestor <commit> <branch>" >&2
     exit 2
 }
 
@@ -190,6 +192,16 @@ check_release() {
     valid "$version is X.Y.Z and above the last release $last (tag $last_tag)."
 }
 
+check_ancestor() {
+    git merge-base --is-ancestor "$1" "$2"
+    case $? in
+    0) valid "$2 contains $1." ;;
+    1) invalid "$2 does not contain $1." ;;
+    esac
+    echo "check.sh: git merge-base --is-ancestor $1 $2 failed" >&2
+    exit 2
+}
+
 case $1 in
 version)
     [ $# -eq 2 ] || usage
@@ -204,6 +216,10 @@ release)
     [ $# -eq 3 ] || usage
     case $3 in v | none) ;; *) usage ;; esac
     check_release "$2" "$3"
+    ;;
+ancestor)
+    [ $# -eq 3 ] || usage
+    check_ancestor "$2" "$3"
     ;;
 *) usage ;;
 esac
