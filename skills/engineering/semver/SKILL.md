@@ -23,16 +23,16 @@ This skill gives versions by Semantic Versioning 2.0.0 and makes branches by Git
   - **Start** makes a branch from the correct base, with the correct name, and checks it out.
   - **Finish** merges a branch into its targets, or opens a pull request for each target. It also makes the tag and the Back-merge, and deletes the branches that are safe to delete.
 
-## Rules for each job
+## In each job
 
-- Change no file of the project except the Semver policy. Do not edit the changelog, a version file, or other project files, because these files belong to the project and its other work.
+- Change no file of the project except the Semver policy and, in Finish, the files with a conflict in a Back-merge. Do not edit the changelog, a version file, or other project files, because these files belong to the project and its other work.
 - Do not stage or commit the Semver policy. The Operator commits it with the process of the project.
-- Do not push with `--force`, do not use `--no-verify`, and do not change a commit that `origin` contains.
-- A version has no `v`. The Setting `Tag prefix` is only for the tag.
+- Do not push with `--force`.
+- Do not use `--no-verify`.
+- Do not change a commit that `origin` contains.
+- Write a version without `v`. Use the Setting `Tag prefix` only for the tag.
 
 ## Before each job
-
-Do these steps before each of the 4 jobs.
 
 1. Read `references/policy-setup.md` in the folder of this skill. It tells you how to set up, examine, and complete the Semver policy.
 2. Run `cat -n docs/agents/semver-policy.md` to read the Semver policy and its line numbers.
@@ -47,7 +47,7 @@ Do these steps before each of the 4 jobs.
 | Hotfix branches | `on` or `off`. | `on` |
 | Tag prefix | `v` or `none`. | `v` |
 | Development merge | `merge commit` or `squash`. | `squash` |
-| Production merge | `merge commit` or `squash`. CAUTION: `squash` makes the release commits not ancestors of the Production branch. Then Back-merges can have conflicts. | `merge commit` |
+| Production merge | `merge commit` or `squash`. CAUTION: Offer `merge commit` as the recommended value. `squash` makes the release commits not ancestors of the Production branch, and then Back-merges can have conflicts. | `merge commit` |
 | Finish mode | `pull request` or `local`. | `pull request` |
 | Tag and back-merge | `CI` or `Skill`. | `CI` |
 | Back-merge conflicts | `confirm`, `automatic`, or `report`. | `confirm` |
@@ -119,16 +119,16 @@ sh <skill folder>/scripts/check.sh ancestor <commit> <branch>
 ## When you check a version or a branch name
 
 1. For each version in the request, run the `version` form of the check script.
-2. For each branch name in the request, run the `branch` form of the check script. Do not run it for the name of the Production branch or the Development branch. Compare that name with the Semver policy.
-3. When the Setting `Hotfix branches` is `off`, a `hotfix/*` name is not correct for the project. This is also true when the script gives `valid:`.
+2. For each branch name in the request, run the `branch` form of the check script. Do not run it for the name of the Production branch or the Development branch, because the script accepts only the 4 branch types. Compare that name with the Semver policy.
+3. When the Setting `Hotfix branches` is `off`, report each `hotfix/*` name as not correct for the project. Do this also when the script gives `valid:`.
 4. Do not change the repository.
 5. In the report, give each version and branch name, and tell if it is correct. For each name or version that is not correct, give the cause from the script.
 
 ## When you pick the next version
 
-Before Pick, read `references/pick.md` in the folder of this skill. Then do its steps. Pick changes nothing. Pick asks no question, except when Start of a `release/*` branch uses Pick.
+Before Pick, read `references/pick.md` in the folder of this skill. Then do its steps. In Pick, do not change the repository. In Pick, ask no question, except when Start of a `release/*` branch uses Pick.
 
-Pick does not find deprecations. When the caller asks how to mark a deprecation, tell the caller to make it on a `feature/*` branch. With `Development merge: squash`, tell the caller to make it in a `feat` commit. Then Pick gives minor, as Semantic Versioning 2.0.0 rule 7 tells.
+Pick does not find deprecations. When the caller asks how to mark a deprecation, tell the caller to make it on a `feature/*` branch. With `Development merge: squash`, tell the caller to make it in a `feat` commit. Then Pick gives minor, as item 7 of the Semantic Versioning 2.0.0 specification tells.
 
 ## When you start a release branch
 
@@ -139,11 +139,11 @@ Pick does not find deprecations. When the caller asks how to mark a deprecation,
 5. If the script gives `invalid:`, stop. In the report, give the cause from the script.
 6. The base branch is the Development branch. When `Development branch` is `none`, the base branch is the Production branch. Make sure that the base branch exists, as step 4 of "When you start a feature, bugfix, or hotfix branch" tells you.
 7. Run `git switch -c release/<version> <base>` to make the branch and check it out.
-8. Do not push the new branch.
+8. Do not push the new branch. The new branch stays local until work starts on it.
 
 ## When you find a Back-merge pull request with a conflict
 
-Do these steps in each job, Check too, so that the Operator learns about the conflict. Do them only when the project has a Development branch and an `origin` remote. You must also have a tool for the host, for example `gh` for GitHub. Do not install or set up a host tool for these steps.
+Do these steps in each job, Check too, so that the Operator learns about the conflict. Do them only when the project has a Development branch and an `origin` remote. You must also have a tool for the host, for example `gh` for GitHub. Do not install or set up a host tool for these steps, because the Operator controls the host tools of the project.
 
 1. Run `gh pr list --base <development> --state open --json number,headRefName,mergeable,url`, or the command of your host tool that does the same work.
 2. A Back-merge pull request has the head `<production>` or a branch `bugfix/back-merge-v<version>`. Record each Back-merge pull request with the `mergeable` value `CONFLICTING` for the report.
@@ -157,7 +157,7 @@ Before Finish, read `references/finish.md` in the folder of this skill. Then do 
 
 ## When you ask a question
 
-Ask with the question tool of the platform. If the platform has no question tool, ask in plain text and end your turn. No answer is not approval. When the request gives the answer before the question, use that answer and do not ask.
+Ask with the question tool of the platform. When you cannot use a question tool, do the steps of the reference file of the job for this condition. This occurs when the platform has no question tool, or when that tool gives an error. If the reference file gives no steps, ask in plain text. Then end your turn. No answer is not approval. When the request gives the answer before the question, use that answer and do not ask.
 
 ## When you write the report
 

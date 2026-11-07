@@ -2,7 +2,9 @@
 
 Read this file before Pick. Also read it before you start a `release/*` branch when the request gives no version. The Setting table is in `SKILL.md` of this skill. If `SKILL.md` is not in your context window, read it before you use this file.
 
-Pick changes nothing in the repository. Pick reads only the tags and the commit messages. Do not read the code or the diffs, and do not use the Setting `Breaking definition` to find a breaking change. The commit authors mark each breaking change in the commit message, so the same commits always give the same version.
+## Before you read the tags and the commits
+
+Pick reads only the tags and the commit messages. Do not read the code or the diffs. Do not use the Setting `Breaking definition` to find a breaking change. The commit authors mark each breaking change in the commit message, so the same commits always give the same version.
 
 ## When you find the last release
 
@@ -19,20 +21,19 @@ When HEAD is on a `hotfix/*` branch, or the request asks for the version of a ho
 
 The commit set is the commits in the Development branch that are not in the Production branch.
 
-1. For each of the 2 branches, use the local branch. If the local branch is not there, use `origin/<branch>`.
-2. Run this command to get the commits that the Development branch got directly, with their parents and messages:
+1. When `Development branch` is `none`, the commit set is the commits in the Production branch after the last release tag. Then use `<tag>..<production>` in place of `<production>..<development>` in the 2 commands of this section. Also use `Production merge` in place of `Development merge` in this file.
+2. For each of the 2 branches, use the local branch. If the local branch is not there, use `origin/<branch>`.
+3. Run this command to get the commits that the Development branch got directly, with their parents and messages:
 
    ```sh
    git log --first-parent --format='%h %p%n%B%n----' <production>..<development>
    ```
 
-3. Run this command to get each commit of the set, also the commits of the merged branches:
+4. Run this command to get each commit of the set, also the commits of the merged branches:
 
    ```sh
    git log --format='%h%n%B%n----' <production>..<development>
    ```
-
-4. When `Development branch` is `none`, the commit set is the commits in the Production branch after the last release tag: `<tag>..<production>`. Then use `Production merge` in place of `Development merge` in this file.
 
 ## When a commit is a release or Back-merge commit
 
@@ -61,7 +62,7 @@ Do not count these commits, because they come from a release that has a version 
 
 1. For each counted commit of the first command in "When you find the commit set", read the first line of its message as a Conventional Commits header: `<type>(<scope>)!: <description>`. The scope and the `!` are optional.
 2. The type `feat` gives minor. The type `fix` gives patch. Each other type, and a first line in a different form, gives no bump.
-3. If no commit gives a bump and no commit is a breaking change, the bump is unclear.
+3. Do the steps in "When you find a breaking change". If no commit gives a bump and no commit is a breaking change, the bump is unclear.
 
 ## When you find a breaking change
 
@@ -97,7 +98,7 @@ Do these steps only when the bump is not unclear.
 
 Give no version, because Pick never guesses. A released version cannot change, so an incorrect version stays in the history.
 
-- For Pick alone, do not ask a question. In the report, give the cause and each unclear commit with its short SHA and its first line. Tell the caller that Start of a release asks the Operator for the version.
+- For Pick alone, do not ask a question. In the report, give the cause and each unclear commit with its short SHA and its first line. Tell the caller that Start of a `release/*` branch asks the Operator for the version.
 - For Start of a `release/*` branch, ask the Operator for the version. In the question, give the cause and each unclear commit with its short SHA and its first line. Also give the value of `Breaking definition`. When the value is `default`, give the default definition: "users or other programs must change what they do to keep working". Give the next patch, the next minor, and the next major version of the last release as answers. The Operator can also type a different version.
 - When the platform has no question tool, or the question tool gives an error, stop. In the report, give the text of the question and its answers. Tell the caller to give the version in a new request, for example "Start release 1.3.0".
 
@@ -105,9 +106,9 @@ Give no version, because Pick never guesses. A released version cannot change, s
 
 The first version is a decision of the Operator.
 
-- For Pick alone, do not ask a question. In the report, tell the caller that no release tag exists, and give the 2 possible first versions: `0.1.0` and `1.0.0`.
+- For Pick alone, do not ask a question. In the report, tell the caller that no release tag exists. Also give the 2 possible first versions: `0.1.0` and `1.0.0`.
 - For Start of a `release/*` branch, ask the Operator one question for the first version. Give `0.1.0` first, as the recommended answer, and then `1.0.0`. Semantic Versioning 2.0.0 recommends 0.1.0 for the first release of a project in development.
-- When the platform has no question tool, or the question tool gives an error, stop. In the report, tell the caller that no release tag exists, and give `0.1.0` and `1.0.0`. Tell the caller to give the version in a new request, for example "Start release 0.1.0".
+- When the platform has no question tool, or the question tool gives an error, stop. In the report, tell the caller that no release tag exists. Also give `0.1.0` and `1.0.0`. Tell the caller to give the version in a new request, for example "Start release 0.1.0".
 
 ## When you report the version of Pick
 
