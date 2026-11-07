@@ -39,6 +39,423 @@
     ],
     "evals": [
         {
+            "id": 1,
+            "name": "01-pick-feature-and-bugfix",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git switch -q develop",
+                    "git switch -q -c feature/search develop && echo 'export const search = true;' >> src/login.ts && git commit -qam 'Add search' && git switch -q develop && git merge -q --no-ff --no-edit feature/search && git branch -q -d feature/search",
+                    "git switch -q -c bugfix/typo develop && echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'Fix the typo in the login check' && git switch -q develop && git merge -q --no-ff --no-edit bugfix/typo && git branch -q -d bugfix/typo",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "1.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "1.2",
+                    "text": "The report gives 1.3.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "02-pick-only-bugfix",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git switch -q develop",
+                    "git switch -q -c bugfix/typo develop && echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'Fix the typo in the login check' && git switch -q develop && git merge -q --no-ff --no-edit bugfix/typo && git branch -q -d bugfix/typo",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "2.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "2.2",
+                    "text": "The report gives 1.2.1 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "03-pick-breaking",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git switch -q develop",
+                    "git switch -q -c feature/api develop && echo 'export const apiVersion = 2;' >> src/login.ts && git commit -qam 'feat!: remove the v1 API' && git switch -q develop && git merge -q --no-ff --no-edit feature/api && git branch -q -d feature/api",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "3.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "3.2",
+                    "text": "The report gives 2.0.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "04-pick-breaking-before-1-minor",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/04-breaking-before-1-minor",
+                "steps": [
+                    "git tag -d v1.2.0 && git push -q origin :refs/tags/v1.2.0 && git tag v0.4.0 && git push -q origin v0.4.0",
+                    "git switch -q develop",
+                    "git switch -q -c feature/api develop && echo 'export const apiVersion = 2;' >> src/login.ts && git commit -qam 'feat!: remove the v1 API' && git switch -q develop && git merge -q --no-ff --no-edit feature/api && git branch -q -d feature/api",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "4.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "4.2",
+                    "text": "The report gives 0.5.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "05-pick-breaking-before-1-major",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git tag -d v1.2.0 && git push -q origin :refs/tags/v1.2.0 && git tag v0.4.0 && git push -q origin v0.4.0",
+                    "git switch -q develop",
+                    "git switch -q -c feature/api develop && echo 'export const apiVersion = 2;' >> src/login.ts && git commit -qam 'feat!: remove the v1 API' && git switch -q develop && git merge -q --no-ff --no-edit feature/api && git branch -q -d feature/api",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "5.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "5.2",
+                    "text": "The report gives 1.0.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "name": "06-pick-github-and-header-messages",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git switch -q develop",
+                    "git switch -q -c feature/search develop && echo 'export const search = true;' >> src/login.ts && git commit -qam 'Add search' && git switch -q develop && git merge -q --no-ff -m 'Merge pull request #5 from example/feature/search' -m 'Add search' feature/search && git branch -q -d feature/search",
+                    "git switch -q -c bugfix/typo develop && echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'Fix the typo in the login check' && git switch -q develop && git merge -q --no-ff -m 'chore: merge bugfix/typo into develop (#6)' bugfix/typo && git branch -q -d bugfix/typo",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "6.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "6.2",
+                    "text": "The report gives 1.3.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "name": "07-start-release-direct-commit",
+            "prompt": "Start the next release.",
+            "setup": {
+                "overlay": "fixtures/07-direct-commit",
+                "steps": [
+                    "git switch -q develop",
+                    "git switch -q -c feature/search develop && echo 'export const search = true;' >> src/login.ts && git commit -qam 'Add search' && git switch -q develop && git merge -q --no-ff --no-edit feature/search && git branch -q -d feature/search",
+                    "echo '// Rejects an empty password.' >> src/login.ts && git commit -qam 'Correct the login check'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "7.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "7.2",
+                    "text": "The report says that a commit on `develop` came from no merged branch, and names that commit (`Correct the login check` or its SHA).",
+                    "grader": "llm"
+                },
+                {
+                    "id": "7.3",
+                    "text": "The report gives no next version as the result of Pick, and asks the caller for the version of the release.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "7.4",
+                    "text": "The report gives the `Breaking definition` value `CLI flags, config file format`.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["CLI flags, config file format"]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "name": "08-pick-skips-back-merge",
+            "prompt": "What is the next version?",
+            "setup": {
+                "overlay": "fixtures/merge-commit",
+                "steps": [
+                    "git tag -d v1.2.0 && echo 'export const version = \"1.2.0\";' > src/version.ts && git add src/version.ts && git commit -qm 'chore(release): 1.2.0' && git tag v1.2.0 && git push -q origin main && git push -q -f origin refs/tags/v1.2.0",
+                    "git switch -q develop",
+                    "git merge -q --no-ff --no-edit v1.2.0",
+                    "git switch -q -c bugfix/typo develop && echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'Fix the typo in the login check' && git switch -q develop && git merge -q --no-ff --no-edit bugfix/typo && git branch -q -d bugfix/typo",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "8.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "8.2",
+                    "text": "The report gives 1.2.1 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "name": "09-pick-squash-highest-bump",
+            "prompt": "What is the next version?",
+            "setup": {
+                "steps": [
+                    "git tag v1.2.3 && git push -q origin v1.2.3",
+                    "git switch -q develop",
+                    "echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'fix: correct the comment of the login check (#6)'",
+                    "echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search (#7)'",
+                    "printf '# Usage\\n' > docs/usage.md && git add docs/usage.md && git commit -qm 'docs: add the usage guide (#8)'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "9.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "9.2",
+                    "text": "The report gives 1.3.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "name": "10-pick-squash-breaking-footer",
+            "prompt": "What is the next version?",
+            "setup": {
+                "steps": [
+                    "git switch -q develop",
+                    "echo '// Checks the user name and the password.' >> src/login.ts && git commit -qam 'fix: correct the comment of the login check (#6)'",
+                    "echo 'export type LoginOptions = { user: string; password: string };' >> src/login.ts && git commit -qam 'feat: accept login options (#7)' -m 'BREAKING CHANGE: login takes a LoginOptions object.'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "10.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "10.2",
+                    "text": "The report gives 2.0.0 as the next version.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "name": "11-start-release-no-bump",
+            "prompt": "Start the next release.",
+            "setup": {
+                "overlay": "fixtures/11-no-bump",
+                "steps": [
+                    "git switch -q develop",
+                    "printf '# Usage\\n' > docs/usage.md && git add docs/usage.md && git commit -qm 'docs: add the usage guide (#6)'",
+                    "printf 'root = true\\n' > .editorconfig && git add .editorconfig && git commit -qm 'chore: add the editor settings (#7)'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "11.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "11.2",
+                    "text": "The report says that no commit since the last release gives a bump (no `feat`, `fix`, or breaking commit).",
+                    "grader": "llm"
+                },
+                {
+                    "id": "11.3",
+                    "text": "The report gives no next version as the result of Pick, and asks the caller for the version of the release.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "11.4",
+                    "text": "The report gives the `Breaking definition` value `CLI flags, config file format`.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["CLI flags, config file format"]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "name": "12-pick-hotfix",
+            "prompt": "Which version does this hotfix get?",
+            "setup": {
+                "steps": [
+                    "git switch -q develop",
+                    "echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search (#7)'",
+                    "git push -q origin develop",
+                    "git switch -q -c hotfix/login main && echo '// Rejects an empty user name.' >> src/login.ts && git commit -qam 'fix: reject an empty user name'"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "12.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "12.2",
+                    "text": "The report gives 1.2.1 as the next version of the hotfix.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 13,
+            "name": "13-start-release-no-tag",
+            "prompt": "Start the next release.",
+            "setup": {
+                "steps": [
+                    "git tag -d v1.2.0 && git push -q origin :refs/tags/v1.2.0",
+                    "git switch -q develop",
+                    "echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search (#7)'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "13.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "13.2",
+                    "text": "The report says that no release tag exists, and asks the caller for the first version.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "13.3",
+                    "text": "The report gives the 2 first versions 0.1.0 and 1.0.0.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["0.1.0", "1.0.0"]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 14,
+            "name": "14-start-first-release",
+            "prompt": "Start release 0.1.0.",
+            "setup": {
+                "steps": [
+                    "git tag -d v1.2.0 && git push -q origin :refs/tags/v1.2.0",
+                    "git switch -q develop",
+                    "echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search (#7)'",
+                    "git push -q origin develop && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "14.1",
+                    "text": "There is exactly one new local branch. Its name is `release/0.1.0`, it points at the commit of `develop`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": {
+                        "prefix": "release/",
+                        "base": "develop",
+                        "name": "release/0.1.0"
+                    }
+                },
+                {
+                    "id": "14.2",
+                    "text": "The new branch is not pushed: the refs of `origin` are unchanged.",
+                    "grader": "script",
+                    "check": "originUnchanged"
+                }
+            ]
+        },
+        {
             "id": 15,
             "name": "15-check-versions-and-branches",
             "prompt": "Are `1.3.0-rc.1+build.5`, `01.2.3`, `release/1.3`, and `hotfix/login` valid here?",
@@ -136,6 +553,71 @@
                     "text": "The new branch is not pushed: the refs of `origin` are unchanged.",
                     "grader": "script",
                     "check": "originUnchanged"
+                }
+            ]
+        },
+        {
+            "id": 19,
+            "name": "19-start-second-release",
+            "prompt": "Start release 1.4.0.",
+            "setup": {
+                "steps": [
+                    "git switch -q develop",
+                    "echo 'export const search = true;' >> src/login.ts && git commit -qam 'feat: add search (#7)'",
+                    "git push -q origin develop",
+                    "git branch release/1.3.0 develop && git push -q origin release/1.3.0 && git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "19.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "19.2",
+                    "text": "The report names the open branch `release/1.3.0`.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["release/1.3.0"]
+                    }
+                },
+                {
+                    "id": "19.3",
+                    "text": "The report says that the job stopped because the release branch `release/1.3.0` is still open.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 20,
+            "name": "20-start-hotfix-off",
+            "prompt": "Start a hotfix for the login crash.",
+            "setup": {
+                "overlay": "fixtures/20-hotfix-off"
+            },
+            "assertions": [
+                {
+                    "id": "20.1",
+                    "text": "The job stops: no new or moved branch or tag, local or on `origin`, no new commit, no file change, the same HEAD, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "20.2",
+                    "text": "The report names the Setting `Hotfix branches`.",
+                    "grader": "script",
+                    "check": "reportNames",
+                    "args": {
+                        "words": ["Hotfix branches"]
+                    }
+                },
+                {
+                    "id": "20.3",
+                    "text": "The report says that the job stopped because the Semver policy has `Hotfix branches: off`.",
+                    "grader": "llm"
                 }
             ]
         },

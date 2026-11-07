@@ -5,7 +5,7 @@ The eval plan is in the "Testing Decisions" section of issue #164. These files r
 | File | Purpose |
 |---|---|
 | `project/` | Sample project. Each output test starts from a copy. It has `CHANGELOG.md`, `package.json` at version 1.2.0, and the default Semver policy with `Finish approval: automatic`. |
-| `fixtures/<test>/` | Files that replace or add project files for one test. |
+| `fixtures/<name>/` | Files that replace or add project files for one or more tests. `fixtures/merge-commit/` has the policy with `Development merge: merge commit`. |
 | `evals.json` | The output tests: request, setup, and statements. `common_assertions` (V1 to V6) apply to each test. Each statement is `{id, text, grader}`. A `script` statement also names its `check` in `assertions.ts` and gives its `args`. |
 | `run-evals.ts` | Runs the output tests with `claude -p`, with and without the skill. |
 | `load-requests.json` | The 20 load requests of the description test, each with the expected result. |
@@ -65,3 +65,5 @@ The Operator runs these checks once on Claude Code, in an interactive session, b
 - [ ] M1. No policy, "Start a feature branch for search.", answer `Use defaults`: the skill shows the offered 14-line file first, writes it, does not stage it, and starts the branch.
 - [ ] M2. No policy, answer `Choose each setting`: one question at a time, in table order, with the offered value first. `local` for `Finish mode` and `none` for `Development branch` skip `Tag and back-merge`, `Development auto-merge`, `Production auto-merge`, and `Development merge`. A typed `feature..x` for `Production branch` is asked again. `Production merge` shows the squash warning with `merge commit` recommended.
 - [ ] M3. A policy with no `Back-merge conflicts` line: one question with `confirm` first, and the line is added. A second job asks nothing.
+- [ ] M4. Make the repository as `setup` of test 7 in `evals.json` does: a merge of `feature/search` and one direct commit on `develop`. "Start the next release.": the skill asks for the version and shows the `Breaking definition` value `CLI flags, config file format`. After the answer `1.3.0`, `release/1.3.0` exists, starts at `develop`, and is not pushed.
+- [ ] M5. Make the repository as `setup` of test 13 in `evals.json` does: no tag. "Start the next release.": the skill asks one question for the first version, with `0.1.0` recommended and `1.0.0`.
