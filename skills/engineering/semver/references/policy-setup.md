@@ -24,7 +24,7 @@ Some values make other Settings unused. For an unused Setting, write the default
 Do the setup before the job, also before Check. Without the Settings, no job knows the branches, the tags, or the merges of the project.
 
 1. Find the answers in the request. The request can tell you to "use the default semver policy". Then use the offered values. The request can also give a value for each Setting.
-2. When step 4, 5, or 6 needs a question and you cannot use a question tool, do not write the file. Also do not do the job. The platform can have no question tool, or the question tool can give an error. Only the Operator selects the values of a new Semver policy. In the report, do these steps:
+2. When step 4, 5, or 6 needs a question and you cannot use a question tool, do not write the file. Also do not do the job. The platform can have no question tool, or the question tool can give an error. Only the Operator, or the request, selects the values of a new Semver policy. In the report, do these steps:
    1. Give the offered Semver policy in a code block.
    2. Give each Setting that has no answer, with its offered value.
    3. Tell the caller to give a value for each of these Settings, or the words "use the default semver policy", in a new request.
