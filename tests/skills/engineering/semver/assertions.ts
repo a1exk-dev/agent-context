@@ -171,7 +171,10 @@ function onlyAllowedChanges(run: Run): Verdict {
 
 // The cleanup test of a deleted branch: its pull request is MERGED with the
 // branch tip as head, or its target contains the tip. A release or hotfix
-// branch also needs its tag and its Back-merge.
+// branch also needs its tag and its Back-merge. A hotfix tag is any tag that
+// contains the tip, also one of an earlier run. An OPEN or MERGED pull
+// request from the Production branch or a `bugfix/back-merge-*` branch into
+// the Development branch counts as the Back-merge.
 function deleteProblem(run: Run, branch: string, tip: string): string | null {
     const policy = policyOf(run);
     const commits = allCommits(run);
@@ -206,9 +209,7 @@ function deleteProblem(run: Run, branch: string, tip: string): string | null {
     const tag =
         type === "release"
             ? tags[`${policy.tagPrefix}${branch.slice("release/".length)}`]
-            : newNames(run, TAGS)
-                  .map((name) => tags[name] as string)
-                  .find((sha) => isAncestor(commits, tip, sha));
+            : Object.values(tags).find((sha) => isAncestor(commits, tip, sha));
     if (!tag) return `${branch} was deleted before its tag existed.`;
     if (policy.development === null) return null;
     const development = policy.development;
@@ -220,6 +221,7 @@ function deleteProblem(run: Run, branch: string, tip: string): string | null {
         run.prsAfter.some(
             (pr) =>
                 pr.baseRefName === development &&
+                pr.state !== "CLOSED" &&
                 (pr.headRefName === policy.production ||
                     pr.headRefName.startsWith("bugfix/back-merge-")),
         );
@@ -502,14 +504,16 @@ const newCommitList = (run: Run): Commit[] => {
 };
 
 // The local `args.target` at the end is a new merge commit. Its first
-// parent is the target at the start, and its second parent is the commit
-// of `args.second`, a branch or a tag.
+// parent is the target at the start, or `args.first` at the start for a new
+// branch. Its second parent is the commit of `args.second`, a branch or a
+// tag.
 function mergedWith(run: Run, args: Record<string, unknown>): Verdict {
     const target = String(args.target);
     const second = String(args.second);
+    const first = String(args.first ?? target);
     const tip = run.after.refs[`${HEADS}${target}`];
     const commit = run.after.commits.find((item) => item.sha === tip);
-    const parents = [commitOf(run, target), commitOf(run, second)];
+    const parents = [commitOf(run, first), commitOf(run, second)];
     if (!commit)
         return { passed: false, evidence: `No local ${target} at the end.` };
     if (run.before.commits.some((item) => item.sha === tip))
@@ -521,6 +525,15 @@ function mergedWith(run: Run, args: Record<string, unknown>): Verdict {
                   `${target} is at ${tip?.slice(0, 7)} with the parents ${commit.parents.join(", ") || "none"}, not ${parents.join(", ")}.`,
               ],
         `${target} is a merge commit of ${second}.`,
+    );
+}
+
+// No file of a branch or tag commit at the end has a conflict marker line.
+// A saved state without `markers` has none.
+function noConflictMarkers(run: Run): Verdict {
+    return verdict(
+        (run.after.markers ?? []).map((file) => `Conflict marker in ${file}.`),
+        "No ref file has a conflict marker.",
     );
 }
 
@@ -687,6 +700,48 @@ function noNewTag(run: Run): Verdict {
     );
 }
 
+// No branch with the prefix `args.prefix` is new, local or on origin.
+function noNewBranch(run: Run, args: Record<string, unknown>): Verdict {
+    const prefix = String(args.prefix);
+    return verdict(
+        newNames(run, HEADS)
+            .filter((name) => name.startsWith(prefix))
+            .map((name) => `New branch: ${name}`),
+        `No new ${prefix} branch.`,
+    );
+}
+
+// At the end, the local branch `args.branch` exists when `args.local` is
+// true, and the origin branch exists when `args.origin` is true.
+function branchWhere(run: Run, args: Record<string, unknown>): Verdict {
+    const ref = `${HEADS}${String(args.branch)}`;
+    const problems = (
+        [
+            ["local", run.after.refs, args.local],
+            ["origin", run.after.origin, args.origin],
+        ] as const
+    )
+        .filter(([, refs, wanted]) => ref in refs !== Boolean(wanted))
+        .map(
+            ([place, , wanted]) =>
+                `The ${place} branch ${String(args.branch)} ${wanted ? "is missing" : "exists"}.`,
+        );
+    return verdict(problems, `${String(args.branch)} is where expected.`);
+}
+
+// The pull request `args.number` has the state `args.state` at the end.
+function prState(run: Run, args: Record<string, unknown>): Verdict {
+    const found = run.prsAfter.find((pr) => pr.number === Number(args.number));
+    return verdict(
+        found?.state === args.state
+            ? []
+            : [
+                  `Pull request #${String(args.number)} is ${found?.state ?? "missing"}, not ${String(args.state)}.`,
+              ],
+        `Pull request #${String(args.number)} is ${String(args.state)}.`,
+    );
+}
+
 // Each of `args.branches` is at its start commit at the end, local and on
 // origin.
 function branchesKept(run: Run, args: Record<string, unknown>): Verdict {
@@ -737,6 +792,7 @@ export const checks: Record<string, Check> = {
     reportNames,
     noChange,
     mergedWith,
+    noConflictMarkers,
     tagAt,
     pushed,
     branchDeleted,
@@ -747,4 +803,7 @@ export const checks: Record<string, Check> = {
     noNewTag,
     branchesKept,
     ranCommand,
+    noNewBranch,
+    branchWhere,
+    prState,
 };

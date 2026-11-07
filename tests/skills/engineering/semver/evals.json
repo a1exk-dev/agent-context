@@ -1241,6 +1241,290 @@
             ]
         },
         {
+            "id": 34,
+            "name": "34-back-merge-conflict-confirm",
+            "prompt": "Finish the hotfix.",
+            "setup": {
+                "overlay": "fixtures/finish-local",
+                "steps": [
+                    "git switch -q develop && printf 'export function login(user: string, password: string): boolean {\\n    return user.length > 0 && password.length >= 8;\\n}\\n' > src/login.ts && git commit -qam 'feat: require 8 characters in a password (#7)' && git push -q origin develop",
+                    "git switch -q -c hotfix/login main && printf 'export function login(user: string, password: string): boolean {\\n    return user.trim().length > 0 && password.length > 0;\\n}\\n' > src/login.ts && git commit -qam 'fix: reject a blank user name' && git push -q -u origin hotfix/login",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "34.1",
+                    "text": "The local `main` is a new merge commit. Its first parent is `main` at the start, and its second parent is the branch `hotfix/login`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "main",
+                        "second": "hotfix/login"
+                    }
+                },
+                {
+                    "id": "34.2",
+                    "text": "The tag `v1.2.1`, local and on `origin`, is on the new commit of `main`.",
+                    "grader": "script",
+                    "check": "tagAt",
+                    "args": {
+                        "tag": "v1.2.1",
+                        "branch": "main"
+                    }
+                },
+                {
+                    "id": "34.3",
+                    "text": "The local `bugfix/back-merge-v1.2.1` is a new merge commit. Its first parent is `develop` at the start, and its second parent is the tag `v1.2.1`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "bugfix/back-merge-v1.2.1",
+                        "first": "develop",
+                        "second": "v1.2.1"
+                    }
+                },
+                {
+                    "id": "34.4",
+                    "text": "No file of a branch or tag commit has a conflict marker line.",
+                    "grader": "script",
+                    "check": "noConflictMarkers"
+                },
+                {
+                    "id": "34.5",
+                    "text": "`bugfix/back-merge-v1.2.1` exists as a local branch and not on `origin`.",
+                    "grader": "script",
+                    "check": "branchWhere",
+                    "args": {
+                        "branch": "bugfix/back-merge-v1.2.1",
+                        "local": true,
+                        "origin": false
+                    }
+                },
+                {
+                    "id": "34.6",
+                    "text": "`develop` stays at its start commit, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchesKept",
+                    "args": {
+                        "branches": ["develop"]
+                    }
+                },
+                {
+                    "id": "34.7",
+                    "text": "The report gives `src/login.ts` as the file with a conflict, and tells that `bugfix/back-merge-v1.2.1` is not pushed.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 35,
+            "name": "35-back-merge-conflict-automatic",
+            "prompt": "Finish the hotfix.",
+            "setup": {
+                "overlay": "fixtures/35-back-merge-automatic",
+                "steps": [
+                    "git switch -q develop && printf 'export function login(user: string, password: string): boolean {\\n    return user.length > 0 && password.length >= 8;\\n}\\n' > src/login.ts && git commit -qam 'feat: require 8 characters in a password (#7)' && git push -q origin develop",
+                    "git switch -q -c hotfix/login main && printf 'export function login(user: string, password: string): boolean {\\n    return user.trim().length > 0 && password.length > 0;\\n}\\n' > src/login.ts && git commit -qam 'fix: reject a blank user name' && git push -q -u origin hotfix/login",
+                    "git switch -q main && git merge -q --no-ff -m 'Merge pull request #12 from example/hotfix/login' hotfix/login && git tag v1.2.1 && git push -q origin main v1.2.1"
+                ],
+                "prs": [
+                    {
+                        "number": 12,
+                        "headRefName": "hotfix/login",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "main"
+                    },
+                    {
+                        "number": 13,
+                        "title": "Merge tag v1.2.1 into develop",
+                        "headRefName": "main",
+                        "baseRefName": "develop",
+                        "state": "OPEN",
+                        "mergeable": "CONFLICTING"
+                    }
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "35.1",
+                    "text": "The local `bugfix/back-merge-v1.2.1` is a new merge commit. Its first parent is `develop` at the start, and its second parent is the tag `v1.2.1`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "bugfix/back-merge-v1.2.1",
+                        "first": "develop",
+                        "second": "v1.2.1"
+                    }
+                },
+                {
+                    "id": "35.2",
+                    "text": "No file of a branch or tag commit has a conflict marker line.",
+                    "grader": "script",
+                    "check": "noConflictMarkers"
+                },
+                {
+                    "id": "35.3",
+                    "text": "`origin` has the same commit as the local repository for `bugfix/back-merge-v1.2.1`.",
+                    "grader": "script",
+                    "check": "pushed",
+                    "args": {
+                        "refs": ["bugfix/back-merge-v1.2.1"]
+                    }
+                },
+                {
+                    "id": "35.4",
+                    "text": "One new pull request has the base `develop` and the head `bugfix/back-merge-v1.2.1`, with auto-merge by merge commit.",
+                    "grader": "script",
+                    "check": "prCreated",
+                    "args": {
+                        "base": "develop",
+                        "head": "bugfix/back-merge-v1.2.1",
+                        "autoMerge": "MERGE"
+                    }
+                },
+                {
+                    "id": "35.5",
+                    "text": "The old Back-merge pull request #13 is closed.",
+                    "grader": "script",
+                    "check": "prState",
+                    "args": {
+                        "number": 13,
+                        "state": "CLOSED"
+                    }
+                },
+                {
+                    "id": "35.6",
+                    "text": "The run made exactly 1 new commit.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 1
+                    }
+                },
+                {
+                    "id": "35.7",
+                    "text": "The report gives `src/login.ts` as the file with a conflict, the new pull request from `bugfix/back-merge-v1.2.1`, and the closed pull request #13.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 36,
+            "name": "36-back-merge-conflict-report",
+            "prompt": "Finish the hotfix.",
+            "setup": {
+                "overlay": "fixtures/36-back-merge-report",
+                "steps": [
+                    "git switch -q develop && printf 'export function login(user: string, password: string): boolean {\\n    return user.length > 0 && password.length >= 8;\\n}\\n' > src/login.ts && git commit -qam 'feat: require 8 characters in a password (#7)' && git push -q origin develop",
+                    "git switch -q -c hotfix/login main && printf 'export function login(user: string, password: string): boolean {\\n    return user.trim().length > 0 && password.length > 0;\\n}\\n' > src/login.ts && git commit -qam 'fix: reject a blank user name' && git push -q -u origin hotfix/login",
+                    "git switch -q main"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "36.1",
+                    "text": "The local `main` is a new merge commit. Its first parent is `main` at the start, and its second parent is the branch `hotfix/login`.",
+                    "grader": "script",
+                    "check": "mergedWith",
+                    "args": {
+                        "target": "main",
+                        "second": "hotfix/login"
+                    }
+                },
+                {
+                    "id": "36.2",
+                    "text": "The tag `v1.2.1`, local and on `origin`, is on the new commit of `main`.",
+                    "grader": "script",
+                    "check": "tagAt",
+                    "args": {
+                        "tag": "v1.2.1",
+                        "branch": "main"
+                    }
+                },
+                {
+                    "id": "36.3",
+                    "text": "No new `bugfix/back-merge-` branch, local or on `origin`.",
+                    "grader": "script",
+                    "check": "noNewBranch",
+                    "args": {
+                        "prefix": "bugfix/back-merge-"
+                    }
+                },
+                {
+                    "id": "36.4",
+                    "text": "`develop` stays at its start commit, local and on `origin`.",
+                    "grader": "script",
+                    "check": "branchesKept",
+                    "args": {
+                        "branches": ["develop"]
+                    }
+                },
+                {
+                    "id": "36.5",
+                    "text": "The run made exactly 1 new commit.",
+                    "grader": "script",
+                    "check": "newCommits",
+                    "args": {
+                        "count": 1
+                    }
+                },
+                {
+                    "id": "36.6",
+                    "text": "The report gives `src/login.ts` as the file with a conflict.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 37,
+            "name": "37-pick-reports-conflicting-back-merge",
+            "prompt": "What is the next version?",
+            "setup": {
+                "steps": [
+                    "git switch -q develop && printf 'export function login(user: string, password: string): boolean {\\n    return user.length > 0 && password.length >= 8;\\n}\\n' > src/login.ts && git commit -qam 'feat: require 8 characters in a password (#7)' && git push -q origin develop",
+                    "git switch -q -c hotfix/login main && printf 'export function login(user: string, password: string): boolean {\\n    return user.trim().length > 0 && password.length > 0;\\n}\\n' > src/login.ts && git commit -qam 'fix: reject a blank user name' && git push -q -u origin hotfix/login",
+                    "git switch -q main && git merge -q --no-ff -m 'Merge pull request #12 from example/hotfix/login' hotfix/login && git tag v1.2.1 && git push -q origin main v1.2.1"
+                ],
+                "prs": [
+                    {
+                        "number": 12,
+                        "headRefName": "hotfix/login",
+                        "baseRefName": "main",
+                        "state": "MERGED",
+                        "mergeCommit": "main"
+                    },
+                    {
+                        "number": 13,
+                        "title": "Merge tag v1.2.1 into develop",
+                        "headRefName": "main",
+                        "baseRefName": "develop",
+                        "state": "OPEN",
+                        "mergeable": "CONFLICTING"
+                    }
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "37.1",
+                    "text": "The job changed nothing: no ref, commit, file, or pull request changed, and no `gh` write call.",
+                    "grader": "script",
+                    "check": "noChange"
+                },
+                {
+                    "id": "37.2",
+                    "text": "The report gives 1.3.0 as the next version.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "37.3",
+                    "text": "The report names the open Back-merge pull request #13 from `main` into `develop`, and tells that it has a conflict.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
             "id": 38,
             "name": "38-branch-cleanup",
             "prompt": "Finish feature/search.",
