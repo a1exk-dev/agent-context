@@ -157,11 +157,43 @@ In `local` mode, Finish does each merge, the tag, and the push with Git. If the 
 
 ## When a merge of the tag has a conflict
 
-This version of the skill does not correct a conflict in the Back-merge or in a different merge of the tag.
+1. Run `git diff --name-only --diff-filter=U`, and record each file with a conflict.
+2. Run `git merge --abort`.
+3. If the tag target is the Development branch, do the steps in "When the Back-merge has a conflict".
+4. If not, stop. Do not delete the finished branch. In the report, give each file with a conflict, and the tag target. Tell that the merge into the Production branch and the tag are done. Tell the Operator to merge the tag into the tag target.
 
-1. Run `git merge --abort`.
-2. Stop. Do not delete the finished branch.
-3. In the report, give each file with a conflict, and the tag target. Tell that the merge into the Production branch and the tag are done. Tell the Operator to merge the tag into the tag target.
+## When the Back-merge has a conflict
+
+The Setting `Back-merge conflicts` tells how Finish handles a Back-merge with a conflict. The replaced pull request is the OPEN pull request from the Production branch into the Development branch that has the conflict. Local mode has no replaced pull request.
+
+1. For `report`, stop. Do not make a branch. In the report, give each file with a conflict, the tag, and the replaced pull request with its number and URL. Tell the Operator to correct the conflict, or to set `Back-merge conflicts` to `confirm` or `automatic`.
+2. For `confirm` and `automatic`, the resolution branch is `bugfix/back-merge-v<version>`, for example `bugfix/back-merge-v1.2.1`. The name has the letter `v` also when `Tag prefix` is `none`.
+3. If the resolution branch exists, local or on `origin`, an earlier Finish run made it. Run `git switch <resolution branch>`. If `git merge-base --is-ancestor <tag> HEAD` gives exit code 0, go to step 9. If not, stop. In the report, give the resolution branch, and tell that it does not contain the tag.
+4. Run `git switch -c <resolution branch> <base>`. In local mode, the base is the local Development branch. In `pull request` mode, the base is `origin/<development>`.
+5. Find the message, as "When you write a merge message" tells you. Run `git merge --no-ff <tag>` with `--no-edit` or `-m '<message>'`. The merge gets the same conflict.
+6. Correct each file with a conflict. Read the two sides of each conflict, and edit the file so that it keeps the changes of the two sides. Do not use `-X ours`, `-X theirs`, `git checkout --ours`, or `git checkout --theirs`, because they remove the changes of one side.
+7. If you cannot tell how to keep the changes of the two sides, run `git merge --abort`. Then run `git switch <development>` and `git branch -d <resolution branch>`. Then stop as step 1 tells you.
+8. Run `git add <file>` for each file. Run `git diff --cached --check`. If it gives a conflict marker, correct the file and add it again. Then run `git commit` with `--no-edit` or `-m '<message>'`. The new merge commit has the tag as its second parent. Do not squash it.
+9. For `confirm`, run `git diff HEAD^1 HEAD -- <files with a conflict>` and show this diff to the Operator. Then ask one question with the answers `Push` and `Do not push`. Give `Push` first, as the recommended answer. If the request already approves the push of the resolution, do not ask. `Finish approval: automatic` does not approve this push.
+10. When the Operator answers `Do not push`, stop. The resolution branch stays local.
+11. When you cannot use a question tool, stop. Do not push. The resolution branch stays local. In the report, give each file with a conflict and the resolution branch. Tell the caller to examine the resolution and to approve it in a new request, for example "Finish the hotfix, push the back-merge resolution".
+12. For `automatic`, and for `confirm` after the answer `Push`, do the next step of your mode.
+13. In local mode, run `git switch <development>`. Then run `git merge --no-ff <resolution branch>` with `--no-edit` or `-m '<message>'`. If `origin` has the Development branch, run `git push origin <development>`.
+14. In `pull request` mode, run `git push -u origin <resolution branch>`. Find the title and the body, as "When you write a merge message" tells you. Run `gh pr create --base <development> --head <resolution branch>` with `--title` and `--body`, or with `--fill`.
+15. In `pull request` mode with `automatic`, do the steps in "When you turn on auto-merge". With `confirm`, do not turn on auto-merge, so that the Operator examines the resolution before the merge.
+16. If a replaced pull request exists, run `gh pr close <number> --comment 'Replaced by <URL of the new pull request>'`.
+17. Go back to the step after the step that sent you to this section.
+
+## When a Back-merge pull request has a conflict
+
+Do this section in `pull request` mode, when the tag exists, in 2 cases:
+
+- The OPEN pull request from the Production branch into the Development branch has the `mergeable` value `CONFLICTING`. This pull request is the replaced pull request.
+- In "When Tag and back-merge is Skill", before you open the pull request into the Development branch. Then no pull request is replaced.
+
+1. Run `git merge-tree --write-tree --name-only origin/<development> <tag>`. This command merges in memory and changes no branch.
+2. If the exit code is 0, Git finds no conflict. If a replaced pull request exists, give it in the report, with its number and URL. Do not change it.
+3. If the exit code is 1, the lines after the first line, up to the first blank line, are the files with a conflict. Do the steps in "When the Back-merge has a conflict".
 
 ## When you delete the finished branch
 
@@ -208,9 +240,10 @@ In `pull request` mode, the host merges each pull request. After the merge, a ne
 The merge commit is the commit on the Production branch that gets the tag. In `pull request` mode, it is the `mergeCommit` of the MERGED pull request. The merge of the tag into a tag target exists when one of these conditions is true:
 
 - `git merge-base --is-ancestor <merge commit> origin/<tag target>` gives exit code 0.
-- An OPEN pull request from the Production branch into the tag target exists. Find it with `gh pr list --head <production> --base <tag target> --state open --json number,mergeable,url`.
+- An OPEN pull request from the Production branch into the tag target exists, and its `mergeable` value is not `CONFLICTING`. Find it with `gh pr list --head <production> --base <tag target> --state open --json number,mergeable,url`.
+- The tag target is the Development branch, and an OPEN pull request from the resolution branch `bugfix/back-merge-v<version>` into the Development branch exists. Find it with `gh pr list --head bugfix/back-merge-v<version> --base <development> --state open --json number,url`.
 
-If that OPEN pull request has the `mergeable` value `CONFLICTING`, give it in the report, with its number and URL.
+A pull request into a `release/*` branch can have the `mergeable` value `CONFLICTING`. Give this pull request in the report, with its number and URL.
 
 ## When Tag and back-merge is CI
 
@@ -218,8 +251,9 @@ A CI job of the project makes the tag and opens the pull request of the Back-mer
 
 1. Run `git rev-parse --verify --quiet 'refs/tags/<tag>^{commit}'`. If the command gives no commit, the tag is missing.
 2. For each tag target, find the merge of the tag, as "When you find the merge into a tag target" tells you.
-3. Do not make a missing tag or a missing pull request.
-4. In the report, give each missing item: the tag, and the merge into each tag target. Tell the Operator to examine the CI job.
+3. Find the OPEN pull request from the Production branch into the Development branch. If the tag exists and this pull request has the `mergeable` value `CONFLICTING`, do the steps in "When a Back-merge pull request has a conflict".
+4. Do not make a missing tag or a missing pull request.
+5. In the report, give each missing item: the tag, and the merge into each tag target. Tell the Operator to examine the CI job.
 
 ## When Tag and back-merge is Skill
 
@@ -228,10 +262,12 @@ A CI job of the project makes the tag and opens the pull request of the Back-mer
 3. If the tag is missing, run `git tag <tag> <merge commit>`.
 4. Then run `git push origin <tag>`.
 5. For each tag target, in the sequence of the table in "When you find the targets", find the merge of the tag. "When you find the merge into a tag target" tells you how. If the merge exists, do not open a pull request into that tag target.
-6. If `git rev-parse origin/<production>` does not give the commit of the tag, do not open a pull request into the tag target. In the report, tell that the Production branch has commits after the tag. A pull request from the Production branch then brings changes that the version does not have.
-7. If not, find the title and the body, as "When you write a merge message" tells you.
-8. Run `gh pr create --base <tag target> --head <production>` with `--title` and `--body`, or with `--fill`.
-9. Do the steps in "When you turn on auto-merge".
+6. If the OPEN pull request from the Production branch into the Development branch has the `mergeable` value `CONFLICTING`, do the steps in "When a Back-merge pull request has a conflict". Do not open a different pull request into the Development branch.
+7. If `git rev-parse origin/<production>` does not give the commit of the tag, do not open a pull request into the tag target. In the report, tell that the Production branch has commits after the tag. A pull request from the Production branch then brings changes that the version does not have.
+8. For the Development branch, first do the steps in "When a Back-merge pull request has a conflict". If they find a conflict, do not open a pull request from the Production branch into the Development branch.
+9. If not, find the title and the body, as "When you write a merge message" tells you.
+10. Run `gh pr create --base <tag target> --head <production>` with `--title` and `--body`, or with `--fill`.
+11. Do the steps in "When you turn on auto-merge".
 
 ## When you clean up branches
 
@@ -271,6 +307,7 @@ Give these items:
 - Each merge: the target, the merge kind, and the short SHA of the new commit.
 - Each pull request that Finish opened or found: its number, URL, base, head, state, and auto-merge. When a pull request waits for its merge, tell the caller to finish the branch again after the merge.
 - In `pull request` mode, each missing tag and each missing merge into a tag target.
+- For a Back-merge with a conflict: each file with a conflict, the resolution branch, and its pull request. Also tell if Finish pushed the resolution, and give the replaced pull request that Finish closed.
 - Each branch and tag that Finish pushed, and each branch that stays local only.
 - Each deleted branch, local and on `origin`. Give each branch that Finish did not delete, with the cause.
 - The branch of HEAD at the end.
