@@ -1,0 +1,107 @@
+---
+name: semver
+description: "Before you make a Git branch, a version tag, or a version change, use this skill. Before you open or merge a pull request into the production or development branch, use this skill. When a prompt says \"version\", \"bump\", \"release\", \"hotfix\", \"tag\", or \"Git Flow\", or names this skill, use this skill. This skill picks the next Semantic Versioning 2.0.0 version and checks a version or a branch name. It also starts and finishes `feature/*`, `bugfix/*`, `release/*`, and `hotfix/*` branches. Before each job, it reads the Semver policy of the project. Do not use it to write a commit message, changelog text, or the description of a pull request, or to bump a dependency."
+---
+
+# Semver
+
+This skill gives versions by Semantic Versioning 2.0.0 and makes branches by Git Flow, as the Semver policy of the project tells it.
+
+## Terms in this skill
+
+- The **Operator** is the person who controls a project and the agents that operate in it. Only the Operator answers the questions of an agent and gives approval. An agent never acts as the Operator.
+- The **caller** is the Operator or the agent that starts this skill.
+- A **Policy** is a file in `docs/agents/` that holds the decisions of the Operator for one skill. The **Semver policy** is the Policy of this skill: `docs/agents/semver-policy.md`.
+- A **Setting** is one line `- <name>: <value>` of a Policy. This skill gives each name and its possible values.
+- The **Production branch** is the branch that holds the released versions. The Setting `Production branch` gives its name.
+- The **Development branch** is the branch that collects the work for the next release. The Setting `Development branch` gives its name, or `none` when the project has no Development branch.
+- A **Back-merge** is the merge from the Production branch into the Development branch after a release or a hotfix.
+- The 4 branch types are `feature/<name>`, `bugfix/<name>`, `release/X.Y.Z`, and `hotfix/<name>`. The prefixes are fixed.
+- This skill does 4 jobs:
+  - **Pick** gives the next version.
+  - **Check** tells whether a version or a branch name is correct for Semantic Versioning 2.0.0 and the Semver policy.
+  - **Start** makes a branch from the correct base, with the correct name, and checks it out.
+  - **Finish** merges a branch into its targets, or opens a pull request for each target. It also makes the tag and the Back-merge, and deletes the branches that are safe to delete.
+
+## Which jobs this version of the skill does
+
+This version of the skill does only Start for `feature/*`, `bugfix/*`, and `hotfix/*` branches. For each other job, stop before you change the repository. In the report, tell the caller that this version of the skill cannot do that job yet.
+
+## Rules for each job
+
+- Change no file of the project except the Semver policy. Do not edit the changelog, a version file, or other project files, because these files belong to the project and its other work.
+- Do not stage or commit the Semver policy. The Operator commits it with the process of the project.
+- Do not push with `--force`, do not use `--no-verify`, and do not change a commit that `origin` contains.
+- A version has no `v`. The Setting `Tag prefix` is only for the tag.
+
+## Before each job
+
+1. Run `cat -n docs/agents/semver-policy.md` to read the Semver policy and its line numbers.
+2. If the file is not there, stop. In the report, tell the Operator to add the Semver policy. Give the default Semver policy in the report.
+3. Examine each line. A correct line is the title `# Semver policy`, a blank line, or one Setting with a name and a value from the table.
+4. If the Semver policy has a different line, or 2 Settings with the same name, stop. In the report, give the line number and the text of each incorrect line. You cannot know which decision of the Operator an incorrect line gives.
+5. If a name of the table has no Setting, stop. In the report, give each name that has no Setting.
+
+| Setting | Values | Default |
+|---|---|---|
+| Production branch | A branch name. | `main` |
+| Development branch | A branch name, or `none`. | `develop` |
+| Hotfix branches | `on` or `off`. | `on` |
+| Tag prefix | `v` or `none`. | `v` |
+| Development merge | `merge commit` or `squash`. | `squash` |
+| Production merge | `merge commit` or `squash`. | `merge commit` |
+| Finish mode | `pull request` or `local`. | `pull request` |
+| Tag and back-merge | `CI` or `Skill`. | `CI` |
+| Back-merge conflicts | `confirm`, `automatic`, or `report`. | `confirm` |
+| Development auto-merge | `on` or `off`. | `off` |
+| Production auto-merge | `on` or `off`. | `off` |
+| Finish approval | `confirm` or `automatic`. | `confirm` |
+| Breaking before 1.0.0 | `minor` or `major`. | `major` |
+| Breaking definition | `default`, or a list of the public parts of the project. A comma is between each 2 parts. | `default` |
+
+The default Semver policy has the title, a blank line, and one Setting for each row, in the sequence of the table:
+
+```markdown
+# Semver policy
+
+- Production branch: main
+- Development branch: develop
+- Hotfix branches: on
+- Tag prefix: v
+- Development merge: squash
+- Production merge: merge commit
+- Finish mode: pull request
+- Tag and back-merge: CI
+- Back-merge conflicts: confirm
+- Development auto-merge: off
+- Production auto-merge: off
+- Finish approval: confirm
+- Breaking before 1.0.0: major
+- Breaking definition: default
+```
+
+## When you start a feature, bugfix, or hotfix branch
+
+1. Find the branch type from the request: `feature`, `bugfix`, or `hotfix`.
+2. Find the base branch in this table:
+
+   | Branch type | Base branch |
+   |---|---|
+   | `feature` | The Development branch. When `Development branch` is `none`, the Production branch. |
+   | `bugfix` | The Development branch. When `Development branch` is `none`, the Production branch. |
+   | `hotfix` | The Production branch. |
+
+3. Make sure that the base branch exists: `git rev-parse --verify --quiet refs/heads/<base>`. If the local branch is not there, use `origin/<base>` when it exists. If the two are not there, stop and give the name of the base branch in the report.
+4. Find the name part from the request, in lowercase words with hyphens. For example, "Start a feature branch for search" gives `feature/search`. A hotfix name has no version, because a hotfix gets its version only at Finish.
+5. If the request gives no subject for the name, ask the caller for the name. If no person can answer, stop.
+6. Make sure that `git check-ref-format --branch <type>/<name>` accepts the full name. Also make sure that no local branch and no `origin` branch has that name. If one of these checks fails, stop and give the cause in the report.
+7. Run `git switch -c <type>/<name> <base>` to make the branch and check it out.
+8. Do not push the new branch. The new branch stays local until work starts on it.
+
+## When you ask a question
+
+Ask with the question tool of the platform. If the platform has no question tool, ask in plain text and end your turn. No answer is not approval. When the request gives the answer before the question, use that answer and do not ask.
+
+## When you write the report
+
+Give the result of the job. For Start, give the new branch, its base branch, and the short SHA of the commit where the new branch starts. Also tell that the new branch is not pushed. When you stop, give the cause and what the job needs to continue.
