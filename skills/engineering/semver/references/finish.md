@@ -2,6 +2,8 @@
 
 Read this file before Finish. `SKILL.md` of this skill has the Setting table. When your context window does not have `SKILL.md`, read it first.
 
+## When you start Finish
+
 Do the sections of this file in this sequence:
 
 1. "When you find the branch to finish"
@@ -17,11 +19,11 @@ Do the sections of this file in this sequence:
 ## When you find the branch to finish
 
 1. If the request gives the name of the branch, use that branch.
-2. If not, and HEAD is on a `feature/*`, `bugfix/*`, `release/*`, or `hotfix/*` branch, use the branch of HEAD. Do this step only when the request gives no branch type, or the branch type of HEAD.
+2. If not, examine HEAD only when the request gives no branch type or the branch type of HEAD. If HEAD is then on a `feature/*`, `bugfix/*`, `release/*`, or `hotfix/*` branch, use the branch of HEAD.
 3. If not, find the branches of the type in the request, local and on `origin`. For example, "Finish the hotfix" gives the type `hotfix`. If only one branch has this type, use that branch. For the type `release`, use the open `release/*` branch, as "When you start a release branch" in `SKILL.md` tells you.
 4. If you find no branch, or more than one branch, stop. In the report, give the branches that you found. Tell the caller to give the branch name in a new request.
 5. The branch must be a local branch or an `origin` branch. If the branch is only on `origin`, use `origin/<branch>` in place of the local branch in each command.
-6. Examine the branch name with the `branch` form of the check script. When the script gives `invalid:`, stop and give its cause in the report.
+6. Examine the branch name with the `branch` form of the check script `scripts/check.sh` in the folder of this skill, as "When you run the check script" in `SKILL.md` tells you. When the script gives `invalid:`, stop. In the report, give the cause that the script gives.
 
 ## When you find the targets
 
@@ -38,11 +40,11 @@ A target is a branch that Finish merges into. Find the targets in this table:
 - When `Development branch` is `none`, the first target of each branch type is the Production branch. Then Finish does no Back-merge.
 - A `release/*` branch is open when no tag `<Tag prefix>X.Y.Z` of its version exists. A hotfix goes into the open `release/*` branch too, so that the next release keeps the correction. If no `release/*` branch is open, the hotfix has no such target.
 - The merge kind into the Development branch is the value of `Development merge`. The merge kind into the Production branch is the value of `Production merge`.
-- A merge into a tag target is always a merge commit, for each value of `Development merge`. A merge commit keeps the tag commit in the history of the target. Then the next Back-merge has no conflict from the same changes.
+- A merge into a tag target is always a merge commit, for each value of `Development merge`. A merge commit keeps the commit of the tag in the history of the target. Then the next Back-merge has no conflict from the same changes.
 
 ## Before you finish in pull request mode
 
-In `pull request` mode, Finish uses a host tool. A host tool is a tool for the host of the project, for example `gh` for GitHub, or an MCP tool of the platform. This file gives the commands of `gh`. With a different host tool, use its commands that do the same work.
+Finish uses a host tool. A host tool is a tool for the host of the project, for example `gh` for GitHub, or an MCP tool of the platform. This file gives the commands of `gh`. With a different host tool, use its commands that do the same work.
 
 1. Run `git remote get-url origin`. If the project has no `origin` remote, stop. In the report, tell that the project has no remote, and give the Setting `Finish mode`. Tell the Operator to add the remote or to set `Finish mode: local`.
 2. Find the host tool that you have. For `gh`, run `command -v gh`. Do not install, set up, or sign in to a host tool, because the Operator controls the host tools of the project.
@@ -62,8 +64,8 @@ In `pull request` mode, Finish uses a host tool. A host tool is a tool for the h
 
 Do these steps only for a `release/*` branch and a `hotfix/*` branch. A `feature/*` branch and a `bugfix/*` branch get no version and no tag.
 
-- For a `release/X.Y.Z` branch, the version is `X.Y.Z`. If the tag of the version exists already, do not run the check script. An earlier Finish run or CI made that tag. If not, examine the version with the `release` form of the check script and the value of `Tag prefix`. When the script gives `invalid:`, stop and give its cause in the report.
-- For a `hotfix/*` branch with a MERGED pull request, run `git tag --points-at <merge commit>`. The merge commit is the `mergeCommit` of the pull request. If a tag `<Tag prefix>X.Y.Z` is on the merge commit, the version is `X.Y.Z`.
+- For a `release/X.Y.Z` branch, the version is `X.Y.Z`. If the tag of the version exists already, do not run the check script. An earlier Finish run or CI made that tag. If not, examine the version with the `release` form of `scripts/check.sh` and the value of `Tag prefix`. When the script gives `invalid:`, stop. In the report, give the cause that the script gives.
+- For a `hotfix/*` branch with a MERGED pull request, run `git tag --points-at <commit of the tag>`. The commit of the tag is the `mergeCommit` of the pull request. If a tag `<Tag prefix>X.Y.Z` is on the commit of the tag, the version is `X.Y.Z`.
 - For a `hotfix/*` branch with no such tag, the version is the next patch of the last release. Read `references/pick.md` in the folder of this skill. Then do the steps in its sections "When you find the last release" and "When the version is for a hotfix".
 - The tag is `<Tag prefix><version>`. When `Tag prefix` is `none`, the tag is the version.
 
@@ -80,29 +82,27 @@ The plan gives each change that Finish will make, before Finish makes a change. 
 
 ## When you ask for approval
 
-Only Finish asks for approval, because Finish changes the long-lived branches of the project and `origin`.
-
 1. If `Finish approval` is `automatic`, do not ask. Give the plan in the report.
 2. If the request already approves this Finish, do not ask. An example is "Finish the release, approved".
-3. If not, show the plan to the Operator. Then ask one question with the answers `Finish`, `Request changes`, and `Reject`. Give `Finish` first, as the recommended answer.
-4. When the Operator answers `Finish`, continue with the next section of the sequence.
-5. When the Operator answers `Request changes`, get the changes from the Operator. Make a new plan with the changes, and do the step 3 again. Change the plan only inside the rules of this skill and the Semver policy. When a change needs a different Setting, tell the Operator to change the Semver policy.
-6. When the Operator answers `Reject`, stop. Do not change the repository. In the report, tell that the Operator rejected the plan.
-7. When you cannot use a question tool, stop. The platform can have no question tool, or the question tool can give an error. Do not change the repository. In the report, give the plan. Tell the caller to approve it in a new request, for example "Finish the release, approved".
+3. If not, and you cannot use a question tool, stop. The platform can have no question tool, or the question tool can give an error. Do not change the repository. In the report, give the plan. Tell the caller that the Operator must approve it in a new request, for example "Finish the release, approved".
+4. If not, show the plan to the Operator. Then ask one question with the answers `Finish`, `Request changes`, and `Reject`. Give `Finish` first, as the recommended answer.
+5. When the Operator answers `Finish`, continue with the next section of the sequence.
+6. When the Operator answers `Request changes`, get the changes from the Operator. Make a new plan with the changes. Then do step 4 again. Change the plan only inside the limits of this skill and the Semver policy. When a change needs a different Setting, tell the Operator to change the Semver policy.
+7. When the Operator answers `Reject`, stop. Do not change the repository. In the report, tell that the Operator rejected the plan.
 
 ## When you write a merge message
 
-Finish writes the message of each merge commit and of each squash commit. In `pull request` mode, Finish also writes the title and the body of each pull request. The project can have rules for these texts.
+Finish writes the message of each merge commit and of each squash commit. In `pull request` mode, Finish also writes the title and the body of each pull request. The project can have requirements for these texts.
 
-1. Find the rules of the project for commit messages and for pull requests. Look in the instructions that you have, and in `AGENTS.md` and `CLAUDE.md` in the root folder of the project.
-2. If you find rules, write each message by these rules. Give the message with `-m`.
-3. If you find no rule, use the default message of Git: give `--no-edit`. This skill has no rules for commit messages.
-4. In `pull request` mode, give the title and the body of a pull request to `gh pr create` with `--title` and `--body`. If you find no rule, give `--fill`, so that the host writes its default text.
-5. In `pull request` mode, when the project has rules for merge messages, give the message to `gh pr merge` with `--subject` and `--body`. If not, give no message, so that the host writes its default message.
+1. Find the requirements of the project for commit messages and for pull requests. Look in the instructions that you have, and in `AGENTS.md` and `CLAUDE.md` in the root folder of the project.
+2. If you find requirements, write each message as these requirements tell you. Give the message with `-m`.
+3. If you find no requirement, use the default message of Git: give `--no-edit`. This skill has no requirements for commit messages.
+4. In `pull request` mode, give the title and the body of a pull request to `gh pr create` with `--title` and `--body`. If you find no requirement, give `--fill`, so that the host writes its default text.
+5. In `pull request` mode, when the project has requirements for merge messages, give the message to `gh pr merge` with `--subject` and `--body`. If not, give no message, so that the host writes its default message.
 
 ## When Finish mode is local
 
-In `local` mode, Finish does each merge, the tag, and the push with Git. If the project has no `origin` remote, do the steps without the fetch, the push, and the delete on `origin`.
+Finish does each merge, the tag, and the push with Git. If the project has no `origin` remote, do the steps without the fetch, the push, and the delete on `origin`.
 
 1. Do the steps in "Before you merge in local mode".
 2. Do the steps in "When you merge into the first target".
@@ -124,7 +124,7 @@ In `local` mode, Finish does each merge, the tag, and the push with Git. If the 
 
 4. If the local target has commits that `origin` does not have, stop. In the report, give the target and the number of commits. Finish pushes the target, so these commits go to `origin` too.
 5. When the branch to finish is local and on `origin`, do the same 2 commands for this branch. If `origin/<branch>` has commits that the local branch does not have, stop. In the report, give the branch and the number of commits. Then the merge does not contain these commits.
-6. Run `git rev-parse <branch>` and record the commit. The section "When you delete the finished branch" uses this commit.
+6. Run `git rev-parse <branch>`. Record the commit that it gives. The section "When you delete the finished branch" uses this commit.
 7. Run `git rev-list --count <first target>..<branch>`. If the result is 0, stop. In the report, tell that the first target contains the branch already.
 
 ## When you merge into the first target
@@ -157,7 +157,7 @@ In `local` mode, Finish does each merge, the tag, and the push with Git. If the 
 
 ## When a merge of the tag has a conflict
 
-1. Run `git diff --name-only --diff-filter=U`, and record each file with a conflict.
+1. Run `git diff --name-only --diff-filter=U`. Record each file with a conflict.
 2. Run `git merge --abort`.
 3. If the tag target is the Development branch, do the steps in "When the Back-merge has a conflict".
 4. If not, stop. Do not delete the finished branch. In the report, give each file with a conflict, and the tag target. Tell that the merge into the Production branch and the tag are done. Tell the Operator to merge the tag into the tag target.
@@ -167,24 +167,25 @@ In `local` mode, Finish does each merge, the tag, and the push with Git. If the 
 The Setting `Back-merge conflicts` tells how Finish handles a Back-merge with a conflict. The replaced pull request is the OPEN pull request from the Production branch into the Development branch that has the conflict. Local mode has no replaced pull request.
 
 1. For `report`, stop. Do not make a branch. In the report, give each file with a conflict, the tag, and the replaced pull request with its number and URL. Tell the Operator to correct the conflict, or to set `Back-merge conflicts` to `confirm` or `automatic`.
-2. For `confirm` and `automatic`, the resolution branch is `bugfix/back-merge-v<version>`, for example `bugfix/back-merge-v1.2.1`. The name has the letter `v` also when `Tag prefix` is `none`.
-3. If the resolution branch exists, local or on `origin`, an earlier Finish run made it. Run `git switch <resolution branch>`. If the `ancestor` form of the check script gives `valid:` for `<tag> HEAD`, go to step 9. If not, stop. In the report, give the resolution branch, and tell that it does not contain the tag.
+2. For `confirm` and `automatic`, the resolution branch is `bugfix/back-merge-v<version>`, for example `bugfix/back-merge-v1.2.1`. The name has the letter `v` also when `Tag prefix` is `none`, so that each Finish run finds the branch by one fixed name.
+3. If the resolution branch exists, local or on `origin`, an earlier Finish run made it. Run `git switch <resolution branch>`. If the `ancestor` form of `scripts/check.sh` gives `valid:` for `<tag> HEAD`, go to step 9. If not, stop. In the report, give the resolution branch, and tell that it does not contain the tag.
 4. Run `git switch -c <resolution branch> <base>`. In local mode, the base is the local Development branch. In `pull request` mode, the base is `origin/<development>`.
 5. Find the message, as "When you write a merge message" tells you. Run `git merge --no-ff <tag>` with `--no-edit` or `-m '<message>'`. The merge gets the same conflict.
-6. Correct each file with a conflict. Read the two sides of each conflict, and edit the file so that it keeps the changes of the two sides. Do not use `-X ours`, `-X theirs`, `git checkout --ours`, or `git checkout --theirs`, because they remove the changes of one side.
-7. If you cannot tell how to keep the changes of the two sides, run `git merge --abort`. Then run `git switch <development>` and `git branch -d <resolution branch>`. Then stop as step 1 tells you.
-8. Run `git add <file>` for each file. Run `git diff --cached --check`. If it gives a conflict marker, correct the file and add it again. Then run `git commit` with `--no-edit` or `-m '<message>'`. The new merge commit has the tag as its second parent. Do not squash it.
-9. For `confirm`, run `git diff HEAD^1 HEAD -- <files with a conflict>` and show this diff to the Operator. Then ask one question with the answers `Push` and `Do not push`. Give `Push` first, as the recommended answer. If the request already approves the push of the resolution, do not ask. `Finish approval: automatic` does not approve this push.
-10. When the Operator answers `Do not push`, stop. The resolution branch stays local.
-11. When you cannot use a question tool, stop. Do not push. The resolution branch stays local. In the report, give each file with a conflict and the resolution branch. Tell the caller to examine the resolution and to approve it in a new request, for example "Finish the hotfix, push the back-merge resolution".
-12. For `automatic`, and for `confirm` after the answer `Push`, do the next step of your mode.
-13. In local mode, run `git switch <development>`. Then run `git merge --no-ff <resolution branch>` with `--no-edit` or `-m '<message>'`. If `origin` has the Development branch, run `git push origin <development>`.
-14. In `pull request` mode, run `git push -u origin <resolution branch>`. Find the title and the body, as "When you write a merge message" tells you. Run `gh pr create --base <development> --head <resolution branch>` with `--title` and `--body`, or with `--fill`.
-15. In `pull request` mode with `automatic`, do the steps in "When you turn on auto-merge". With `confirm`, do not turn on auto-merge, so that the Operator examines the resolution before the merge.
-16. If a replaced pull request exists, run `gh pr close <number> --comment 'Replaced by <URL of the new pull request>'`.
-17. Go back to the step after the step that sent you to this section.
+6. Correct each file with a conflict. Read the two sides of each conflict. Then edit the file so that it keeps the changes of the two sides. Do not use `-X ours`, `-X theirs`, `git checkout --ours`, or `git checkout --theirs`, because they remove the changes of one side.
+7. If you cannot tell how to keep the changes of the two sides, run `git merge --abort`. Then run `git switch <development>`. Then run `git branch -d <resolution branch>`. Then stop as step 1 tells you.
+8. Run `git add <file>` for each file. Run `git diff --cached --check`. If the command gives a conflict marker, correct that file. Then run `git add` for that file again. Then run `git commit` with `--no-edit` or `-m '<message>'`. The new merge commit has the tag as its second parent. Do not squash it.
+9. For `confirm`, if the request already approves the push of the resolution, do not ask, and go to step 13. `Finish approval: automatic` does not approve this push.
+10. For `confirm`, when you cannot use a question tool, stop. Do not push. The resolution branch stays local. In the report, give each file with a conflict and the resolution branch. Tell the caller that the Operator must examine the resolution and approve it in a new request, for example "Finish the hotfix, push the back-merge resolution".
+11. For `confirm`, run `git diff HEAD^1 HEAD -- <files with a conflict>`. Show this diff to the Operator. Then ask one question with the answers `Push` and `Do not push`. Give `Push` first, as the recommended answer.
+12. When the Operator answers `Do not push`, stop. The resolution branch stays local.
+13. For `automatic`, and for `confirm` after the answer `Push` or the approval in the request, do the next step of your mode.
+14. In local mode, run `git switch <development>`. Then run `git merge --no-ff <resolution branch>` with `--no-edit` or `-m '<message>'`. If `origin` has the Development branch, run `git push origin <development>`.
+15. In `pull request` mode, run `git push -u origin <resolution branch>`. Find the title and the body, as "When you write a merge message" tells you. Run `gh pr create --base <development> --head <resolution branch>` with `--title` and `--body`, or with `--fill`.
+16. In `pull request` mode with `automatic`, do the steps in "When you turn on auto-merge". With `confirm`, do not turn on auto-merge, so that the Operator examines the resolution before the merge.
+17. If a replaced pull request exists, run `gh pr close <number> --comment 'Replaced by <URL of the new pull request>'`.
+18. Go back to the step after the step that sent you to this section.
 
-## When a Back-merge pull request has a conflict
+## When you examine a Back-merge for a conflict in pull request mode
 
 Do this section in `pull request` mode, when the tag exists, in 2 cases:
 
@@ -204,11 +205,12 @@ Delete the finished branch only when its work is in the targets. A deleted branc
 3. Run `git fetch origin`. If `origin/<branch>` is there and is not the recorded commit or one of its ancestors, do not delete the branch. In the report, give the branch and the cause.
 4. CAUTION: Delete the branch only after steps 2 and 3. A branch with new commits loses these commits.
 5. Run `git branch -D <branch>`. After a squash merge, `git branch -d` refuses to delete the branch, because the target does not contain its commits.
-6. If `origin/<branch>` is there, run `git push origin --delete <branch>`.
+6. CAUTION: Delete `origin/<branch>` only after steps 2 and 3. A deleted branch can have commits that no other branch contains.
+7. If `origin/<branch>` is there, run `git push origin --delete <branch>`.
 
 ## When Finish mode is pull request
 
-In `pull request` mode, the host merges each pull request. After the merge, a new Finish run of the same branch does the next steps. For example, a new "Finish the release" makes or examines the tag and the Back-merge.
+The host merges each pull request. After the merge, a new Finish run of the same branch does the next steps. For example, a new "Finish the release" makes or examines the tag and the Back-merge.
 
 1. If the branch has no pull request, do the steps in "When you open the pull request".
 2. If the pull request is OPEN, do the steps in "When the pull request is open".
@@ -219,7 +221,7 @@ In `pull request` mode, the host merges each pull request. After the merge, a ne
 
 1. If `origin/<branch>` is not there, or the local branch has commits that `origin/<branch>` does not have, run `git push -u origin <branch>`. The host opens a pull request only from a branch on `origin`.
 2. Find the title and the body, as "When you write a merge message" tells you.
-3. Run `gh pr create --base <first target> --head <branch>` with `--title` and `--body`, or with `--fill`.
+3. When the plan has approval, run `gh pr create --base <first target> --head <branch>` with `--title` and `--body`, or with `--fill`.
 4. Do the steps in "When you turn on auto-merge".
 
 ## When the pull request is open
@@ -237,9 +239,9 @@ In `pull request` mode, the host merges each pull request. After the merge, a ne
 
 ## When you find the merge into a tag target
 
-The merge commit is the commit on the Production branch that gets the tag. In `pull request` mode, it is the `mergeCommit` of the MERGED pull request. The merge of the tag into a tag target exists when one of these conditions is true:
+The commit of the tag is the commit on the Production branch that gets the tag. In `pull request` mode, it is the `mergeCommit` of the MERGED pull request. The merge of the tag into a tag target exists when one of these conditions is true:
 
-- The `ancestor` form of the check script gives `valid:` for `<merge commit> origin/<tag target>`.
+- The `ancestor` form of `scripts/check.sh` gives `valid:` for `<commit of the tag> origin/<tag target>`.
 - An OPEN pull request from the Production branch into the tag target exists, and its `mergeable` value is not `CONFLICTING`. Find it with `gh pr list --head <production> --base <tag target> --state open --json number,mergeable,url`.
 - The tag target is the Development branch, and an OPEN pull request from the resolution branch `bugfix/back-merge-v<version>` into the Development branch exists. Find it with `gh pr list --head bugfix/back-merge-v<version> --base <development> --state open --json number,url`.
 
@@ -251,22 +253,22 @@ A CI job of the project makes the tag and opens the pull request of the Back-mer
 
 1. Run `git rev-parse --verify --quiet 'refs/tags/<tag>^{commit}'`. If the command gives no commit, the tag is missing.
 2. For each tag target, find the merge of the tag, as "When you find the merge into a tag target" tells you.
-3. Find the OPEN pull request from the Production branch into the Development branch. If the tag exists and this pull request has the `mergeable` value `CONFLICTING`, do the steps in "When a Back-merge pull request has a conflict".
+3. Find the OPEN pull request from the Production branch into the Development branch. If the tag exists and this pull request has the `mergeable` value `CONFLICTING`, do the steps in "When you examine a Back-merge for a conflict in pull request mode".
 4. Do not make a missing tag or a missing pull request.
 5. In the report, give each missing item: the tag, and the merge into each tag target. Tell the Operator to examine the CI job.
 
 ## When Tag and back-merge is Skill
 
-1. Run the `ancestor` form of the check script for `<merge commit> origin/<production>`. If it does not give `valid:`, stop. In the report, tell that `origin/<production>` does not contain the merge commit.
+1. Run the `ancestor` form of `scripts/check.sh` for `<commit of the tag> origin/<production>`. If it does not give `valid:`, stop. In the report, tell that `origin/<production>` does not contain the commit of the tag.
 2. Run `git rev-parse --verify --quiet 'refs/tags/<tag>^{commit}'`. If the tag exists, do not make it again. Do not move or delete a tag. A released version does not change.
-3. If the tag is missing, run `git tag <tag> <merge commit>`.
-4. Then run `git push origin <tag>`.
-5. For each tag target, in the sequence of the table in "When you find the targets", find the merge of the tag. "When you find the merge into a tag target" tells you how. If the merge exists, do not open a pull request into that tag target.
-6. If the OPEN pull request from the Production branch into the Development branch has the `mergeable` value `CONFLICTING`, do the steps in "When a Back-merge pull request has a conflict". Do not open a different pull request into the Development branch.
+3. If the tag is missing, run `git tag <tag> <commit of the tag>`.
+4. When the plan has approval, run `git push origin <tag>`.
+5. For each tag target, in the sequence of the table in "When you find the targets", find the merge of the tag, as "When you find the merge into a tag target" tells you. If the merge exists, do not open a pull request into that tag target.
+6. If the OPEN pull request from the Production branch into the Development branch has the `mergeable` value `CONFLICTING`, do the steps in "When you examine a Back-merge for a conflict in pull request mode". Do not open a different pull request into the Development branch.
 7. If `git rev-parse origin/<production>` does not give the commit of the tag, do not open a pull request into the tag target. In the report, tell that the Production branch has commits after the tag. A pull request from the Production branch then brings changes that the version does not have.
-8. For the Development branch, first do the steps in "When a Back-merge pull request has a conflict". If they find a conflict, do not open a pull request from the Production branch into the Development branch.
+8. For the Development branch, first do the steps in "When you examine a Back-merge for a conflict in pull request mode". If they find a conflict, do not open a pull request from the Production branch into the Development branch.
 9. If not, find the title and the body, as "When you write a merge message" tells you.
-10. Run `gh pr create --base <tag target> --head <production>` with `--title` and `--body`, or with `--fill`.
+10. When the plan has approval, run `gh pr create --base <tag target> --head <production>` with `--title` and `--body`, or with `--fill`.
 11. Do the steps in "When you turn on auto-merge".
 
 ## When you clean up branches
@@ -285,19 +287,20 @@ Do this section at the end of each Finish that did not stop, in the two modes. I
 5. For each branch, do the test in "When a branch is safe to delete". Do the test for the local branch and for the `origin` branch separately, each with its own commit.
 6. CAUTION: Delete a branch only when it passes the test. A deleted branch can have commits that no other branch contains.
 7. For each local branch that passes the test, run `git branch -D <branch>`. After a squash merge, `git branch -d` refuses to delete the branch, because the target does not contain its commits.
-8. For each `origin` branch that passes the test, run `git push origin --delete <branch>`.
-9. For each branch that does not pass the test, record the branch and the cause for the report.
+8. CAUTION: Delete an `origin` branch only when it passes the test. A deleted branch can have commits that no other branch contains.
+9. For each `origin` branch that passes the test, run `git push origin --delete <branch>`.
+10. For each branch that does not pass the test, record the branch and the cause for the report.
 
 ## When a branch is safe to delete
 
 A branch passes the test only when each of these steps gives a pass. The commit of the branch is the commit of the local branch or of the `origin` branch that you examine.
 
 1. In `pull request` mode, run `gh pr list --head <branch> --state merged --json number,headRefOid,mergeCommit`. The branch passes this step only when a MERGED pull request has the commit of the branch as its `headRefOid`. Then the pull request has all the commits of the branch.
-2. In `local` mode, find the target of the branch type, as "When you find the targets" tells you. The branch passes this step only when the `ancestor` form of the check script gives `valid:` for `<commit> <target>`.
+2. In `local` mode, find the target of the branch type, as "When you find the targets" tells you. The branch passes this step only when the `ancestor` form of `scripts/check.sh` gives `valid:` for `<commit> <target>`.
 3. For a `release/X.Y.Z` branch, the tag `<Tag prefix>X.Y.Z` must exist.
-4. For a `hotfix/*` branch in `pull request` mode, a tag `<Tag prefix>X.Y.Z` must be on the `mergeCommit` of its pull request. Find it with `git tag --points-at <merge commit>`.
+4. For a `hotfix/*` branch in `pull request` mode, a tag `<Tag prefix>X.Y.Z` must be on the `mergeCommit` of its pull request. Find it with `git tag --points-at <commit of the tag>`.
 5. For a `hotfix/*` branch in `local` mode, a tag `<Tag prefix>X.Y.Z` must contain the commit of the branch. Find it with `git tag --contains <commit>`.
-6. For a `release/*` or `hotfix/*` branch, when the project has a Development branch, the Back-merge must exist. Find it as "When you find the merge into a tag target" tells you, with the commit of the tag as the merge commit.
+6. For a `release/*` or `hotfix/*` branch, when the project has a Development branch, the Back-merge must exist. Find it as "When you find the merge into a tag target" tells you, with the commit of the tag of that branch.
 
 ## When you report Finish
 
