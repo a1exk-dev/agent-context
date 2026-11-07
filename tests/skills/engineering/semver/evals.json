@@ -1,0 +1,119 @@
+{
+    "skill_name": "semver",
+    "common_assertions": [
+        {
+            "id": "V1",
+            "text": "The Skill was loaded (Skill call or `SKILL.md` read) before the first `git switch -c`, `git checkout -b`, `git branch <name>`, `git merge`, `git tag`, `git push`, `gh pr create`, `gh pr merge`, or `gh pr close`, and before the final report.",
+            "grader": "script",
+            "check": "skillLoadedFirst"
+        },
+        {
+            "id": "V2",
+            "text": "When the policy file exists at the start, the run read it before the first command of V1 and before the final report.",
+            "grader": "script",
+            "check": "policyReadFirst"
+        },
+        {
+            "id": "V3",
+            "text": "No file changed in the working tree except `docs/agents/semver-policy.md`, and that file is not staged. `CHANGELOG.md` and `package.json` are unchanged on every branch. Finish merges and Back-merge resolutions are the only new commits.",
+            "grader": "script",
+            "check": "onlyAllowedChanges"
+        },
+        {
+            "id": "V4",
+            "text": "No force push, no `--no-verify`, no `-X ours` or `-X theirs`, no rewrite of a commit that `origin` contains, and no deleted branch that fails the cleanup test.",
+            "grader": "script",
+            "check": "safeHistory"
+        },
+        {
+            "id": "V5",
+            "text": "Each new branch and tag follows the policy: the prefixes `feature/`, `bugfix/`, `release/X.Y.Z`, `hotfix/<name>`, the Tag prefix, and `X.Y.Z` versions with no pre-release or build part.",
+            "grader": "script",
+            "check": "policyNames"
+        },
+        {
+            "id": "V6",
+            "text": "The final report gives the result (version, branch, merges, tags, pull requests, deleted and kept branches), or the reason that the job stopped and what it needs.",
+            "grader": "llm"
+        }
+    ],
+    "evals": [
+        {
+            "id": 17,
+            "name": "17-start-feature",
+            "prompt": "Start a feature branch for search.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "17.1",
+                    "text": "There is exactly one new local branch. Its name is `feature/<name>`, it points at the commit of `develop`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": { "prefix": "feature/", "base": "develop" }
+                },
+                {
+                    "id": "17.2",
+                    "text": "The new branch is not pushed: the refs of `origin` are unchanged.",
+                    "grader": "script",
+                    "check": "originUnchanged"
+                }
+            ]
+        },
+        {
+            "id": 18,
+            "name": "18-start-bugfix-no-development",
+            "prompt": "Start a bugfix branch for the login crash.",
+            "setup": {
+                "overlay": "fixtures/18-no-development-branch",
+                "steps": [
+                    "git branch -D develop && git push -q origin --delete develop"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "18.1",
+                    "text": "There is exactly one new local branch. Its name is `bugfix/<name>`, it points at the commit of `main`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": { "prefix": "bugfix/", "base": "main" }
+                },
+                {
+                    "id": "18.2",
+                    "text": "The new branch is not pushed: the refs of `origin` are unchanged.",
+                    "grader": "script",
+                    "check": "originUnchanged"
+                }
+            ]
+        },
+        {
+            "id": 21,
+            "name": "21-start-hotfix",
+            "prompt": "Start a hotfix for the login crash.",
+            "setup": {
+                "steps": ["git switch -q develop"]
+            },
+            "assertions": [
+                {
+                    "id": "21.1",
+                    "text": "There is exactly one new local branch. Its name is `hotfix/<name>`, it points at the commit of `main`, and it is checked out.",
+                    "grader": "script",
+                    "check": "branchStarted",
+                    "args": { "prefix": "hotfix/", "base": "main" }
+                },
+                {
+                    "id": "21.2",
+                    "text": "The name of the new `hotfix/*` branch has no version.",
+                    "grader": "script",
+                    "check": "noVersionInName",
+                    "args": { "prefix": "hotfix/" }
+                },
+                {
+                    "id": "21.3",
+                    "text": "The new branch is not pushed: the refs of `origin` are unchanged.",
+                    "grader": "script",
+                    "check": "originUnchanged"
+                }
+            ]
+        }
+    ]
+}
