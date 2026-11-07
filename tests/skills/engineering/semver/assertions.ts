@@ -347,6 +347,71 @@ function originUnchanged(run: Run): Verdict {
     );
 }
 
+const GH_WRITES = ["create", "merge", "close"];
+
+// A stopped job: the local refs, HEAD, and the refs of origin are unchanged,
+// and no gh call wrote a pull request.
+function stopped(run: Run): Verdict {
+    const origin = originUnchanged(run);
+    const problems = origin.passed ? [] : [origin.evidence];
+    const refs = new Set([
+        ...Object.keys(run.before.refs),
+        ...Object.keys(run.after.refs),
+    ]);
+    for (const ref of refs) {
+        if (run.before.refs[ref] !== run.after.refs[ref])
+            problems.push(
+                `${ref}: ${run.before.refs[ref] ?? "none"} -> ${run.after.refs[ref] ?? "none"}`,
+            );
+    }
+    if (run.before.head !== run.after.head)
+        problems.push(`HEAD: ${run.before.head} -> ${run.after.head}`);
+    for (const args of run.ghCalls) {
+        if (args[0] === "pr" && GH_WRITES.includes(args[1] ?? ""))
+            problems.push(`gh write call: gh ${args.join(" ")}`);
+    }
+    return verdict(problems, "No ref, HEAD, or pull request changed.");
+}
+
+const endTrimmed = (text: string | null) =>
+    text === null ? null : `${text.trimEnd()}\n`;
+
+// The policy file at the end is exactly `args.text`, apart from blank lines
+// at its end, and is not staged. A null text means no policy file.
+function policyFile(run: Run, args: Record<string, unknown>): Verdict {
+    const expected = endTrimmed((args.text as string | null) ?? null);
+    const actual = endTrimmed(run.after.policy);
+    const problems: string[] = [];
+    if (actual !== expected)
+        problems.push(
+            `The policy file is:\n${actual ?? "(missing)"}\nnot:\n${expected ?? "(missing)"}`,
+        );
+    if (run.after.staged.includes(POLICY))
+        problems.push("The policy file is staged.");
+    return verdict(problems, "The policy file is as expected and not staged.");
+}
+
+function policyUnchanged(run: Run): Verdict {
+    return run.before.policy === run.after.policy
+        ? { passed: true, evidence: "The policy file is unchanged." }
+        : {
+              passed: false,
+              evidence: `The policy file changed to:\n${run.after.policy ?? "(missing)"}`,
+          };
+}
+
+// Each of `args.words` is in the report, in any case.
+function reportNames(run: Run, args: Record<string, unknown>): Verdict {
+    const report = run.report.toLowerCase();
+    const words = args.words as string[];
+    return verdict(
+        words
+            .filter((word) => !report.includes(word.toLowerCase()))
+            .map((word) => `The report does not give "${word}".`),
+        `The report gives each of ${words.length} words.`,
+    );
+}
+
 export const checks: Record<string, Check> = {
     skillLoadedFirst,
     policyReadFirst,
@@ -356,4 +421,8 @@ export const checks: Record<string, Check> = {
     branchStarted,
     noVersionInName,
     originUnchanged,
+    stopped,
+    policyFile,
+    policyUnchanged,
+    reportNames,
 };

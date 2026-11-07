@@ -46,3 +46,11 @@ The runner saves these files in `outputs/`:
 - `prs-before.json` and `prs.json`: the pull requests before and after the run.
 - `gh-calls.txt`: one JSON line with the arguments of each `gh` call.
 - `report.md`: the final message of the run.
+
+## Manual checklist
+
+The Operator runs these checks once on Claude Code, in an interactive session, before the build pull request merges, and records the results in that pull request. Each check starts in a copy of `project/` with the skill installed, as the runner makes it. For M1 and M2, delete `docs/agents/semver-policy.md` before the session starts.
+
+- [ ] M1. No policy, "Start a feature branch for search.", answer `Use defaults`: the skill shows the offered 14-line file first, writes it, does not stage it, and starts the branch.
+- [ ] M2. No policy, answer `Choose each setting`: one question at a time, in table order, with the offered value first. `local` for `Finish mode` and `none` for `Development branch` skip `Tag and back-merge`, `Development auto-merge`, `Production auto-merge`, and `Development merge`. A typed `feature..x` for `Production branch` is asked again. `Production merge` shows the squash warning with `merge commit` recommended.
+- [ ] M3. A policy with no `Back-merge conflicts` line: one question with `confirm` first, and the line is added. A second job asks nothing.
