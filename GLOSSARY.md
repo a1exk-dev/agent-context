@@ -46,3 +46,7 @@ _Avoid_: soft rule, warning rule
 **Confirmer**:
 A Confirmer is a new subagent that answers "yes" or "no", with one sentence, for one problem that a different check found. That check can be a reviewer, the grader of the output tests, or the author in a reader test. The Confirmer gets the requirement, the quoted text, and the files, but not the reason of the other check. The problem counts when one or more Confirmers answer "yes".
 _Avoid_: verifier, second reviewer
+
+**Review target**:
+A Review target is the Agent instructions that one self-check of the agent-instructions Skill examines. A first file gives the Review target, for example `AGENTS.md`. The Review target of a Skill is the Markdown files in the folder of that Skill.
+_Avoid_: review scope, file set

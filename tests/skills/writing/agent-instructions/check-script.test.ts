@@ -983,8 +983,9 @@ describe("check script, report form", () => {
     });
 
     // Runs 05, 07, and 09 of #145 started no confirmers for some reports
-    // with blocking findings, so the output names each such report.
-    it("lists each report with blocking findings after the drop for 2 confirmers", () => {
+    // with blocking findings, so the output names each such report. Since
+    // #206, the 2 confirmers of a reviewer get all its reports.
+    it("lists each report with blocking findings after the drop for the confirmers of its reviewer", () => {
         const text = "# Title\n\nWork well.\nThe file is read by the agent.\n";
         const result = checkReports(text, [
             finding({ rule: passive, text: "The file is read by the agent." }),
@@ -1008,12 +1009,12 @@ describe("check script, report form", () => {
             {
                 report: expect.stringMatching(/report-1\.md$/),
                 blocking: 1,
-                action: "Start 2 confirmers for this report.",
+                action: "Give the blocking findings of this report to the 2 confirmers of its reviewer.",
             },
             {
                 report: expect.stringMatching(/report-4\.md$/),
                 blocking: 2,
-                action: "Start 2 confirmers for this report.",
+                action: "Give the blocking findings of this report to the 2 confirmers of its reviewer.",
             },
         ]);
     });
