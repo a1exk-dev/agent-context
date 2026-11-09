@@ -44,7 +44,7 @@ An Advisory rule is a judgment requirement in a reference file of the agent-inst
 _Avoid_: soft rule, warning rule
 
 **Confirmer**:
-A Confirmer is a new subagent that answers "yes" or "no", with one sentence, for one problem that a different check found. That check can be a reviewer, the grader of the output tests, or the author in a reader test. The Confirmer gets the requirement, the quoted text, and the files, but not the reason of the other check. The problem counts when one or more Confirmers answer "yes".
+A Confirmer is a new subagent that answers "yes" or "no", with one sentence, for each problem in its prompt. A different check found these problems. That check can be a reviewer, the grader of the output tests, or the author in a reader test. In a review round, a Confirmer answers for all problems for Blocking rules that one reviewer found. The Confirmer gets the requirement, the quoted text, and the files, but not the reason of the other check. A problem counts when one or more Confirmers answer "yes" for it.
 _Avoid_: verifier, second reviewer
 
 **Review target**:
