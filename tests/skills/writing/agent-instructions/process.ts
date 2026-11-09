@@ -69,8 +69,28 @@ const REPORT_LINE = /^\s*Report: (.+?)\s*$/m;
 const REPORTS_LINE = /^\s*Reports: (.+?)\s*$/m;
 const REPORT_FOLDER_LINE = /^\s*Report folder: (.+?)\s*$/m;
 const CHANGES_LINE = /^\s*Changes: (.+?)\s*$/m;
-// The round number and the reviewer folder of a path in a review round.
-const REVIEW_PATH = /(?:^|\/)round-(\d+)\/(loading|ste|iso)\//;
+// The round number, the reviewer folder, and the rest of a path in a
+// review round.
+const REVIEW_PATH = new RegExp(
+    `(?:^|/)round-(\\d+)/(${Object.values(FOLDERS).join("|")})/(.*)$`,
+);
+
+// The report path of a reviewer for one file of a review round, relative to
+// the round folder of the run: `round-<n>/<folder>/<project path>.md`.
+const reportFile = (round: number, folder: string, file: string) =>
+    `round-${round}/${folder}/${file}.md`;
+
+// The round, the reviewer folder, and the file under review of a path in a
+// review round. The file is empty for the report folder itself.
+function reviewPlace(path: string) {
+    const match = REVIEW_PATH.exec(path);
+    if (!match) return null;
+    return {
+        round: Number(match[1]),
+        folder: match[2],
+        file: match[3].replace(/\.md$/, ""),
+    };
+}
 
 // The class of a prompt, or null when the prompt has no class line of
 // review.md or more than one.
@@ -90,8 +110,8 @@ function local(run: Run, path: string): string {
         : plain;
 }
 
-// The words of a prompt line, without quotation marks and separators.
-const words = (line: string | undefined) =>
+// The items of a prompt line, without quotation marks and separators.
+const tokens = (line: string | undefined) =>
     [...(line ?? "").matchAll(/[^\s,;"'`]+/g)].map((match) => match[0]);
 
 // The files of a Changes line: each absolute path in the project folder.
@@ -126,21 +146,21 @@ function subagentChecks(
         }
         let round: number | undefined;
         if (REVIEWERS.includes(name)) {
-            const [folder] = words(REPORT_FOLDER_LINE.exec(agent.prompt)?.[1]);
-            const place = folder ? REVIEW_PATH.exec(`${folder}/`) : null;
-            if (!place) {
+            const [folder] = tokens(REPORT_FOLDER_LINE.exec(agent.prompt)?.[1]);
+            const folderPlace = folder ? reviewPlace(`${folder}/`) : null;
+            if (!folderPlace) {
                 noFolder.push(`The ${name} subagent has no report folder.`);
                 return [];
             }
-            round = Number(place[1]);
+            round = folderPlace.round;
         }
-        const reports = words(REPORTS_LINE.exec(agent.prompt)?.[1]).filter(
+        const reports = tokens(REPORTS_LINE.exec(agent.prompt)?.[1]).filter(
             (path) => path.includes("/"),
         );
-        const place = reports
-            .map((path) => REVIEW_PATH.exec(path))
-            .find((match) => match !== null);
-        if (name === "confirmer" && place) round = Number(place[1]);
+        const reportPlace = reports
+            .map(reviewPlace)
+            .find((place) => place !== null);
+        if (name === "confirmer" && reportPlace) round = reportPlace.round;
         const path = FILE_LINE.exec(agent.prompt)?.[1];
         const file = path ? local(run, path) : null;
         const task = TASK_LINE.exec(agent.prompt)?.[1] ?? "";
@@ -270,7 +290,7 @@ const roundEnd = (round: Round) =>
 // The saved report of a reviewer for one file of a review round.
 const savedReport = (run: Run, round: Round, reviewer: string, file: string) =>
     run.saved.find((path) =>
-        path.endsWith(`/round-${round.number}/${FOLDERS[reviewer]}/${file}.md`),
+        path.endsWith(`/${reportFile(round.number, FOLDERS[reviewer], file)}`),
     );
 
 // The files of a round. Review round 1: each Markdown file that the run
@@ -289,16 +309,13 @@ function roundFiles(run: Run, round: Round): string[] {
         if (round.number === 1) return changed;
         const changes = round.checks.flatMap((check) => check.changes);
         if (changes.length > 0) return [...new Set(changes)];
-        const prefix = `/round-${round.number}/`;
         return [
             ...new Set(
                 run.saved.flatMap((path) => {
-                    const place = REVIEW_PATH.exec(path);
-                    if (Number(place?.[1]) !== round.number) return [];
-                    const rest = path.slice(
-                        path.indexOf(prefix) + prefix.length,
-                    );
-                    return [rest.slice(rest.indexOf("/") + 1, -".md".length)];
+                    const place = reviewPlace(path);
+                    return place?.round === round.number && place.file
+                        ? [place.file]
+                        : [];
                 }),
             ),
         ];
@@ -408,6 +425,57 @@ function readTargets(run: Run, files: string[]): Map<string, string[]> {
     return targets;
 }
 
+// The reviewer subagents of one class in a round, each with `failed` as
+// review.md defines it: the subagent failed, its last message does not give
+// the report path of each file of its Changes line (of the round when the
+// line has none) that no earlier subagent of its class saved, or a report
+// form run after its report, and before the next subagent of its class,
+// gives a report path of its folder that no subagent of its class up to it
+// names in a tool call. That report form exits 2.
+function reviewerAttempts(
+    run: Run,
+    found: Process,
+    round: Round,
+    reviewer: string,
+): Check[] {
+    const folder = FOLDERS[reviewer];
+    const attempts = subagentsOf(round).filter(
+        (check) => check.class === reviewer,
+    );
+    const named = (checks: Check[]) =>
+        checks
+            .flatMap((item) => item.calls)
+            .map((call) => JSON.stringify(call.input))
+            .join("\n");
+    return attempts.map((check, index) => {
+        const files =
+            check.changes.length > 0 ? check.changes : roundFiles(run, round);
+        const earlier = named(attempts.slice(0, index));
+        const unreported = files.some((file) => {
+            const path = reportFile(round.number, folder, file);
+            return !earlier.includes(path) && !check.report.includes(path);
+        });
+        const next = attempts[index + 1]?.start ?? Number.POSITIVE_INFINITY;
+        const upToIt = named(attempts.slice(0, index + 1));
+        const missing = found.calls.some((call) => {
+            if (!isBash(call) || call.at <= check.end || call.at >= next)
+                return false;
+            const form = formRun(run, command(call));
+            return (form?.reports ?? []).some((path) => {
+                const place = reviewPlace(path);
+                return (
+                    place?.round === round.number &&
+                    place.folder === folder &&
+                    !upToIt.includes(
+                        reportFile(round.number, folder, place.file),
+                    )
+                );
+            });
+        });
+        return { ...check, failed: check.failed || unreported || missing };
+    });
+}
+
 // The review round problems of [1]: 1 subagent of each class, or 2 when
 // the first failed, the first subagents in one message, the reads of each
 // class, and a saved report of each class for each file of the round.
@@ -418,9 +486,7 @@ function reviewerProblems(run: Run, found: Process, round: Round): string[] {
     const targets = readTargets(run, files);
     const firsts: Check[] = [];
     for (const reviewer of REVIEWERS) {
-        const attempts = subagentsOf(round).filter(
-            (check) => check.class === reviewer,
-        );
+        const attempts = reviewerAttempts(run, found, round, reviewer);
         if (attempts.length === 0) continue;
         firsts.push(attempts[0]);
         if (attempts.length === 2 && !attempts[0].failed)
@@ -652,7 +718,7 @@ function savedReports(run: Run, found: Process, kind: Kind) {
                 reports.set(path, {
                     round: place.number,
                     file: form.file,
-                    folder: REVIEW_PATH.exec(path)?.[2] ?? null,
+                    folder: reviewPlace(path)?.folder ?? null,
                     count: counts.get(path) ?? 0,
                 });
         }
@@ -698,7 +764,7 @@ function reviewVote(
                     `${name}: a confirmer gives ${path}, which is not a saved report of this round.`,
                 );
         const folders = new Set(
-            check.reports.map((path) => REVIEW_PATH.exec(path)?.[2]),
+            check.reports.map((path) => reviewPlace(path)?.folder),
         );
         if (folders.size > 1)
             problems.push(
@@ -719,7 +785,7 @@ function reviewVote(
             (check) =>
                 check.reports.length > 0 &&
                 check.reports.every(
-                    (path) => REVIEW_PATH.exec(path)?.[2] === folder,
+                    (path) => reviewPlace(path)?.folder === folder,
                 ),
         );
         const ok = started.filter((check) => !check.failed);

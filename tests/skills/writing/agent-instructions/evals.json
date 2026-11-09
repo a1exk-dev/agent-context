@@ -936,7 +936,7 @@
                 },
                 {
                     "id": "10.2",
-                    "text": "The author agent did the 3 reviews and the 3 reader-test tasks itself, one after the other.",
+                    "text": "The author agent did the 3 reviews of each file of each review round and the 3 reader-test tasks itself, one after the other.",
                     "grader": "script"
                 },
                 {

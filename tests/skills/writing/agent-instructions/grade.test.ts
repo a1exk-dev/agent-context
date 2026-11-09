@@ -699,16 +699,20 @@ type ReviewerStart = {
     files?: string[];
     indexes?: number[];
     reads?: (index: number) => string[];
+    saves?: (index: number) => string[];
+    gives?: (index: number) => string[];
     failed?: number[];
     folder?: boolean;
     handBack?: boolean;
 };
 
 // Starts reviewers in one message. Each one reads the files of the round
-// and `reads`, saves its report of each file with a Write call, and gives
-// the saved paths in its last message.
+// and `reads`, saves its report of each file of `saves` (each file of the
+// round when not given) with a Write call, and gives the report paths of
+// `gives` (the saved paths when not given) in its last message.
 function startReviewers(run: Builder, options: ReviewerStart = {}) {
     const { round = 1, files = ["AGENTS.md"], indexes = [0, 1, 2] } = options;
+    const saves = (n: number) => options.saves?.(indexes[n]) ?? files;
     return run.agents(
         indexes.map((index) =>
             reviewerPrompt(index, {
@@ -722,7 +726,7 @@ function startReviewers(run: Builder, options: ReviewerStart = {}) {
                 ...(options.reads?.(indexes[n]) ?? files).map((file) =>
                     read(file),
                 ),
-                ...files.map((file) => ({
+                ...saves(n).map((file) => ({
                     name: "Write",
                     input: {
                         file_path: reportPath(round, indexes[n], file),
@@ -731,7 +735,7 @@ function startReviewers(run: Builder, options: ReviewerStart = {}) {
                 })),
             ],
             report: (n) =>
-                files
+                (options.gives?.(indexes[n]) ?? saves(n))
                     .map((file) => reportPath(round, indexes[n], file))
                     .join("\n"),
             failed: options.failed,
@@ -1103,6 +1107,59 @@ describe("process statements", () => {
             expect(processVerdicts(run.record(), ["1"])["1"].passed).toBe(true);
         });
 
+        it(`passes [1] when the ${platform} run starts one new subagent for a reviewer that saved 1 of 2 reports`, () => {
+            const run = start();
+            const files = ["AGENTS.md", DEPLOY];
+            saveReviewRound(run, 1, files);
+            startReviewers(run, {
+                files,
+                saves: (index) => (index === 2 ? ["AGENTS.md"] : files),
+            });
+            startReviewers(run, { files, indexes: [2], saves: () => [DEPLOY] });
+            run.bash(reportForm()).bash(reportForm(DEPLOY)).edit().edit(DEPLOY);
+            readerRound(run);
+            expect(
+                processVerdicts(run.record(), PROCESS, TWO_FILES)["1"],
+            ).toMatchObject({ passed: true });
+        });
+
+        it(`fails [1] when the ${platform} run starts no new subagent for a reviewer that saved 1 of 2 reports`, () => {
+            const run = start();
+            const files = ["AGENTS.md", DEPLOY];
+            saveReviewRound(run, 1, files);
+            startReviewers(run, {
+                files,
+                saves: (index) => (index === 2 ? ["AGENTS.md"] : files),
+            });
+            run.bash(reportForm()).bash(reportForm(DEPLOY)).edit().edit(DEPLOY);
+            readerRound(run);
+            expect(
+                processVerdicts(run.record(), PROCESS, TWO_FILES)["1"],
+            ).toMatchObject({
+                passed: false,
+                evidence:
+                    "Review round 1: the ISO 24495-1 reviewer subagent failed, and the run started no new subagent.",
+            });
+        });
+
+        it(`passes [1] when the ${platform} run starts a new subagent after the report form misses a report of a reviewer`, () => {
+            const run = start();
+            saveReviewRound(run);
+            // The first ISO 24495-1 reviewer gives the report path in its
+            // last message, but saves no report.
+            startReviewers(run, {
+                saves: (index) => (index === 2 ? [] : ["AGENTS.md"]),
+                gives: () => ["AGENTS.md"],
+            });
+            run.bash(reportForm());
+            startReviewers(run, { indexes: [2] });
+            run.bash(reportForm()).edit();
+            readerRound(run);
+            expect(processVerdicts(run.record())["1"]).toMatchObject({
+                passed: true,
+            });
+        });
+
         it(`fails [1] when the ${platform} run starts no new subagent for a failed reviewer`, () => {
             const run = start();
             saveReviewRound(run);
@@ -1125,6 +1182,46 @@ describe("process statements", () => {
                 /Review round 2, AGENTS\.md: the report form ran/,
             );
             expect(verdicts["2"].evidence).not.toMatch(/Review round 2, docs/);
+        });
+
+        // A run that did each check itself, as "When no subagent is
+        // available" tells: one saved report for each reviewer class and
+        // each file of review round 1, then the 3 reader tasks of AGENTS.md.
+        const selfRun = (files: string[], classes = [0, 1, 2]) => {
+            const run = start();
+            for (const index of classes)
+                for (const file of files)
+                    run.write(
+                        reportPath(1, index, file),
+                        `Round 1: ${REVIEWERS[index].replace(" reviewer", "")} review, ${file}\n${REPORT}`,
+                    );
+            TASKS.forEach((_, index) => {
+                run.write(
+                    `${DIR}/reader-round-1/reader-${index + 1}.md`,
+                    `Reader-test round 1, AGENTS.md, reader task ${index + 1}\n${READER_REPORT}`,
+                );
+            });
+            return processVerdicts(run.record(), ["10.2"], TWO_FILES)["10.2"];
+        };
+
+        it(`passes [10.2] for a ${platform} run with a saved check of each reviewer class for each file`, () => {
+            expect(selfRun(["AGENTS.md", DEPLOY])).toMatchObject({
+                passed: true,
+            });
+        });
+
+        it(`fails [10.2] for a ${platform} run without the checks of a file of the round`, () => {
+            expect(selfRun(["AGENTS.md"])).toMatchObject({
+                passed: false,
+                evidence: `Review round 1, ${DEPLOY} has the reports: .`,
+            });
+        });
+
+        it(`fails [10.2] for a ${platform} run without one reviewer class for one file`, () => {
+            expect(selfRun(["AGENTS.md", DEPLOY], [0, 2])).toMatchObject({
+                passed: false,
+                evidence: `Review round 1, AGENTS.md has the reports: iso 24495-1, loading.\nReview round 1, ${DEPLOY} has the reports: iso 24495-1, loading.`,
+            });
         });
 
         it(`grades the rounds of a ${platform} run that did the checks itself`, () => {
