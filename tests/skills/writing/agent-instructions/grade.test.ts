@@ -336,31 +336,66 @@ type RunRecord = {
     saved?: Record<string, string>;
 };
 type Call = { name: string; input: Record<string, unknown> };
+// The calls and the report of each subagent, or a function that gives them
+// for the index of the subagent in the message.
 type AgentOptions = {
-    report?: string;
-    calls?: Call[];
+    report?: string | ((index: number) => string);
+    calls?: Call[] | ((index: number) => Call[]);
     failed?: number[];
     during?: () => void;
     handBack?: boolean;
 };
+
+const callsOf = (options: AgentOptions, index: number) =>
+    typeof options.calls === "function"
+        ? options.calls(index)
+        : (options.calls ?? [read()]);
+const reportOf = (options: AgentOptions, index: number) =>
+    typeof options.report === "function"
+        ? options.report(index)
+        : (options.report ?? REPORT);
 
 const REVIEWERS = [
     "loading reviewer",
     "ASD-STE100 reviewer",
     "ISO 24495-1 reviewer",
 ];
+// The report folder of each reviewer, in the sequence of REVIEWERS.
+const FOLDERS = ["loading", "ste", "iso"];
 const TASKS = [
     "Make release 1.2.0.",
     "Make release 2.0.0.",
     "Make a feature branch.",
 ];
 
-const reviewerPrompt = (name: string, file = "AGENTS.md") =>
-    `You are the ${name} for an Agent instruction.\nCheck class: ${name}\nThis task is read-only.\n\nFile under review: ${WORK}/${file}\n`;
+// The saved report of reviewer `index` for one file of a review round.
+const reportPath = (round: number, index: number, file = "AGENTS.md") =>
+    `${DIR}/round-${round}/${FOLDERS[index]}/${file}.md`;
+
+type ReviewerOptions = { round?: number; changes?: string[]; folder?: boolean };
+
+// The reviewer prompt of review.md: the review target, the changed files of
+// the round, and the report folder of the reviewer.
+const reviewerPrompt = (
+    index: number,
+    { round = 1, changes = ["AGENTS.md"], folder = true }: ReviewerOptions = {},
+) =>
+    [
+        `You are the ${REVIEWERS[index]} for Agent instructions.`,
+        `Check class: ${REVIEWERS[index]}`,
+        "This task is read-only.",
+        "",
+        `Review target: ${WORK}/AGENTS.md`,
+        `Changes: ${changes.map((file) => `${WORK}/${file}: "Before a commit"`).join("; ")}`,
+        ...(folder
+            ? [`Report folder: ${DIR}/round-${round}/${FOLDERS[index]}/`]
+            : []),
+        "",
+    ].join("\n");
 const readerPrompt = (task: string, file = "AGENTS.md") =>
     `Check class: reader\nThis task is a dry run.\n\nInstruction file: ${WORK}/${file}\nProject folder: ${WORK}\nTask: ${task}\n`;
-const confirmerPrompt = (report: string, file = "AGENTS.md") =>
-    `Check class: confirmer\nThis task is read-only.\n\nFile under review: ${WORK}/${file}\nReport: ${report}\nFindings: 1. "rule" "text"\n`;
+const confirmerPrompt = (reports: string[]) =>
+    `Check class: confirmer\nThis task is read-only.\n\nReports: ${reports.join(" ")}\nFindings: 1. ${WORK}/AGENTS.md "rule" "text"\n`;
 const stepConfirmerPrompt = (report: string, file = "AGENTS.md") =>
     `Check class: confirmer\nThis task is read-only.\n\nInstruction file: ${WORK}/${file}\nProject folder: ${WORK}\nTask: ${TASKS[0]}\nReport: ${report}\nSteps: 1. "Run make test." "Run \`make test\`."\n`;
 
@@ -397,6 +432,7 @@ type Builder = {
     agents(prompts: string[], options?: AgentOptions): Builder;
     bash(command: string): Builder;
     edit(file?: string): Builder;
+    write(path: string, text: string): Builder;
     save(path: string, text: string): Builder;
     record(): RunRecord;
 };
@@ -463,7 +499,7 @@ function claude(): Builder {
             options.during?.();
             ids.forEach((toolUseId, index) => {
                 const fail = options.failed?.includes(index) ?? false;
-                for (const item of options.calls ?? [read()])
+                for (const item of callsOf(options, index))
                     assistant(toolUseId, [
                         {
                             type: "tool_use",
@@ -472,7 +508,7 @@ function claude(): Builder {
                             input: item.input,
                         },
                     ]);
-                const report = options.report ?? REPORT;
+                const report = reportOf(options, index);
                 if (!fail && !options.handBack)
                     assistant(toolUseId, [{ type: "text", text: report }]);
                 result(
@@ -490,6 +526,10 @@ function claude(): Builder {
         bash: (command) => call("Bash", { command }),
         edit: (file = "AGENTS.md") =>
             call("Edit", { file_path: `${WORK}/${file}` }),
+        write(path, text) {
+            saved[path] = text;
+            return call("Write", { file_path: path, content: text });
+        },
         save(path, text) {
             saved[path] = text;
             return builder;
@@ -540,7 +580,7 @@ function openCode(): Builder {
                         {
                             info: { id: `${child}_1`, role: "assistant" },
                             parts: [
-                                ...(options.calls ?? [read()]).map((item) =>
+                                ...callsOf(options, index).map((item) =>
                                     part(item.name.toLowerCase(), item.input),
                                 ),
                                 ...(fail
@@ -548,7 +588,7 @@ function openCode(): Builder {
                                     : [
                                           {
                                               type: "text",
-                                              text: options.report ?? REPORT,
+                                              text: reportOf(options, index),
                                           },
                                       ]),
                             ],
@@ -577,6 +617,10 @@ function openCode(): Builder {
         bash: (command) => call("bash", { command }),
         edit: (file = "AGENTS.md") =>
             call("edit", { filePath: `${WORK}/${file}` }),
+        write(path, text) {
+            saved[path] = text;
+            return call("write", { filePath: path, content: text });
+        },
         save(path, text) {
             saved[path] = text;
             return builder;
@@ -599,10 +643,31 @@ function openCode(): Builder {
 // The text of AGENTS.md before the run, and the copy of each round.
 const BEFORE = agents("Use pnpm.");
 
-const reviewReports = (round: number) =>
-    REVIEWERS.map((_, index) => `${DIR}/round-${round}/report-${index + 1}.md`);
+// The changed files of a run: AGENTS.md alone, AGENTS.md with a new file,
+// and AGENTS.md with a new pointer.
+const ONE_FILE: File[] = [
+    {
+        path: "AGENTS.md",
+        before: BEFORE,
+        after: agents("Use pnpm.\n\nRun `make test`."),
+    },
+];
+const DEPLOY = "docs/agents/deploy.md";
+const TWO_FILES: File[] = [
+    ...ONE_FILE,
+    { path: DEPLOY, before: null, after: "# Deploy\n\nRun `make deploy`.\n" },
+];
+const TESTING = "docs/agents/testing.md";
+const POINTER: File[] = [
+    {
+        path: "AGENTS.md",
+        before: BEFORE,
+        after: agents(`Use pnpm.\n\nBefore you test, read \`${TESTING}\`.`),
+    },
+];
+
 const reportForm = (file = "AGENTS.md", round = 1) =>
-    `${CHECK} --reports --file ${WORK}/${file} ${reviewReports(round).join(" ")} > ${DIR}/round-${round}/form.json`;
+    `${CHECK} --reports --file ${WORK}/${file} ${FOLDERS.map((_, index) => reportPath(round, index, file)).join(" ")} > ${DIR}/round-${round}/form.json`;
 const readerReports = (round: number) =>
     TASKS.map(
         (_, index) => `${DIR}/reader-round-${round}/reader-${index + 1}.md`,
@@ -612,42 +677,94 @@ const closedLists = (round: number) =>
 const readerForm = (file = "AGENTS.md", round = 1) =>
     `${CHECK} --reports --file ${WORK}/${file} --copy ${DIR}/copy.md --tasks ${DIR}/tasks.json ${readerReports(round).join(" ")} > ${DIR}/reader-round-${round}/form.json`;
 
-// Saves the copy of a review round and its reviewer reports, as review.md
-// tells.
+// Saves the copy of each file of a review round and the report of each
+// reviewer for each file, as review.md tells. `reports` gives the report
+// text of each reviewer.
 function saveReviewRound(
     run: Builder,
     round = 1,
+    files = ["AGENTS.md"],
     reports = [REPORT, REPORT, REPORT],
-    file = "AGENTS.md",
 ) {
-    run.save(`${DIR}/round-${round}/${file}`, BEFORE);
-    reviewReports(round).forEach((path, index) => {
-        run.save(path, reports[index]);
-    });
+    for (const file of files) {
+        run.save(`${DIR}/round-${round}/${file}`, BEFORE);
+        reports.forEach((text, index) => {
+            run.save(reportPath(round, index, file), text);
+        });
+    }
+}
+
+type ReviewerStart = {
+    round?: number;
+    files?: string[];
+    indexes?: number[];
+    reads?: (index: number) => string[];
+    failed?: number[];
+    folder?: boolean;
+    handBack?: boolean;
+};
+
+// Starts reviewers in one message. Each one reads the files of the round
+// and `reads`, saves its report of each file with a Write call, and gives
+// the saved paths in its last message.
+function startReviewers(run: Builder, options: ReviewerStart = {}) {
+    const { round = 1, files = ["AGENTS.md"], indexes = [0, 1, 2] } = options;
+    return run.agents(
+        indexes.map((index) =>
+            reviewerPrompt(index, {
+                round,
+                changes: files,
+                folder: options.folder,
+            }),
+        ),
+        {
+            calls: (n) => [
+                ...(options.reads?.(indexes[n]) ?? files).map((file) =>
+                    read(file),
+                ),
+                ...files.map((file) => ({
+                    name: "Write",
+                    input: {
+                        file_path: reportPath(round, indexes[n], file),
+                        content: REPORT,
+                    },
+                })),
+            ],
+            report: (n) =>
+                files
+                    .map((file) => reportPath(round, indexes[n], file))
+                    .join("\n"),
+            failed: options.failed,
+            handBack: options.handBack,
+        },
+    );
 }
 
 type RoundOptions = {
     round?: number;
+    files?: string[];
     file?: string;
     reports?: string[];
+    reads?: (index: number) => string[];
     closed?: string[];
     calls?: Call[];
     vote?: (run: Builder) => void;
 };
 
-// One review round of one file, as review.md tells: the copy, the check
-// script, the 3 reviewers in one message, the saved reports and the report
-// form, the vote, then the correction.
+// One review round, as review.md tells: the copy of each file, the check
+// script, the 3 reviewers in one message, the saved reports, the report
+// form of each file, the vote, then the corrections.
 const reviewRound = (run: Builder, options: RoundOptions = {}) => {
-    const { round = 1, file = "AGENTS.md" } = options;
-    saveReviewRound(run, round, options.reports, file);
+    const { round = 1, files = ["AGENTS.md"] } = options;
+    saveReviewRound(run, round, files, options.reports);
     run.bash(
-        `${CHECK} ${WORK}/${file} --project ${WORK} --glossary none > ${DIR}/round-${round}/script.json`,
-    )
-        .agents(REVIEWERS.map((name) => reviewerPrompt(name, file)))
-        .bash(reportForm(file, round));
+        `${CHECK} ${files.map((file) => `${WORK}/${file}`).join(" ")} --project ${WORK} --glossary none > ${DIR}/round-${round}/script.json`,
+    );
+    startReviewers(run, { round, files, reads: options.reads });
+    for (const file of files) run.bash(reportForm(file, round));
     options.vote?.(run);
-    return run.edit(file);
+    for (const file of files) run.edit(file);
+    return run;
 };
 
 // One reader-test round of one file: the copy, the 3 readers in one message,
@@ -670,19 +787,21 @@ const readerRound = (run: Builder, options: RoundOptions = {}) => {
     return run.edit(file);
 };
 
+// Starts confirmers in groups of 3, one message for each group.
+function startConfirmers(run: Builder, reports: string[][]) {
+    for (let index = 0; index < reports.length; index += 3)
+        run.agents(reports.slice(index, index + 3).map(confirmerPrompt), {
+            report: "1. yes: The sentence is passive.",
+        });
+}
+
 const PROCESS = ["1", "2", "3a", "3c", "4"];
 
 // Grades the process statements of a run and gives the verdict of each id.
-function processVerdicts(record: RunRecord, ids = PROCESS) {
+function processVerdicts(record: RunRecord, ids = PROCESS, files = ONE_FILE) {
     const runDir = runFolder(
         ids.map((id) => statement(id)),
-        [
-            {
-                path: "AGENTS.md",
-                before: agents("Use pnpm."),
-                after: agents("Use pnpm.\n\nRun `make test`."),
-            },
-        ],
+        files,
         { record },
     );
     const result = grade("script", runDir);
@@ -709,12 +828,35 @@ describe("process statements", () => {
         ["Claude Code", claude],
         ["OpenCode", openCode],
     ] as const) {
+        // [1] of a run whose reviewers give blocking findings: `reports`
+        // gives the report text of each reviewer for each file, and
+        // `confirmers` the Reports paths of each confirmer.
+        const blockingVote = (
+            reports: string[],
+            confirmers: string[][],
+            files = ONE_FILE,
+        ) => {
+            const run = start();
+            reviewRound(run, {
+                files: files.map((file) => file.path),
+                reports,
+                vote: (round) => startConfirmers(round, confirmers),
+            });
+            readerRound(run);
+            return processVerdicts(run.record(), PROCESS, files)["1"];
+        };
+        const [loading, ste] = [reportPath(1, 0), reportPath(1, 1)];
+        const blocking = [BLOCKING_REPORT, REPORT, REPORT];
+
         it(`passes each process statement of a ${platform} run that obeys review.md`, () => {
             const run = start();
             reviewRound(run);
             readerRound(run);
             const verdicts = processVerdicts(run.record());
             expect(passed(verdicts)).toEqual(PROCESS);
+            expect(verdicts["1"].evidence).toBe(
+                "1 review rounds with 1 reviewer of each class in one message, a report of each reviewer for each file, 2 confirmers for each reviewer with blocking findings, and no file change before the last report.",
+            );
             expect(verdicts["2"].evidence).toMatch(
                 /Review round 1, AGENTS\.md: the report form ran\. 3 dropped findings in 3 reports/,
             );
@@ -738,18 +880,286 @@ describe("process statements", () => {
                 'runs "cat AGENTS.md > /tmp/x"',
             );
         });
+
+        it(`passes [1] and [2] for ${platform} reviewers of 2 files with 6 reports`, () => {
+            const run = start();
+            reviewRound(run, { files: ["AGENTS.md", DEPLOY] });
+            readerRound(run);
+            const verdicts = processVerdicts(run.record(), PROCESS, TWO_FILES);
+            expect(passed(verdicts)).toEqual(PROCESS);
+            expect(verdicts["2"].evidence).toMatch(
+                /Review round 1, docs\/agents\/deploy\.md: the report form ran\. 3 dropped findings in 3 reports/,
+            );
+        });
+
+        it(`passes [1] for ${platform} reviewers that read the pointer targets`, () => {
+            const run = start();
+            reviewRound(run, { reads: () => ["AGENTS.md", TESTING] });
+            readerRound(run);
+            expect(
+                processVerdicts(run.record(), PROCESS, POINTER)["1"].passed,
+            ).toBe(true);
+        });
+
+        it(`fails [1] for a ${platform} reviewer that did not read a pointer target`, () => {
+            const run = start();
+            reviewRound(run, {
+                reads: (index) =>
+                    index === 1 ? ["AGENTS.md"] : ["AGENTS.md", TESTING],
+            });
+            readerRound(run);
+            expect(
+                processVerdicts(run.record(), PROCESS, POINTER)["1"],
+            ).toMatchObject({
+                passed: false,
+                evidence: `Review round 1: the ASD-STE100 reviewer did not read ${TESTING}.`,
+            });
+        });
+
+        it(`fails [1] for ${platform} reviewers that did not read a file of the round`, () => {
+            const run = start();
+            reviewRound(run, {
+                files: ["AGENTS.md", DEPLOY],
+                reads: (index) =>
+                    index === 2 ? ["AGENTS.md"] : ["AGENTS.md", DEPLOY],
+            });
+            readerRound(run);
+            expect(
+                processVerdicts(run.record(), PROCESS, TWO_FILES)["1"],
+            ).toMatchObject({
+                passed: false,
+                evidence: `Review round 1: the ISO 24495-1 reviewer did not read ${DEPLOY}.`,
+            });
+        });
+
+        it(`fails [1] for ${platform} reviewers that start 3 for each file`, () => {
+            const run = start();
+            saveReviewRound(run, 1, ["AGENTS.md", DEPLOY]);
+            startReviewers(run, { files: ["AGENTS.md"] });
+            startReviewers(run, { files: [DEPLOY] });
+            run.bash(reportForm()).bash(reportForm(DEPLOY)).edit();
+            readerRound(run);
+            const verdict = processVerdicts(run.record(), PROCESS, TWO_FILES)[
+                "1"
+            ];
+            expect(verdict.passed).toBe(false);
+            expect(verdict.evidence).toContain(
+                "Review round 1: 2 subagents of the loading reviewer, and the first did not fail.",
+            );
+        });
+
+        it(`fails [1] for ${platform} reviewers of one round in different messages`, () => {
+            const run = start();
+            saveReviewRound(run);
+            for (const index of [0, 1, 2])
+                startReviewers(run, { indexes: [index] });
+            run.bash(reportForm()).edit();
+            readerRound(run);
+            expect(processVerdicts(run.record())["1"]).toMatchObject({
+                passed: false,
+                evidence:
+                    "Review round 1: the reviewers of the round start in different messages.",
+            });
+        });
+
+        it(`fails [1] for a ${platform} run without the report of one reviewer`, () => {
+            const run = start();
+            reviewRound(run);
+            readerRound(run);
+            const record = run.record();
+            delete record.saved?.[reportPath(1, 2)];
+            expect(processVerdicts(record)["1"]).toMatchObject({
+                passed: false,
+                evidence: expect.stringContaining(
+                    "Review round 1: AGENTS.md has no report of the ISO 24495-1 reviewer.",
+                ),
+            });
+        });
+
+        it(`fails [1] for a ${platform} reviewer prompt without a report folder`, () => {
+            const run = start();
+            saveReviewRound(run);
+            startReviewers(run, { indexes: [0, 1] });
+            startReviewers(run, { indexes: [2], folder: false });
+            run.bash(reportForm()).edit();
+            readerRound(run);
+            expect(processVerdicts(run.record())["1"]).toMatchObject({
+                passed: false,
+                evidence: expect.stringContaining(
+                    "The ISO 24495-1 reviewer subagent has no report folder.",
+                ),
+            });
+        });
+
+        it(`passes [1] for 2 ${platform} confirmers of a reviewer with blocking findings`, () => {
+            expect(
+                blockingVote(blocking, [[loading], [loading]]),
+            ).toMatchObject({ passed: true });
+        });
+
+        it(`passes [1] for 2 ${platform} confirmers that give the blocking reports of 2 files`, () => {
+            const both = [loading, reportPath(1, 0, DEPLOY)];
+            expect(
+                blockingVote(blocking, [both, both], TWO_FILES),
+            ).toMatchObject({ passed: true });
+        });
+
+        it(`fails [1] for ${platform} confirmers that leave out a blocking report of their reviewer`, () => {
+            expect(
+                blockingVote(blocking, [[loading], [loading]], TWO_FILES),
+            ).toMatchObject({
+                passed: false,
+                evidence: `Review round 1: a confirmer of the loading reviewer does not give ${reportPath(1, 0, DEPLOY)}.\nReview round 1: a confirmer of the loading reviewer does not give ${reportPath(1, 0, DEPLOY)}.`,
+            });
+        });
+
+        it(`fails [1] for 1 ${platform} confirmer of a reviewer with blocking findings`, () => {
+            expect(blockingVote(blocking, [[loading]])).toMatchObject({
+                passed: false,
+                evidence:
+                    "Review round 1: the loading reviewer has 1 blocking findings and 1 confirmers.",
+            });
+        });
+
+        it(`fails [1] for a ${platform} confirmer of a reviewer without blocking findings`, () => {
+            expect(
+                blockingVote(blocking, [[loading], [loading], [ste]]),
+            ).toMatchObject({
+                passed: false,
+                evidence:
+                    "Review round 1: the ASD-STE100 reviewer has 0 blocking findings and 1 confirmers.",
+            });
+        });
+
+        it(`fails [1] for 4 ${platform} confirmers of one reviewer`, () => {
+            expect(
+                blockingVote(blocking, Array(4).fill([loading])),
+            ).toMatchObject({
+                passed: false,
+                evidence:
+                    "Review round 1: the loading reviewer has 1 blocking findings and 4 confirmers.",
+            });
+        });
+
+        it(`fails [1] for a ${platform} confirmer that gives the reports of 2 reviewers`, () => {
+            expect(
+                blockingVote(blocking, [[loading], [loading, ste]]),
+            ).toMatchObject({
+                passed: false,
+                evidence: expect.stringContaining(
+                    "Review round 1: a confirmer gives the reports of 2 reviewers.",
+                ),
+            });
+        });
+
+        it(`fails [1] for 7 ${platform} confirmers in a review round`, () => {
+            const all = [0, 1, 2].map((index) => reportPath(1, index));
+            expect(
+                blockingVote(
+                    [BLOCKING_REPORT, BLOCKING_REPORT, BLOCKING_REPORT],
+                    [
+                        all[0],
+                        all[0],
+                        all[0],
+                        all[1],
+                        all[1],
+                        all[2],
+                        all[2],
+                    ].map((path) => [path]),
+                ),
+            ).toMatchObject({
+                passed: false,
+                evidence: expect.stringContaining(
+                    "Review round 1 has 7 confirmers.",
+                ),
+            });
+        });
+
+        it(`passes [1] when the ${platform} run starts one new subagent for a failed reviewer`, () => {
+            const run = start();
+            saveReviewRound(run);
+            startReviewers(run, { failed: [2] });
+            startReviewers(run, { indexes: [2] });
+            run.bash(reportForm()).edit();
+            readerRound(run);
+            const verdicts = processVerdicts(run.record());
+            expect(verdicts["1"].passed).toBe(true);
+            expect(verdicts["4"].evidence).toBe(
+                "1 review rounds and 1 reader-test rounds.",
+            );
+        });
+
+        it(`passes [1] when the ${platform} run saves the report of a reviewer that failed 2 times`, () => {
+            const run = start();
+            saveReviewRound(run);
+            startReviewers(run, { failed: [2] });
+            startReviewers(run, { indexes: [2], failed: [0] });
+            run.write(
+                reportPath(1, 2),
+                `Round 1: ISO 24495-1 review, AGENTS.md\n${REPORT}`,
+            )
+                .bash(reportForm())
+                .edit();
+            expect(processVerdicts(run.record(), ["1"])["1"].passed).toBe(true);
+        });
+
+        it(`fails [1] when the ${platform} run starts no new subagent for a failed reviewer`, () => {
+            const run = start();
+            saveReviewRound(run);
+            startReviewers(run, { failed: [2] });
+            run.bash(reportForm()).edit();
+            readerRound(run);
+            expect(processVerdicts(run.record())["1"].evidence).toBe(
+                "Review round 1: the ISO 24495-1 reviewer subagent failed, and the run started no new subagent.",
+            );
+        });
+
+        it(`passes round 2 of a ${platform} run for the one changed file of 2`, () => {
+            const run = start();
+            reviewRound(run, { files: ["AGENTS.md", DEPLOY] });
+            reviewRound(run, { round: 2 });
+            readerRound(run);
+            const verdicts = processVerdicts(run.record(), PROCESS, TWO_FILES);
+            expect(passed(verdicts)).toEqual(PROCESS);
+            expect(verdicts["2"].evidence).toMatch(
+                /Review round 2, AGENTS\.md: the report form ran/,
+            );
+            expect(verdicts["2"].evidence).not.toMatch(/Review round 2, docs/);
+        });
+
+        it(`grades the rounds of a ${platform} run that did the checks itself`, () => {
+            const run = start();
+            for (let round = 1; round <= 4; round++) {
+                run.save(`${DIR}/round-${round}/AGENTS.md`, BEFORE);
+                for (const index of [0, 1, 2])
+                    run.write(
+                        reportPath(round, index),
+                        `Round ${round}: ${REVIEWERS[index].replace(" reviewer", "")} review, AGENTS.md\n${REPORT}`,
+                    );
+                run.bash(reportForm("AGENTS.md", round)).edit();
+            }
+            const verdicts = processVerdicts(run.record(), ["1", "2", "4"]);
+            expect(verdicts["1"].passed).toBe(true);
+            expect(verdicts["2"].passed).toBe(true);
+            expect(verdicts["4"]).toMatchObject({
+                passed: false,
+                evidence: "4 review rounds and 0 reader-test rounds.",
+            });
+        });
     }
 
     it("takes the report of a subagent from its hand-back tool result", () => {
         const run = claude();
-        saveReviewRound(run, 1, [BLOCKING_REPORT, REPORT, REPORT]);
-        run.agents(
-            REVIEWERS.map((name) => reviewerPrompt(name)),
-            { handBack: true, report: BLOCKING_REPORT },
-        )
+        saveReviewRound(
+            run,
+            1,
+            ["AGENTS.md"],
+            [BLOCKING_REPORT, REPORT, REPORT],
+        );
+        startReviewers(run, { handBack: true })
             .bash(reportForm())
             .agents(
-                [1, 2].map(() => confirmerPrompt(`${DIR}/round-1/report-1.md`)),
+                [1, 2].map(() => confirmerPrompt([reportPath(1, 0)])),
                 { handBack: true, report: "1. yes: The text is passive." },
             )
             .edit();
@@ -847,7 +1257,7 @@ describe("process statements", () => {
         const run = claude();
         saveReviewRound(run);
         run.agents(
-            REVIEWERS.map((name) => reviewerPrompt(name)),
+            [0, 1, 2].map((index) => reviewerPrompt(index)),
             { during: () => run.edit() },
         )
             .bash(reportForm())
@@ -860,68 +1270,17 @@ describe("process statements", () => {
         );
     });
 
-    it("fails [1] for reviewers of one file in different messages", () => {
-        const run = claude();
-        saveReviewRound(run);
-        for (const name of REVIEWERS) run.agents([reviewerPrompt(name)]);
-        run.bash(reportForm()).edit();
-        readerRound(run);
-        expect(processVerdicts(run.record())["1"].passed).toBe(false);
-    });
-
-    // A review round whose loading report has a blocking finding, with
-    // `count` confirmers for that report and `others` for the next report.
-    const blockingVote = (count: number, others = 0) => {
-        const run = claude();
-        const [loading, ste] = reviewReports(1);
-        reviewRound(run, {
-            reports: [BLOCKING_REPORT, REPORT, REPORT],
-            vote: (round) =>
-                round.agents(
-                    [
-                        ...Array(count).fill(confirmerPrompt(loading)),
-                        ...Array(others).fill(confirmerPrompt(ste)),
-                    ],
-                    { report: "1. yes: The sentence is passive." },
-                ),
-        });
-        readerRound(run);
-        return processVerdicts(run.record())["1"];
-    };
-
-    it("passes [1] for 2 confirmers of a report with a blocking finding", () => {
-        expect(blockingVote(2)).toMatchObject({ passed: true });
-    });
-
-    it("fails [1] for 1 confirmer of a report with a blocking finding", () => {
-        expect(blockingVote(1)).toMatchObject({
-            passed: false,
-            evidence: expect.stringContaining(
-                `Review round 1: the report ${DIR}/round-1/report-1.md has 1 blocking findings and 1 confirmers.`,
-            ),
-        });
-    });
-
-    it("fails [1] for a confirmer of a report with no blocking finding", () => {
-        expect(blockingVote(2, 1)).toMatchObject({
-            passed: false,
-            evidence: expect.stringContaining(
-                `Review round 1: the report ${DIR}/round-1/report-2.md has 0 blocking findings and 1 confirmers.`,
-            ),
-        });
-    });
-
     it("fails [1] when a report file of the report form is missing", () => {
         const run = claude();
         saveReviewRound(run);
-        run.agents(REVIEWERS.map((name) => reviewerPrompt(name)))
-            .bash(reportForm().replace("report-3.md", "report-9.md"))
+        startReviewers(run)
+            .bash(reportForm().replace("iso/AGENTS.md.md", "iso/missing.md"))
             .edit();
         readerRound(run);
         expect(processVerdicts(run.record())["1"]).toMatchObject({
             passed: false,
             evidence: expect.stringContaining(
-                `Review round 1: the report file ${DIR}/round-1/report-9.md is missing.`,
+                `Review round 1: the report file ${DIR}/round-1/iso/missing.md is missing.`,
             ),
         });
     });
@@ -980,41 +1339,9 @@ describe("process statements", () => {
         });
     });
 
-    it("passes [1] when the run starts one new subagent for a failed reviewer", () => {
-        const run = claude();
-        saveReviewRound(run);
-        run.agents(
-            REVIEWERS.map((name) => reviewerPrompt(name)),
-            { failed: [2] },
-        )
-            .agents([reviewerPrompt(REVIEWERS[2])])
-            .bash(reportForm())
-            .edit();
-        readerRound(run);
-        const verdicts = processVerdicts(run.record());
-        expect(verdicts["1"].passed).toBe(true);
-        expect(verdicts["4"].evidence).toBe(
-            "1 review rounds and 1 reader-test rounds.",
-        );
-    });
-
-    it("fails [1] when the run starts no new subagent for a failed reviewer", () => {
-        const run = claude();
-        run.agents(
-            REVIEWERS.map((name) => reviewerPrompt(name)),
-            { failed: [2] },
-        )
-            .bash(reportForm())
-            .edit();
-        readerRound(run);
-        expect(processVerdicts(run.record())["1"].evidence).toMatch(
-            /no new subagent/,
-        );
-    });
-
     it("fails [2] and [3c] when the run corrects the file before the report form", () => {
         const run = claude();
-        run.agents(REVIEWERS.map((name) => reviewerPrompt(name)))
+        startReviewers(run)
             .edit()
             .bash(reportForm())
             .agents(
@@ -1030,25 +1357,6 @@ describe("process statements", () => {
             /Review round 1, AGENTS\.md: no report form before the correction/,
         );
         expect(verdicts["3c"].passed).toBe(false);
-    });
-
-    it("grades the rounds of a run that did the checks itself", () => {
-        const run = claude();
-        const save = (title: string) =>
-            run.bash(
-                `cat > /tmp/r/${title.length}.md <<'EOF'\n${title}\n${REPORT}EOF`,
-            );
-        for (let round = 1; round <= 4; round++) {
-            for (const name of ["loading", "ASD-STE100", "ISO 24495-1"])
-                save(`Round ${round}: ${name} review`);
-            run.bash(reportForm()).edit();
-        }
-        const verdicts = processVerdicts(run.record(), ["2", "4"]);
-        expect(verdicts["2"].passed).toBe(true);
-        expect(verdicts["4"]).toMatchObject({
-            passed: false,
-            evidence: "4 review rounds and 0 reader-test rounds.",
-        });
     });
 });
 

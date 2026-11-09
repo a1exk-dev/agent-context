@@ -14,12 +14,12 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
+                    "text": "In each review round, the run started one fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for the full review target, with no fork, all 3 in one message, and had a maximum of 3 subagents open at the same time. Each reviewer read each file of the round and the target of each new pointer in these files. The run saved a copy of each file of the round, the round folder has a report of each reviewer for each file of the round, and the run changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each reviewer that has blocking findings in the report form against the copy of its round, with all reports of that reviewer that have blocking findings, no confirmer for a reviewer without blocking findings, and a maximum of 6 confirmers in the round.",
                     "grader": "script"
                 },
                 {
                     "id": "2",
-                    "text": "After each review round, the run ran the report form of the check script on the reviewer reports of each file of the round before it corrected a file.",
+                    "text": "After each review round, the run ran the report form of the check script on the 3 reviewer reports of each file of the round before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -117,12 +117,12 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
+                    "text": "In each review round, the run started one fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for the full review target, with no fork, all 3 in one message, and had a maximum of 3 subagents open at the same time. Each reviewer read each file of the round and the target of each new pointer in these files. The run saved a copy of each file of the round, the round folder has a report of each reviewer for each file of the round, and the run changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each reviewer that has blocking findings in the report form against the copy of its round, with all reports of that reviewer that have blocking findings, no confirmer for a reviewer without blocking findings, and a maximum of 6 confirmers in the round.",
                     "grader": "script"
                 },
                 {
                     "id": "2",
-                    "text": "After each review round, the run ran the report form of the check script on the reviewer reports of each file of the round before it corrected a file.",
+                    "text": "After each review round, the run ran the report form of the check script on the 3 reviewer reports of each file of the round before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -220,12 +220,12 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
+                    "text": "In each review round, the run started one fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for the full review target, with no fork, all 3 in one message, and had a maximum of 3 subagents open at the same time. Each reviewer read each file of the round and the target of each new pointer in these files. The run saved a copy of each file of the round, the round folder has a report of each reviewer for each file of the round, and the run changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each reviewer that has blocking findings in the report form against the copy of its round, with all reports of that reviewer that have blocking findings, no confirmer for a reviewer without blocking findings, and a maximum of 6 confirmers in the round.",
                     "grader": "script"
                 },
                 {
                     "id": "2",
-                    "text": "After each review round, the run ran the report form of the check script on the reviewer reports of each file of the round before it corrected a file.",
+                    "text": "After each review round, the run ran the report form of the check script on the 3 reviewer reports of each file of the round before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -318,12 +318,12 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
+                    "text": "In each review round, the run started one fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for the full review target, with no fork, all 3 in one message, and had a maximum of 3 subagents open at the same time. Each reviewer read each file of the round and the target of each new pointer in these files. The run saved a copy of each file of the round, the round folder has a report of each reviewer for each file of the round, and the run changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each reviewer that has blocking findings in the report form against the copy of its round, with all reports of that reviewer that have blocking findings, no confirmer for a reviewer without blocking findings, and a maximum of 6 confirmers in the round.",
                     "grader": "script"
                 },
                 {
                     "id": "2",
-                    "text": "After each review round, the run ran the report form of the check script on the reviewer reports of each file of the round before it corrected a file.",
+                    "text": "After each review round, the run ran the report form of the check script on the 3 reviewer reports of each file of the round before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -410,12 +410,12 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
+                    "text": "In each review round, the run started one fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for the full review target, with no fork, all 3 in one message, and had a maximum of 3 subagents open at the same time. Each reviewer read each file of the round and the target of each new pointer in these files. The run saved a copy of each file of the round, the round folder has a report of each reviewer for each file of the round, and the run changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each reviewer that has blocking findings in the report form against the copy of its round, with all reports of that reviewer that have blocking findings, no confirmer for a reviewer without blocking findings, and a maximum of 6 confirmers in the round.",
                     "grader": "script"
                 },
                 {
                     "id": "2",
-                    "text": "After each review round, the run ran the report form of the check script on the reviewer reports of each file of the round before it corrected a file.",
+                    "text": "After each review round, the run ran the report form of the check script on the 3 reviewer reports of each file of the round before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -507,12 +507,12 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
+                    "text": "In each review round, the run started one fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for the full review target, with no fork, all 3 in one message, and had a maximum of 3 subagents open at the same time. Each reviewer read each file of the round and the target of each new pointer in these files. The run saved a copy of each file of the round, the round folder has a report of each reviewer for each file of the round, and the run changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each reviewer that has blocking findings in the report form against the copy of its round, with all reports of that reviewer that have blocking findings, no confirmer for a reviewer without blocking findings, and a maximum of 6 confirmers in the round.",
                     "grader": "script"
                 },
                 {
                     "id": "2",
-                    "text": "After each review round, the run ran the report form of the check script on the reviewer reports of each file of the round before it corrected a file.",
+                    "text": "After each review round, the run ran the report form of the check script on the 3 reviewer reports of each file of the round before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -595,12 +595,12 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
+                    "text": "In each review round, the run started one fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for the full review target, with no fork, all 3 in one message, and had a maximum of 3 subagents open at the same time. Each reviewer read each file of the round and the target of each new pointer in these files. The run saved a copy of each file of the round, the round folder has a report of each reviewer for each file of the round, and the run changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each reviewer that has blocking findings in the report form against the copy of its round, with all reports of that reviewer that have blocking findings, no confirmer for a reviewer without blocking findings, and a maximum of 6 confirmers in the round.",
                     "grader": "script"
                 },
                 {
                     "id": "2",
-                    "text": "After each review round, the run ran the report form of the check script on the reviewer reports of each file of the round before it corrected a file.",
+                    "text": "After each review round, the run ran the report form of the check script on the 3 reviewer reports of each file of the round before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -689,12 +689,12 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
+                    "text": "In each review round, the run started one fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for the full review target, with no fork, all 3 in one message, and had a maximum of 3 subagents open at the same time. Each reviewer read each file of the round and the target of each new pointer in these files. The run saved a copy of each file of the round, the round folder has a report of each reviewer for each file of the round, and the run changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each reviewer that has blocking findings in the report form against the copy of its round, with all reports of that reviewer that have blocking findings, no confirmer for a reviewer without blocking findings, and a maximum of 6 confirmers in the round.",
                     "grader": "script"
                 },
                 {
                     "id": "2",
-                    "text": "After each review round, the run ran the report form of the check script on the reviewer reports of each file of the round before it corrected a file.",
+                    "text": "After each review round, the run ran the report form of the check script on the 3 reviewer reports of each file of the round before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -785,12 +785,12 @@
             "assertions": [
                 {
                     "id": "1",
-                    "text": "In each review round, the run started a fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for each file, with no fork. It started the 3 reviewers of each file in one message, had a maximum of 3 subagents open at the same time, saved each reviewer report and a copy of each file in the folder of the round, and changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each saved report that has blocking findings in the report form against the copy of its round, no confirmer for a report without blocking findings, and a maximum of 6 confirmers for each file.",
+                    "text": "In each review round, the run started one fresh loading, ASD-STE100, and ISO 24495-1 reviewer subagent for the full review target, with no fork, all 3 in one message, and had a maximum of 3 subagents open at the same time. Each reviewer read each file of the round and the target of each new pointer in these files. The run saved a copy of each file of the round, the round folder has a report of each reviewer for each file of the round, and the run changed no reviewed file before the last report of the round. After the last reviewer report, it started 2 confirmers for each reviewer that has blocking findings in the report form against the copy of its round, with all reports of that reviewer that have blocking findings, no confirmer for a reviewer without blocking findings, and a maximum of 6 confirmers in the round.",
                     "grader": "script"
                 },
                 {
                     "id": "2",
-                    "text": "After each review round, the run ran the report form of the check script on the reviewer reports of each file of the round before it corrected a file.",
+                    "text": "After each review round, the run ran the report form of the check script on the 3 reviewer reports of each file of the round before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -886,7 +886,7 @@
             "assertions": [
                 {
                     "id": "2",
-                    "text": "After each review round, the run ran the report form of the check script on the reviewer reports of each file of the round before it corrected a file.",
+                    "text": "After each review round, the run ran the report form of the check script on the 3 reviewer reports of each file of the round before it corrected a file.",
                     "grader": "script"
                 },
                 {
