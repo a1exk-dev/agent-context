@@ -48,5 +48,5 @@ A Confirmer is a new subagent that answers "yes" or "no", with one sentence, for
 _Avoid_: verifier, second reviewer
 
 **Review target**:
-A Review target is the Agent instructions that one self-check of the agent-instructions Skill examines. A first file gives the Review target, for example `AGENTS.md`. The Review target of a Skill is the Markdown files in the folder of that Skill.
+A Review target is the Agent instructions that one self-check of the agent-instructions Skill examines. The reviewers find the files of a Review target from its first file, for example `AGENTS.md`. The Review target of a Skill is the Markdown files in the folder of that Skill.
 _Avoid_: review scope, file set
