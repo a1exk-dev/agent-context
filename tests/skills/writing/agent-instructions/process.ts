@@ -1051,8 +1051,11 @@ export function readers(run: Run): Verdict {
     const saved = savedReports(run, found, "reader");
     const problems = [...found.unclassified, ...saved.problems];
     const [first] = found.reader;
+    // An output-test run skips the review rounds (#211). A recorded run with
+    // review rounds starts the reader test after the first of them.
     if (!first) problems.push("No reader-test round.");
     else if (
+        found.review.length > 0 &&
         !found.review.some((round) => roundStart(round) < roundStart(first))
     )
         problems.push(
@@ -1066,7 +1069,7 @@ export function readers(run: Run): Verdict {
         );
     return verdict(
         problems,
-        `${found.reader.length} reader-test rounds with 3 read-only readers for each file, after the review rounds, and 2 confirmers for each saved closed list with a "no".`,
+        `${found.reader.length} reader-test rounds with 3 read-only readers for each file, after the review rounds when the run did them, and 2 confirmers for each saved closed list with a "no".`,
     );
 }
 

@@ -866,6 +866,13 @@ describe("process statements", () => {
             );
         });
 
+        it(`passes [3a] and [3c] of a ${platform} run without review rounds`, () => {
+            const run = start();
+            readerRound(run);
+            const verdicts = processVerdicts(run.record(), ["3a", "3c"]);
+            expect(passed(verdicts)).toEqual(["3a", "3c"]);
+        });
+
         it(`fails [3a] for a ${platform} reader that runs a Bash redirect`, () => {
             const run = start();
             reviewRound(run);
@@ -1185,42 +1192,36 @@ describe("process statements", () => {
         });
 
         // A run that did each check itself, as "When no subagent is
-        // available" tells: one saved report for each reviewer class and
-        // each file of review round 1, then the 3 reader tasks of AGENTS.md.
-        const selfRun = (files: string[], classes = [0, 1, 2]) => {
+        // available" tells: the reader tasks of AGENTS.md, and a saved
+        // report for each reviewer class in `classes` for each file of
+        // review round 1. An output-test run does no review check (#211).
+        const selfRun = (classes: number[], tasks = [1, 2, 3]) => {
             const run = start();
             for (const index of classes)
-                for (const file of files)
-                    run.write(
-                        reportPath(1, index, file),
-                        `Round 1: ${REVIEWERS[index].replace(" reviewer", "")} review, ${file}\n${REPORT}`,
-                    );
-            TASKS.forEach((_, index) => {
                 run.write(
-                    `${DIR}/reader-round-1/reader-${index + 1}.md`,
-                    `Reader-test round 1, AGENTS.md, reader task ${index + 1}\n${READER_REPORT}`,
+                    reportPath(1, index),
+                    `Round 1: ${REVIEWERS[index].replace(" reviewer", "")} review, AGENTS.md\n${REPORT}`,
                 );
-            });
+            for (const task of tasks)
+                run.write(
+                    `${DIR}/reader-round-1/reader-${task}.md`,
+                    `Reader-test round 1, AGENTS.md, reader task ${task}\n${READER_REPORT}`,
+                );
             return processVerdicts(run.record(), ["10.2"], TWO_FILES)["10.2"];
         };
 
-        it(`passes [10.2] for a ${platform} run with a saved check of each reviewer class for each file`, () => {
-            expect(selfRun(["AGENTS.md", DEPLOY])).toMatchObject({
-                passed: true,
-            });
+        it(`passes [10.2] for a ${platform} run that saved each reader task and no review check`, () => {
+            expect(selfRun([])).toMatchObject({ passed: true });
         });
 
-        it(`fails [10.2] for a ${platform} run without the checks of a file of the round`, () => {
-            expect(selfRun(["AGENTS.md"])).toMatchObject({
-                passed: false,
-                evidence: `Review round 1, ${DEPLOY} has the reports: .`,
-            });
+        it(`grades no review check of [10.2] for a ${platform} run that saved one reviewer class`, () => {
+            expect(selfRun([0])).toMatchObject({ passed: true });
         });
 
-        it(`fails [10.2] for a ${platform} run without one reviewer class for one file`, () => {
-            expect(selfRun(["AGENTS.md", DEPLOY], [0, 2])).toMatchObject({
+        it(`fails [10.2] for a ${platform} run without one reader task`, () => {
+            expect(selfRun([], [1, 3])).toMatchObject({
                 passed: false,
-                evidence: `Review round 1, AGENTS.md has the reports: iso 24495-1, loading.\nReview round 1, ${DEPLOY} has the reports: iso 24495-1, loading.`,
+                evidence: "Reader-test round 1, AGENTS.md has the tasks: 1, 3.",
             });
         });
 
@@ -1534,7 +1535,9 @@ describe("script statements", () => {
         ).toMatchObject({ passed: true });
     });
 
-    it("has one function for each script statement id in evals.json", () => {
+    // An output-test run skips the review rounds (#211), so evals.json has
+    // no review statement. grade.ts still grades them in recorded runs.
+    it("has one function for each script statement id in evals.json and each review statement", () => {
         const evals: { assertions: Statement[] }[] = readJson(
             join(import.meta.dirname, "evals.json"),
         ).evals;
@@ -1545,8 +1548,9 @@ describe("script statements", () => {
                     .map((item) => item.id),
             ),
         );
+        expect(ids).not.toContain("1");
         expect(Object.keys(scriptStatements).toSorted()).toEqual(
-            [...ids].toSorted(),
+            [...ids, "1", "2", "4"].toSorted(),
         );
     });
 });

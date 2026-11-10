@@ -3,12 +3,7 @@
 // grader for the other statements. grade.ts builds the Run of a saved run
 // folder and calls these functions.
 
-import {
-    READER_TITLE,
-    REVIEW_TITLE,
-    type ToolCall,
-    WRITE_TOOLS,
-} from "./eval-lib.ts";
+import { READER_TITLE, type ToolCall, WRITE_TOOLS } from "./eval-lib.ts";
 import {
     readerReportForms,
     readers,
@@ -198,27 +193,18 @@ const sameLevel = (line: string) => line.replace(/^#+ /, "# ");
 
 const SUBAGENT_TOOLS = ["agent", "task"];
 
-// The file under review after a review title, as in "Round 2: ASD-STE100
-// review, skills/x/SKILL.md".
-const TITLE_FILE = /^, ([^\s"\\]+)/;
-
-// [10.2]: each saved check in its own tool call and message, and no change of
-// a saved report. One review check is one reviewer class for one file of the
-// round. Each file of a review round has a check of each class, and round 1
-// has the checks of each Markdown file that the run created or changed.
+// [10.2]: each saved reader task in its own tool call and message, the 3
+// tasks of each file of each reader-test round, and no change of a saved
+// report. An output-test run does no review round (#211), so [10.2] grades
+// no review check.
 function selfChecks(run: Run): Verdict {
     const problems: string[] = [];
-    // The classes of the saved checks of each file of each review round. A
-    // title without a file has the file "".
-    const reviews = new Map<string, Map<string, string[]>>();
     const readers = new Map<string, string[]>();
     const savedPaths: { path: string; index: number }[] = [];
     run.messages.forEach((message, index) => {
         for (const call of message.calls) {
-            const input = JSON.stringify(call.input);
             const titles = [
-                ...input.matchAll(REVIEW_TITLE),
-                ...input.matchAll(READER_TITLE),
+                ...JSON.stringify(call.input).matchAll(READER_TITLE),
             ];
             if (titles.length === 0) continue;
             if (titles.length > 1) {
@@ -231,24 +217,9 @@ function selfChecks(run: Run): Verdict {
                     `Message ${index + 1}: the report call is one of ${message.calls.length} tool calls.`,
                 );
             }
-            for (const title of titles) {
-                const [, round, name, task] = title;
-                if (task === undefined) {
-                    const rest = input.slice(
-                        (title.index ?? 0) + title[0].length,
-                    );
-                    const file = TITLE_FILE.exec(rest)?.[1] ?? "";
-                    const files =
-                        reviews.get(round) ?? new Map<string, string[]>();
-                    reviews.set(round, files);
-                    files.set(file, [
-                        ...(files.get(file) ?? []),
-                        name.toLowerCase(),
-                    ]);
-                } else {
-                    const key = `${round}, ${name.trim()}`;
-                    readers.set(key, [...(readers.get(key) ?? []), task]);
-                }
+            for (const [, round, name, task] of titles) {
+                const key = `${round}, ${name.trim()}`;
+                readers.set(key, [...(readers.get(key) ?? []), task]);
             }
             const path = call.input.file_path ?? call.input.filePath;
             if (typeof path === "string") savedPaths.push({ path, index });
@@ -268,27 +239,6 @@ function selfChecks(run: Run): Verdict {
             }
         }
     });
-    if (reviews.size === 0) problems.push("No saved review report.");
-    const first = reviews.get("1");
-    for (const change of run.changes)
-        if (
-            first &&
-            change.after !== null &&
-            change.path.endsWith(".md") &&
-            !first.has(change.path)
-        )
-            first.set(change.path, []);
-    for (const [round, files] of reviews) {
-        for (const [file, names] of files) {
-            const sorted = names.toSorted().join(", ");
-            if (sorted !== "asd-ste100, iso 24495-1, loading") {
-                const name = file
-                    ? `Review round ${round}, ${file}`
-                    : `Review round ${round}`;
-                problems.push(`${name} has the reports: ${sorted}.`);
-            }
-        }
-    }
     if (readers.size === 0) problems.push("No saved reader report.");
     for (const [key, tasks] of readers) {
         if (tasks.toSorted().join(",") !== "1,2,3") {
@@ -299,7 +249,7 @@ function selfChecks(run: Run): Verdict {
     }
     return verdict(
         problems,
-        `Each report is in its own tool call and message: ${reviews.size} review rounds, ${readers.size} reader-test file rounds.`,
+        `Each reader report is in its own tool call and message: ${readers.size} reader-test file rounds.`,
     );
 }
 
