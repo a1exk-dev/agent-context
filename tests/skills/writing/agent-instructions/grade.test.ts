@@ -1372,6 +1372,9 @@ describe("process statements", () => {
         // Run record 06 of #209 without review rounds, reader-test round 2.
         `cat ${WORK}/Makefile; git -C ${WORK} diff AGENTS.md`,
         `git -C ${WORK} -C docs log --oneline -3`,
+        // Run record 03 of #209 without review rounds, reader-test round 1.
+        "git remote -v; git diff AGENTS.md; git branch --list 'release/*'",
+        "git tag -l 'v1.*' && git branch -a --list feature/*",
     ])("passes [3a] for the read-only reader command %s", (command) => {
         const run = claude();
         reviewRound(run);
@@ -1394,6 +1397,9 @@ describe("process statements", () => {
         `git -C ${WORK} push origin main`,
         `git -C ${WORK} -c core.editor=vi log`,
         "git -C",
+        "git branch release/1.0.0",
+        "git branch -a release/1.0.0",
+        "git tag v1.0.0 HEAD",
     ])("fails [3a] for the reader command %s", (command) => {
         const run = claude();
         reviewRound(run);

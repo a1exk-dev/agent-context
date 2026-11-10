@@ -1031,13 +1031,23 @@ function readOnlyCommand([name, ...args]: string[]): boolean {
     // The reader prompt permits `-C <folder>` after `git`.
     while (args[0] === "-C" && args.length > 2) args = args.slice(2);
     const [sub, ...rest] = args;
-    if (sub === "branch")
-        return rest.every((arg) => ["-a", "-r", "--list"].includes(arg));
+    if (sub === "branch") return listOnly(rest, ["-a", "-r"], ["--list"]);
     if (sub === "remote") return rest.length === 1 && rest[0] === "-v";
-    if (sub === "tag")
-        return rest.every((arg) => ["-l", "--list"].includes(arg));
+    if (sub === "tag") return listOnly(rest, [], ["-l", "--list"]);
     return ["status", "diff", "log", "show", "ls-files", "rev-parse"].includes(
         sub,
+    );
+}
+
+// The reader prompt permits patterns only after a list option, because
+// `git branch <name>` and `git tag <name>` make a branch or a tag.
+function listOnly(args: string[], options: string[], list: string[]): boolean {
+    const listed = args.some((arg) => list.includes(arg));
+    return args.every(
+        (arg) =>
+            options.includes(arg) ||
+            list.includes(arg) ||
+            (listed && !arg.startsWith("-")),
     );
 }
 
