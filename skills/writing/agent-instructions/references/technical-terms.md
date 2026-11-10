@@ -24,7 +24,7 @@ When the glossary gives a base-list word a different meaning, use the project me
 
 ## When a word is not in the base list or in the glossary
 
-When a technical noun is not in the base list and not in the glossary, add a warning. This rule is also applicable to a technical noun that the user or a different project file uses.
+When a technical noun is not in the base list and not in the glossary, add a warning. This rule is also applicable to a technical noun that the user or a different project file uses. It is also applicable to a noun group that contains a glossary term, when the glossary does not give that noun group. In that noun group, the glossary term does not have its glossary meaning.
 
 1. If the project has a glossary, recommend a glossary entry in the format of the project.
 2. If the project has no glossary, recommend a new `GLOSSARY.md` with a short structure: the term and its definition.

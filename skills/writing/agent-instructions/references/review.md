@@ -282,6 +282,7 @@ You can also use `find`, but not with `-delete`, `-exec`, `-ok`, or `-fprint`.
 You can also use `git status`, `git diff`, `git log`, `git show`, `git ls-files`, `git rev-parse`, and `git remote -v`.
 You can also use `git branch` alone, or only with `-a`, `-r`, or `--list`.
 You can also use `git tag` alone, or only with `-l` or `--list`.
+In each of these `git` commands, you can write `-C <folder>` after `git`.
 You can use a loop `for <name> in <words>; do <commands>; done` only when each command in the loop is on this list.
 Do not send the output of a command to a file. You can add only `2>/dev/null` or `2>&1` to a command.
 Give this report in 3 parts. Start each part with its heading line, as this form shows:

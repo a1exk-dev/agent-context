@@ -32,6 +32,7 @@ In the Warnings part, add one item for each of these warnings that is applicable
 - Each finding that you did not correct after round 3, with its rule.
 - Each finding that you rejected, with the rule that permits the text.
 - In the edit job, each finding about text that is not in the changed part.
+- In the edit job, each pointer in an unchanged part that does not give the condition to read its target. The pointer list of the check script gives each sentence that names a file path.
 - Each problem from the reader test that you cannot correct.
 - Each text that a round 3 correction changed, and each text that an advisory correction in the last review round changed. Also each text that changed after the reader test when you did all 3 review rounds. Write that no reviewer examined these texts.
 - Each text that a correction of an unclear part after the last reader-test round changed. Write that no reader examined these texts.
@@ -51,7 +52,8 @@ Obey these rules for the moved text and the extraction candidates:
 - In the Summary part of the write job and of the edit job, give each text that you moved. For each text, give its new file and the reason.
 - When the file size was the reason, give the file size before you moved the text, and the limit.
 - In the write job, write no Extraction candidates part.
-- In the edit job, copy the full candidate list of the round-1 loading reviewer into the Extraction candidates part. Only round 1 reviews the full file.
+- In the edit job, write each extraction candidate that you found in step 7 of `SKILL.md` in the Extraction candidates part.
+- In the edit job, also add each item of the candidate list of the round-1 loading reviewer that is not in that part. Only round 1 reviews the full file.
 - If a loading reviewer after round 1 gives a different item for a section, use the last item.
 - A reviewer other than the loading reviewer can tell you to move text in an unchanged part. Then find the section of that text. If "When you recommend text to move" in `references/loading-rules.md` gives that section, add it to the Extraction candidates part.
 - Use the heading of each section as the name of its candidate.
