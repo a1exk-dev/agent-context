@@ -89,6 +89,8 @@ export type Run = {
     dropped: (path: string, reports: string[]) => number | null;
     saved: string[];
     readSaved: (path: string) => string | null;
+    // Whether a project path is in the project as the run left it.
+    exists: (path: string) => boolean;
     blockingCounts: (copy: string, reports: string[]) => Map<string, number>;
 };
 

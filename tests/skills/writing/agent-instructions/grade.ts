@@ -246,6 +246,10 @@ function readRun(runDir: string, metadata: Metadata): Run {
             const local = tmp.get(path);
             return local === undefined ? null : readFileSync(local, "utf8");
         },
+        exists: (path) =>
+            projectPlaces(outputs, metadata).some((place) =>
+                existsSync(join(place, path)),
+            ),
         blockingCounts: (copy, reports) => blockingCounts(tmp, copy, reports),
     };
 }
@@ -265,16 +269,17 @@ function savedFiles(
     return files;
 }
 
+// The folders that give the project as the run left it, first match first:
+// the changed files, the overlay of the test, and the starting project.
+const projectPlaces = (outputs: string, metadata: Metadata) => [
+    join(outputs, "files"),
+    ...(metadata.setup?.overlay ? [join(HERE, metadata.setup.overlay)] : []),
+    join(HERE, "project"),
+];
+
 // The glossary of the run: CONTEXT.md as the run left it.
 function glossaryPath(outputs: string, metadata: Metadata): string | null {
-    const places = [
-        join(outputs, "files"),
-        ...(metadata.setup?.overlay
-            ? [join(HERE, metadata.setup.overlay)]
-            : []),
-        join(HERE, "project"),
-    ];
-    for (const place of places) {
+    for (const place of projectPlaces(outputs, metadata)) {
         const path = join(place, "CONTEXT.md");
         if (existsSync(path)) return path;
     }

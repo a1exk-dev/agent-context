@@ -392,7 +392,8 @@ function attemptProblems(
 
 // The files that a reviewer of a round reads: each file of the round, and
 // the target of each pointer on an added line of these files. A folder
-// target, with a `/` at its end, has no text to read. A relative
+// target, with a `/` at its end, and a target that the project does not
+// have give no text to read. A relative
 // target can be relative to the folder of its file or to a folder above it,
 // so each of these project paths counts as the target.
 function readTargets(run: Run, files: string[]): Map<string, string[]> {
@@ -418,7 +419,7 @@ function readTargets(run: Run, files: string[]): Map<string, string[]> {
             }
             const paths = folders
                 .map((folder) => posix.normalize(posix.join(folder, target)))
-                .filter((path) => !path.startsWith(".."));
+                .filter((path) => !path.startsWith("..") && run.exists(path));
             if (paths.length > 0 && !targets.has(paths[0]))
                 targets.set(paths[0], paths);
         }

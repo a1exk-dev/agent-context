@@ -666,6 +666,16 @@ const POINTER: File[] = [
     },
 ];
 
+// AGENTS.md with a new sentence that names a file that the project does not
+// have.
+const MISSING_POINTER: File[] = [
+    {
+        path: "AGENTS.md",
+        before: BEFORE,
+        after: agents("Use pnpm.\n\nAdd each flag to `src/flags.ts`."),
+    },
+];
+
 // AGENTS.md with a new sentence that names a folder, not a file to read.
 const FOLDER_POINTER: File[] = [
     {
@@ -920,6 +930,16 @@ describe("process statements", () => {
             readerRound(run);
             expect(
                 processVerdicts(run.record(), PROCESS, FOLDER_POINTER)["1"]
+                    .passed,
+            ).toBe(true);
+        });
+
+        it(`passes [1] for ${platform} reviewers that do not read a file that the project does not have`, () => {
+            const run = start();
+            reviewRound(run);
+            readerRound(run);
+            expect(
+                processVerdicts(run.record(), PROCESS, MISSING_POINTER)["1"]
                     .passed,
             ).toBe(true);
         });
