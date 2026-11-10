@@ -20,6 +20,14 @@ The check script of this skill examines each rule that ends with "(script check)
 
 Each round contains the checks of all files that it examines. Do not do a different series of rounds for each file. For the round limits, count the rounds of all files together, because the limits are for the full task. A review round has 3 reviewers: one reviewer of each class for the full review target.
 
+The Markdown files of a review target are these files:
+
+- Its first file.
+- Each Markdown file in the folder of a Skill of the review target.
+- Each file in the `Changes:` line of round 1.
+
+A pointer target that is not in this list is not a file of the review target.
+
 The round list gives the files of a review round, in the alphabetical sequence of their paths. In review round 1, the round list contains each Markdown file of the review target. In review rounds 2 and 3, it contains each file in the `Changes:` line of the reviewer prompt.
 
 Each review round and each reader-test round has these steps:
@@ -31,7 +39,7 @@ Each review round and each reader-test round has these steps:
    - Codex: Call `wait_agent` again until each subagent gives its report. Before you get all reports, do not stop, because a stopped main agent gets no report. If the `close_agent` tool is available, close each subagent after its report. The maximum of 3 subagents includes each open subagent.
    - OpenCode: Wait for the message that gives the reports of all `task` tool calls.
 4. Before you get all reports of the round, do not change a file that the round examines. This makes sure that all subagents of the round read the same text.
-5. A subagent fails when the tool call that starts it gives an error. A confirmer or a reader also fails when it stops without a report. A reviewer also fails when its last message does not give the report path of each file in the round list. When the report form gives exit code 2 for a missing report path, the reviewer of that report folder also failed. If a subagent fails, do not wait for a report from it. For a confirmer or a reader, its group is complete without that report. Start the other groups of the round as item 2 tells you. Then get all other reports of the round. On Codex, if the `close_agent` tool is available, close each failed subagent. Then start one new subagent for each failed subagent, as items 1 to 3 tell you. Start the new reviewers in one message. Give each new reviewer the same prompt and the same report folder as the failed reviewer. Do not add a list of files to that prompt. With this sequence, a maximum of 3 subagents operate at the same time.
+5. A subagent fails when the tool call that starts it gives an error. A confirmer or a reader also fails when it stops without a report. A reviewer also fails when its last message does not give the report path of each file in the round list. Examine the report folder of a reviewer only after its last message. When the report form gives exit code 2 for a missing report path, the reviewer of that report folder also failed. If a subagent fails, do not wait for a report from it. For a confirmer or a reader, its group is complete without that report. Start the other groups of the round as item 2 tells you. Then get all other reports of the round. On Codex, if the `close_agent` tool is available, close each failed subagent. Then start one new subagent for each failed subagent, as items 1 to 3 tell you. Start the new reviewers in one message. Give each new reviewer the same prompt and the same report folder as the failed reviewer. Do not add a list of files to that prompt. With this sequence, a maximum of 3 subagents operate at the same time.
 6. If a new subagent also fails, do these checks as "When no subagent is available" tells you:
    - Each review check whose report is missing, for a reviewer whose new subagent failed. A report is missing for each file in the round list that has no report in the report folder of that reviewer.
    - Each check of a confirmer or a reader whose new subagent failed.
@@ -72,7 +80,7 @@ Do not run commands that change files, Git data, or external services.
 Exception: save your reports in your report folder, as this prompt tells you. Write no other file.
 
 Review target: <for each review target: the absolute path of its first file, for example the SKILL.md file of a Skill, or AGENTS.md>
-Changes: <for each changed file: its absolute path and its changed sections, or "all" for a new review target. In rounds 2 and 3, only the sections that the previous round changed. In the edit job, include the pointer of each section that you moved, but not the text of that section>
+Changes: <for each Markdown file that the job made or changed: its absolute path and its changed sections, or "all" for a new file. For a new file that contains only moved sections, write "no changed sections". In rounds 2 and 3, give only the sections that the previous round changed. In the edit job, include the pointer of each section that you moved, but not the text of that section>
 Report folder: <absolute path of <round folder>/round-<n>/loading/, <round folder>/round-<n>/ste/, or <round folder>/round-<n>/iso/>
 Job: <"the write job" or "the edit job">
 Project folder: <absolute path>
@@ -85,11 +93,12 @@ Check script findings: <absolute path of the JSON file of the check script for t
 
 Before the review, read the report requirements from their file.
 Do only this review. Do not give it to a subagent.
-To find the files of each review target, start at the first file of that review target. Then follow the pointers of each file that you find.
-Review only the Markdown files inside the review target. For a Skill, these files are the Markdown files in the folder of the Skill.
-Also review each file in the Changes line when no pointer identifies it.
-Read the pointer targets before you give a finding. Give no finding for a problem that a pointer target already solves.
-Read these files only for context: the pointer targets outside the review target, and the files in the folder of a Skill that are not Markdown. Give no finding for these files.
+Review only these Markdown files: the first file of each review target, each Markdown file in the folder of a Skill of the review target, and each file in the Changes line.
+The check script findings give the pointer list: each sentence that names a file path, with its line and heading.
+Before you give a finding, read each file in the Pointer targets line and each file that a sentence in the pointer list names.
+Give no finding for a problem that one of these files already solves.
+Read these files only for context: the pointer targets that you do not review, and the files in the folder of a Skill that are not Markdown. Give no finding for these files.
+In each tool call that reads a file, give the absolute path of that file. Do not use `cd`, `*`, or a loop to read files, because the tool calls must show each file that you read.
 The number in round-<n> of your report folder is the number of the round.
 In round 1, the sections under review are all sections of each Markdown file of the review target.
 In rounds 2 and 3, the sections under review are only the sections in the Changes line.
@@ -103,11 +112,10 @@ The ISO 24495-1 reviewer examines the conditions of the pointers and the heading
 Write the file size of each file and its limit.
 Give a finding for each text to move in a section in the Changes line.
 Also give a finding for each text that the author moved and that does not obey loading-rules.md. In the Text field, write the pointer of that text in quotation marks. If that text has no pointer, copy the heading of the moved section.
-<For the ISO 24495-1 reviewer only:> The check script findings also give the pointer list: each sentence that names a file path, with its line and heading.
-For each sentence in the pointer list that is a pointer, decide whether the heading and the sentence give the condition to read the target.
-Also find each pointer that names no file, for example "that file".
-In "When you select the text" in plain-language-checks.md, skip the rule about long text. The loading reviewer examines it.
-In "When you select the words and the tone", skip the rule about one term for each item. The ASD-STE100 reviewer examines it.
+<For the ISO 24495-1 reviewer only:> For each sentence in the pointer list that is a pointer, decide whether the heading and the sentence give the condition to read the target.
+<For the ISO 24495-1 reviewer only:> Also find each pointer that names no file, for example "that file".
+<For the ISO 24495-1 reviewer only:> In "When you select the text" in plain-language-checks.md, skip the rule about long text. The loading reviewer examines that rule.
+<For the ISO 24495-1 reviewer only:> In "When you select the words and the tone" in plain-language-checks.md, skip the rule about one term for each item. The ASD-STE100 reviewer examines that rule.
 <For the loading reviewer in the edit job only:> Write the extraction candidates in a different list: section heading, recommended file, and pointer sentence. Put in this list only sections under review that are not in the Changes line. Use only the candidates that "When you recommend text to move" in loading-rules.md gives.
 
 For each Markdown file that you review, save one report as <report folder>/<file path>.md. <file path> is the path of the file in the project folder.
