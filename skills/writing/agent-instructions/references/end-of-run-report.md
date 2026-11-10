@@ -52,7 +52,7 @@ Obey these rules for the moved text and the extraction candidates:
 - In the Summary part of the write job and of the edit job, give each text that you moved. For each text, give its new file and the reason.
 - When the file size was the reason, give the file size before you moved the text, and the limit.
 - In the write job, write no Extraction candidates part.
-- In the edit job, write each extraction candidate that you found in step 7 of `SKILL.md` in the Extraction candidates part.
+- In the edit job, before you write the report, read "When you recommend text to move" in `references/loading-rules.md`. Then find each extraction candidate in the unchanged parts as it tells you. Write each candidate in the Extraction candidates part, also when the file is less than its size limit.
 - In the edit job, also add each item of the candidate list of the round-1 loading reviewer that is not in that part. Only round 1 reviews the full file.
 - If a loading reviewer after round 1 gives a different item for a section, use the last item.
 - A reviewer other than the loading reviewer can tell you to move text in an unchanged part. Then find the section of that text. If "When you recommend text to move" in `references/loading-rules.md` gives that section, add it to the Extraction candidates part.
