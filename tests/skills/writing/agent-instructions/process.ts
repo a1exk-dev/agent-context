@@ -391,7 +391,8 @@ function attemptProblems(
 }
 
 // The files that a reviewer of a round reads: each file of the round, and
-// the target of each pointer on an added line of these files. A relative
+// the target of each pointer on an added line of these files. A folder
+// target, with a `/` at its end, has no text to read. A relative
 // target can be relative to the folder of its file or to a folder above it,
 // so each of these project paths counts as the target.
 function readTargets(run: Run, files: string[]): Map<string, string[]> {
@@ -401,7 +402,7 @@ function readTargets(run: Run, files: string[]): Map<string, string[]> {
     for (const pointer of run.pointers) {
         if (!files.includes(pointer.path)) continue;
         for (const target of pointer.targets) {
-            if (target.startsWith("~")) continue;
+            if (target.startsWith("~") || target.endsWith("/")) continue;
             if (posix.isAbsolute(target)) {
                 targets.set(local(run, target), [local(run, target)]);
                 continue;
@@ -460,8 +461,10 @@ function reviewerAttempts(
         const missing = found.calls.some((call) => {
             if (!isBash(call) || call.at <= check.end || call.at >= next)
                 return false;
-            const form = formRun(run, command(call));
-            return (form?.reports ?? []).some((path) => {
+            const paths = formRuns(run, command(call)).flatMap(
+                (form) => form.reports,
+            );
+            return paths.some((path) => {
                 const place = reviewPlace(path);
                 return (
                     place?.round === round.number &&
@@ -612,6 +615,32 @@ function roundProblems(run: Run, found: Process, round: Round): string[] {
 // report paths, as the command gives them.
 type FormRun = { file: string; reports: string[]; reader: boolean };
 
+// The report form runs of a shell line. One line can run the report form
+// for several files, one command on each line or after `;`, `&&`, or `||`.
+// A command that only sets shell variables, for example `S=<path>`, gives
+// their values to `$S` and `${S}` in the later commands of the line.
+function formRuns(run: Run, line: string): FormRun[] {
+    const values = new Map<string, string>();
+    const expand = (text: string) =>
+        text.replace(
+            /\$\{(\w+)\}|\$(\w+)/g,
+            (word, braced, plain) => values.get(braced ?? plain) ?? word,
+        );
+    const forms: FormRun[] = [];
+    for (const part of line.split(/\n|;|&&|\|\|/)) {
+        const words = part.trim().split(/\s+/);
+        const assignments = words.map((word) => /^(\w+)=(\S*)$/.exec(word));
+        if (part.trim() && assignments.every((match) => match !== null)) {
+            for (const match of assignments)
+                if (match) values.set(match[1], expand(match[2]));
+            continue;
+        }
+        const form = formRun(run, expand(part));
+        if (form) forms.push(form);
+    }
+    return forms;
+}
+
 function formRun(run: Run, line: string): FormRun | null {
     const words = [...line.matchAll(/"([^"]*)"|'([^']*)'|(\S+)/g)].map(
         (match) => match[1] ?? match[2] ?? match[3],
@@ -687,40 +716,43 @@ function savedReports(run: Run, found: Process, kind: Kind) {
     }
     for (const call of found.calls) {
         if (!isBash(call)) continue;
-        const form = formRun(run, command(call));
-        if (!form || form.reader) continue;
-        for (const [folder, paths] of groupBy(
-            form.reports,
-            (path) => roundFolder(path)?.folder ?? "",
-        )) {
-            const place = roundFolder(paths[0]);
-            if (place?.kind !== "review") {
-                for (const path of paths)
+        for (const form of formRuns(run, command(call))) {
+            if (form.reader) continue;
+            for (const [folder, paths] of groupBy(
+                form.reports,
+                (path) => roundFolder(path)?.folder ?? "",
+            )) {
+                const place = roundFolder(paths[0]);
+                if (place?.kind !== "review") {
+                    for (const path of paths)
+                        problems.push(
+                            `The report file ${path} is not in a round-<n> folder.`,
+                        );
+                    continue;
+                }
+                const name = `Review round ${place.number}`;
+                const present = paths.filter((path) => {
+                    if (run.readSaved(path) !== null) return true;
                     problems.push(
-                        `The report file ${path} is not in a round-<n> folder.`,
+                        `${name}: the report file ${path} is missing.`,
                     );
-                continue;
-            }
-            const name = `Review round ${place.number}`;
-            const present = paths.filter((path) => {
-                if (run.readSaved(path) !== null) return true;
-                problems.push(`${name}: the report file ${path} is missing.`);
-                return false;
-            });
-            const copy = `${folder}/${form.file}`;
-            if (run.readSaved(copy) === null) {
-                problems.push(`${name}: the copy ${copy} is missing.`);
-                continue;
-            }
-            if (present.length === 0) continue;
-            const counts = run.blockingCounts(copy, present);
-            for (const path of present)
-                reports.set(path, {
-                    round: place.number,
-                    file: form.file,
-                    folder: reviewPlace(path)?.folder ?? null,
-                    count: counts.get(path) ?? 0,
+                    return false;
                 });
+                const copy = `${folder}/${form.file}`;
+                if (run.readSaved(copy) === null) {
+                    problems.push(`${name}: the copy ${copy} is missing.`);
+                    continue;
+                }
+                if (present.length === 0) continue;
+                const counts = run.blockingCounts(copy, present);
+                for (const path of present)
+                    reports.set(path, {
+                        round: place.number,
+                        file: form.file,
+                        folder: reviewPlace(path)?.folder ?? null,
+                        count: counts.get(path) ?? 0,
+                    });
+            }
         }
     }
     return { problems, reports };
@@ -1111,16 +1143,10 @@ function reportForms(run: Run, kind: Kind): Verdict {
             const ran = found.calls.some((call) => {
                 if (!isBash(call) || call.at <= lastReport || call.at >= limit)
                     return false;
-                const line = command(call);
-                const target = /--file[= ]+(?:"([^"]+)"|'([^']+)'|(\S+))/.exec(
-                    line,
-                );
-                return (
-                    line.includes("check.ts") &&
-                    line.includes("--reports") &&
-                    line.includes("--tasks") === (kind === "reader") &&
-                    target !== null &&
-                    local(run, target[1] ?? target[2] ?? target[3]) === file
+                return formRuns(run, command(call)).some(
+                    (form) =>
+                        form.reader === (kind === "reader") &&
+                        form.file === file,
                 );
             });
             const name = `${label(round)}, ${file}`;

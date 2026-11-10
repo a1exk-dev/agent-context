@@ -666,6 +666,15 @@ const POINTER: File[] = [
     },
 ];
 
+// AGENTS.md with a new sentence that names a folder, not a file to read.
+const FOLDER_POINTER: File[] = [
+    {
+        path: "AGENTS.md",
+        before: BEFORE,
+        after: agents("Use pnpm.\n\nPut each route in `src/routes/`."),
+    },
+];
+
 const reportForm = (file = "AGENTS.md", round = 1) =>
     `${CHECK} --reports --file ${WORK}/${file} ${FOLDERS.map((_, index) => reportPath(round, index, file)).join(" ")} > ${DIR}/round-${round}/form.json`;
 const readerReports = (round: number) =>
@@ -903,6 +912,43 @@ describe("process statements", () => {
             expect(
                 processVerdicts(run.record(), PROCESS, POINTER)["1"].passed,
             ).toBe(true);
+        });
+
+        it(`passes [1] for ${platform} reviewers that do not read a folder that a sentence names`, () => {
+            const run = start();
+            reviewRound(run);
+            readerRound(run);
+            expect(
+                processVerdicts(run.record(), PROCESS, FOLDER_POINTER)["1"]
+                    .passed,
+            ).toBe(true);
+        });
+
+        it(`passes [1] and [2] for the ${platform} report forms of 2 files in one command`, () => {
+            const run = start();
+            const files = ["AGENTS.md", DEPLOY];
+            saveReviewRound(run, 1, files);
+            startReviewers(run, { files });
+            run.bash(files.map((file) => reportForm(file)).join("\n"));
+            for (const file of files) run.edit(file);
+            readerRound(run);
+            expect(
+                passed(processVerdicts(run.record(), PROCESS, TWO_FILES)),
+            ).toEqual(PROCESS);
+        });
+
+        it(`passes [1] and [2] for a ${platform} report form with shell variables for its paths`, () => {
+            const run = start();
+            saveReviewRound(run);
+            startReviewers(run);
+            const script = CHECK.replace(/^node /, "");
+            const folder = `${DIR}/round-1`;
+            run.bash(
+                `S=${script}; R=${folder}\nnode $S --reports --file ${WORK}/AGENTS.md ${FOLDERS.map((name) => `$R/${name}/AGENTS.md.md`).join(" ")} > \${R}/form.json`,
+            );
+            run.edit();
+            readerRound(run);
+            expect(passed(processVerdicts(run.record()))).toEqual(PROCESS);
         });
 
         it(`fails [1] for a ${platform} reviewer that did not read a pointer target`, () => {
