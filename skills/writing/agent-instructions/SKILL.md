@@ -23,13 +23,14 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - A **finding** is one problem that a reviewer subagent gives in its report. The check script also gives findings.
 - A **blocking rule** is a rule in a reference file of this skill. The rule ends with the mark "(blocking)". When you accept a confirmed finding for a blocking rule, the review round of that finding fails.
 - An **advisory rule** is a rule in a reference file of this skill. The rule ends with the mark "(advisory)". A finding for an advisory rule never makes a review round fail.
-- A **confirmer** is a new subagent that answers "yes" or "no", with one sentence, for one problem that a different check found. It gets the rule, the quoted text, and the files, but not the cause that the other check gives. The problem counts when one or more confirmers answer "yes".
+- A **confirmer** is a new subagent that answers "yes" or "no", with one sentence, for each problem in its prompt. These problems come from a check other than the confirmer. In a review round, a confirmer gets all blocking findings of one reviewer. A confirmer gets the rule, the quoted text, and the files, but not the cause that the other check gives. A problem is confirmed when one or more confirmers answer "yes" for it.
 - A **warning** is one item in the Warnings part of the end-of-run report. It is not the STE signal word WARNING, which this skill does not use.
 - A **tier** is one position in the sequence of the sources.
 - An **ADR** is an architecture decision record: a file that records one design decision and its cause.
 - **Loading rules** are the rules that a file must obey. If a file does not obey them, one of 3 results occurs. A platform does not load the file, a check gives an error, or the platform does not read all of the file.
 - The **loading reviewer**, the **ASD-STE100 reviewer**, and the **ISO 24495-1 reviewer** are the 3 reviewer subagents.
-- The **self-check** is the review by the 3 reviewer subagents, in a maximum of 3 rounds.
+- The **review target** is the Agent instructions that one self-check examines. For a Skill, the review target is the Markdown files in the folder of that Skill.
+- The **self-check** is the review of the full review target by one reviewer subagent of each class, in a maximum of 3 rounds.
 - The **reader test** is a dry run of 3 tasks by new reader subagents after the self-check.
 - In the edit job, the **changed part** is the text that the user wants to change. It also includes each line that you add. When you move a line of that text to a different section, the line stays in the changed part. Each other part of the file is an **unchanged part**.
 - An **extraction candidate** is a whole section of an unchanged part that the author recommends to move in the edit job. In the edit job, "When you recommend text to move" in `references/loading-rules.md` gives these sections.
@@ -119,14 +120,14 @@ node <skill folder>/scripts/check.ts <file>... --project <project folder> --glos
 - The script does not write its error message to the JSON file. The shell shows the error message.
 - If the script gives no JSON, stop the self-check and the reader test. Then write the end-of-run report. In a warning, give the error message. In the same warning, tell the user that the check script requires Node.js 22.18 or later.
 
-The report form of the script examines the reviewer reports of one file. Run it once for each file of the round:
+The report form of the script examines the 3 reviewer reports of one file. Run it once for each file of the round:
 
 ```sh
 node <skill folder>/scripts/check.ts --reports --file <file under review> <report file>... > <JSON file>
 ```
 
 - The script gives JSON with 3 lists of findings: blocking, advisory, and dropped. It drops each finding that has a missing field, a quotation that is not in the files, or no rule with a mark.
-- The JSON also gives the confirm list. This list gives each report that has one or more findings in the blocking list. When a subagent is available, start 2 confirmers for each report in the confirm list, and for no other report.
+- The JSON also gives the confirm list. This list gives each report that has one or more findings in the blocking list. When a subagent is available, give the blocking findings of each report in the confirm list to the 2 confirmers of its reviewer. Start no confirmers for a reviewer that has no report in a confirm list.
 - The exit codes are the same as in the first form. Exit code 1 shows one or more findings in the blocking list or the advisory list.
 
 For the reader reports of one file, also give the saved copy and the tasks file that `references/review.md` gives. Give the reports in the sequence of the tasks:

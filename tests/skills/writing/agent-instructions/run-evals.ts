@@ -31,9 +31,9 @@ const USAGE = `Run the agent-instructions output tests with \`claude -p\`.
 
 Usage:
   bun run-evals.ts --out <iteration-dir> [--ids 1,3] [--configs with_skill,without_skill]
-                   [--jobs 5] [--model claude-opus-5-5] [--timeout 3600]`;
+                   [--jobs 5] [--model claude-opus-5-5] [--effort medium] [--timeout 3600]`;
 
-type Options = { out: string; model: string; timeout: number };
+type Options = { out: string; model: string; effort: string; timeout: number };
 
 async function run(ev: Eval, config: string, options: Options) {
     const runDir = join(options.out, `eval-${ev.name}`, config, "run-1");
@@ -59,6 +59,7 @@ async function run(ev: Eval, config: string, options: Options) {
         "--model",
         options.model,
     ];
+    if (options.effort) cmd.push("--effort", options.effort);
     if (withSkill) cmd.push("--append-system-prompt", FORCE_SKILL);
     if (ev.disallowed_tools?.length) {
         cmd.push("--disallowedTools", ...ev.disallowed_tools);
@@ -118,12 +119,14 @@ if (import.meta.main) {
         configs: { type: "string", default: "with_skill,without_skill" },
         jobs: { type: "string", default: "5" },
         model: { type: "string", default: "claude-opus-5-5" },
+        effort: { type: "string", default: "" },
         timeout: { type: "string", default: "3600" },
     });
     const jobs = jobsOption(USAGE, values.jobs);
     const options: Options = {
         out: values.out,
         model: values.model,
+        effort: values.effort,
         timeout: integerOption(USAGE, "timeout", values.timeout),
     };
     const configs = values.configs.split(",");
