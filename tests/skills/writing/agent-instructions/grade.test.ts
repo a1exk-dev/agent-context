@@ -1369,6 +1369,9 @@ describe("process statements", () => {
         `ls -a && grep -n '"version"' package.json; git branch -a; git tag 2>/dev/null; git log --oneline -5`,
         "git tag -l && git tag --list",
         "for f in a.md b.md\ndo\n  head -5 $f\ndone | wc -l",
+        // Run record 06 of #209 without review rounds, reader-test round 2.
+        `cat ${WORK}/Makefile; git -C ${WORK} diff AGENTS.md`,
+        `git -C ${WORK} -C docs log --oneline -3`,
     ])("passes [3a] for the read-only reader command %s", (command) => {
         const run = claude();
         reviewRound(run);
@@ -1388,6 +1391,9 @@ describe("process statements", () => {
         "for 1f in a.md; do cat $1f; done",
         "git tag v1.0.0",
         "git tag -d v1.0.0",
+        `git -C ${WORK} push origin main`,
+        `git -C ${WORK} -c core.editor=vi log`,
+        "git -C",
     ])("fails [3a] for the reader command %s", (command) => {
         const run = claude();
         reviewRound(run);

@@ -1028,6 +1028,8 @@ function readOnlyCommand([name, ...args]: string[]): boolean {
             /^-(delete|exec|execdir|ok|okdir|fprint0?|fprintf|fls)$/.test(arg),
         );
     if (name !== "git") return false;
+    // The reader prompt permits `-C <folder>` after `git`.
+    while (args[0] === "-C" && args.length > 2) args = args.slice(2);
     const [sub, ...rest] = args;
     if (sub === "branch")
         return rest.every((arg) => ["-a", "-r", "--list"].includes(arg));
