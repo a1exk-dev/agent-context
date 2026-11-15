@@ -1,0 +1,213 @@
+{
+    "skill_name": "human-communication",
+    "common_assertions": [
+        {
+            "id": "U1",
+            "text": "The Skill was loaded (Skill call or `SKILL.md` read) before the first assistant text, the first `AskUserQuestion` call, and the first write to a document.",
+            "grader": "script",
+            "check": "skillLoadedFirst"
+        },
+        {
+            "id": "U2",
+            "text": "The human text in English has no \"should\", \"may\", \"might\", \"would\", \"could\", \"shall\", or \"ensure\", no semicolon, no sentence of more than 25 words, and no word in capital letters for emphasis except CAUTION.",
+            "grader": "script",
+            "check": "steText"
+        },
+        {
+            "id": "U3",
+            "text": "The human text uses the active voice, one term for each item (the `GLOSSARY.md` term where the glossary has one), and pronouns that each refer to one item.",
+            "grader": "llm"
+        },
+        {
+            "id": "U4",
+            "text": "The human text gives the result first, keeps only details on the topic, and gives the next step when one exists.",
+            "grader": "llm"
+        },
+        {
+            "id": "U5",
+            "text": "No file changed except the files that the request asks for and the setup files of the test. Nothing is staged or committed, except in test 9.",
+            "grader": "script",
+            "check": "onlyRequestedChanges"
+        },
+        {
+            "id": "U6",
+            "text": "The text calls nothing \"STE compliant\" or \"STE certified\".",
+            "grader": "script",
+            "check": "noComplianceClaim"
+        }
+    ],
+    "evals": [
+        {
+            "id": 1,
+            "name": "01-chat-answer",
+            "prompt": "How does the retry in src/fetch.ts work?",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "1.1",
+                    "text": "The chat text has no Markdown heading.",
+                    "grader": "script",
+                    "check": "noHeading"
+                },
+                {
+                    "id": "1.2",
+                    "text": "The chat text names the code as `src/fetch.ts:<line>`.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": { "pattern": "src/fetch\\.ts:\\d+" }
+                },
+                {
+                    "id": "1.3",
+                    "text": "The run does not read the policy file `docs/agents/human-communication-policy.md`.",
+                    "grader": "script",
+                    "check": "notRead",
+                    "args": { "pattern": "human-communication-policy.md" }
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "02-command",
+            "prompt": "How do I run the tests?",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "2.1",
+                    "text": "The chat text gives the test command `bun test` in a code block.",
+                    "grader": "script",
+                    "check": "codeBlock",
+                    "args": { "pattern": "bun test" }
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "03-behavior-change",
+            "prompt": "Change the retry limit to 5 and tell me what changes.",
+            "setup": {},
+            "expect": { "changes": ["src/fetch.ts"] },
+            "assertions": [
+                {
+                    "id": "3.1",
+                    "text": "`src/fetch.ts` has a retry limit of 5.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "src/fetch.ts",
+                        "pattern": "MAX_TRIES = 5\\b"
+                    }
+                },
+                {
+                    "id": "3.2",
+                    "text": "The report shows a before and after of the behavior (the retry stops after 3 tries before, after 5 tries now), in code or in pseudocode.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "04-diff-before-approval",
+            "prompt": "Propose a new install section for README.md. Show it to me before you write it.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "4.1",
+                    "text": "The chat text holds a diff of the change to `README.md` in a code block. `README.md` is unchanged (U5).",
+                    "grader": "script",
+                    "check": "codeBlock",
+                    "args": { "pattern": "^\\+", "flags": "m" }
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "05-issue-references",
+            "prompt": "Summarize the open issues in issues.json.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "5.1",
+                    "text": "The chat text names each issue by its title with its URL, and never by a bare `#<n>`.",
+                    "grader": "script",
+                    "check": "issuesNamed",
+                    "args": {
+                        "issues": [
+                            {
+                                "number": 12,
+                                "title": "Retry gives up too early on slow networks",
+                                "url": "https://github.com/example/scheduler/issues/12"
+                            },
+                            {
+                                "number": 15,
+                                "title": "Jobs at midnight run twice",
+                                "url": "https://github.com/example/scheduler/issues/15"
+                            },
+                            {
+                                "number": 18,
+                                "title": "Add a dry-run flag to the scheduler",
+                                "url": "https://github.com/example/scheduler/issues/18"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "name": "06-document",
+            "prompt": "Write a setup guide for new contributors in docs/setup.md.",
+            "setup": {},
+            "expect": { "changes": ["docs/setup.md"] },
+            "assertions": [
+                {
+                    "id": "6.1",
+                    "text": "`docs/setup.md` starts with a title, and it has one or more `##` headings and a list.",
+                    "grader": "script",
+                    "check": "documentForm",
+                    "args": { "path": "docs/setup.md" }
+                },
+                {
+                    "id": "6.2",
+                    "text": "The headings of `docs/setup.md` are in the sequence of the tasks of a new contributor. The file has no text that depends on the chat, for example \"as I said above\".",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "name": "07-glossary-term",
+            "prompt": "Explain what the scheduler in src/ does.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "7.1",
+                    "text": "The human text says \"Job\".",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": { "pattern": "\\bJobs?\\b" }
+                },
+                {
+                    "id": "7.2",
+                    "text": "The human text does not say \"task\" outside code and quoted text.",
+                    "grader": "script",
+                    "check": "proseAvoids",
+                    "args": { "pattern": "\\btasks?\\b", "flags": "i" }
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "name": "08-other-language",
+            "prompt": "Erkläre, wie der Retry in src/fetch.ts funktioniert.",
+            "setup": {},
+            "skip": ["U2"],
+            "assertions": [
+                {
+                    "id": "8.1",
+                    "text": "The answer is in German, with short sentences in the active voice.",
+                    "grader": "llm"
+                }
+            ]
+        }
+    ]
+}

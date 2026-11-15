@@ -23,13 +23,13 @@ import {
 
 // Reads the tests of `<dir>/evals.json` with the given ids, or all tests with
 // no ids. Each test gets the common statements first.
-export function readEvalsIn<E extends { id: number; assertions: string[] }>(
+export function readEvalsIn<E extends { id: number; assertions: unknown[] }>(
     dir: string,
     ids: string,
 ): E[] {
     const wanted = ids.split(",").filter(Boolean).map(Number);
     const file = JSON.parse(readFileSync(join(dir, "evals.json"), "utf8")) as {
-        common_assertions: string[];
+        common_assertions: E["assertions"];
         evals: E[];
     };
     return file.evals

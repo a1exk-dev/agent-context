@@ -670,5 +670,11 @@
         "rule": "6.2",
         "text": "Semver policy",
         "cause": "The title is the fixed first line of the Policy file. Its Skill accepts only this title."
+    },
+    {
+        "path": "skills/writing/human-communication/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Its name is `GLOSSARY.md` or `CONTEXT.md`.",
+        "cause": "The path is an example of a file in a project that installs the Skill."
     }
 ]
