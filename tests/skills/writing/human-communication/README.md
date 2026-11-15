@@ -5,7 +5,8 @@ The eval plan is in the "Testing Decisions" section of issue #188 and in the res
 | File | Purpose |
 |---|---|
 | `project/` | Sample project. Each output test starts from a copy. It has `AGENTS.md`, `CLAUDE.md` (`@AGENTS.md`), `GLOSSARY.md` with the term "Job" ("task" to avoid), `README.md`, `src/fetch.ts` (a retry with a limit of 3), `src/scheduler.ts` (a comment that calls a Job a "task"), `issues.json` (3 issues), and the default Human communication policy. |
-| `evals.json` | The output tests: request, setup, `expect`, and statements. `common_assertions` (U1 to U6) apply to each test, except the ids in its `skip` list. Each statement is `{id, text, grader}`. A `script` statement also names its `check` in `assertions.ts` and gives its `args`. `expect.changes` lists the files that the request asks for, and `expect.commits` the number of new commits (U5). |
+| `evals.json` | The output tests: request, setup, `expect`, and statements. `common_assertions` (U1 to U6) apply to each test, except the ids in its `skip` list. Each statement is `{id, text, grader}`. A `script` statement also names its `check` in `assertions.ts` and gives its `args`. `expect.changes` lists the files that the request asks for, and `expect.commits` the number of new commits (U5). `templates` lists the template files of the test in the project. |
+| `overlays/` | The files that a test copies over `project/`, one folder for each test that names it in `setup.overlay`. |
 | `run-evals.ts` | Runs the output tests with `claude -p`, with and without the skill. |
 | `eval-lib.ts` | The tests of `evals.json`, the temporary copy of the project, and the copy of the outputs before the runner deletes the copy. |
 | `git-state.ts` | The Git state before and after a run. |
@@ -46,4 +47,4 @@ After the run, the runner copies each changed file to `outputs/files/` and delet
 
 ## Human text
 
-U2 and the other text checks read the human text: each text block of the main agent, the final message when no text block holds it, each question with its options in `outputs/questions.jsonl`, each new or changed Markdown or text file, and the body of each new commit message. Before the checks, `human-text.ts` removes code blocks. It puts 1 word in place of each code span, URL, path, and quoted text, because the writing rules do not apply to them.
+U2 and the other text checks read the human text: each text block of the main agent, the final message when no text block holds it, each question with its options in `outputs/questions.jsonl`, each new or changed Markdown or text file, and the body of each new commit message. Before the checks, `human-text.ts` removes code blocks. Before that, it removes each line that is equal to a line of a template in `templates`, because the fixed text of a template is not text of the agent. It puts 1 word in place of each code span, URL, path, and quoted text, because the writing rules do not apply to them.
