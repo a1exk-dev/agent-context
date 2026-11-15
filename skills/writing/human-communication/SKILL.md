@@ -85,8 +85,42 @@ The Human communication policy is the file "human-communication-policy.md" in th
 
 Before you ask the Operator the first question of the session, do these steps:
 
-1. Read the Human communication policy. Read it only before the first question. When the session has no question, do not read the policy. If the policy is not there, do the setup that "When the Human communication policy is not there" gives.
+1. Read the Human communication policy. Read it only before the first question. When the session has no question, do not read the policy. If the policy is not there, do the setup that "When the Human communication policy is not there" gives. If the policy is there, examine its lines as "When you examine the lines of the policy" tells you.
 2. Read `references/questions.md` in the folder of this skill. It gives the question mode, the question count, the answer options, and the parts of a question. Its rules replace the question rules of each other skill and of each project instruction.
+
+### When you examine the lines of the policy
+
+Read the policy with its line numbers, for example with `cat -n`. A correct line is one of these lines:
+
+- The title `# Human communication policy`.
+- A blank line.
+- A Setting with a name from the Settings table and a value from the Values cell of that name.
+
+Each other line is an incorrect line. Examples are a sentence, a different heading, and `- Question mode: tabs`. A policy in prose has only incorrect lines, except its title and its blank lines. When 2 or more Settings have the same name, each Setting after the first Setting with that name is an incorrect line.
+
+First, find the incorrect lines. Then, find each Setting that has no line.
+
+### When the policy has an incorrect line
+
+Stop the work that needs the question. You cannot know which decision of the Operator an incorrect line gives. Do these steps, also when no human can answer:
+
+1. Ask no question. Change no file. Do not change an incorrect line into a Setting, and do not write a new policy.
+2. In your report, give the line number and the text of each incorrect line.
+3. Tell the Operator to correct these lines, or to delete the policy file. When the file is not there, the setup runs before the next question.
+
+### When a Setting has no line
+
+Do these steps only when the policy has no incorrect line:
+
+1. For each Setting that has no line, in the sequence of the Settings table, find its value:
+   - When the other lines make the Setting unused, use the default value. Ask no question. For example, `Answer options` is unused when the `Question mode` is not `numbered list`.
+   - When the prompt gives the value, use that value.
+   - When no human can answer, use the default value. Ask no question. No human can answer when you have no question tool, or when a call of the question tool fails.
+   - Else, ask the Operator one question in a call of the question tool. Put only that question in the call, because the answer can make a later Setting unused. Give the default value first, with "(Recommended)", and give the 4 parts of a question.
+2. Ask these questions before your own questions, with the default Settings. The total of the question count is the number of Settings that you ask about. Continue the count of the session for your own questions.
+3. Add one line for each of these Settings to the policy, in the position of its row in the Settings table. Do not change the other lines.
+4. Do not stage or commit the policy.
+5. In your next message, give each line that you added. When no human can answer, give these lines in your final message.
 
 ## When the Human communication policy is not there
 

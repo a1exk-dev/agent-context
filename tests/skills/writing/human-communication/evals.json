@@ -1407,6 +1407,182 @@
                     }
                 }
             ]
+        },
+        {
+            "id": 35,
+            "name": "35-prose-policy",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/35-prose-policy"
+            },
+            "answers": ["debug", "logs/app.log", "Yes"],
+            "expect": {
+                "changes": []
+            },
+            "assertions": [
+                {
+                    "id": "35.1",
+                    "text": "The policy holds 2 lines of prose. The run asks no question: no question tool call and no question in the chat text. U5 checks that the run changes no file.",
+                    "grader": "script",
+                    "check": "noQuestion"
+                },
+                {
+                    "id": "35.2",
+                    "text": "The report gives the incorrect lines 3 and 4, each with its line number and its text.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "35.3",
+                    "text": "The report tells the Operator to correct the policy file, or to delete it so that the setup runs.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 36,
+            "name": "36-duplicate-name",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/36-duplicate-name"
+            },
+            "answers": ["debug", "logs/app.log", "Yes"],
+            "expect": {
+                "changes": []
+            },
+            "assertions": [
+                {
+                    "id": "36.1",
+                    "text": "The policy has 2 `Question mode` lines. The run asks no question: no question tool call and no question in the chat text. U5 checks that the run changes no file.",
+                    "grader": "script",
+                    "check": "noQuestion"
+                },
+                {
+                    "id": "36.2",
+                    "text": "The report gives the incorrect line 4, `- Question mode: one at a time`, with its line number.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "36.3",
+                    "text": "The report tells the Operator to correct the policy file, or to delete it so that the setup runs.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 37,
+            "name": "37-missing-line",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/37-missing-line"
+            },
+            "answers": ["on", "debug", "logs/app.log", "Yes"],
+            "questions": true,
+            "expect": {
+                "changes": [
+                    "docs/agents/human-communication-policy.md",
+                    "config/logger.json"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "37.1",
+                    "text": "The policy has no `Question count` line. The first question tool call holds only the question for it, \"Q1 of 1\". The 3 own questions follow in one tabbed call, \"Q2 of 4\" to \"Q4 of 4\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [
+                            ["Q1 of 1"],
+                            ["Q2 of 4", "Q3 of 4", "Q4 of 4"]
+                        ]
+                    }
+                },
+                {
+                    "id": "37.2",
+                    "text": "The question for `Question count` offers `on` first, as the recommended option, and `off`.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "37.3",
+                    "text": "The run adds `- Question count: on` after the `Answer options` line and changes no other line. U5 checks that the run does not stage the policy.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "docs/agents/human-communication-policy.md",
+                        "pattern": "^# Human communication policy\\n\\n- Question mode: tabbed\\n- Answer options: on\\n- Question count: on\\n?$"
+                    }
+                },
+                {
+                    "id": "37.4",
+                    "text": "A chat message names the change to the policy file.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "human-communication-policy\\.md"
+                    }
+                },
+                {
+                    "id": "37.5",
+                    "text": "`config/logger.json` holds the log level `debug` and the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug[\\s\\S]*logs/app\\.log|logs/app\\.log[\\s\\S]*debug"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 38,
+            "name": "38-missing-line-no-human",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/37-missing-line"
+            },
+            "questions": true,
+            "skip": ["Q6"],
+            "expect": {
+                "changes": ["docs/agents/human-communication-policy.md"]
+            },
+            "assertions": [
+                {
+                    "id": "38.1",
+                    "text": "The run has no question tool. It adds `- Question count: on` with no question, after the `Answer options` line. U5 checks that the run does not stage the policy.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "docs/agents/human-communication-policy.md",
+                        "pattern": "^# Human communication policy\\n\\n- Question mode: tabbed\\n- Answer options: on\\n- Question count: on\\n?$"
+                    }
+                },
+                {
+                    "id": "38.2",
+                    "text": "The final message lists the 3 own questions, numbered, \"Q1 of 3\" to \"Q3 of 3\".",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                    }
+                },
+                {
+                    "id": "38.3",
+                    "text": "Q6 for this test: with no answer, the run writes no `config/logger.json`.",
+                    "grader": "script",
+                    "check": "noUnansweredWrite",
+                    "args": {
+                        "paths": ["config/logger.json"]
+                    }
+                },
+                {
+                    "id": "38.4",
+                    "text": "The final message names the change to the policy file.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "human-communication-policy\\.md"
+                    }
+                }
+            ]
         }
     ]
 }
