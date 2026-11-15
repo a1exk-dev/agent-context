@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
     completedSession,
+    FORCE_SKILL,
     hitUsageLimit,
     isSkillLoad,
     loadVerdict,
@@ -314,6 +315,17 @@ describe("toolCalls", () => {
     });
 });
 
+// The prompt of each output-test run (#211): the Skill, no review rounds,
+// and the reader test with its vote.
+const EVAL_PROMPT =
+    'Use the agent-instructions skill for this task. This run is an output test of the skill, so do not do the review rounds of the self-check. Do not start a loading, ASD-STE100, or ISO 24495-1 reviewer or a confirmer for a reviewer, and do not do their review checks yourself. In place of the review rounds, make the round folder with `mktemp -d` and do the check in "After the last review round" of `references/review.md` on your changes. Then do the reader test with its vote, as `references/review.md` tells you. After each reader-test round, do the check in "After the last review round" on your corrections in place of a new review round.';
+
+describe("FORCE_SKILL", () => {
+    it("tells an output-test run to use the Skill, skip the review rounds, and do the reader test", () => {
+        expect(FORCE_SKILL).toBe(EVAL_PROMPT);
+    });
+});
+
 describe("openCodeEnv", () => {
     function config(env: Record<string, string | undefined>) {
         return JSON.parse(env.OPENCODE_CONFIG_CONTENT ?? "");
@@ -325,9 +337,7 @@ describe("openCodeEnv", () => {
             forceSkill: true,
         });
         expect(config(env).permission).toEqual({ "*": "allow", task: "deny" });
-        expect(config(env).agent.build.prompt).toBe(
-            "Use the agent-instructions skill for this task.",
-        );
+        expect(config(env).agent.build.prompt).toBe(EVAL_PROMPT);
         expect(env.PWD).toBe("/work");
     });
 

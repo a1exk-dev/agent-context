@@ -3,12 +3,7 @@
 // grader for the other statements. grade.ts builds the Run of a saved run
 // folder and calls these functions.
 
-import {
-    READER_TITLE,
-    REVIEW_TITLE,
-    type ToolCall,
-    WRITE_TOOLS,
-} from "./eval-lib.ts";
+import { READER_TITLE, type ToolCall, WRITE_TOOLS } from "./eval-lib.ts";
 import {
     readerReportForms,
     readers,
@@ -89,6 +84,8 @@ export type Run = {
     dropped: (path: string, reports: string[]) => number | null;
     saved: string[];
     readSaved: (path: string) => string | null;
+    // Whether a project path is in the project as the run left it.
+    exists: (path: string) => boolean;
     blockingCounts: (copy: string, reports: string[]) => Map<string, number>;
 };
 
@@ -198,17 +195,18 @@ const sameLevel = (line: string) => line.replace(/^#+ /, "# ");
 
 const SUBAGENT_TOOLS = ["agent", "task"];
 
+// [10.2]: each saved reader task in its own tool call and message, the 3
+// tasks of each file of each reader-test round, and no change of a saved
+// report. An output-test run does no review round (#211), so [10.2] grades
+// no review check.
 function selfChecks(run: Run): Verdict {
     const problems: string[] = [];
-    const reviews = new Map<string, string[]>();
     const readers = new Map<string, string[]>();
     const savedPaths: { path: string; index: number }[] = [];
     run.messages.forEach((message, index) => {
         for (const call of message.calls) {
-            const input = JSON.stringify(call.input);
             const titles = [
-                ...input.matchAll(REVIEW_TITLE),
-                ...input.matchAll(READER_TITLE),
+                ...JSON.stringify(call.input).matchAll(READER_TITLE),
             ];
             if (titles.length === 0) continue;
             if (titles.length > 1) {
@@ -221,15 +219,9 @@ function selfChecks(run: Run): Verdict {
                     `Message ${index + 1}: the report call is one of ${message.calls.length} tool calls.`,
                 );
             }
-            for (const title of titles) {
-                const [, round, name, task] = title;
-                if (task === undefined) {
-                    const list = reviews.get(round) ?? [];
-                    reviews.set(round, [...list, name.toLowerCase()]);
-                } else {
-                    const key = `${round}, ${name.trim()}`;
-                    readers.set(key, [...(readers.get(key) ?? []), task]);
-                }
+            for (const [, round, name, task] of titles) {
+                const key = `${round}, ${name.trim()}`;
+                readers.set(key, [...(readers.get(key) ?? []), task]);
             }
             const path = call.input.file_path ?? call.input.filePath;
             if (typeof path === "string") savedPaths.push({ path, index });
@@ -249,13 +241,6 @@ function selfChecks(run: Run): Verdict {
             }
         }
     });
-    if (reviews.size === 0) problems.push("No saved review report.");
-    for (const [round, names] of reviews) {
-        const sorted = names.toSorted().join(", ");
-        if (sorted !== "asd-ste100, iso 24495-1, loading") {
-            problems.push(`Review round ${round} has the reports: ${sorted}.`);
-        }
-    }
     if (readers.size === 0) problems.push("No saved reader report.");
     for (const [key, tasks] of readers) {
         if (tasks.toSorted().join(",") !== "1,2,3") {
@@ -266,7 +251,7 @@ function selfChecks(run: Run): Verdict {
     }
     return verdict(
         problems,
-        `Each report is in its own tool call and message: ${reviews.size} review rounds, ${readers.size} reader-test file rounds.`,
+        `Each reader report is in its own tool call and message: ${readers.size} reader-test file rounds.`,
     );
 }
 

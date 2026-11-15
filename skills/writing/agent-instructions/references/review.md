@@ -12,97 +12,123 @@ The check script of this skill examines each rule that ends with "(script check)
    If you do not find the tool, also after the search with `tool_search` on Codex, go to the section "When no subagent is available".
 2. Tell the platform clearly to start a new subagent with an empty context window. Start each subagent from the main agent, because a subagent on Codex or OpenCode cannot start subagents.
 3. Put the full task and its limits in the prompt. Put the full prompt text from this file, with its `Check class:` line, in the tool call that starts the subagent. Do not save the prompt to a file for the subagent to read. When the full prompt is in the tool call, the tool call shows the class of each check. No platform can make a subagent read-only from a `SKILL.md` file. Let the subagent use the shell, because Codex uses the shell to read files.
-4. Give each subagent the absolute paths of the reference files that it uses and of the file that it examines. The reference files are in the `references/` folder next to the `SKILL.md` file of this skill.
+4. Give each subagent the absolute paths of the reference files that it uses and of the files that it examines. The reference files are in the `references/` folder next to the `SKILL.md` file of this skill.
 5. Start a new subagent for each check: each reviewer and each confirmer in each round, and each reader task. Do not give a second check to a subagent, because that subagent knows the previous text and findings.
 6. Start the subagents of each round as "When you do a round" tells you.
 
 ## When you do a round
 
-Each round contains the checks of all files that it examines. Do not do a different series of rounds for each file. For the round limits, count the rounds of all files together, because the limits are for the full task. For example, a review round for 2 files has 6 checks: 3 reviewers for each file.
+Each round contains the checks of all files that it examines. Do not do a different series of rounds for each file. For the round limits, count the rounds of all files together, because the limits are for the full task. A review round has 3 reviewers: one reviewer of each class for the full review target.
+
+The Markdown files of a review target are these files:
+
+- Its first file.
+- Each Markdown file in the folder of a Skill of the review target.
+- Each file in the `Changes:` line of round 1.
+
+A pointer target that is not in this list is not a file of the review target.
+
+The round list gives the files of a review round, in the alphabetical sequence of their paths. In review round 1, the round list contains each Markdown file of the review target. In review rounds 2 and 3, it contains each file in the `Changes:` line of the reviewer prompt.
 
 Each review round and each reader-test round has these steps:
 
-1. If the round has 3 checks or fewer, start all subagents of the round in one message.
-2. If the round has more than 3 checks, start the subagents in groups of 3. Put the 3 checks of one file in one group. Start each group in one message. After you get all reports of a group, start the next group. Codex permits a maximum of 3 subagents at the same time.
+1. In a review round, start the 3 reviewers in one message.
+2. After you have the input of the confirmers or the readers, start them in groups of 3. For the confirmers of a review round, the input is the confirm lists of "During and after a review round". Put the 3 readers of one file in one group. Start each group in one message. After you get all reports of a group, start the next group. Codex permits a maximum of 3 subagents at the same time.
 3. Wait for the reports of all subagents of the round:
    - Claude Code: Wait for one message for each subagent.
    - Codex: Call `wait_agent` again until each subagent gives its report. Before you get all reports, do not stop, because a stopped main agent gets no report. If the `close_agent` tool is available, close each subagent after its report. The maximum of 3 subagents includes each open subagent.
    - OpenCode: Wait for the message that gives the reports of all `task` tool calls.
 4. Before you get all reports of the round, do not change a file that the round examines. This makes sure that all subagents of the round read the same text.
-5. A subagent fails when the tool call that starts it gives an error. A subagent also fails when it stops without a report. If a subagent fails, do not wait for a report from it. Its group is complete without that report. Start the other groups of the round as item 2 tells you. Then get all other reports of the round. On Codex, if the `close_agent` tool is available, close each failed subagent. Then start one new subagent for each failed check, as items 1 to 3 tell you. With this sequence, a maximum of 3 subagents operate at the same time.
+5. A subagent fails when the tool call that starts it gives an error. A confirmer or a reader also fails when it stops without a report. A reviewer also fails when its last message does not give the report path of each file in the round list. Examine the report folder of a reviewer only after its last message. When the report form gives exit code 2 for a missing report path, the reviewer of that report folder also failed. If a subagent fails, do not wait for a report from it. For a confirmer or a reader, its group is complete without that report. Start the other groups of the round as item 2 tells you. Then get all other reports of the round. On Codex, if the `close_agent` tool is available, close each failed subagent. Then start one new subagent for each failed subagent, as items 1 to 3 tell you. Start the new reviewers in one message. Give each new reviewer the same prompt and the same report folder as the failed reviewer. Do not add a list of files to that prompt. With this sequence, a maximum of 3 subagents operate at the same time.
 6. If a new subagent also fails, do these checks as "When no subagent is available" tells you:
-   - Each check whose new subagent failed.
+   - Each review check whose report is missing, for a reviewer whose new subagent failed. A report is missing for each file in the round list that has no report in the report folder of that reviewer.
+   - Each check of a confirmer or a reader whose new subagent failed.
    - Each check of the round that you did not start.
    - All checks of the later review rounds and reader-test rounds. The tool that starts subagents failed 2 times for the same check.
 
-   When a subagent gave the report for a check, do not do that check again.
+   When a subagent gave the report for a check, do not do that check again. Do not review a file again when its report is in the report folder of that reviewer.
 7. After the last report of the round, correct the files. Do not correct a file between 2 groups of the round. The last report can come from a new subagent or from "When no subagent is available".
 
 ## Before each review round
 
 1. Before review round 1, make one new round folder that is not in the project, with the command `mktemp -d`. Use this folder for the self-check and the reader test. Do not use a specified path, because a different session can use the same path.
-2. At the start of each review round, save a copy of each file that the round examines as `<round folder>/round-<n>/<file path>`. `<n>` is the number of the round. `<file path>` is the path of the file in the project folder. Do not make the copy in a tool call that saves a report. Save each copy as "When you save a file or run a command in a round" tells you.
-3. Run the check script on the full file of each file in the round, as "When you run the check script" in `SKILL.md` tells you. Save the output of each round to a new JSON file in `<round folder>/round-<n>/`.
+2. At the start of each review round, save a copy of each Markdown file of the review target as `<round folder>/round-<n>/<file path>`. `<n>` is the number of the round. `<file path>` is the path of the file in the project folder. Do not make the copy in a tool call that saves a report. Save each copy as "When you save a file or run a command in a round" tells you.
+3. Run the check script on the full file of each Markdown file of the review target, as "When you run the check script" in `SKILL.md` tells you. Save the output of each round to a new JSON file in `<round folder>/round-<n>/`.
 4. Give the path of the JSON file to each reviewer of the round.
 
 ## When you start the reviewers
 
-In each round, start 3 new, read-only reviewer subagents for each file, as "When you do a round" tells you:
+In each round, start 3 new reviewer subagents for the full review target, one of each class, as "When you do a round" tells you:
 
 | Reviewer | Checks | Reference files |
 |---|---|---|
-| Loading reviewer | The loading rules for each file type, and the Agent Skills specification for a Skill | `review.md`, `loading-rules.md`, and `agent-skills-spec.md` for a Skill |
-| ASD-STE100 reviewer | The STE rules | `review.md`, `ste-rules.md`, `technical-terms.md`, and the glossary |
-| ISO 24495-1 reviewer | The plain-language checks | `review.md`, `plain-language-checks.md`, the glossary, and the files that the file under review identifies with pointers |
+| Loading reviewer | The loading rules for each file type, and the Agent Skills specification for a Skill | `review.md`, `loading-rules.md`, `agent-skills-spec.md` for a Skill, and the pointer targets |
+| ASD-STE100 reviewer | The STE rules | `review.md`, `ste-rules.md`, `technical-terms.md`, the glossary, and the pointer targets |
+| ISO 24495-1 reviewer | The plain-language checks | `review.md`, `plain-language-checks.md`, the glossary, and the pointer targets |
 
-Each reviewer reads the prompt in this file to know the requirements for its report. A reviewer does only the review that the author gave to it.
+The pointer targets are the files that the pointers in the files of the review target identify. Each reviewer reads the prompt in this file to know the requirements for its reports. A reviewer does only the review that the author gave to it.
 
-Copy this prompt for each reviewer. Replace only the placeholders. Do not change the report requirements. Keep the lines for the reviewer that you start. Remove the label in angle brackets from these lines. Remove the lines for the other reviewers. In the write job, also remove the lines for the loading reviewer in the edit job. Give the same pointer targets to each reviewer.
+Copy this prompt for each reviewer. Replace only the placeholders. Do not change the report requirements. Keep the lines for the reviewer that you start. Remove the label in angle brackets from these lines. Remove the lines for the other reviewers. In the write job, also remove the lines for the loading reviewer in the edit job. Give the same `Review target:` line, `Changes:` line, and pointer targets to each reviewer. In round 1, give the changed sections of each file in the `Changes:` line.
 
 ```text
-You are the <name> reviewer for an Agent instruction: a file that an agent reads as instructions.
+You are the <name> reviewer for Agent instructions: files that an agent reads as instructions.
 <For the loading reviewer only:> Check class: loading reviewer
 <For the ASD-STE100 reviewer only:> Check class: ASD-STE100 reviewer
 <For the ISO 24495-1 reviewer only:> Check class: ISO 24495-1 reviewer
 This task is read-only. Only read files. Do not edit, make, move, or delete files.
 Do not run commands that change files, Git data, or external services.
+Exception: save your reports in your report folder, as this prompt tells you. Write no other file.
 
-File under review: <absolute path>
-Sections to review: <"the full file" in round 1, or the changed sections in rounds 2 and 3>
-Sections that the author can edit: <in round 1, the changed part, for example a new section, or "the full file" for a new file. In rounds 2 and 3, each section to review that is in the changed part. In the edit job, include the pointer of each section that you moved, but not the text of that section>
+Review target: <for each review target: the absolute path of its first file, for example the SKILL.md file of a Skill, or AGENTS.md>
+Changes: <for each Markdown file that the job made or changed: its absolute path and its changed sections, or "all" for a new file. For a new file that contains only moved sections, write "no changed sections". In rounds 2 and 3, give only the sections that the previous round changed. In the edit job, include the pointer of each section that you moved, but not the text of that section>
+Report folder: <absolute path of <round folder>/round-<n>/loading/, <round folder>/round-<n>/ste/, or <round folder>/round-<n>/iso/>
 Job: <"the write job" or "the edit job">
 Project folder: <absolute path>
 Target platforms: <the target platforms that you found with loading-rules.md, for example "Claude Code, Codex, and OpenCode">
 Rules: <absolute paths of all reference files for this reviewer in the table>
 Report requirements: <absolute path of this review.md file>
 Glossary: <absolute path of GLOSSARY.md or CONTEXT.md, or "none">
-Pointer targets: <absolute paths of the files that the pointers in the file identify, or "none">
+Pointer targets: <absolute paths of the files that the pointers in the files of the review target identify, or "none">
 Check script findings: <absolute path of the JSON file of the check script for this round>
 
 Before the review, read the report requirements from their file.
 Do only this review. Do not give it to a subagent.
+Review only these Markdown files: the first file of each review target, each Markdown file in the folder of a Skill of the review target, and each file in the Changes line.
+The check script findings give the pointer list: each sentence that names a file path, with its line and heading.
+Before you give a finding, read each file in the Pointer targets line and each file that a sentence in the pointer list names.
+Give no finding for a problem that one of these files already solves.
+Read these files only for context: the pointer targets that you do not review, and the files in the folder of a Skill that are not Markdown. Give no finding for these files.
+In each tool call that reads a file, give the absolute path of that file. Do not use `cd`, `*`, or a loop to read files, because the tool calls must show each file that you read.
+The number in round-<n> of your report folder is the number of the round.
+In round 1, the sections under review are all sections of each Markdown file of the review target.
+In rounds 2 and 3, the sections under review are only the sections in the Changes line.
 Use each rule in the rule files for the sections under review.
 Skip each rule that ends with "(script check)". The check script findings give the problems for these rules.
-Give the problems in all sections under review, also in sections that the author cannot edit.
-The author puts each finding about a section that the author cannot edit in a warning.
+Give the problems in all sections under review, also in sections that are not in the Changes line.
+The author puts each finding about a section that is not in the Changes line in a warning.
 The author does not change the text of that section.
 <For the loading reviewer only:> Skip the rules about pointers and headings in "When you select a feature" in loading-rules.md.
 The ISO 24495-1 reviewer examines the conditions of the pointers and the headings.
 Write the file size of each file and its limit.
-Give a finding for each text to move in a section that the author can edit.
+Give a finding for each text to move in a section in the Changes line.
 Also give a finding for each text that the author moved and that does not obey loading-rules.md. In the Text field, write the pointer of that text in quotation marks. If that text has no pointer, copy the heading of the moved section.
-<For the ISO 24495-1 reviewer only:> The check script findings also give the pointer list: each sentence that names a file path, with its line and heading.
-For each sentence in the pointer list that is a pointer, decide whether the heading and the sentence give the condition to read the target.
-Also find each pointer that names no file, for example "that file".
-In "When you select the text" in plain-language-checks.md, skip the rule about long text. The loading reviewer examines it.
-In "When you select the words and the tone", skip the rule about one term for each item. The ASD-STE100 reviewer examines it.
-<For the loading reviewer in the edit job only:> Write the extraction candidates in a different list: section heading, recommended file, and pointer sentence. Put in this list only sections under review that the author cannot edit. Use only the candidates that "When you recommend text to move" in loading-rules.md gives.
+<For the ISO 24495-1 reviewer only:> For each sentence in the pointer list that is a pointer, decide whether the heading and the sentence give the condition to read the target.
+<For the ISO 24495-1 reviewer only:> Also find each pointer that names no file, for example "that file".
+<For the ISO 24495-1 reviewer only:> In "When you select the text" in plain-language-checks.md, skip the rule about long text. The loading reviewer examines that rule.
+<For the ISO 24495-1 reviewer only:> In "When you select the words and the tone" in plain-language-checks.md, skip the rule about one term for each item. The ASD-STE100 reviewer examines that rule.
+<For the loading reviewer in the edit job only:> Write the extraction candidates in a different list: section heading, recommended file, and pointer sentence. Put in this list only sections under review that are not in the Changes line. Use only the candidates that "When you recommend text to move" in loading-rules.md gives.
 
-Start the report with the blocking checklist, in this form:
+For each Markdown file that you review, save one report as <report folder>/<file path>.md. <file path> is the path of the file in the project folder.
+For example, save the report of skills/x/SKILL.md as <report folder>/skills/x/SKILL.md.md.
+Save each report with one tool call, alone in a new message. Wait for its result before you review the next file.
+If the report folder already has the report of a file, do not review that file again. Also do not change that report.
+After you save all reports, give only the list of the saved paths in your last message.
+
+Start each report with the blocking checklist, in this form:
 Blocking checklist:
-1. "<a rule that ends with "(blocking)", word for word>" - <each place in the sections under review that does not obey the rule: its line and its text in quotation marks, or "none">
+1. "<a rule that ends with "(blocking)", word for word>" - <each place in the sections under review of that file that does not obey the rule: its line and its text in quotation marks, or "none">
 Put each rule of your rule files that ends with "(blocking)" in the checklist. Do not put a rule that you skip in the checklist.
-For the checklist, examine only the sections under review.
+For the checklist, examine only the sections under review of that file.
 After the checklist, give one finding for each place in the checklist. Then give the findings for the other rules.
 
 Give each finding in this form:
@@ -115,7 +141,7 @@ Write the full rule in each finding. Do not refer to a different finding.
 Copy the rule and the text word for word. A script compares each quotation with the files and removes each finding with a different quotation.
 Write each finding so that the author can examine it without the other findings.
 Do not make a new rule. A group heading is not a rule.
-The Text field contains only words from the file under review.
+In the Text field, write only words from the file of that report.
 For a file-size problem or a file-location problem, copy the heading or the first line of the file.
 Give the paths and the line numbers in the Problem field.
 Use this form for each finding. Keep the necessary lists apart from the findings.
@@ -125,24 +151,22 @@ Do not add other notes or questions.
 
 ### During and after a review round
 
-1. Round 1 examines the full file, also in the edit job. In each prompt, give the parts to review and, in a different line, the parts that the author can edit. In the edit job, put each finding about text that is not in the changed part in a warning.
-2. After the last report of the round, save each reviewer report to a new file in `<round folder>/round-<n>/`. Use the file name `<file name>-<reviewer>.md`. `<file name>` is the name of the file under review, with its extension. `<reviewer>` is `loading`, `ste`, or `iso`. Save each report as "When you save a file or run a command in a round" tells you.
-3. Before you change a file of the round, run the report form of the check script for each file of the round. Run it as "When you run the check script" in `SKILL.md` tells you. In that command, write the full absolute path of the file under review and of each report file. Do not use `*`, because the command must show which reports the script examined. Also obey the items for a command in "When you save a file or run a command in a round". The script refuses a path with `$` or `*`. Use only the findings in the blocking list and the advisory list. Do not use the findings in the dropped list.
-4. For each report in the confirm list of the report form, do the vote in "When a report has blocking findings". Do not start confirmers for a report that is not in the confirm list. Before you get all confirmer reports of the round, do not correct a file.
-5. The findings to use are the script findings, the confirmed blocking findings, and the findings in the advisory list. For each of these findings, correct your text, or reject the finding. Put each script finding about text that you cannot edit in a warning. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
-6. A round passes when you accept no script finding and no confirmed blocking finding of the round. A finding that you reject with a warning does not make the round fail. A finding in the advisory list never starts a new round. The self-check stops when a round passes, or after round 3.
-7. If the round does not pass, start all 3 reviewers again in the next round, but only for the sections that the previous round changed. A section is changed when one or more of its lines changed. To find these sections, compare each file and its copy in the folder of the previous round, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
-8. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
-9. If the round passes and you correct a finding in the advisory list, do the check in "After the last review round" on the text that this correction changed.
+1. Round 1 examines all Markdown files of the review target, also in the edit job. In the edit job, put each finding about a section that is not in the `Changes:` line in a warning.
+2. Before you change a file of the round, run the report form of the check script once for each file in the round list. Run it as "When you run the check script" in `SKILL.md` tells you. Give the 3 reports of that file: `<round folder>/round-<n>/loading/<file path>.md`, `<round folder>/round-<n>/ste/<file path>.md`, and `<round folder>/round-<n>/iso/<file path>.md`. Do not give a report of a different file. In that command, write the full absolute path of the file under review and of each report file. Do not use `*`, because the command must show which reports the script examined. Also obey the items for a command in "When you save a file or run a command in a round". The script refuses a path with `$` or `*`. Use only the findings in the blocking list and the advisory list. Do not use the findings in the dropped list.
+3. For each reviewer with one or more reports in the confirm lists of the round, do the vote in "When a reviewer has blocking findings". The folder after `round-<n>/` in the path of a report gives its reviewer. Do not start confirmers for a reviewer that has no report in a confirm list. Before you get all confirmer reports of the round, do not correct a file.
+4. The findings to use are the script findings, the confirmed blocking findings, and the findings in the advisory list. For each of these findings, correct your text, or reject the finding. Put each script finding about text that you cannot edit in a warning. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
+5. A round passes when you accept no script finding and no confirmed blocking finding of the round. A finding that you reject with a warning does not make the round fail. A finding in the advisory list never starts a new round. The self-check stops when a round passes, or after round 3.
+6. If the round does not pass, start all 3 reviewers again in the next round, but only for the sections that the previous round changed. Give these sections in the `Changes:` line. A section is changed when one or more of its lines changed. To find these sections, compare each file and its copy in the folder of the previous round, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
+7. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
+8. If the round passes and you correct a finding in the advisory list, do the check in "After the last review round" on the text that this correction changed.
 
-### When a report has blocking findings
+### When a reviewer has blocking findings
 
-Do this vote for each report in the confirm list of the report form. Do the vote in each job, also for a small change. Also do the vote when you expect to reject the findings, because only the vote decides which blocking findings count.
+Do this vote for each reviewer with one or more reports in the confirm lists of the round. Do the vote in each job, also for a small change. Also do the vote when you expect to reject the findings, because only the vote decides which blocking findings count.
 
-1. Start 2 new, read-only confirmer subagents for the report. Start the 2 confirmers also when the report has many findings, because only a confirmer can confirm a blocking finding. Wait for the reports of the 2 confirmers, also when the first confirmer answers "yes" for each finding. A round is complete only after each check gives its report. A round has a maximum of 6 confirmers for each file.
-2. Give each confirmer the path of the saved report file. Also give each finding of that report in the blocking list of the report form, with its rule and its text. Do not give the Problem field or the Correction field of the reviewer.
-3. Start the confirmers as "When you do a round" tells you. The confirmers are checks of the same round. Start them in groups of 3.
-4. A blocking finding is confirmed when one or more of its confirmers answer "yes".
+1. In the confirmer prompt below, give the paths of the reports of that reviewer in the confirm lists. Also give each finding of these reports in the blocking lists, with the path of its file, its rule, and its text. Give the findings numbers in one series across all files. Do not give the Problem field or the Correction field of the reviewer.
+2. Start 2 new, read-only confirmer subagents for the reviewer, as "When you do a round" tells you. The confirmers are checks of the same round. Start them in groups of 3. Start the 2 confirmers also when the reports have many findings, because only a confirmer can confirm a blocking finding. Wait for the reports of the 2 confirmers, also when the first confirmer answers "yes" for each finding. A round is complete only after each check gives its report. A review round has a maximum of 6 confirmers: 2 for each reviewer.
+3. A blocking finding is confirmed when one or more of its 2 confirmers answer "yes". When a confirmer gives no answer line for a finding, that confirmer answered "yes" for that finding.
 
 Copy this prompt for each confirmer. Replace only the placeholders.
 
@@ -151,12 +175,13 @@ Check class: confirmer
 This task is read-only. Only read files. Do not edit, make, move, or delete files.
 Do not run commands that change files, Git data, or external services.
 
-File under review: <absolute path>
-Report: <absolute path of the saved report file>
-Findings: <for each finding in the blocking list of one reviewer report: a number, the rule in quotation marks, and the text in quotation marks>
+Reports: <absolute paths of the reports of one reviewer in the confirm lists of the round>
+Findings: <for each finding in the blocking lists of these reports: a number, the absolute path of the file under review, the rule in quotation marks, and the text in quotation marks>
 
-Read the file under review from the disk.
+Read each file under review from the disk.
+Also read the files that the pointers in these files identify.
 For each finding, decide whether the text in the file does not obey the rule.
+If a file that a pointer identifies already gives what the rule asks for, answer "no".
 Give one line for each finding in this form:
 <number>. <"yes" if the text does not obey the rule, or "no">: <one sentence that gives the cause>
 Give only these lines. Do not give the work to a subagent.
@@ -193,7 +218,7 @@ Give only these lines. Do not give the work to a subagent.
 
 ### After the last review round
 
-Do this check on each round 3 correction. Also do it on each correction after the reader test when you did all 3 review rounds. Item 9 of "During and after a review round" gives one more correction for this check.
+Do this check on each round 3 correction. Also do it on each correction after the reader test when you did all 3 review rounds. Item 8 of "During and after a review round" gives one more correction for this check.
 
 1. Run the check script on the full file of each changed file, as "When you run the check script" in `SKILL.md` tells you.
 2. Correct each script finding in the text that the corrections changed. After each correction, do items 1 and 2 again.
@@ -225,7 +250,7 @@ Do the reader test in each job, also for a small change. Also do the reader test
 5. At the start of each reader-test round, save a copy of each file that the round tests as `<round folder>/reader-round-<n>/<file path>`. Save each copy as "When you save a file or run a command in a round" tells you. Each reader-test round has the 3 tasks of each file. Give each task and the path of its new or changed file to a different new subagent. Start the subagents as "When you do a round" tells you.
 6. Make sure that each subagent does a dry run. The first line of the reader prompt tells the subagent to do a dry run.
 7. After the last report of the round, save each reader report to a new file in `<round folder>/reader-round-<n>/`. Save each report as "When you save a file or run a command in a round" tells you.
-8. Before you change a file of the round, run the report form for reader reports for each file of the round. The script compares each quote with the file on the disk. Run the report form for reader reports as "When you run the check script" in `SKILL.md` tells you. Write the full path of each file, as item 3 of "During and after a review round" tells you. In that command, also obey these rules:
+8. Before you change a file of the round, run the report form for reader reports for each file of the round. The script compares each quote with the file on the disk. Run the report form for reader reports as "When you run the check script" in `SKILL.md` tells you. Write the full path of each file, as item 2 of "During and after a review round" tells you. In that command, also obey these rules:
    - Give the reports in the sequence of the tasks in the tasks file.
    - In the edit job, give the copy of the file that you saved before your first change. In the write job, give "none", because all lines are new.
    - Do not use the quotes in the dropped list.
@@ -257,6 +282,8 @@ You can also use `find`, but not with `-delete`, `-exec`, `-ok`, or `-fprint`.
 You can also use `git status`, `git diff`, `git log`, `git show`, `git ls-files`, `git rev-parse`, and `git remote -v`.
 You can also use `git branch` alone, or only with `-a`, `-r`, or `--list`.
 You can also use `git tag` alone, or only with `-l` or `--list`.
+After `--list` or `-l` in these `git branch` and `git tag` commands, you can give a pattern, for example `'v1.*'`.
+In each of these `git` commands, you can write `-C <folder>` after `git`.
 You can use a loop `for <name> in <words>; do <commands>; done` only when each command in the loop is on this list.
 Do not send the output of a command to a file. You can add only `2>/dev/null` or `2>&1` to a command.
 Give this report in 3 parts. Start each part with its heading line, as this form shows:
@@ -277,9 +304,9 @@ Give only these 3 parts. Write each step and each quote from the instruction on 
 
 This section is applicable when no tool starts a subagent. It is also applicable to the checks that item 6 of "When you do a round" gives.
 
-Do each review and each reader task as a different check. Use the same reviewer prompt, reader prompt, and round limits. Each check has a different report file. With these files, the user can examine each finding and the sequence of the checks.
+Do each review and each reader task as a different check. One review check is one reviewer class for one file in the round list. Use the same reviewer prompt, with the same `Review target:` line and `Changes:` line, so that you also read the pointer targets. Use the same reader prompt and the same round limits. Each check has a different report file. With these files, the user can examine each finding and the sequence of the checks.
 
-Save each report file in the folder of its round: `<round folder>/round-<n>/` or `<round folder>/reader-round-<n>/`. In this section, you can write these report files. The limits in the reviewer prompt and the reader prompt do not stop these files.
+Save each review report at the path that the reviewer prompt gives: `<report folder>/<file path>.md`. Save each reader report in `<round folder>/reader-round-<n>/`. In this section, you can write these report files. The limits in the reviewer prompt and the reader prompt do not stop these files.
 
 Before the first check of each round, save a copy of each file that the round examines. Send only this tool call in a new message. Put no other tool call in that message. This message shows that you saved the copy before the checks of the round.
 
@@ -300,9 +327,9 @@ The end-of-run report cannot replace these files. Give the path of the report fo
 
 Do the checks in this sequence:
 
-1. In each review round, do each review that no subagent did, in the sequence of the reviewer table.
-2. Start each review report with its title, for example "Round 2: ASD-STE100 review". Then write the blocking checklist of the reviewer prompt. Give each finding in the form of the reviewer prompt. Keep the necessary lists apart from the findings. Give no other items.
-3. Do not do the vote of "When a report has blocking findings". Each finding in the blocking list counts as a confirmed blocking finding. When the new subagent of a confirmer also fails, each finding of that vote also counts as a confirmed blocking finding.
+1. In each review round, do each review check that no subagent did. Do the reviewer classes in the sequence of the reviewer table. For each class, do the files in the sequence of the round list.
+2. Start each review report with its title, for example "Round 2: ASD-STE100 review, skills/x/SKILL.md". Then write the blocking checklist of the reviewer prompt. Give each finding in the form of the reviewer prompt. Keep the necessary lists apart from the findings. Give no other items.
+3. Do not do the vote of "When a reviewer has blocking findings". Each finding in the blocking list counts as a confirmed blocking finding. When the new subagent of a confirmer also fails, each finding of that vote also counts as a confirmed blocking finding.
    Also do not do the vote of "When a reader step does not obey the instruction". Each "no" in a closed list counts as a confirmed wrong step.
 4. Correct your text after each round. Then do the next round, or write that the self-check stopped.
 5. After the self-check stops, do each reader task that no subagent did, one after the other. Use these titles, with the number of the reader-test round and the file name:

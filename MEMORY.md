@@ -72,6 +72,14 @@ Guidance: Run only the failed topics until every statement for those topics pass
 
 Reason: The Operator wants agents to fix failures before they repeat tests that passed. The full matrix then checks the other topics.
 
+## Output-test runs skip the review rounds
+
+Applies when: changing the runner prompt or the statements of the output tests of the agent-instructions Skill.
+
+Guidance: Tell each run to use the Skill and to do the reader test with its vote. Tell each run to start no loading, ASD-STE100, or ISO 24495-1 reviewer and no Confirmer for a reviewer. Write no statement whose only subject is a review round. Keep the review checks of `tests/skills/writing/agent-instructions/process.ts`, because they grade recorded runs.
+
+Reason: The output tests show how well the Skill does its job. The review rounds used most of the 34M tokens of the 25 runs of the #209 matrix. Agents run the reviewers on each edit of the Skill before the matrix. The reader test stays, because it is the most important check of the written instruction. See #211.
+
 ## One check per message makes agents work in sequence
 
 Applies when: an Agent instruction tells the agent to do several checks or tasks itself, one after the other, without subagents.

@@ -26,7 +26,17 @@ export const SKILL = join(
     "../../../../skills/writing/agent-instructions",
 );
 export const SKILL_DIR = ".claude/skills/agent-instructions";
-export const FORCE_SKILL = "Use the agent-instructions skill for this task.";
+// The prompt of each output-test run. The output tests show how well the
+// Skill does its job, so a run skips the review rounds of the self-check and
+// keeps the reader test with its vote (#211). The load test does not use it.
+export const FORCE_SKILL = [
+    "Use the agent-instructions skill for this task.",
+    "This run is an output test of the skill, so do not do the review rounds of the self-check.",
+    "Do not start a loading, ASD-STE100, or ISO 24495-1 reviewer or a confirmer for a reviewer, and do not do their review checks yourself.",
+    'In place of the review rounds, make the round folder with `mktemp -d` and do the check in "After the last review round" of `references/review.md` on your changes.',
+    "Then do the reader test with its vote, as `references/review.md` tells you.",
+    'After each reader-test round, do the check in "After the last review round" on your corrections in place of a new review round.',
+].join(" ");
 
 // The report titles that "When no subagent is available" in review.md gives.
 export const REVIEW_TITLE =

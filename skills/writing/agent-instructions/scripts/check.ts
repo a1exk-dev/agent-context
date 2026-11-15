@@ -27,7 +27,7 @@ gives the terms and their _Avoid_ words. The base list of technical terms
 comes from references/technical-terms.md of the Skill.
 
 Report form: checks the findings (Rule, Text, Problem, Correction) of the
-reviewer reports of one file under review. Writes JSON to stdout:
+3 reviewer reports of one file under review. Writes JSON to stdout:
 { "blocking": [ { reviewer, rule, ruleFile, heading, text, path, line,
                   problem, correction, report, reportLine } ],
   "advisory": [ ...the same fields ],
@@ -37,7 +37,8 @@ It drops each finding with a missing field, a Text quote that is not in the
 file, or a Rule quote that is in no rule that ends with "(blocking)" or
 "(advisory)". It sorts the other findings by the mark of their rule. The
 confirm list gives each report with one or more findings in the blocking
-list, and tells the author to start 2 confirmers for it.
+list, and tells the author to give these findings to the 2 confirmers of
+the reviewer of that report.
 
 Report form for reader reports: add --copy <saved copy|none> and --tasks
 <tasks file>, and give one reader report for each task, in the sequence of
@@ -1200,7 +1201,8 @@ function reportForm(argv: string[]): number {
     const confirm = reports.flatMap((report) => {
         const count = blockingCounts.get(report) ?? 0;
         if (count === 0) return [];
-        const action = "Start 2 confirmers for this report.";
+        const action =
+            "Give the blocking findings of this report to the 2 confirmers of its reviewer.";
         return [{ report, blocking: count, action }];
     });
     process.stdout.write(
