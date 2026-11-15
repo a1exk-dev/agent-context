@@ -2,7 +2,7 @@
 // so that a later edit cannot add an exclusion, the name of another Skill,
 // or a compliance claim. The output tests check the behavior.
 
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, readlinkSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import { HERE, SKILL } from "./eval-lib.ts";
@@ -83,5 +83,32 @@ describe("the human-communication Skill text", () => {
                 .map((sentence) => `${file.path}: ${sentence}`),
         );
         expect(claims).toEqual([]);
+    });
+});
+
+describe("this repository's move to the human-communication Skill", () => {
+    it("installs the Skill with a symlink for each platform", () => {
+        for (const folder of [".agents/skills", ".claude/skills"]) {
+            expect(readlinkSync(join(ROOT, folder, NAME))).toBe(
+                "../../skills/writing/human-communication",
+            );
+        }
+    });
+
+    it("has the default policy", () => {
+        expect(
+            readFileSync(
+                join(ROOT, "docs/agents/human-communication-policy.md"),
+                "utf8",
+            ),
+        ).toBe(
+            "# Human communication policy\n\n- Question mode: tabbed\n- Answer options: on\n- Question count: on\n",
+        );
+    });
+
+    it("puts the pointer text in AGENTS.md in place of the Questions section", () => {
+        const agents = readFileSync(join(ROOT, "AGENTS.md"), "utf8");
+        expect(agents).toContain(`# Human communication\n\n- ${POINTER}\n`);
+        expect(agents).not.toMatch(/^# Questions$/m);
     });
 });

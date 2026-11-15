@@ -4,9 +4,9 @@
 - For each system design decision, examine SOLID. Use composition, not inheritance.
 - Design the code and its tests for standard use, and for the failures that production inputs, dependencies, or code paths can cause. Do not design for failures that only test code can cause.
 
-# Questions
+# Human communication
 
-- When you must ask the Operator a question, use the question tool. Ask one question, then wait for the answer before you ask the next question. Give concrete answers to select from, with the recommended answer first. This instruction replaces the question format of each Skill that asks questions in batches.
+- Before you write text that a human reads (chat messages, questions, reports, code comments, and documents for persons), use the Skill tool with the human-communication Skill. If your platform has no Skill tool, read its SKILL.md.
 
 # Knowledge
 
