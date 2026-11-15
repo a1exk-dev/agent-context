@@ -1,0 +1,9 @@
+{
+    "name": "scheduler",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "migrate": "bun src/migrate.ts",
+        "start": "bun src/scheduler.ts"
+    }
+}

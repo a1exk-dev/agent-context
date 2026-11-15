@@ -66,6 +66,31 @@ describe("humanText", () => {
             { source: "commit", text: "The retry stops after 5 tries." },
         ]);
     });
+
+    it("removes each fixed line of a template from the human text", () => {
+        const templates = {
+            ".github/pull_request_template.md":
+                "## Summary\n\n## Test plan\n\n- [ ] This change should not break the API.\n",
+        };
+        const files = {
+            "pr.md":
+                "## Summary\n\nThe retry stops after 5 tries.\n\n## Test plan\n\n- [ ] This change should not break the API.\n- [x] I ran the tests.\n",
+        };
+        expect(
+            humanText({
+                events: [],
+                questions: [],
+                files,
+                commits: [],
+                templates,
+            }),
+        ).toEqual([
+            {
+                source: "file:pr.md",
+                text: "\n\nThe retry stops after 5 tries.\n\n\n\n\n- [x] I ran the tests.\n",
+            },
+        ]);
+    });
 });
 
 describe("prose", () => {

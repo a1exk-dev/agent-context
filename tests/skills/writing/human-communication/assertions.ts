@@ -20,11 +20,13 @@ import {
 } from "./human-text.ts";
 
 // The saved files of one run. `files` has the text of each new or changed
-// file. `questions` has the input of each AskUserQuestion call.
+// file. `questions` has the input of each AskUserQuestion call. `templates`
+// has the text of each template of the test, by path.
 export type Run = {
     events: ClaudeEvent[];
     questions: QuestionCall[];
     files: Record<string, string>;
+    templates: Record<string, string>;
     before: GitState;
     after: GitState;
     expect: Expect;
@@ -45,6 +47,7 @@ const human = (run: Run): HumanPart[] =>
         questions: run.questions,
         files: run.files,
         commits: newCommits(run.before, run.after).map((c) => c.message),
+        templates: run.templates,
     });
 
 // The chat text: the text blocks of the main agent and the final message.
@@ -257,5 +260,40 @@ export const checks: Record<string, Check> = {
                 .map((sentence) => `${part.source}: ${sentence}`),
         );
         return verdict(problems, `No prose matches /${String(args.pattern)}/.`);
+    },
+
+    keepsTemplate(run, args) {
+        const path = String(args.path);
+        const template = String(args.template);
+        const text = run.files[path];
+        if (text === undefined) return verdict([`${path} is missing.`], "");
+        const fixed = (run.templates[template] ?? "")
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean);
+        const lines = text.split("\n").map((line) => line.trim());
+        let next = 0;
+        const problems: string[] = [];
+        for (const line of fixed) {
+            const found = lines.indexOf(line, next);
+            if (found === -1) problems.push(`missing or out of order: ${line}`);
+            else next = found + 1;
+        }
+        return verdict(
+            problems,
+            `${path} keeps the ${fixed.length} fixed lines of ${template}.`,
+        );
+    },
+
+    commitMatches(run, args) {
+        const commits = newCommits(run.before, run.after);
+        const problems = commits
+            .filter((commit) => !regex(args).test(commit.message))
+            .map((commit) => `no match: ${commit.message}`);
+        if (commits.length === 0) problems.push("No new commit.");
+        return verdict(
+            problems,
+            `Each new commit matches /${String(args.pattern)}/.`,
+        );
     },
 };

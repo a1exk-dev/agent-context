@@ -208,6 +208,84 @@
                     "grader": "llm"
                 }
             ]
+        },
+        {
+            "id": 9,
+            "name": "09-commit-message",
+            "prompt": "Commit the staged change.",
+            "setup": {
+                "overlay": "overlays/09-commit-message",
+                "steps": [
+                    "perl -pi -e 's/MAX_TRIES = 3/MAX_TRIES = 5/' src/fetch.ts && git add src/fetch.ts"
+                ]
+            },
+            "expect": { "changes": ["src/fetch.ts"], "commits": 1 },
+            "assertions": [
+                {
+                    "id": "9.1",
+                    "text": "The new commit has a Conventional Commits header, a blank line, and a body, as the Commit policy in `AGENTS.md` tells.",
+                    "grader": "script",
+                    "check": "commitMatches",
+                    "args": {
+                        "pattern": "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\([\\w./-]+\\))?!?: \\S[^\\n]*\\n\\n\\S"
+                    }
+                },
+                {
+                    "id": "9.2",
+                    "text": "The body of the commit message says what the change does (the retry limit goes from 3 to 5 tries) and why, in sentences.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "name": "10-pr-template",
+            "prompt": "Write the PR description for this branch into pr.md.",
+            "setup": {
+                "overlay": "overlays/10-pr-template",
+                "steps": [
+                    "git checkout -q -b fix/retry-limit && perl -pi -e 's/MAX_TRIES = 3/MAX_TRIES = 5/' src/fetch.ts && git commit -q -am 'fix: raise the retry limit to 5'"
+                ]
+            },
+            "expect": { "changes": ["pr.md"] },
+            "templates": [".github/pull_request_template.md"],
+            "assertions": [
+                {
+                    "id": "10.1",
+                    "text": "`pr.md` keeps each line of `.github/pull_request_template.md` word for word and in its order: the headings `## Summary` and `## Test plan`, and the fixed sentence.",
+                    "grader": "script",
+                    "check": "keepsTemplate",
+                    "args": {
+                        "path": "pr.md",
+                        "template": ".github/pull_request_template.md"
+                    }
+                },
+                {
+                    "id": "10.2",
+                    "text": "Under `## Summary`, the sentences of `pr.md` describe the change of the branch (the retry limit goes from 3 to 5 tries). Under `## Test plan`, they tell how to test the change.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "name": "11-caution",
+            "prompt": "Give me the steps to reset the local database.",
+            "setup": { "overlay": "overlays/11-caution" },
+            "assertions": [
+                {
+                    "id": "11.1",
+                    "text": "The chat text has a CAUTION.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": { "pattern": "\\bCAUTION\\b" }
+                },
+                {
+                    "id": "11.2",
+                    "text": "The CAUTION comes directly before the step that deletes the database file `data/app.db`, not after it. After CAUTION, the instruction comes first, then the risk (the step deletes all saved Jobs, and you cannot undo it).",
+                    "grader": "llm"
+                }
+            ]
         }
     ]
 }
