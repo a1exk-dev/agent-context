@@ -1,0 +1,1656 @@
+{
+    "skill_name": "human-communication",
+    "common_assertions": [
+        {
+            "id": "U1",
+            "text": "The Skill was loaded (Skill call or `SKILL.md` read) before the first assistant text, the first `AskUserQuestion` call, and the first write to a document.",
+            "grader": "script",
+            "check": "skillLoadedFirst"
+        },
+        {
+            "id": "U2",
+            "text": "The human text in English has no \"should\", \"may\", \"might\", \"would\", \"could\", \"shall\", or \"ensure\", no semicolon, no sentence of more than 25 words, and no word in capital letters for emphasis except CAUTION.",
+            "grader": "script",
+            "check": "steText"
+        },
+        {
+            "id": "U3",
+            "text": "The human text uses the active voice, one term for each item (the `GLOSSARY.md` term where the glossary has one), and pronouns that each refer to one item.",
+            "grader": "llm"
+        },
+        {
+            "id": "U4",
+            "text": "The human text gives the result first, keeps only details on the topic, and gives the next step when one exists.",
+            "grader": "llm"
+        },
+        {
+            "id": "U5",
+            "text": "No file changed except the files that the request asks for and the setup files of the test. Nothing is staged or committed, except in test 9.",
+            "grader": "script",
+            "check": "onlyRequestedChanges"
+        },
+        {
+            "id": "U6",
+            "text": "The text calls nothing \"STE compliant\" or \"STE certified\".",
+            "grader": "script",
+            "check": "noComplianceClaim"
+        }
+    ],
+    "question_assertions": [
+        {
+            "id": "Q1",
+            "text": "Each question starts with \"Q<n> of <total>\". In a tool call, the header is \"Q<n> of <total>\" and the question text starts with it. In plain text, it starts each question. n starts at 1, goes up by 1 for each question in the session, and never goes back. Not checked when `Question count: off`.",
+            "grader": "script",
+            "check": "questionCount"
+        },
+        {
+            "id": "Q2",
+            "text": "Each question has 2 or more options, and only the first option label ends with \"(Recommended)\". Not checked when `Answer options: off` in `numbered list` mode.",
+            "grader": "script",
+            "check": "answerOptions"
+        },
+        {
+            "id": "Q3",
+            "text": "Each tool call holds at most 4 questions with 2 to 4 options each (the schema limit of `AskUserQuestion`).",
+            "grader": "script",
+            "check": "toolLimits"
+        },
+        {
+            "id": "Q4",
+            "text": "Each question has the 4 parts: the count and the question, \"Where we are\" in 1 to 3 sentences, a concrete example (prose, code, or a diff), and the options, each with its effect. It reads cold to a person who did not see the work.",
+            "grader": "llm"
+        },
+        {
+            "id": "Q5",
+            "text": "The text does not tell the Operator that the Skill replaced another question instruction.",
+            "grader": "llm"
+        },
+        {
+            "id": "Q6",
+            "text": "With no answer, no file that the answer controls is written.",
+            "grader": "script",
+            "check": "noUnansweredWrite"
+        }
+    ],
+    "evals": [
+        {
+            "id": 1,
+            "name": "01-chat-answer",
+            "prompt": "How does the retry in src/fetch.ts work?",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "1.1",
+                    "text": "The chat text has no Markdown heading.",
+                    "grader": "script",
+                    "check": "noHeading"
+                },
+                {
+                    "id": "1.2",
+                    "text": "The chat text names the code as `src/fetch.ts:<line>`.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "src/fetch\\.ts:\\d+"
+                    }
+                },
+                {
+                    "id": "1.3",
+                    "text": "The run does not read the policy file `docs/agents/human-communication-policy.md`.",
+                    "grader": "script",
+                    "check": "notRead",
+                    "args": {
+                        "pattern": "human-communication-policy.md"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "02-command",
+            "prompt": "How do I run the tests?",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "2.1",
+                    "text": "The chat text gives the test command `bun test` in a code block.",
+                    "grader": "script",
+                    "check": "codeBlock",
+                    "args": {
+                        "pattern": "bun test"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "03-behavior-change",
+            "prompt": "Change the retry limit to 5 and tell me what changes.",
+            "setup": {},
+            "expect": {
+                "changes": ["src/fetch.ts"]
+            },
+            "assertions": [
+                {
+                    "id": "3.1",
+                    "text": "`src/fetch.ts` has a retry limit of 5.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "src/fetch.ts",
+                        "pattern": "MAX_TRIES = 5\\b"
+                    }
+                },
+                {
+                    "id": "3.2",
+                    "text": "The report shows a before and after of the behavior (the retry stops after 3 tries before, after 5 tries now), in code or in pseudocode.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "04-diff-before-approval",
+            "prompt": "Propose a new install section for README.md. Show it to me before you write it.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "4.1",
+                    "text": "The chat text holds a diff of the change to `README.md` in a code block. `README.md` is unchanged (U5).",
+                    "grader": "script",
+                    "check": "codeBlock",
+                    "args": {
+                        "pattern": "^\\+",
+                        "flags": "m"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "05-issue-references",
+            "prompt": "Summarize the open issues in issues.json.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "5.1",
+                    "text": "The chat text names each issue by its title with its URL, and never by a bare `#<n>`.",
+                    "grader": "script",
+                    "check": "issuesNamed",
+                    "args": {
+                        "issues": [
+                            {
+                                "number": 12,
+                                "title": "Retry gives up too early on slow networks",
+                                "url": "https://github.com/example/scheduler/issues/12"
+                            },
+                            {
+                                "number": 15,
+                                "title": "Jobs at midnight run twice",
+                                "url": "https://github.com/example/scheduler/issues/15"
+                            },
+                            {
+                                "number": 18,
+                                "title": "Add a dry-run flag to the scheduler",
+                                "url": "https://github.com/example/scheduler/issues/18"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "name": "06-document",
+            "prompt": "Write a setup guide for new contributors in docs/setup.md.",
+            "setup": {},
+            "expect": {
+                "changes": ["docs/setup.md"]
+            },
+            "assertions": [
+                {
+                    "id": "6.1",
+                    "text": "`docs/setup.md` starts with a title, and it has one or more `##` headings and a list.",
+                    "grader": "script",
+                    "check": "documentForm",
+                    "args": {
+                        "path": "docs/setup.md"
+                    }
+                },
+                {
+                    "id": "6.2",
+                    "text": "The headings of `docs/setup.md` are in the sequence of the tasks of a new contributor. The file has no text that depends on the chat, for example \"as I said above\".",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "name": "07-glossary-term",
+            "prompt": "Explain what the scheduler in src/ does.",
+            "setup": {},
+            "assertions": [
+                {
+                    "id": "7.1",
+                    "text": "The human text says \"Job\".",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "\\bJobs?\\b"
+                    }
+                },
+                {
+                    "id": "7.2",
+                    "text": "The human text does not say \"task\" outside code and quoted text.",
+                    "grader": "script",
+                    "check": "proseAvoids",
+                    "args": {
+                        "pattern": "\\btasks?\\b",
+                        "flags": "i"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "name": "08-other-language",
+            "prompt": "Erkläre, wie der Retry in src/fetch.ts funktioniert.",
+            "setup": {},
+            "skip": ["U2"],
+            "assertions": [
+                {
+                    "id": "8.1",
+                    "text": "The answer is in German, with short sentences in the active voice.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "name": "09-commit-message",
+            "prompt": "Commit the staged change.",
+            "setup": {
+                "overlay": "overlays/09-commit-message",
+                "steps": [
+                    "perl -pi -e 's/MAX_TRIES = 3/MAX_TRIES = 5/' src/fetch.ts && git add src/fetch.ts"
+                ]
+            },
+            "expect": {
+                "changes": ["src/fetch.ts"],
+                "commits": 1
+            },
+            "assertions": [
+                {
+                    "id": "9.1",
+                    "text": "The new commit has a Conventional Commits header, a blank line, and a body, as the Commit policy in `AGENTS.md` tells.",
+                    "grader": "script",
+                    "check": "commitMatches",
+                    "args": {
+                        "pattern": "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\([\\w./-]+\\))?!?: \\S[^\\n]*\\n\\n\\S"
+                    }
+                },
+                {
+                    "id": "9.2",
+                    "text": "The body of the commit message says what the change does (the retry limit goes from 3 to 5 tries) and why, in sentences.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "name": "10-pr-template",
+            "prompt": "Write the PR description for this branch into pr.md.",
+            "setup": {
+                "overlay": "overlays/10-pr-template",
+                "steps": [
+                    "git checkout -q -b fix/retry-limit && perl -pi -e 's/MAX_TRIES = 3/MAX_TRIES = 5/' src/fetch.ts && git commit -q -am 'fix: raise the retry limit to 5'"
+                ]
+            },
+            "expect": {
+                "changes": ["pr.md"]
+            },
+            "templates": [".github/pull_request_template.md"],
+            "assertions": [
+                {
+                    "id": "10.1",
+                    "text": "`pr.md` keeps each line of `.github/pull_request_template.md` word for word and in its order: the headings `## Summary` and `## Test plan`, and the fixed sentence.",
+                    "grader": "script",
+                    "check": "keepsTemplate",
+                    "args": {
+                        "path": "pr.md",
+                        "template": ".github/pull_request_template.md"
+                    }
+                },
+                {
+                    "id": "10.2",
+                    "text": "Under `## Summary`, the sentences of `pr.md` describe the change of the branch (the retry limit goes from 3 to 5 tries). Under `## Test plan`, they tell how to test the change.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "name": "11-caution",
+            "prompt": "Give me the steps to reset the local database.",
+            "setup": {
+                "overlay": "overlays/11-caution"
+            },
+            "assertions": [
+                {
+                    "id": "11.1",
+                    "text": "The chat text has a CAUTION.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "\\bCAUTION\\b"
+                    }
+                },
+                {
+                    "id": "11.2",
+                    "text": "The CAUTION comes directly before the step that deletes the database file `data/app.db`, not after it. After CAUTION, the instruction comes first, then the risk (the step deletes all saved Jobs, and you cannot undo it).",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "name": "12-tabbed",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {},
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "12.1",
+                    "text": "The run asks the 3 questions in one tool call, with the headers \"Q1 of 3\", \"Q2 of 3\", and \"Q3 of 3\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [["Q1 of 3", "Q2 of 3", "Q3 of 3"]]
+                    }
+                },
+                {
+                    "id": "12.2",
+                    "text": "`config/logger.json` holds the log level `debug`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug"
+                    }
+                },
+                {
+                    "id": "12.3",
+                    "text": "`config/logger.json` holds the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "logs/app\\.log"
+                    }
+                },
+                {
+                    "id": "12.4",
+                    "text": "`config/logger.json` turns log rotation on.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 13,
+            "name": "13-tab-limit",
+            "prompt": "Before you change anything, ask me the log level, the log file path, the log format, the time zone of the timestamps, the maximum line length, and if the console output uses colors. Then write config/logger.json.",
+            "setup": {},
+            "answers": ["debug", "logs/app.log", "json", "UTC", "200", "No"],
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "13.1",
+                    "text": "The run asks a tool call with 4 questions, then a tool call with 2 questions, counted \"Q1 of 6\" to \"Q6 of 6\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [
+                            ["Q1 of 6", "Q2 of 6", "Q3 of 6", "Q4 of 6"],
+                            ["Q5 of 6", "Q6 of 6"]
+                        ]
+                    }
+                },
+                {
+                    "id": "13.2",
+                    "text": "`config/logger.json` holds the log level `debug` and the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug[\\s\\S]*logs/app\\.log|logs/app\\.log[\\s\\S]*debug"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 14,
+            "name": "14-total-changes",
+            "prompt": "Ask me if the app needs a database. If yes, ask which one.",
+            "setup": {},
+            "answers": ["Yes", "PostgreSQL"],
+            "questions": true,
+            "assertions": [
+                {
+                    "id": "14.1",
+                    "text": "The dependent question comes in a later tool call. The first call has \"Q1 of 1\", and the second call has \"Q2 of 2\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [["Q1 of 1"], ["Q2 of 2"]]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 15,
+            "name": "15-one-at-a-time",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/15-one-at-a-time"
+            },
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "15.1",
+                    "text": "The policy says `Question mode: one at a time`. The run asks 3 tool calls with 1 question each: \"Q1 of 3\", then \"Q2 of 3\", then \"Q3 of 3\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [["Q1 of 3"], ["Q2 of 3"], ["Q3 of 3"]]
+                    }
+                },
+                {
+                    "id": "15.2",
+                    "text": "`config/logger.json` holds the log level `debug`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug"
+                    }
+                },
+                {
+                    "id": "15.3",
+                    "text": "`config/logger.json` holds the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "logs/app\\.log"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 16,
+            "name": "16-numbered-list",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/16-numbered-list"
+            },
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "16.1",
+                    "text": "The policy says `Question mode: numbered list`. The run makes no `AskUserQuestion` call.",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": []
+                    }
+                },
+                {
+                    "id": "16.2",
+                    "text": "One chat message lists the 3 questions, numbered, each with its count \"Q1 of 3\" to \"Q3 of 3\". Q2 checks the options with the recommended option first.",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                    }
+                },
+                {
+                    "id": "16.3",
+                    "text": "The run stops after the message with the numbered list. It writes no file and does no more work after that message.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 17,
+            "name": "17-numbered-list-options-off",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/17-numbered-list-options-off"
+            },
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "skip": ["Q2"],
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "17.1",
+                    "text": "The policy says `Question mode: numbered list` and `Answer options: off`. The run makes no `AskUserQuestion` call.",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": []
+                    }
+                },
+                {
+                    "id": "17.2",
+                    "text": "One chat message lists the 3 questions, numbered, \"Q1 of 3\" to \"Q3 of 3\", and no question has answer options.",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"],
+                        "options": false
+                    }
+                }
+            ]
+        },
+        {
+            "id": 18,
+            "name": "18-tabbed-options-off",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/18-tabbed-options-off"
+            },
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "18.1",
+                    "text": "The policy says `Answer options: off`, but the mode is `tabbed`: the run asks the 3 questions in one tool call, \"Q1 of 3\" to \"Q3 of 3\". Q2 checks that each question still has options.",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [["Q1 of 3", "Q2 of 3", "Q3 of 3"]]
+                    }
+                },
+                {
+                    "id": "18.2",
+                    "text": "`config/logger.json` holds the log level `debug`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug"
+                    }
+                },
+                {
+                    "id": "18.3",
+                    "text": "`config/logger.json` holds the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "logs/app\\.log"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 19,
+            "name": "19-count-off",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/19-count-off"
+            },
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "skip": ["Q1"],
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "19.1",
+                    "text": "The run asks the 3 questions in one tool call.",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "sizes": [3]
+                    }
+                },
+                {
+                    "id": "19.2",
+                    "text": "The policy says `Question count: off`. No question and no chat text has \"Q<n> of <total>\", and each tool call header is a short topic name.",
+                    "grader": "script",
+                    "check": "noQuestionCount"
+                },
+                {
+                    "id": "19.3",
+                    "text": "`config/logger.json` holds the log level `debug`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug"
+                    }
+                },
+                {
+                    "id": "19.4",
+                    "text": "`config/logger.json` holds the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "logs/app\\.log"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 20,
+            "name": "20-failed-call",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {},
+            "answers": [],
+            "hostError": "request_user_input is unavailable in Default mode",
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "20.1",
+                    "text": "The run makes a question tool call, and the host denies it with the error \"request_user_input is unavailable in Default mode\".",
+                    "grader": "script",
+                    "check": "questionCalls"
+                },
+                {
+                    "id": "20.2",
+                    "text": "After the error, one chat message lists the 3 questions, numbered, each with its count \"Q1 of 3\" to \"Q3 of 3\". Q2 checks the options with the recommended option first.",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                    }
+                },
+                {
+                    "id": "20.3",
+                    "text": "The numbered list asks the same 3 questions as the denied call in `outputs/questions.jsonl`. The run stops after the list and writes no file.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 21,
+            "name": "21-prompt-override",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json. Ask me as a numbered list.",
+            "setup": {},
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "21.1",
+                    "text": "The prompt asks for a numbered list, so the run makes no `AskUserQuestion` call. The policy file stays unchanged (U5).",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": []
+                    }
+                },
+                {
+                    "id": "21.2",
+                    "text": "One chat message lists the 3 questions, numbered, each with its count \"Q1 of 3\" to \"Q3 of 3\".",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 22,
+            "name": "22-agents-md-loses",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/22-agents-md"
+            },
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "22.1",
+                    "text": "`AGENTS.md` says \"Ask one question at a time.\", but the policy wins: the run asks the 3 questions in one tabbed call, \"Q1 of 3\" to \"Q3 of 3\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [["Q1 of 3", "Q2 of 3", "Q3 of 3"]]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 23,
+            "name": "23-other-skill-format",
+            "prompt": "Use setup-ci to set up CI.",
+            "setup": {
+                "overlay": "overlays/23-setup-ci"
+            },
+            "questions": true,
+            "answers": [],
+            "expect": {
+                "changes": [".github/workflows/ci.yml"]
+            },
+            "assertions": [
+                {
+                    "id": "23.1",
+                    "text": "The run asks the questions of the setup-ci Skill with 1 or more question tool calls.",
+                    "grader": "script",
+                    "check": "questionCalls"
+                },
+                {
+                    "id": "23.2",
+                    "text": "No chat text asks the questions of the setup-ci Skill as a numbered round in one message.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 24,
+            "name": "24-no-human-questions",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {},
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "24.1",
+                    "text": "The run has no question tool. The final message lists the 3 questions, numbered, each with its count \"Q1 of 3\" to \"Q3 of 3\". Q2 checks the options with the recommended option first.",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                    }
+                },
+                {
+                    "id": "24.2",
+                    "text": "The text states no assumption as a decision. For example, it does not say which log level, log file path, or rotation the file will use, and the run writes no file.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 25,
+            "name": "25-no-human-answers-given",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json. My answers: the log level is debug, the log file path is logs/app.log, and logs rotate.",
+            "setup": {},
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "25.1",
+                    "text": "The run has no question tool and asks no question: no question tool call and no question in the chat text.",
+                    "grader": "script",
+                    "check": "noQuestion"
+                },
+                {
+                    "id": "25.2",
+                    "text": "`config/logger.json` holds the log level `debug`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug"
+                    }
+                },
+                {
+                    "id": "25.3",
+                    "text": "`config/logger.json` holds the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "logs/app\\.log"
+                    }
+                },
+                {
+                    "id": "25.4",
+                    "text": "`config/logger.json` turns log rotation on.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 26,
+            "name": "26-setup-chat-only",
+            "prompt": "How does the retry in src/fetch.ts work?",
+            "setup": {
+                "remove": ["docs/agents/human-communication-policy.md"]
+            },
+            "answers": [],
+            "assertions": [
+                {
+                    "id": "26.1",
+                    "text": "The run asks no question: no question tool call and no question in the chat text.",
+                    "grader": "script",
+                    "check": "noQuestion"
+                },
+                {
+                    "id": "26.2",
+                    "text": "The run does not read the policy file and does not start the setup. U5 checks that the run writes no policy file.",
+                    "grader": "script",
+                    "check": "notRead",
+                    "args": {
+                        "pattern": "human-communication-policy.md"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 27,
+            "name": "27-setup-use-defaults",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "remove": ["docs/agents/human-communication-policy.md"]
+            },
+            "answers": [
+                "Use defaults",
+                "Yes",
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": [
+                    "docs/agents/human-communication-policy.md",
+                    "AGENTS.md",
+                    "config/logger.json"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "27.1",
+                    "text": "The first question tool call holds the 2 setup questions, \"Q1 of 2\" (the policy) and \"Q2 of 2\" (the pointer text). The 3 own questions follow in one tabbed call, \"Q3 of 5\" to \"Q5 of 5\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [
+                            ["Q1 of 2", "Q2 of 2"],
+                            ["Q3 of 5", "Q4 of 5", "Q5 of 5"]
+                        ]
+                    }
+                },
+                {
+                    "id": "27.2",
+                    "text": "The first question tool call shows the default Human communication policy, for example in the preview of `Use defaults`.",
+                    "grader": "script",
+                    "check": "questionMatches",
+                    "args": {
+                        "pattern": "Question mode: tabbed[\\s\\S]*Answer options: on[\\s\\S]*Question count: on"
+                    }
+                },
+                {
+                    "id": "27.3",
+                    "text": "The policy question offers `Use defaults` first, as the recommended option, and `Choose each setting`. The pointer question offers yes first, as the recommended option, and no.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "27.4",
+                    "text": "The run writes the default Human communication policy.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "docs/agents/human-communication-policy.md",
+                        "pattern": "^# Human communication policy\\n\\n- Question mode: tabbed\\n- Answer options: on\\n- Question count: on\\n?$"
+                    }
+                },
+                {
+                    "id": "27.5",
+                    "text": "`AGENTS.md` holds the pointer text. `CLAUDE.md` holds `@AGENTS.md`, so U5 checks that `CLAUDE.md` is unchanged.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "AGENTS.md",
+                        "pattern": "Before you write text that a human reads \\(chat messages, questions, reports, code comments, and documents for persons\\), use the Skill tool with the human-communication Skill\\. If your platform has no Skill tool, read its SKILL\\.md\\."
+                    }
+                },
+                {
+                    "id": "27.7",
+                    "text": "After the setup, a chat message names the new policy file and `AGENTS.md`.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "(?=[\\s\\S]*human-communication-policy\\.md)(?=[\\s\\S]*AGENTS\\.md)"
+                    }
+                },
+                {
+                    "id": "27.8",
+                    "text": "`config/logger.json` holds the log level `debug` and the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug[\\s\\S]*logs/app\\.log|logs/app\\.log[\\s\\S]*debug"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 28,
+            "name": "28-setup-choose-numbered-list",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "remove": ["docs/agents/human-communication-policy.md"]
+            },
+            "answers": [
+                "Choose each setting",
+                "No",
+                "numbered list",
+                "on",
+                "on"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": ["docs/agents/human-communication-policy.md"]
+            },
+            "assertions": [
+                {
+                    "id": "28.1",
+                    "text": "The run makes the setup call with 2 questions, then 1 call for each of the 3 Settings.",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "sizes": [2, 1, 1, 1]
+                    }
+                },
+                {
+                    "id": "28.2",
+                    "text": "The Setting calls ask `Question mode`, `Answer options`, and `Question count`, in this sequence. Each call gives the default value first, as the recommended option.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "28.3",
+                    "text": "The policy file holds the answers.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "docs/agents/human-communication-policy.md",
+                        "pattern": "^# Human communication policy\\n\\n- Question mode: numbered list\\n- Answer options: on\\n- Question count: on\\n?$"
+                    }
+                },
+                {
+                    "id": "28.4",
+                    "text": "After the setup, one chat message lists the 3 own questions, numbered, \"Q6 of 8\" to \"Q8 of 8\". U5 checks that the run writes no `config/logger.json`.",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q6 of 8", "Q7 of 8", "Q8 of 8"]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 29,
+            "name": "29-setup-choose-tabbed",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "remove": ["docs/agents/human-communication-policy.md"]
+            },
+            "answers": [
+                "Choose each setting",
+                "No",
+                "tabbed",
+                "on",
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": [
+                    "docs/agents/human-communication-policy.md",
+                    "config/logger.json"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "29.1",
+                    "text": "The run makes the setup call with 2 questions, 1 call for `Question mode`, 1 call for `Question count`, and 1 tabbed call with the 3 own questions. It asks no `Answer options` question.",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "sizes": [2, 1, 1, 3]
+                    }
+                },
+                {
+                    "id": "29.2",
+                    "text": "The policy file holds `Answer options: on`, with no question for it.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "docs/agents/human-communication-policy.md",
+                        "pattern": "^# Human communication policy\\n\\n- Question mode: tabbed\\n- Answer options: on\\n- Question count: on\\n?$"
+                    }
+                },
+                {
+                    "id": "29.3",
+                    "text": "`config/logger.json` holds the log level `debug` and the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug[\\s\\S]*logs/app\\.log|logs/app\\.log[\\s\\S]*debug"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 30,
+            "name": "30-setup-two-files",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "remove": ["docs/agents/human-communication-policy.md"],
+                "overlay": "overlays/30-two-files"
+            },
+            "answers": [
+                "Use defaults",
+                "Yes",
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": [
+                    "docs/agents/human-communication-policy.md",
+                    "AGENTS.md",
+                    "CLAUDE.md",
+                    "config/logger.json"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "30.1",
+                    "text": "The first question tool call holds the 2 setup questions, \"Q1 of 2\" (the policy) and \"Q2 of 2\" (the pointer text). The 3 own questions follow in one tabbed call, \"Q3 of 5\" to \"Q5 of 5\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [
+                            ["Q1 of 2", "Q2 of 2"],
+                            ["Q3 of 5", "Q4 of 5", "Q5 of 5"]
+                        ]
+                    }
+                },
+                {
+                    "id": "30.2",
+                    "text": "The first question tool call shows the default Human communication policy, for example in the preview of `Use defaults`.",
+                    "grader": "script",
+                    "check": "questionMatches",
+                    "args": {
+                        "pattern": "Question mode: tabbed[\\s\\S]*Answer options: on[\\s\\S]*Question count: on"
+                    }
+                },
+                {
+                    "id": "30.3",
+                    "text": "The policy question offers `Use defaults` first, as the recommended option, and `Choose each setting`. The pointer question offers yes first, as the recommended option, and no.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "30.4",
+                    "text": "The run writes the default Human communication policy.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "docs/agents/human-communication-policy.md",
+                        "pattern": "^# Human communication policy\\n\\n- Question mode: tabbed\\n- Answer options: on\\n- Question count: on\\n?$"
+                    }
+                },
+                {
+                    "id": "30.5",
+                    "text": "`AGENTS.md` holds the pointer text.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "AGENTS.md",
+                        "pattern": "Before you write text that a human reads \\(chat messages, questions, reports, code comments, and documents for persons\\), use the Skill tool with the human-communication Skill\\. If your platform has no Skill tool, read its SKILL\\.md\\."
+                    }
+                },
+                {
+                    "id": "30.6",
+                    "text": "`CLAUDE.md` keeps its own text and holds the pointer text.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "CLAUDE.md",
+                        "pattern": "British spelling[\\s\\S]*Before you write text that a human reads \\(chat messages, questions, reports, code comments, and documents for persons\\), use the Skill tool with the human-communication Skill\\. If your platform has no Skill tool, read its SKILL\\.md\\."
+                    }
+                },
+                {
+                    "id": "30.7",
+                    "text": "After the setup, a chat message names the new policy file and `AGENTS.md`.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "(?=[\\s\\S]*human-communication-policy\\.md)(?=[\\s\\S]*AGENTS\\.md)"
+                    }
+                },
+                {
+                    "id": "30.8",
+                    "text": "`config/logger.json` holds the log level `debug` and the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug[\\s\\S]*logs/app\\.log|logs/app\\.log[\\s\\S]*debug"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 31,
+            "name": "31-setup-no-entry-files",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "remove": [
+                    "docs/agents/human-communication-policy.md",
+                    "AGENTS.md",
+                    "CLAUDE.md"
+                ]
+            },
+            "answers": [
+                "Use defaults",
+                "Yes",
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": [
+                    "docs/agents/human-communication-policy.md",
+                    "AGENTS.md",
+                    "CLAUDE.md",
+                    "config/logger.json"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "31.1",
+                    "text": "The first question tool call holds the 2 setup questions, \"Q1 of 2\" (the policy) and \"Q2 of 2\" (the pointer text). The 3 own questions follow in one tabbed call, \"Q3 of 5\" to \"Q5 of 5\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [
+                            ["Q1 of 2", "Q2 of 2"],
+                            ["Q3 of 5", "Q4 of 5", "Q5 of 5"]
+                        ]
+                    }
+                },
+                {
+                    "id": "31.2",
+                    "text": "The first question tool call shows the default Human communication policy, for example in the preview of `Use defaults`.",
+                    "grader": "script",
+                    "check": "questionMatches",
+                    "args": {
+                        "pattern": "Question mode: tabbed[\\s\\S]*Answer options: on[\\s\\S]*Question count: on"
+                    }
+                },
+                {
+                    "id": "31.3",
+                    "text": "The policy question offers `Use defaults` first, as the recommended option, and `Choose each setting`. The pointer question offers yes first, as the recommended option, and no.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "31.4",
+                    "text": "The run writes the default Human communication policy.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "docs/agents/human-communication-policy.md",
+                        "pattern": "^# Human communication policy\\n\\n- Question mode: tabbed\\n- Answer options: on\\n- Question count: on\\n?$"
+                    }
+                },
+                {
+                    "id": "31.5",
+                    "text": "The new `AGENTS.md` holds the pointer text.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "AGENTS.md",
+                        "pattern": "Before you write text that a human reads \\(chat messages, questions, reports, code comments, and documents for persons\\), use the Skill tool with the human-communication Skill\\. If your platform has no Skill tool, read its SKILL\\.md\\."
+                    }
+                },
+                {
+                    "id": "31.6",
+                    "text": "The new `CLAUDE.md` holds only `@AGENTS.md`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "CLAUDE.md",
+                        "pattern": "^\\s*@AGENTS\\.md\\s*$"
+                    }
+                },
+                {
+                    "id": "31.7",
+                    "text": "After the setup, a chat message names the new policy file and `AGENTS.md`.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "(?=[\\s\\S]*human-communication-policy\\.md)(?=[\\s\\S]*AGENTS\\.md)"
+                    }
+                },
+                {
+                    "id": "31.8",
+                    "text": "`config/logger.json` holds the log level `debug` and the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug[\\s\\S]*logs/app\\.log|logs/app\\.log[\\s\\S]*debug"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 32,
+            "name": "32-setup-pointer-there",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "remove": ["docs/agents/human-communication-policy.md"],
+                "overlay": "overlays/32-pointer-there"
+            },
+            "answers": [
+                "Use defaults",
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": [
+                    "docs/agents/human-communication-policy.md",
+                    "config/logger.json"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "32.1",
+                    "text": "`AGENTS.md` already holds the pointer text, so the first call holds only the policy question, \"Q1 of 1\". The 3 own questions follow in one tabbed call, \"Q2 of 4\" to \"Q4 of 4\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [
+                            ["Q1 of 1"],
+                            ["Q2 of 4", "Q3 of 4", "Q4 of 4"]
+                        ]
+                    }
+                },
+                {
+                    "id": "32.2",
+                    "text": "The run writes the default Human communication policy. U5 checks that `AGENTS.md` and `CLAUDE.md` are unchanged.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "docs/agents/human-communication-policy.md",
+                        "pattern": "^# Human communication policy\\n\\n- Question mode: tabbed\\n- Answer options: on\\n- Question count: on\\n?$"
+                    }
+                },
+                {
+                    "id": "32.3",
+                    "text": "`config/logger.json` holds the log level `debug` and the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug[\\s\\S]*logs/app\\.log|logs/app\\.log[\\s\\S]*debug"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 33,
+            "name": "33-setup-no-human",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "remove": ["docs/agents/human-communication-policy.md"]
+            },
+            "questions": true,
+            "expect": {
+                "changes": []
+            },
+            "assertions": [
+                {
+                    "id": "33.1",
+                    "text": "The run has no question tool. The final message lists the 2 setup questions first and then the 3 own questions, numbered, \"Q1 of 5\" to \"Q5 of 5\". U5 checks that the run writes no policy file and makes no pointer edit.",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": [
+                            "Q1 of 5",
+                            "Q2 of 5",
+                            "Q3 of 5",
+                            "Q4 of 5",
+                            "Q5 of 5"
+                        ]
+                    }
+                },
+                {
+                    "id": "33.2",
+                    "text": "The final message gives the default Human communication policy in a code block.",
+                    "grader": "script",
+                    "check": "codeBlock",
+                    "args": {
+                        "pattern": "Question mode: tabbed[\\s\\S]*Answer options: on[\\s\\S]*Question count: on"
+                    }
+                },
+                {
+                    "id": "33.3",
+                    "text": "Q1 is the policy question and Q2 is the pointer question. The final message tells the caller to answer in a new request, or to say \"use the default human communication policy\".",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 34,
+            "name": "34-setup-no-human-default-words",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json. For the setup, use the default human communication policy.",
+            "setup": {
+                "remove": ["docs/agents/human-communication-policy.md"]
+            },
+            "questions": true,
+            "skip": ["Q6"],
+            "expect": {
+                "changes": ["docs/agents/human-communication-policy.md"]
+            },
+            "assertions": [
+                {
+                    "id": "34.1",
+                    "text": "The run writes the default Human communication policy. U5 checks that the run does not stage it and makes no pointer edit.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "docs/agents/human-communication-policy.md",
+                        "pattern": "^# Human communication policy\\n\\n- Question mode: tabbed\\n- Answer options: on\\n- Question count: on\\n?$"
+                    }
+                },
+                {
+                    "id": "34.2",
+                    "text": "The default policy words do not answer the pointer question. The final message lists the pointer question first and then the 3 own questions, numbered, \"Q1 of 4\" to \"Q4 of 4\".",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 4", "Q2 of 4", "Q3 of 4", "Q4 of 4"]
+                    }
+                },
+                {
+                    "id": "34.3",
+                    "text": "Q6 for this test: with no answer, the run writes no `config/logger.json`.",
+                    "grader": "script",
+                    "check": "noUnansweredWrite",
+                    "args": {
+                        "paths": ["config/logger.json"]
+                    }
+                },
+                {
+                    "id": "34.4",
+                    "text": "A chat message names the new policy file.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "human-communication-policy\\.md"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 35,
+            "name": "35-prose-policy",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/35-prose-policy"
+            },
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "expect": {
+                "changes": []
+            },
+            "assertions": [
+                {
+                    "id": "35.1",
+                    "text": "The policy holds 2 lines of prose. The run asks no question: no question tool call and no question in the chat text. U5 checks that the run changes no file.",
+                    "grader": "script",
+                    "check": "noQuestion"
+                },
+                {
+                    "id": "35.2",
+                    "text": "The report gives the incorrect lines 3 and 4, each with its line number and its text.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "35.3",
+                    "text": "The report tells the Operator to correct the policy file, or to delete it so that the setup runs.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 36,
+            "name": "36-duplicate-name",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/36-duplicate-name"
+            },
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "expect": {
+                "changes": []
+            },
+            "assertions": [
+                {
+                    "id": "36.1",
+                    "text": "The policy has 2 `Question mode` lines. The run asks no question: no question tool call and no question in the chat text. U5 checks that the run changes no file.",
+                    "grader": "script",
+                    "check": "noQuestion"
+                },
+                {
+                    "id": "36.2",
+                    "text": "The report gives the incorrect line 4, `- Question mode: one at a time`, with its line number.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "36.3",
+                    "text": "The report tells the Operator to correct the policy file, or to delete it so that the setup runs.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 37,
+            "name": "37-missing-line",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/37-missing-line"
+            },
+            "answers": [
+                "on",
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
+            "questions": true,
+            "expect": {
+                "changes": [
+                    "docs/agents/human-communication-policy.md",
+                    "config/logger.json"
+                ]
+            },
+            "assertions": [
+                {
+                    "id": "37.1",
+                    "text": "The policy has no `Question count` line. The first question tool call holds only the question for it, \"Q1 of 1\". The 3 own questions follow in one tabbed call, \"Q2 of 4\" to \"Q4 of 4\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [
+                            ["Q1 of 1"],
+                            ["Q2 of 4", "Q3 of 4", "Q4 of 4"]
+                        ]
+                    }
+                },
+                {
+                    "id": "37.2",
+                    "text": "The question for `Question count` offers `on` first, as the recommended option, and `off`.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "37.3",
+                    "text": "The run adds `- Question count: on` after the `Answer options` line and changes no other line. U5 checks that the run does not stage the policy.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "docs/agents/human-communication-policy.md",
+                        "pattern": "^# Human communication policy\\n\\n- Question mode: tabbed\\n- Answer options: on\\n- Question count: on\\n?$"
+                    }
+                },
+                {
+                    "id": "37.4",
+                    "text": "A chat message names the change to the policy file.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "human-communication-policy\\.md"
+                    }
+                },
+                {
+                    "id": "37.5",
+                    "text": "`config/logger.json` holds the log level `debug` and the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug[\\s\\S]*logs/app\\.log|logs/app\\.log[\\s\\S]*debug"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 38,
+            "name": "38-missing-line-no-human",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/37-missing-line"
+            },
+            "questions": true,
+            "skip": ["Q6"],
+            "expect": {
+                "changes": ["docs/agents/human-communication-policy.md"]
+            },
+            "assertions": [
+                {
+                    "id": "38.1",
+                    "text": "The run has no question tool. It adds `- Question count: on` with no question, after the `Answer options` line. U5 checks that the run does not stage the policy.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "docs/agents/human-communication-policy.md",
+                        "pattern": "^# Human communication policy\\n\\n- Question mode: tabbed\\n- Answer options: on\\n- Question count: on\\n?$"
+                    }
+                },
+                {
+                    "id": "38.2",
+                    "text": "The policy is there, so the run does no setup and asks no pointer question. The final message lists the 3 own questions, numbered, \"Q1 of 3\" to \"Q3 of 3\".",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                    }
+                },
+                {
+                    "id": "38.3",
+                    "text": "Q6 for this test: with no answer, the run writes no `config/logger.json`.",
+                    "grader": "script",
+                    "check": "noUnansweredWrite",
+                    "args": {
+                        "paths": ["config/logger.json"]
+                    }
+                },
+                {
+                    "id": "38.4",
+                    "text": "The final message names the change to the policy file.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "human-communication-policy\\.md"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,58 @@
+[
+    {
+        "query": "how does the retry in src/fetch.ts work?",
+        "should_trigger": true
+    },
+    {
+        "query": "explain this error: TypeError: cannot read properties of undefined",
+        "should_trigger": true
+    },
+    { "query": "write a setup guide in docs/setup.md", "should_trigger": true },
+    {
+        "query": "write the README section for the new config option",
+        "should_trigger": true
+    },
+    { "query": "commit this", "should_trigger": true },
+    {
+        "query": "write the PR description for this branch",
+        "should_trigger": true
+    },
+    {
+        "query": "draft an issue for the flaky retry test",
+        "should_trigger": true
+    },
+    {
+        "query": "add a code comment that explains the retry limit",
+        "should_trigger": true
+    },
+    {
+        "query": "review the last commit and report the problems",
+        "should_trigger": true
+    },
+    {
+        "query": "summarize the open issues in issues.json",
+        "should_trigger": true
+    },
+    {
+        "query": "ask me what you need, then set up the logger config",
+        "should_trigger": true
+    },
+    { "query": "help me plan the database migration", "should_trigger": true },
+    {
+        "query": "write release notes for the next version",
+        "should_trigger": true
+    },
+    { "query": "fix the typo in README.md", "should_trigger": true },
+    { "query": "rename fetchData to loadData", "should_trigger": true },
+    {
+        "query": "draft an email to the team about the outage",
+        "should_trigger": true
+    },
+    { "query": "what changed in the last 3 commits?", "should_trigger": true },
+    { "query": "is the retry limit of 3 too low?", "should_trigger": true },
+    {
+        "query": "set up a human communication policy for this repo",
+        "should_trigger": true
+    },
+    { "query": "erkläre mir src/fetch.ts", "should_trigger": true }
+]

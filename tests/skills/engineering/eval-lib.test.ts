@@ -127,6 +127,22 @@ describe("loadOutcome", () => {
         );
         expect(outcome.limit).toBe(true);
     });
+
+    it("gives the decision each event so far, so a text block can decide", async () => {
+        const text: ClaudeEvent = {
+            type: "assistant",
+            message: { content: [{ type: "text", text: "Done." }] },
+        };
+        const outcome = await loadOutcome(
+            stream(toolUse("Bash", { command: "ls" }), text),
+            (_calls, events) =>
+                events.some((event) => JSON.stringify(event).includes("Done."))
+                    ? false
+                    : null,
+        );
+        expect(outcome.hit).toBe(false);
+        expect(outcome.calls).toHaveLength(1);
+    });
 });
 
 describe("summarize", () => {

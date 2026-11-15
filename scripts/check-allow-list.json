@@ -670,5 +670,29 @@
         "rule": "6.2",
         "text": "Semver policy",
         "cause": "The title is the fixed first line of the Policy file. Its Skill accepts only this title."
+    },
+    {
+        "path": "skills/writing/human-communication/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Its name is `GLOSSARY.md` or `CONTEXT.md`.",
+        "cause": "The path is an example of a file in a project that installs the Skill."
+    },
+    {
+        "path": "docs/agents/human-communication-policy.md",
+        "rule": "6.2",
+        "text": "Human communication policy",
+        "cause": "Human communication policy is the name that the human-communication Skill gives its Policy, and the human-communication Skill reads the title `# Human communication policy`."
+    },
+    {
+        "path": "AGENTS.md",
+        "rule": "6.2",
+        "text": "If your platform has no Skill tool, read its SKILL.md.",
+        "cause": "The pointer text of the human-communication Skill, word for word. SKILL.md is the file name, not the term Skill."
+    },
+    {
+        "path": "AGENTS.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "If your platform has no Skill tool, read its SKILL.md.",
+        "cause": "The pointer text of the human-communication Skill, word for word. SKILL.md is the file of that Skill, not a file in the root folder."
     }
 ]

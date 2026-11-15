@@ -23,13 +23,13 @@ import {
 
 // Reads the tests of `<dir>/evals.json` with the given ids, or all tests with
 // no ids. Each test gets the common statements first.
-export function readEvalsIn<E extends { id: number; assertions: string[] }>(
+export function readEvalsIn<E extends { id: number; assertions: unknown[] }>(
     dir: string,
     ids: string,
 ): E[] {
     const wanted = ids.split(",").filter(Boolean).map(Number);
     const file = JSON.parse(readFileSync(join(dir, "evals.json"), "utf8")) as {
-        common_assertions: string[];
+        common_assertions: E["assertions"];
         evals: E[];
     };
     return file.evals
@@ -43,16 +43,18 @@ export function readEvalsIn<E extends { id: number; assertions: string[] }>(
 export type LoadRequest = { query: string; should_trigger: boolean };
 export type LoadOptions = { model: string; timeout: number };
 export type LoadRun = { hit: boolean; calls: string[] };
-type Decide = (calls: ToolCall[]) => boolean | null;
+type Decide = (calls: ToolCall[], events: ClaudeEvent[]) => boolean | null;
 
 // Reads the stream-json lines of a run until `decide` gives a decision. Only
-// the calls of the main agent count. A run that ends with no decision is no
+// the calls of the main agent count. `decide` also gets each event so far, for
+// a decision that reads text blocks. A run that ends with no decision is no
 // load. `hit` is null when the stream stops before its result.
 export async function loadOutcome(
     stream: AsyncIterable<string>,
     decide: Decide,
 ): Promise<{ hit: boolean | null; limit: boolean; calls: ToolCall[] }> {
     const calls: ToolCall[] = [];
+    const events: ClaudeEvent[] = [];
     let hit: boolean | null = null;
     let limit = false;
     for await (const line of stream) {
@@ -63,8 +65,9 @@ export async function loadOutcome(
             continue;
         }
         limit ||= hitUsageLimit(line);
+        events.push(event);
         if (!event.parent_tool_use_id) calls.push(...toolCalls(event));
-        hit = decide(calls);
+        hit = decide(calls, events);
         if (hit === null && event.type === "result") hit = false;
         if (hit !== null) break;
     }
@@ -212,6 +215,7 @@ export type OutputOptions = { out: string; model: string; timeout: number };
 
 // Runs one output test with `claude -p` in the test repository `work`. It
 // writes the transcript, the stderr text, and `report.md` of the run.
+// `extraArgs` are more `claude` flags, for example of a question host.
 export async function outputRun(
     prompt: string,
     forceSkill: string | null,
@@ -219,6 +223,7 @@ export async function outputRun(
     env: Record<string, string | undefined>,
     options: OutputOptions,
     runDir: string,
+    extraArgs: string[] = [],
 ) {
     const cmd = [
         "claude",
@@ -235,6 +240,7 @@ export async function outputRun(
         options.model,
     ];
     if (forceSkill) cmd.push("--append-system-prompt", forceSkill);
+    cmd.push(...extraArgs);
     const { proc, exited } = spawnTimed(
         cmd,
         { cwd: work, env, stdout: "pipe", stderr: "pipe" },
