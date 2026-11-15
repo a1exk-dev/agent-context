@@ -406,9 +406,9 @@
         {
             "id": 13,
             "name": "13-tab-limit",
-            "prompt": "Before you change anything, ask me the log level, the log file path, if logs rotate, the maximum file size, the number of old files to keep, and the log format. Then write config/logger.json.",
+            "prompt": "Before you change anything, ask me the log level, the log file path, the log format, the time zone of the timestamps, the maximum line length, and if the console output uses colors. Then write config/logger.json.",
             "setup": {},
-            "answers": ["debug", "logs/app.log", "Yes", "10 MB", "5", "json"],
+            "answers": ["debug", "logs/app.log", "json", "UTC", "200", "No"],
             "questions": true,
             "expect": {
                 "changes": ["config/logger.json"]
