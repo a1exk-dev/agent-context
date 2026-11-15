@@ -13,7 +13,7 @@ This skill tells you how to write text that a human reads. The text is clear on 
 - The glossary is the file that gives the terms of the project. Its name is `GLOSSARY.md` or `CONTEXT.md`. If the project has the two files, use `GLOSSARY.md`.
 - STE-based text obeys the rules in `references/ste-rules.md`. These rules are our own words for a part of the writing rules of ASD-STE100. STE-based text is not "STE compliant" and not "STE certified", because ASD did not examine it.
 - Plain language is text that obeys the rules in `references/plain-language.md`. These rules are our own words for the 4 principles of ISO 24495-1:2023.
-- A document for persons is a text that a person reads without the chat. Examples are `README.md`, a file in `docs/`, an issue body, and a pull request text.
+- A document for persons is a text that a human reads without the chat. Examples are `README.md`, a file in `docs/`, an issue body, and a pull request text.
 
 ## When this skill is applicable
 
@@ -63,7 +63,7 @@ In other cases, give an example when words alone are not clear. A prose example 
 
 Another skill or the project can give a structure for a text. Examples are sections, headings, fixed labels, required fields, and their sequence.
 
-- Keep that structure and its fixed text word for word. The writing rules do not apply to the fixed text.
+- Keep that structure and its fixed text word for word. The rules of the 2 reference files do not apply to the fixed text.
 - Write the sentences inside the structure as this skill tells you.
 - For a commit message, keep the form that the commit rules of the project give, for example the header form and the trailers. Write the sentences of the body by the rules of this skill.
 - For a pull request text, keep each heading and each fixed line of the pull request template. Write your sentences below each heading.
@@ -78,7 +78,7 @@ The Human communication policy is the file "human-communication-policy.md" in th
 | Answer options | `on` or `off`. Only the `numbered list` question mode uses this Setting. The other question modes always give answer options. | `on` |
 | Question count | `on` or `off`. | `on` |
 
-`references/questions.md` tells you what each value does.
+When you ask a question, `references/questions.md` tells you what each value does.
 
 ## Before you ask the Operator a question
 
@@ -103,7 +103,7 @@ First, find the incorrect lines. Then, find each Setting that has no line.
 
 Stop the work that needs the question. You cannot know which decision of the Operator an incorrect line gives. Do these steps, also when no human can answer:
 
-1. Ask no question. Change no file. Do not change an incorrect line into a Setting, and do not write a new policy.
+1. Ask no question. Change no file. Do not change an incorrect line into a Setting. Do not write a new policy.
 2. In your report, give the line number and the text of each incorrect line.
 3. Tell the Operator to correct these lines, or to delete the policy file. When the file is not there, the setup runs before the next question.
 
@@ -115,8 +115,8 @@ Do these steps only when the policy has no incorrect line:
    - When the other lines make the Setting unused, use the default value. Ask no question. For example, `Answer options` is unused when the `Question mode` is not `numbered list`.
    - When the prompt gives the value, use that value.
    - When no human can answer, use the default value. Ask no question. No human can answer when you have no question tool, or when a call of the question tool fails.
-   - Else, ask the Operator one question in a call of the question tool. Put only that question in the call, because the answer can make a later Setting unused. Give the default value first, with "(Recommended)", and give the 4 parts of a question.
-2. Ask these questions before your own questions, with the default Settings. The total of the question count is the number of Settings that you ask about. Continue the count of the session for your own questions.
+   - Else, before your own questions, ask the Operator one question in a call of the question tool. Use the default Settings for this call. Put only that question in the call, because the answer can make a later Setting unused. Give the default value first, with "(Recommended)". Give the 4 parts of a question.
+2. The total of the question count is the number of Settings that you ask about. Continue the count of the session for your own questions.
 3. Add one line for each of these Settings to the policy, in the position of its row in the Settings table. Do not change the other lines.
 4. Do not stage or commit the policy.
 5. In your next message, give each line that you added. When no human can answer, give these lines in your final message.
@@ -159,13 +159,13 @@ A pointer target that already holds the sentence of the pointer text needs no ed
 Ask the setup questions with the default Settings: the `tabbed` question mode, with the question count and the answer options. Give each setup question the 4 parts that `references/questions.md` gives.
 
 1. When the prompt gives a value for each Setting, use these values. When the prompt says "use the default human communication policy", use the default values. In these 2 cases, do not ask the policy question.
-2. Ask the first call of the question tool. It holds the policy question and the pointer question, one tab for each question:
+2. When no pointer target needs an edit, do not ask the pointer question. When the first call then has no question, make no call.
+3. Make the first call of the question tool. It holds the policy question and the pointer question, one tab for each question:
    - The policy question. Show the default Human communication policy in the preview of `Use defaults`. Give the options `Use defaults` (Recommended) and `Choose each setting`.
-   - The pointer question. Name each pointer target, and show the pointer text in the preview of the first option. Give the options `Yes` (Recommended) and `No`.
-3. When no pointer target needs an edit, do not ask the pointer question. When the call then has no question, make no call.
+   - The pointer question. Name each pointer target. Show the pointer text in the preview of the first option. Give the options `Yes` (Recommended) and `No`.
 4. In the first call, the total of the question count is the number of setup questions in that call. The new policy decides how you ask your own questions. Continue the count of the session after the setup questions.
 5. When the Operator selects `Choose each setting`, ask one question for each Setting, in the sequence of the Settings table. Ask only one question in each call, because one answer can make a later Setting unused. Give the default value first, with "(Recommended)".
-   - Ask the `Answer options` question only when the answer for `Question mode` is `numbered list`. Else write `on` for `Answer options`, and ask no question for it.
+   - Ask the `Answer options` question only when the answer for `Question mode` is `numbered list`. Else write `on` for `Answer options`. Ask no question for `Answer options`.
 6. When a call of the question tool fails, obey "When no human can answer the setup questions".
 
 When you have the answers, do these steps:
@@ -192,7 +192,7 @@ When the prompt gives a value for each Setting, or says "use the default human c
 
 When the prompt does not give these answers, do these steps:
 
-1. Write no file, and make no edit for the pointer text.
+1. Write no file. Make no edit for the pointer text.
 2. In your final message, put the setup questions first. When the prompt answers the pointer question, do not ask it. Then put your own questions. Write the questions in one numbered list, as `references/questions.md` tells you. The total of the question count is the number of questions in the list.
 3. Below the policy question, give the default Human communication policy in a code block.
 4. Tell the caller to answer the questions in a new request. As an alternative, the caller can say "use the default human communication policy".

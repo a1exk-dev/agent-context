@@ -16,7 +16,7 @@ This file tells you how to ask the Operator questions. `SKILL.md` in the folder 
 - Use the question mode, the question count, the answer options, and the parts of a question from this file.
 - The other skill still gives the facts that you must find out. Ask for these facts as this file tells you.
 - When the Operator asks for a different form in the current prompt, use that form for this session only.
-- Do not tell the Operator that you replaced another instruction. This text adds nothing that the Operator needs.
+- Do not tell the Operator that you replaced another instruction. A notice of the replacement adds nothing that the Operator needs.
 
 When 2 instructions about questions do not agree, obey them in this sequence, with the highest first:
 
@@ -48,13 +48,13 @@ In the `tabbed` question mode, use the limit of your own question tool. A call t
 
 ## When you count the questions
 
-- Give each question its question count. Use one count for the full session.
+- Give each question its question count. Use one sequence of numbers for the full session.
 - When the Human communication policy has the line `- Question count: off`, give no question count. In a call of the question tool, use a short topic name as the header, for example "Log level". In a chat message, start each question with the question text.
 - `<n>` is the number of the question in the session. It starts at 1 and goes up by 1 for each question. It never goes back.
 - `<total>` is the number of questions that you know at that time. When an answer adds or removes questions, give the new total in the next question.
 - Give a single question its count too, for example "Q1 of 1".
-- In a call of the question tool, use the count as the header of the question. Also start the question text with the count.
-- In a chat message, start each question with the count.
+- In a call of the question tool, use the question count as the header of the question. Also start the question text with the question count.
+- In a chat message, start each question with the question count.
 
 This example shows a total that changes:
 
@@ -70,7 +70,7 @@ Call 2: Q2 of 2  Which database does the app use?
 - In the `numbered list` question mode, give answer options when the Human communication policy has the line `- Answer options: on`. When it has the line `- Answer options: off`, give no answer options. The Operator then answers in their own words.
 - Put the recommended option first. Add "(Recommended)" to the end of its label. The Operator can then accept it with one click.
 - Do not add "(Recommended)" to a different option.
-- In the description of each option, give the effect of that option.
+- In the description of each answer option, give the effect of that answer option.
 
 ## When you write a question
 

@@ -25,11 +25,11 @@ These rules make the text understandable: the reader understands it on the first
 
 - Obey the rules in `ste-rules.md` in this folder.
 - Use a neutral and direct tone.
-- Make all parts of the text agree, and use the same term for the same item.
+- Make all parts of the text agree.
 
 ## When the reader uses the text
 
 These rules make the text usable: the reader can act on it.
 
-- Show an example when words alone are not clear. `SKILL.md` gives the cases that need a diff, a code block, or a before and after.
+- Show an example when words alone are not clear. `SKILL.md` in the folder above this file gives the cases that need a diff, a code block, or a before and after.
 - Give each command, path, and name in the exact form that the reader types or opens.
