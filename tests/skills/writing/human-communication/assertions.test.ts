@@ -637,3 +637,76 @@ describe("checks of tests 9 to 11", () => {
         expect(check("commitMatches", run({}), args).passed).toBe(false);
     });
 });
+
+describe("checks of the policy setup tests 26 to 34", () => {
+    const setup = ask("Q1 of 2", "Q2 of 2");
+    const ownList = [
+        "1. Q3 of 5 Which level?",
+        "   - info (Recommended): fewer lines.",
+        "   - debug: more lines.",
+        "2. Q4 of 5 Which path?",
+        "   - logs/app.log (Recommended): one file.",
+        "   - stdout: no file.",
+        "3. Q5 of 5 Do logs rotate?",
+        "   - Yes (Recommended): small files.",
+        "   - No: one large file.",
+    ].join("\n");
+    const counts = ["Q3 of 5", "Q4 of 5", "Q5 of 5"];
+
+    it("Q1 and Q2 read the setup calls and then the numbered list of the own questions", () => {
+        const value = run({ questions: [setup], events: [text(ownList)] });
+        expect(check("questionCount", value).passed).toBe(true);
+        expect(check("answerOptions", value).passed).toBe(true);
+        const back = run({
+            questions: [setup],
+            events: [text(ownList.replace("Q3 of 5", "Q2 of 5"))],
+        });
+        expect(check("questionCount", back).passed).toBe(false);
+    });
+
+    it("Q1 does not count a chat line that repeats the count of a tool question", () => {
+        const value = run({
+            questions: [setup],
+            events: [text("1. Q1 of 2: Use defaults\n2. Q2 of 2: Yes")],
+        });
+        expect(check("questionCount", value).passed).toBe(true);
+    });
+
+    it("listedQuestions passes after answered setup calls with other counts", () => {
+        const value = run({ questions: [setup], events: [text(ownList)] });
+        expect(check("listedQuestions", value, { counts }).passed).toBe(true);
+    });
+
+    it("questionMatches reads the question text, labels, descriptions, and previews of a call", () => {
+        const call = {
+            questions: [
+                {
+                    header: "Q1 of 2",
+                    question: "Q1 of 2: Which Human communication policy?",
+                    options: [
+                        {
+                            label: "Use defaults (Recommended)",
+                            description: "Writes the default file.",
+                            preview:
+                                "# Human communication policy\n\n- Question mode: tabbed",
+                        },
+                        { label: "Choose each setting", description: "Asks." },
+                    ],
+                },
+            ],
+        };
+        const args = { pattern: "- Question mode: tabbed" };
+        expect(
+            check("questionMatches", run({ questions: [call] }), args).passed,
+        ).toBe(true);
+        expect(
+            check("questionMatches", run({ questions: [setup] }), args).passed,
+        ).toBe(false);
+        expect(
+            check("questionMatches", run({ questions: [setup, call] }), {
+                ...args,
+                call: 1,
+            }).passed,
+        ).toBe(true);
+    });
+});

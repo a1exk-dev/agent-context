@@ -26,7 +26,7 @@ When 2 instructions about questions do not agree, obey them in this sequence, wi
 
 ## When you select the question mode
 
-Use the `Question mode` of the Human communication policy. When the policy gives no question mode, use `tabbed`.
+Use the `Question mode` of the Human communication policy.
 
 When the prompt gives the answer to a question, use that answer. Do not ask that question.
 

@@ -85,4 +85,6 @@ U2 and the other text checks read the human text: each text block of the main ag
 
 The Operator runs these checks once in an interactive Claude Code session, before the build pull request merges, and records the results in the pull request. Each check starts in a copy of `project/` with the skill installed.
 
+- M1. Delete `docs/agents/human-communication-policy.md`, give the request of test 12, and select `Use defaults`. The question UI shows the 2 setup tabs with the headers "Q1 of 2" and "Q2 of 2". The own questions then start at Q3.
+- M2. Give a request with a question whose options differ in code, for example "Ask me which retry limit to use in src/fetch.ts, then change it". The question UI shows the example in the preview of each option.
 - M3. With `Question mode: one at a time` in the policy, give the request of test 12. The agent waits for each answer before it asks the next question.

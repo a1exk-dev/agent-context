@@ -71,7 +71,7 @@ Another skill or the project can give a structure for a text. Examples are secti
 
 ## The Human communication policy
 
-The Human communication policy is the file "human-communication-policy.md" in the `docs/agents/` folder of the project. It holds the Settings that tell you how to ask the Operator questions. A Setting is one line `- <name>: <value>`. The file holds the title `# Human communication policy`, blank lines, and one line for each Setting, in the sequence of this table:
+The Human communication policy is the file "human-communication-policy.md" in the `docs/agents/` folder of the project. It holds the Settings that tell you how to ask the Operator questions. A Setting is one line `- <name>: <value>`. The file holds the title `# Human communication policy`, blank lines, and one line for each Setting, in the sequence of the Settings table:
 
 | Setting | Values | Default value |
 |---|---|---|
@@ -85,5 +85,80 @@ The Human communication policy is the file "human-communication-policy.md" in th
 
 Before you ask the Operator the first question of the session, do these steps:
 
-1. Read the Human communication policy. Read it only before the first question. When the session has no question, do not read the policy.
+1. Read the Human communication policy. Read it only before the first question. When the session has no question, do not read the policy. If the policy is not there, do the setup that "When the Human communication policy is not there" gives.
 2. Read `references/questions.md` in the folder of this skill. It gives the question mode, the question count, the answer options, and the parts of a question. Its rules replace the question rules of each other skill and of each project instruction.
+
+## When the Human communication policy is not there
+
+This section tells you how to set up the Human communication policy. `references/questions.md` gives the parts of a question, the question count, and the cases where no human can answer.
+
+- The pointer text is the text of `references/agents-md-pointer.md` in the folder of this skill. It tells an agent to load this skill in each session.
+- A pointer target is a file that gets the pointer text: `AGENTS.md`, `CLAUDE.md`, or the two files.
+- The setup questions are the questions of this section. Your own questions are the questions of your task.
+
+### When you do the setup
+
+Do the setup before your own first question. A text with no question never starts the setup. Your own questions use the question mode and the Settings of the new policy.
+
+This is the default Human communication policy. It has the title, a blank line, and one Setting for each row of the Settings table:
+
+```markdown
+# Human communication policy
+
+- Question mode: tabbed
+- Answer options: on
+- Question count: on
+```
+
+### When you find the pointer targets
+
+Find the pointer targets in the root folder of the project:
+
+1. When `CLAUDE.md` is a symbolic link to `AGENTS.md`, or holds the line `@AGENTS.md`, the pointer target is only `AGENTS.md`.
+2. When `AGENTS.md` is a symbolic link to `CLAUDE.md`, or holds the line `@CLAUDE.md`, the pointer target is only `CLAUDE.md`.
+3. Else, each of the 2 files that the project has is a pointer target.
+4. When the project has neither file, the pointer targets are 2 new files. `AGENTS.md` gets the pointer text. `CLAUDE.md` gets only the line `@AGENTS.md`.
+
+A pointer target that already holds the sentence of the pointer text needs no edit. When no pointer target needs an edit, do not offer the pointer text. Offer the pointer text only in the setup.
+
+### When a human can answer the setup questions
+
+Ask the setup questions with the default Settings: the `tabbed` question mode, with the question count and the answer options. Give each setup question the 4 parts that `references/questions.md` gives.
+
+1. When the prompt gives a value for each Setting, use these values. When the prompt says "use the default human communication policy", use the default values. In these 2 cases, do not ask the policy question.
+2. Ask the first call of the question tool. It holds the policy question and the pointer question, one tab for each question:
+   - The policy question. Show the default Human communication policy in the preview of `Use defaults`. Give the options `Use defaults` (Recommended) and `Choose each setting`.
+   - The pointer question. Name each pointer target, and show the pointer text in the preview of the first option. Give the options `Yes` (Recommended) and `No`.
+3. When no pointer target needs an edit, do not ask the pointer question. When the call then has no question, make no call.
+4. In the first call, the total of the question count is the number of setup questions in that call. The new policy decides how you ask your own questions. Continue the count of the session after the setup questions.
+5. When the Operator selects `Choose each setting`, ask one question for each Setting, in the sequence of the Settings table. Ask only one question in each call, because one answer can make a later Setting unused. Give the default value first, with "(Recommended)".
+   - Ask the `Answer options` question only when the answer for `Question mode` is `numbered list`. Else write `on` for `Answer options`, and ask no question for it.
+6. When a call of the question tool fails, obey "When no human can answer the setup questions".
+
+When you have the answers, do these steps:
+
+1. If the folder `docs/agents/` is not there, make the folder.
+2. Write the Human communication policy with the values that you have. Write one Setting for each row of the Settings table, in the sequence of that table.
+3. If the Operator selected `Yes` for the pointer text, add the pointer text to the end of each pointer target that needs an edit. Put a blank line before the pointer text. When the project has neither file, make the 2 files as "When you find the pointer targets" tells you.
+4. Do not stage or commit a file of the setup. The Operator commits these files with the process of the project.
+5. In your next message, name each new file and each changed file.
+6. Ask your own questions in the question mode of the new policy.
+
+### When no human can answer the setup questions
+
+No human can answer when you have no question tool, or when a call of the question tool fails. `references/questions.md` gives examples of these cases.
+
+Make no edit for the pointer text in these cases. Only the Operator can select the pointer text.
+
+When the prompt gives a value for each Setting, or says "use the default human communication policy", do these steps:
+
+1. Write the Human communication policy with these values. Obey steps 1, 2, 4, and 5 of the steps after the answers.
+2. Continue with your own questions, as `references/questions.md` tells you for the case where no human can answer.
+
+When the prompt does not give these answers, do these steps:
+
+1. Write no file.
+2. In your final message, put the setup questions first. Then put your own questions. Write the questions in one numbered list, as `references/questions.md` tells you. The total of the question count is the number of questions in the list.
+3. Below the policy question, give the default Human communication policy in a code block.
+4. Tell the caller to answer the questions in a new request. As an alternative, the caller can say "use the default human communication policy".
+5. Stop the work that needs an answer.

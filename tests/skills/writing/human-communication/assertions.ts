@@ -163,9 +163,10 @@ function plainQuestions(text: string): Asked[] {
 // gives no answer.
 const answered = (run: Run) => run.questions.filter((call) => !call.error);
 
-// The questions of the answered tool calls. With no answered tool call, the
-// questions of the numbered lists in the chat text, for example the plain
-// text after a denied call.
+// The questions of the answered tool calls, then the questions of the
+// numbered lists in the chat text, for example the plain text after a
+// denied call, or the own questions after the setup calls. A chat line that
+// repeats the count of a tool question is not a new question.
 function askedQuestions(run: Run): Asked[] {
     const calls = answered(run).flatMap((call) =>
         (call.questions ?? []).map((item) => ({
@@ -175,8 +176,21 @@ function askedQuestions(run: Run): Asked[] {
             tool: true,
         })),
     );
-    return calls.length > 0 ? calls : chat(run).flatMap(plainQuestions);
+    const counts = new Set(calls.map((item) => item.count));
+    const plain = chat(run)
+        .flatMap(plainQuestions)
+        .filter((item) => !counts.has(item.count));
+    return [...calls, ...plain];
 }
+
+// Each string value of a question tool call: the question text, the labels,
+// the descriptions, and the previews.
+const strings = (value: unknown): string[] =>
+    typeof value === "string"
+        ? [value]
+        : value && typeof value === "object"
+          ? Object.values(value).flatMap(strings)
+          : [];
 
 const RECOMMENDED = "(Recommended)";
 const recommended = (label: string, tool: boolean) =>
@@ -403,7 +417,10 @@ export const checks: Record<string, Check> = {
     // asks them. With `args.options: false`, no question has options.
     listedQuestions(run, args) {
         const counts = args.counts as string[];
-        if (answered(run).length > 0)
+        const asked = answered(run).flatMap((call) =>
+            (call.questions ?? []).map((item) => item.header ?? ""),
+        );
+        if (asked.some((count) => counts.includes(count)))
             return verdict(["A question tool call asked the questions."], "");
         const list = chat(run)
             .map(plainQuestions)
@@ -500,6 +517,23 @@ export const checks: Record<string, Check> = {
                       `calls ${JSON.stringify(got)}, want ${JSON.stringify(want)}`,
                   ],
             `calls ${JSON.stringify(got)}`,
+        );
+    },
+
+    // A string of question tool call `args.call` (the first call by default)
+    // matches `args.pattern`, for example the default file in a preview.
+    questionMatches(run, args) {
+        const index = Number(args.call ?? 0);
+        const found = strings(run.questions[index]).some((value) =>
+            regex(args).test(value),
+        );
+        return verdict(
+            found
+                ? []
+                : [
+                      `Question call ${index + 1} does not match /${String(args.pattern)}/.`,
+                  ],
+            `Question call ${index + 1} matches /${String(args.pattern)}/.`,
         );
     },
 
