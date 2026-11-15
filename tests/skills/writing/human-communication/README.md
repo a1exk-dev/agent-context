@@ -13,6 +13,9 @@ The eval plan is in the "Testing Decisions" section of issue #188 and in the res
 | `assertions.ts` | The script checks. |
 | `grade.ts` | Grades the script statements of one run, and merges the llm results into `grading.json`. |
 | `grader.md` | Instructions for the grader subagent of the llm statements, and the confirmer prompt. |
+| `load-requests.json` | The 20 requests of the load test. Each must load the skill. |
+| `run-load-test.ts` | Runs the load test with `claude -p` in 2 configurations: `description` (the skill with no pointer) and `pointer` (the skill and the pointer text in `AGENTS.md`). |
+| `load-decision.ts` | Decides if a load-test run loaded the skill. |
 | `static.test.ts` | The static test in the check: the skill names no other skill, the description and the pointer text name no exclusion, the pointer text is word for word, and each "compliant" or "certified" is in a sentence with "never" or "not". |
 
 The unit tests (`*.test.ts`) test the Git state parser, the copy and delete of the run folder, the human text, the checks, and `grade.ts`. The test container has no Git, so they test the parser with saved Git output.
@@ -33,6 +36,18 @@ Then grade each run folder (`<iteration>/eval-<name>/<configuration>/run-1`) in 
 2. Give `grader.md` and the run folder to a fresh grader subagent, one grader for each run. It writes `llm-grading.json`.
 3. For each `llm` statement with a "no", start 2 confirmers with the prompt in `grader.md`, and write `confirmers.json`. A failed statement counts only when at least 1 confirmer agrees.
 4. `bun tests/skills/writing/human-communication/grade.ts merge <run-dir>` writes `grading.json`.
+
+## Load test
+
+The load test runs each request of `load-requests.json` 3 times in each configuration. It adds no system prompt that names the skill. Run it from the repository root:
+
+```sh
+bun tests/skills/writing/human-communication/run-load-test.ts --out /tmp/hc-load/round-1.json
+```
+
+`--configs description` or `--configs pointer` runs 1 configuration, and `--ids 1,5` runs only these requests. The pointer configuration adds `references/agents-md-pointer.md` of the skill to `AGENTS.md` and commits it. In both configurations, the copy of `project/` is on the branch `feature/log-level` with 4 commits (a new config option, `fetchData`, a retry test, and a README typo) and a staged change in `src/fetch.ts`, so that each request fits it.
+
+A run counts as a load when the agent calls the skill or reads its `SKILL.md` before its first text, its first question, and its first document write, and within its first 8 tool calls. A request is correct when its load rate is above 0.5. The stop rule needs at least 18 of 20 correct requests in each configuration.
 
 ## The test repository
 

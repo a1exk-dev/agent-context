@@ -65,7 +65,7 @@ const pathOf = (call: ToolCall) =>
         call.input.file_path ?? call.input.filePath ?? call.input.path ?? "",
     );
 
-function isSkillLoad(call: ToolCall): boolean {
+export function isSkillLoad(call: ToolCall): boolean {
     if (call.name.toLowerCase() === "skill")
         return String(call.input.skill ?? call.input.name ?? "") === SKILL_NAME;
     const target = `${pathOf(call)} ${String(call.input.command ?? "")}`;
@@ -75,7 +75,7 @@ function isSkillLoad(call: ToolCall): boolean {
 // What a human sees first: a text block, a question, or a document write.
 type Step = { load: boolean; seen: string | null };
 
-function steps(events: ClaudeEvent[]): Step[] {
+export function steps(events: ClaudeEvent[]): Step[] {
     return events
         .filter(
             (event) => event.type === "assistant" && !event.parent_tool_use_id,
