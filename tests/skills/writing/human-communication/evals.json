@@ -90,14 +90,18 @@
                     "text": "The chat text names the code as `src/fetch.ts:<line>`.",
                     "grader": "script",
                     "check": "textMatches",
-                    "args": { "pattern": "src/fetch\\.ts:\\d+" }
+                    "args": {
+                        "pattern": "src/fetch\\.ts:\\d+"
+                    }
                 },
                 {
                     "id": "1.3",
                     "text": "The run does not read the policy file `docs/agents/human-communication-policy.md`.",
                     "grader": "script",
                     "check": "notRead",
-                    "args": { "pattern": "human-communication-policy.md" }
+                    "args": {
+                        "pattern": "human-communication-policy.md"
+                    }
                 }
             ]
         },
@@ -112,7 +116,9 @@
                     "text": "The chat text gives the test command `bun test` in a code block.",
                     "grader": "script",
                     "check": "codeBlock",
-                    "args": { "pattern": "bun test" }
+                    "args": {
+                        "pattern": "bun test"
+                    }
                 }
             ]
         },
@@ -121,7 +127,9 @@
             "name": "03-behavior-change",
             "prompt": "Change the retry limit to 5 and tell me what changes.",
             "setup": {},
-            "expect": { "changes": ["src/fetch.ts"] },
+            "expect": {
+                "changes": ["src/fetch.ts"]
+            },
             "assertions": [
                 {
                     "id": "3.1",
@@ -151,7 +159,10 @@
                     "text": "The chat text holds a diff of the change to `README.md` in a code block. `README.md` is unchanged (U5).",
                     "grader": "script",
                     "check": "codeBlock",
-                    "args": { "pattern": "^\\+", "flags": "m" }
+                    "args": {
+                        "pattern": "^\\+",
+                        "flags": "m"
+                    }
                 }
             ]
         },
@@ -193,14 +204,18 @@
             "name": "06-document",
             "prompt": "Write a setup guide for new contributors in docs/setup.md.",
             "setup": {},
-            "expect": { "changes": ["docs/setup.md"] },
+            "expect": {
+                "changes": ["docs/setup.md"]
+            },
             "assertions": [
                 {
                     "id": "6.1",
                     "text": "`docs/setup.md` starts with a title, and it has one or more `##` headings and a list.",
                     "grader": "script",
                     "check": "documentForm",
-                    "args": { "path": "docs/setup.md" }
+                    "args": {
+                        "path": "docs/setup.md"
+                    }
                 },
                 {
                     "id": "6.2",
@@ -220,14 +235,19 @@
                     "text": "The human text says \"Job\".",
                     "grader": "script",
                     "check": "textMatches",
-                    "args": { "pattern": "\\bJobs?\\b" }
+                    "args": {
+                        "pattern": "\\bJobs?\\b"
+                    }
                 },
                 {
                     "id": "7.2",
                     "text": "The human text does not say \"task\" outside code and quoted text.",
                     "grader": "script",
                     "check": "proseAvoids",
-                    "args": { "pattern": "\\btasks?\\b", "flags": "i" }
+                    "args": {
+                        "pattern": "\\btasks?\\b",
+                        "flags": "i"
+                    }
                 }
             ]
         },
@@ -246,27 +266,121 @@
             ]
         },
         {
+            "id": 9,
+            "name": "09-commit-message",
+            "prompt": "Commit the staged change.",
+            "setup": {
+                "overlay": "overlays/09-commit-message",
+                "steps": [
+                    "perl -pi -e 's/MAX_TRIES = 3/MAX_TRIES = 5/' src/fetch.ts && git add src/fetch.ts"
+                ]
+            },
+            "expect": {
+                "changes": ["src/fetch.ts"],
+                "commits": 1
+            },
+            "assertions": [
+                {
+                    "id": "9.1",
+                    "text": "The new commit has a Conventional Commits header, a blank line, and a body, as the Commit policy in `AGENTS.md` tells.",
+                    "grader": "script",
+                    "check": "commitMatches",
+                    "args": {
+                        "pattern": "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\([\\w./-]+\\))?!?: \\S[^\\n]*\\n\\n\\S"
+                    }
+                },
+                {
+                    "id": "9.2",
+                    "text": "The body of the commit message says what the change does (the retry limit goes from 3 to 5 tries) and why, in sentences.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "name": "10-pr-template",
+            "prompt": "Write the PR description for this branch into pr.md.",
+            "setup": {
+                "overlay": "overlays/10-pr-template",
+                "steps": [
+                    "git checkout -q -b fix/retry-limit && perl -pi -e 's/MAX_TRIES = 3/MAX_TRIES = 5/' src/fetch.ts && git commit -q -am 'fix: raise the retry limit to 5'"
+                ]
+            },
+            "expect": {
+                "changes": ["pr.md"]
+            },
+            "templates": [".github/pull_request_template.md"],
+            "assertions": [
+                {
+                    "id": "10.1",
+                    "text": "`pr.md` keeps each line of `.github/pull_request_template.md` word for word and in its order: the headings `## Summary` and `## Test plan`, and the fixed sentence.",
+                    "grader": "script",
+                    "check": "keepsTemplate",
+                    "args": {
+                        "path": "pr.md",
+                        "template": ".github/pull_request_template.md"
+                    }
+                },
+                {
+                    "id": "10.2",
+                    "text": "Under `## Summary`, the sentences of `pr.md` describe the change of the branch (the retry limit goes from 3 to 5 tries). Under `## Test plan`, they tell how to test the change.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "name": "11-caution",
+            "prompt": "Give me the steps to reset the local database.",
+            "setup": {
+                "overlay": "overlays/11-caution"
+            },
+            "assertions": [
+                {
+                    "id": "11.1",
+                    "text": "The chat text has a CAUTION.",
+                    "grader": "script",
+                    "check": "textMatches",
+                    "args": {
+                        "pattern": "\\bCAUTION\\b"
+                    }
+                },
+                {
+                    "id": "11.2",
+                    "text": "The CAUTION comes directly before the step that deletes the database file `data/app.db`, not after it. After CAUTION, the instruction comes first, then the risk (the step deletes all saved Jobs, and you cannot undo it).",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
             "id": 12,
             "name": "12-tabbed",
             "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
             "setup": {},
             "answers": ["debug", "logs/app.log", "Yes"],
             "questions": true,
-            "expect": { "changes": ["config/logger.json"] },
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
             "assertions": [
                 {
                     "id": "12.1",
                     "text": "The run asks the 3 questions in one tool call, with the headers \"Q1 of 3\", \"Q2 of 3\", and \"Q3 of 3\".",
                     "grader": "script",
                     "check": "questionCalls",
-                    "args": { "calls": [["Q1 of 3", "Q2 of 3", "Q3 of 3"]] }
+                    "args": {
+                        "calls": [["Q1 of 3", "Q2 of 3", "Q3 of 3"]]
+                    }
                 },
                 {
                     "id": "12.2",
                     "text": "`config/logger.json` holds the log level `debug`.",
                     "grader": "script",
                     "check": "fileMatches",
-                    "args": { "path": "config/logger.json", "pattern": "debug" }
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug"
+                    }
                 },
                 {
                     "id": "12.3",
@@ -292,7 +406,9 @@
             "setup": {},
             "answers": ["debug", "logs/app.log", "Yes", "10 MB", "5", "json"],
             "questions": true,
-            "expect": { "changes": ["config/logger.json"] },
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
             "assertions": [
                 {
                     "id": "13.1",
@@ -331,7 +447,9 @@
                     "text": "The dependent question comes in a later tool call. The first call has \"Q1 of 1\", and the second call has \"Q2 of 2\".",
                     "grader": "script",
                     "check": "questionCalls",
-                    "args": { "calls": [["Q1 of 1"], ["Q2 of 2"]] }
+                    "args": {
+                        "calls": [["Q1 of 1"], ["Q2 of 2"]]
+                    }
                 }
             ]
         },
@@ -339,17 +457,23 @@
             "id": 22,
             "name": "22-agents-md-loses",
             "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
-            "setup": { "overlay": "overlays/22-agents-md" },
+            "setup": {
+                "overlay": "overlays/22-agents-md"
+            },
             "answers": ["debug", "logs/app.log", "Yes"],
             "questions": true,
-            "expect": { "changes": ["config/logger.json"] },
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
             "assertions": [
                 {
                     "id": "22.1",
                     "text": "`AGENTS.md` says \"Ask one question at a time.\", but the policy wins: the run asks the 3 questions in one tabbed call, \"Q1 of 3\" to \"Q3 of 3\".",
                     "grader": "script",
                     "check": "questionCalls",
-                    "args": { "calls": [["Q1 of 3", "Q2 of 3", "Q3 of 3"]] }
+                    "args": {
+                        "calls": [["Q1 of 3", "Q2 of 3", "Q3 of 3"]]
+                    }
                 }
             ]
         },
@@ -357,10 +481,14 @@
             "id": 23,
             "name": "23-other-skill-format",
             "prompt": "Use setup-ci to set up CI.",
-            "setup": { "overlay": "overlays/23-setup-ci" },
+            "setup": {
+                "overlay": "overlays/23-setup-ci"
+            },
             "questions": true,
             "answers": [],
-            "expect": { "changes": [".github/workflows/ci.yml"] },
+            "expect": {
+                "changes": [".github/workflows/ci.yml"]
+            },
             "assertions": [
                 {
                     "id": "23.1",

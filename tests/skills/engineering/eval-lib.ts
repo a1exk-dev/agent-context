@@ -43,16 +43,18 @@ export function readEvalsIn<E extends { id: number; assertions: unknown[] }>(
 export type LoadRequest = { query: string; should_trigger: boolean };
 export type LoadOptions = { model: string; timeout: number };
 export type LoadRun = { hit: boolean; calls: string[] };
-type Decide = (calls: ToolCall[]) => boolean | null;
+type Decide = (calls: ToolCall[], events: ClaudeEvent[]) => boolean | null;
 
 // Reads the stream-json lines of a run until `decide` gives a decision. Only
-// the calls of the main agent count. A run that ends with no decision is no
+// the calls of the main agent count. `decide` also gets each event so far, for
+// a decision that reads text blocks. A run that ends with no decision is no
 // load. `hit` is null when the stream stops before its result.
 export async function loadOutcome(
     stream: AsyncIterable<string>,
     decide: Decide,
 ): Promise<{ hit: boolean | null; limit: boolean; calls: ToolCall[] }> {
     const calls: ToolCall[] = [];
+    const events: ClaudeEvent[] = [];
     let hit: boolean | null = null;
     let limit = false;
     for await (const line of stream) {
@@ -63,8 +65,9 @@ export async function loadOutcome(
             continue;
         }
         limit ||= hitUsageLimit(line);
+        events.push(event);
         if (!event.parent_tool_use_id) calls.push(...toolCalls(event));
-        hit = decide(calls);
+        hit = decide(calls, events);
         if (hit === null && event.type === "result") hit = false;
         if (hit !== null) break;
     }

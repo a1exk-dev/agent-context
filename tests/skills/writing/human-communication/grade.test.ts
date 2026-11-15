@@ -21,7 +21,11 @@ describe("grade.ts", () => {
     // Writes a run folder with one text block and the given statements.
     function runFolder(
         assertions: unknown[],
-        options: { text?: string; files?: Record<string, string> } = {},
+        options: {
+            text?: string;
+            files?: Record<string, string>;
+            templates?: Record<string, string>;
+        } = {},
     ): string {
         out = mkdtempSync(join(tmpdir(), "hc-grade-"));
         const evalDir = join(out, "eval-01-chat-answer");
@@ -61,7 +65,11 @@ describe("grade.ts", () => {
         }
         writeFileSync(
             join(evalDir, "eval_metadata.json"),
-            JSON.stringify({ assertions, expect: {} }),
+            JSON.stringify({
+                assertions,
+                expect: {},
+                templates: options.templates,
+            }),
         );
         return runDir;
     }
@@ -108,6 +116,26 @@ describe("grade.ts", () => {
         });
         scriptStep(runDir);
         expect(read(runDir, "script-grading.json").script[0].passed).toBe(true);
+    });
+
+    it("reads the templates of eval_metadata.json", () => {
+        const kept = {
+            id: "10.1",
+            text: "template",
+            grader: "script",
+            check: "keepsTemplate",
+            args: { path: "pr.md", template: "template.md" },
+        };
+        const runDir = runFolder([U2, kept], {
+            files: { "pr.md": "- [ ] It should not break.\n- [x] It works.\n" },
+            templates: { "template.md": "- [ ] It should not break.\n" },
+        });
+        scriptStep(runDir);
+        expect(
+            read(runDir, "script-grading.json").script.map(
+                (item: { passed: boolean }) => item.passed,
+            ),
+        ).toEqual([true, true]);
     });
 
     it("stops on LIMIT_HIT", () => {

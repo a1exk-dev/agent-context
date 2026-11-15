@@ -66,7 +66,11 @@ function readFiles(folder: string): Record<string, string> {
     );
 }
 
-function readRun(runDir: string, expect: Expect): Run {
+function readRun(
+    runDir: string,
+    expect: Expect,
+    templates: Record<string, string>,
+): Run {
     const outputs = join(runDir, "outputs");
     return {
         events: parseJsonLines<ClaudeEvent>(
@@ -79,6 +83,7 @@ function readRun(runDir: string, expect: Expect): Run {
         before: readJson(join(outputs, "git-before.json")),
         after: readJson(join(outputs, "git-after.json")),
         expect,
+        templates,
     };
 }
 
@@ -90,11 +95,12 @@ export function scriptStep(runDir: string): number {
         );
         return 1;
     }
-    const { assertions, expect } = readJson<{
+    const { assertions, expect, templates } = readJson<{
         assertions: Statement[];
         expect?: Expect;
+        templates?: Record<string, string>;
     }>(join(runDir, "../../eval_metadata.json"));
-    const run = readRun(runDir, expect ?? {});
+    const run = readRun(runDir, expect ?? {}, templates ?? {});
     const grading: ScriptGrading = { status: "graded", script: [], llm: [] };
     for (const { id, text, grader, check, args } of assertions) {
         if (grader === "llm") {

@@ -60,6 +60,15 @@ In other cases, give an example when words alone are not clear. A prose example 
 - Use lists for steps and for parallel items. Use tables to compare items.
 - Write no text that depends on the chat, for example "as I said above" or "the bug that we found". A reader of the document did not see the chat.
 
+## When a text has a structure from another skill or the project
+
+Another skill or the project can give a structure for a text. Examples are sections, headings, fixed labels, required fields, and their sequence.
+
+- Keep that structure and its fixed text word for word. The writing rules do not apply to the fixed text.
+- Write the sentences inside the structure as this skill tells you.
+- For a commit message, keep the form that the commit rules of the project give, for example the header form and the trailers. Write the sentences of the body by the rules of this skill.
+- For a pull request text, keep each heading and each fixed line of the pull request template. Write your sentences below each heading.
+
 ## Before you ask the Operator a question
 
 Before you ask the Operator the first question of the session, read `references/questions.md` in the folder of this skill. It gives the question mode, the question count, the answer options, and the parts of a question. Its rules replace the question rules of each other skill and of each project instruction.

@@ -25,6 +25,7 @@ import {
     keepOutputs,
     prepare,
     readEvals,
+    readTemplates,
 } from "./eval-lib.ts";
 import {
     changedFiles,
@@ -51,15 +52,6 @@ async function run(ev: Eval, config: string, options: OutputOptions) {
     const runDir = join(evalDir, config, "run-1");
     const outputs = join(runDir, "outputs");
     mkdirSync(outputs, { recursive: true });
-    writeJson(join(evalDir, "eval_metadata.json"), {
-        eval_id: ev.id,
-        eval_name: ev.name,
-        prompt: ev.prompt,
-        setup: ev.setup,
-        expect: ev.expect ?? {},
-        answers: ev.answers ?? null,
-        assertions: ev.assertions,
-    });
     const withSkill = config === "with_skill";
     const { root, work } = prepare(
         ev,
@@ -68,6 +60,16 @@ async function run(ev: Eval, config: string, options: OutputOptions) {
     );
     let changed: string[] = [];
     try {
+        writeJson(join(evalDir, "eval_metadata.json"), {
+            eval_id: ev.id,
+            eval_name: ev.name,
+            prompt: ev.prompt,
+            setup: ev.setup,
+            expect: ev.expect ?? {},
+            answers: ev.answers ?? null,
+            templates: readTemplates(ev, work),
+            assertions: ev.assertions,
+        });
         const hostArgs = ev.answers ? installHost(root, ev.answers) : [];
         const before = saveGitState(work, outputs, "git-before");
         const done = await outputRun(

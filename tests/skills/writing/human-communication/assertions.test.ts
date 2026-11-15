@@ -29,6 +29,7 @@ const run = (overrides: Partial<Run>): Run => ({
     before: START,
     after: START,
     expect: {},
+    templates: {},
     ...overrides,
 });
 const check = (name: string, value: Run, args = {}) =>
@@ -401,5 +402,92 @@ describe("questionCalls", () => {
         expect(check("questionCalls", run({})).passed).toBe(false);
         const questions = [ask("Q1 of 1")];
         expect(check("questionCalls", run({ questions })).passed).toBe(true);
+    });
+});
+
+describe("checks of tests 9 to 11", () => {
+    const TEMPLATE = {
+        ".github/pull_request_template.md":
+            "## Summary\n\n## Test plan\n\n- [ ] This change should not break the API.\n",
+    };
+
+    it("steText does not read the fixed text of a template", () => {
+        const files = {
+            "pr.md":
+                "## Summary\n\nThe retry stops after 5 tries.\n\n## Test plan\n\n- [ ] This change should not break the API.\n",
+        };
+        expect(
+            check("steText", run({ files, templates: TEMPLATE })).passed,
+        ).toBe(true);
+        expect(check("steText", run({ files })).passed).toBe(false);
+    });
+
+    it("keepsTemplate needs each fixed line of the template, in its order", () => {
+        const args = {
+            path: "pr.md",
+            template: ".github/pull_request_template.md",
+        };
+        const kept = {
+            "pr.md":
+                "## Summary\n\nThe retry stops later.\n\n## Test plan\n\n- [ ] This change should not break the API.\n- [x] I ran the tests.\n",
+        };
+        expect(
+            check(
+                "keepsTemplate",
+                run({ files: kept, templates: TEMPLATE }),
+                args,
+            ),
+        ).toEqual({
+            passed: true,
+            evidence:
+                "pr.md keeps the 3 fixed lines of .github/pull_request_template.md.",
+        });
+        const changed = {
+            "pr.md":
+                "## Test plan\n\n- [ ] Tests pass.\n\n## Summary\n\nThe retry stops later.\n",
+        };
+        expect(
+            check(
+                "keepsTemplate",
+                run({ files: changed, templates: TEMPLATE }),
+                args,
+            ),
+        ).toEqual({
+            passed: false,
+            evidence: [
+                "missing or out of order: ## Test plan",
+                "missing or out of order: - [ ] This change should not break the API.",
+            ].join("\n"),
+        });
+        expect(
+            check("keepsTemplate", run({ templates: TEMPLATE }), args).passed,
+        ).toBe(false);
+    });
+
+    it("commitMatches needs a new commit, and each new commit matches", () => {
+        const args = { pattern: "^fix: \\S.*\\n\\n\\S" };
+        const commit = (message: string) => ({
+            ...START,
+            commits: [{ sha: "b2", message, files: [] }, ...START.commits],
+        });
+        expect(
+            check(
+                "commitMatches",
+                run({
+                    after: commit(
+                        "fix: raise the retry limit\n\nThe retry stops after 5 tries.",
+                    ),
+                }),
+                args,
+            ).passed,
+        ).toBe(true);
+        expect(
+            check(
+                "commitMatches",
+                run({ after: commit("Raise the limit") }),
+                args,
+            ).passed,
+        ).toBe(false);
+        expect(check("commitMatches", run({}), args).passed).toBe(false);
     });
 });

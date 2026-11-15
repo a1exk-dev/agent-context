@@ -66,6 +66,9 @@ export type Eval = {
     expect?: Expect;
     // The ids of the common statements that do not apply to the test.
     skip?: string[];
+    // The paths of the templates in the project. Their fixed text is not
+    // human text of the agent.
+    templates?: string[];
     assertions: Statement[];
 };
 
@@ -148,6 +151,17 @@ export function prepare(
         throw error;
     }
     return { root, work };
+}
+
+// The text of each template of the test in the project folder of a run, by
+// path.
+export function readTemplates(ev: Eval, work: string): Record<string, string> {
+    return Object.fromEntries(
+        (ev.templates ?? []).map((path) => [
+            path,
+            readFileSync(join(work, path), "utf8"),
+        ]),
+    );
 }
 
 // Writes the question host to `<root>/host`, next to the project folder, so

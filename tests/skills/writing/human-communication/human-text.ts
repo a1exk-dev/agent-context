@@ -23,6 +23,8 @@ export type HumanSource = {
     files: Record<string, string>;
     // The full message of each new commit.
     commits: string[];
+    // The text of each template that the project gives, by path.
+    templates?: Record<string, string>;
 };
 
 export type HumanPart = { source: string; text: string };
@@ -32,7 +34,25 @@ const DOCUMENT = /\.(md|mdx|markdown|txt)$/i;
 // Each text that a human reads in a run: the text blocks of the main agent,
 // the final message when no text block holds it, each question with its
 // options, each new or changed document, and the body of each new commit.
+// The fixed text of the templates is not human text of the agent, so each
+// line that is equal to a template line becomes empty.
 export function humanText(run: HumanSource): HumanPart[] {
+    const fixed = new Set(
+        Object.values(run.templates ?? {})
+            .flatMap((text) => text.split("\n"))
+            .map((line) => line.trim())
+            .filter(Boolean),
+    );
+    return parts(run).map(({ source, text }) => ({
+        source,
+        text: text
+            .split("\n")
+            .map((line) => (fixed.has(line.trim()) ? "" : line))
+            .join("\n"),
+    }));
+}
+
+function parts(run: HumanSource): HumanPart[] {
     const parts: HumanPart[] = [];
     for (const event of run.events) {
         if (event.type !== "assistant" || event.parent_tool_use_id) continue;
