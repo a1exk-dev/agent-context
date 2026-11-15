@@ -357,7 +357,11 @@
             "name": "12-tabbed",
             "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
             "setup": {},
-            "answers": ["debug", "logs/app.log", "Yes"],
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "expect": {
                 "changes": ["config/logger.json"]
@@ -460,7 +464,11 @@
             "setup": {
                 "overlay": "overlays/15-one-at-a-time"
             },
-            "answers": ["debug", "logs/app.log", "Yes"],
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "expect": {
                 "changes": ["config/logger.json"]
@@ -504,7 +512,11 @@
             "setup": {
                 "overlay": "overlays/16-numbered-list"
             },
-            "answers": ["debug", "logs/app.log", "Yes"],
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "expect": {
                 "changes": ["config/logger.json"]
@@ -542,7 +554,11 @@
             "setup": {
                 "overlay": "overlays/17-numbered-list-options-off"
             },
-            "answers": ["debug", "logs/app.log", "Yes"],
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "skip": ["Q2"],
             "expect": {
@@ -577,7 +593,11 @@
             "setup": {
                 "overlay": "overlays/18-tabbed-options-off"
             },
-            "answers": ["debug", "logs/app.log", "Yes"],
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "expect": {
                 "changes": ["config/logger.json"]
@@ -621,7 +641,11 @@
             "setup": {
                 "overlay": "overlays/19-count-off"
             },
-            "answers": ["debug", "logs/app.log", "Yes"],
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "skip": ["Q1"],
             "expect": {
@@ -704,7 +728,11 @@
             "name": "21-prompt-override",
             "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json. Ask me as a numbered list.",
             "setup": {},
-            "answers": ["debug", "logs/app.log", "Yes"],
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "expect": {
                 "changes": ["config/logger.json"]
@@ -737,7 +765,11 @@
             "setup": {
                 "overlay": "overlays/22-agents-md"
             },
-            "answers": ["debug", "logs/app.log", "Yes"],
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "expect": {
                 "changes": ["config/logger.json"]
@@ -881,7 +913,13 @@
             "setup": {
                 "remove": ["docs/agents/human-communication-policy.md"]
             },
-            "answers": ["Use defaults", "Yes", "debug", "logs/app.log", "Yes"],
+            "answers": [
+                "Use defaults",
+                "Yes",
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "expect": {
                 "changes": [
@@ -1026,7 +1064,7 @@
                 "on",
                 "debug",
                 "logs/app.log",
-                "Yes"
+                "Yes, rotate daily and keep 7 files"
             ],
             "questions": true,
             "expect": {
@@ -1075,7 +1113,13 @@
                 "remove": ["docs/agents/human-communication-policy.md"],
                 "overlay": "overlays/30-two-files"
             },
-            "answers": ["Use defaults", "Yes", "debug", "logs/app.log", "Yes"],
+            "answers": [
+                "Use defaults",
+                "Yes",
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "expect": {
                 "changes": [
@@ -1174,7 +1218,13 @@
                     "CLAUDE.md"
                 ]
             },
-            "answers": ["Use defaults", "Yes", "debug", "logs/app.log", "Yes"],
+            "answers": [
+                "Use defaults",
+                "Yes",
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "expect": {
                 "changes": [
@@ -1270,7 +1320,12 @@
                 "remove": ["docs/agents/human-communication-policy.md"],
                 "overlay": "overlays/32-pointer-there"
             },
-            "answers": ["Use defaults", "debug", "logs/app.log", "Yes"],
+            "answers": [
+                "Use defaults",
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "expect": {
                 "changes": [
@@ -1415,7 +1470,11 @@
             "setup": {
                 "overlay": "overlays/35-prose-policy"
             },
-            "answers": ["debug", "logs/app.log", "Yes"],
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "expect": {
                 "changes": []
             },
@@ -1445,7 +1504,11 @@
             "setup": {
                 "overlay": "overlays/36-duplicate-name"
             },
-            "answers": ["debug", "logs/app.log", "Yes"],
+            "answers": [
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "expect": {
                 "changes": []
             },
@@ -1475,7 +1538,12 @@
             "setup": {
                 "overlay": "overlays/37-missing-line"
             },
-            "answers": ["on", "debug", "logs/app.log", "Yes"],
+            "answers": [
+                "on",
+                "debug",
+                "logs/app.log",
+                "Yes, rotate daily and keep 7 files"
+            ],
             "questions": true,
             "expect": {
                 "changes": [
@@ -1557,11 +1625,11 @@
                 },
                 {
                     "id": "38.2",
-                    "text": "The default policy words do not answer the pointer question. The final message lists the pointer question first and then the 3 own questions, numbered, \"Q1 of 4\" to \"Q4 of 4\".",
+                    "text": "The policy is there, so the run does no setup and asks no pointer question. The final message lists the 3 own questions, numbered, \"Q1 of 3\" to \"Q3 of 3\".",
                     "grader": "script",
                     "check": "listedQuestions",
                     "args": {
-                        "counts": ["Q1 of 4", "Q2 of 4", "Q3 of 4", "Q4 of 4"]
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
                     }
                 },
                 {
