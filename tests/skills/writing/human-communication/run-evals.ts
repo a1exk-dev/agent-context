@@ -4,8 +4,10 @@
 // no CLAUDE.md or AGENTS.md of this repository loads, and no run leaves a
 // file in this repository. `--setting-sources project,local` keeps user
 // skills and user memory out, so human-communication is the only installed
-// Skill. After the run, the runner copies the changed files to the run
-// folder and deletes the copy.
+// Skill. A test with `answers` also gets the question host of
+// question-host.ts in the temporary folder. After the run, the runner copies
+// the changed files and the saved questions to the run folder and deletes
+// the copy.
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -19,6 +21,7 @@ import { claudeEnv, writeJson } from "../agent-instructions/eval-lib.ts";
 import {
     type Eval,
     FORCE_SKILL,
+    installHost,
     keepOutputs,
     prepare,
     readEvals,
@@ -54,6 +57,7 @@ async function run(ev: Eval, config: string, options: OutputOptions) {
         prompt: ev.prompt,
         setup: ev.setup,
         expect: ev.expect ?? {},
+        answers: ev.answers ?? null,
         assertions: ev.assertions,
     });
     const withSkill = config === "with_skill";
@@ -64,6 +68,7 @@ async function run(ev: Eval, config: string, options: OutputOptions) {
     );
     let changed: string[] = [];
     try {
+        const hostArgs = ev.answers ? installHost(root, ev.answers) : [];
         const before = saveGitState(work, outputs, "git-before");
         const done = await outputRun(
             ev.prompt,
@@ -72,6 +77,7 @@ async function run(ev: Eval, config: string, options: OutputOptions) {
             claudeEnv(),
             options,
             runDir,
+            hostArgs,
         );
         const after = saveGitState(work, outputs, "git-after");
         changed = changedFiles(before, after);

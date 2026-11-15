@@ -212,6 +212,7 @@ export type OutputOptions = { out: string; model: string; timeout: number };
 
 // Runs one output test with `claude -p` in the test repository `work`. It
 // writes the transcript, the stderr text, and `report.md` of the run.
+// `extraArgs` are more `claude` flags, for example of a question host.
 export async function outputRun(
     prompt: string,
     forceSkill: string | null,
@@ -219,6 +220,7 @@ export async function outputRun(
     env: Record<string, string | undefined>,
     options: OutputOptions,
     runDir: string,
+    extraArgs: string[] = [],
 ) {
     const cmd = [
         "claude",
@@ -235,6 +237,7 @@ export async function outputRun(
         options.model,
     ];
     if (forceSkill) cmd.push("--append-system-prompt", forceSkill);
+    cmd.push(...extraArgs);
     const { proc, exited } = spawnTimed(
         cmd,
         { cwd: work, env, stdout: "pipe", stderr: "pipe" },

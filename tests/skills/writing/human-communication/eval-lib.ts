@@ -12,11 +12,13 @@ import {
     readFileSync,
     rmSync,
     statSync,
+    writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readEvalsIn } from "../../engineering/eval-lib.ts";
+import { PERMISSION_TOOL, SERVER } from "./question-host.ts";
 
 export const HERE = dirname(fileURLToPath(import.meta.url));
 export const SKILL = join(
@@ -54,6 +56,13 @@ export type Eval = {
     name: string;
     prompt: string;
     setup: Setup;
+    // A test with `answers` runs with the question host. The host answers
+    // the questions of the run in order with these answers, and then with
+    // the first option of each question. A test with no `answers` runs with
+    // no host, so the run has no question tool.
+    answers?: string[];
+    // A test with `questions: true` also gets the question statements.
+    questions?: boolean;
     expect?: Expect;
     // The ids of the common statements that do not apply to the test.
     skip?: string[];
@@ -61,15 +70,30 @@ export type Eval = {
 };
 
 // Reads the tests of evals.json with the given ids, or all tests with no
-// ids. Each test gets the common statements first, without the statements
-// in its `skip` list.
+// ids. Each test gets the common statements first, then the question
+// statements when it has `questions: true`, without the statements in its
+// `skip` list.
 export function readEvals(ids: string): Eval[] {
-    return readEvalsIn<Eval>(HERE, ids).map((ev) => ({
-        ...ev,
-        assertions: ev.assertions.filter(
-            (statement) => !ev.skip?.includes(statement.id),
-        ),
-    }));
+    const file = JSON.parse(readFileSync(join(HERE, "evals.json"), "utf8")) as {
+        common_assertions: Statement[];
+        question_assertions: Statement[];
+    };
+    const common = file.common_assertions.length;
+    return readEvalsIn<Eval>(HERE, ids).map((ev) => {
+        const assertions = ev.questions
+            ? [
+                  ...ev.assertions.slice(0, common),
+                  ...file.question_assertions,
+                  ...ev.assertions.slice(common),
+              ]
+            : ev.assertions;
+        return {
+            ...ev,
+            assertions: assertions.filter(
+                (statement) => !ev.skip?.includes(statement.id),
+            ),
+        };
+    });
 }
 
 // A fixed identity and date make the start commit the same in each run.
@@ -126,7 +150,52 @@ export function prepare(
     return { root, work };
 }
 
-// Copies each changed file that exists to outputs/files/, then deletes the
+// Writes the question host to `<root>/host`, next to the project folder, so
+// the host, its hook, and its settings exist only in the temporary copy and
+// never show in the Git state of the project. Gives the `claude` flags that
+// load them. The hook answers from `answers` in order.
+export function installHost(root: string, answers: string[]): string[] {
+    const host = join(root, "host");
+    const script = join(host, "question-host.ts");
+    mkdirSync(host, { recursive: true });
+    cpSync(join(HERE, "question-host.ts"), script);
+    writeFileSync(join(host, "answers.json"), JSON.stringify(answers));
+    const hook = [process.execPath, script, "hook", host]
+        .map((part) => JSON.stringify(part))
+        .join(" ");
+    const settings = {
+        hooks: {
+            PreToolUse: [
+                {
+                    matcher: "AskUserQuestion",
+                    hooks: [{ type: "command", command: hook }],
+                },
+            ],
+        },
+    };
+    const mcp = {
+        mcpServers: {
+            [SERVER]: {
+                type: "stdio",
+                command: process.execPath,
+                args: [script, "mcp"],
+            },
+        },
+    };
+    writeFileSync(join(host, "settings.json"), JSON.stringify(settings));
+    writeFileSync(join(host, "mcp.json"), JSON.stringify(mcp));
+    return [
+        "--settings",
+        join(host, "settings.json"),
+        "--mcp-config",
+        join(host, "mcp.json"),
+        "--permission-prompt-tool",
+        PERMISSION_TOOL,
+    ];
+}
+
+// Copies each changed file that exists to outputs/files/, and the questions
+// that the question host saved to outputs/questions.jsonl. Then deletes the
 // temporary folder `root` of the run. Gives the text of each copied file.
 export function keepOutputs(
     root: string,
@@ -136,6 +205,11 @@ export function keepOutputs(
 ): Record<string, string> {
     const files: Record<string, string> = {};
     try {
+        const questions = join(root, "host", "questions.jsonl");
+        if (existsSync(questions)) {
+            mkdirSync(outputs, { recursive: true });
+            cpSync(questions, join(outputs, "questions.jsonl"));
+        }
         for (const path of paths) {
             const source = join(work, path);
             if (!existsSync(source) || !statSync(source).isFile()) continue;

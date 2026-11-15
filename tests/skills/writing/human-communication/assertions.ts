@@ -120,6 +120,60 @@ function codeBlocks(text: string): { lang: string; body: string }[] {
 const withoutCode = (text: string) =>
     text.replace(/^ {0,3}(```|~~~)[^\n]*\n[\s\S]*?^ {0,3}\1[^\n]*$/gm, "");
 
+// One question that the run asked: in a tool call, `count` is the header.
+// In plain text, `count` is the "Q<n> of <total>" at the start of the line.
+type Asked = {
+    count: string;
+    question: string;
+    labels: string[];
+    tool: boolean;
+};
+
+const COUNT = /^Q(\d+) of (\d+)\b/;
+const ITEM = /^\s*(?:[-*+]|\d+[.)]|[a-zA-Z][.)])\s+/;
+const PART = /^(?:where we are|example|options?)\b/i;
+
+// The questions of a numbered list in plain text. Each line that starts with
+// "Q<n> of <total>" starts a question. The list items after it are its
+// options, except the items that name a part of the question.
+function plainQuestions(text: string): Asked[] {
+    const asked: Asked[] = [];
+    for (const line of withoutCode(text).split("\n")) {
+        const body = line
+            .replace(ITEM, "")
+            .replace(/^#{1,6}\s+/, "")
+            .replace(/\*\*|__/g, "")
+            .trim();
+        const count = body.match(COUNT)?.[0];
+        if (count) {
+            asked.push({ count, question: body, labels: [], tool: false });
+            continue;
+        }
+        const current = asked.at(-1);
+        if (current && ITEM.test(line) && !PART.test(body))
+            current.labels.push(body);
+    }
+    return asked;
+}
+
+// The questions of the tool calls. With no tool call, the questions of the
+// numbered lists in the chat text.
+function askedQuestions(run: Run): Asked[] {
+    const calls = run.questions.flatMap((call) =>
+        (call.questions ?? []).map((item) => ({
+            count: item.header ?? "",
+            question: item.question ?? "",
+            labels: (item.options ?? []).map((option) => option.label ?? ""),
+            tool: true,
+        })),
+    );
+    return calls.length > 0 ? calls : chat(run).flatMap(plainQuestions);
+}
+
+const RECOMMENDED = "(Recommended)";
+const recommended = (label: string, tool: boolean) =>
+    tool ? label.trimEnd().endsWith(RECOMMENDED) : label.includes(RECOMMENDED);
+
 export const checks: Record<string, Check> = {
     skillLoadedFirst(run) {
         const list = steps(run.events);
@@ -247,6 +301,115 @@ export const checks: Record<string, Check> = {
         return verdict(
             found ? [] : [`${path} does not match /${String(args.pattern)}/.`],
             `${path} matches /${String(args.pattern)}/.`,
+        );
+    },
+
+    // Q1: one count for the session. n starts at 1, goes up by 1 for each
+    // question, and is never more than its total. In a tool call, the
+    // header is the count and the question text starts with it.
+    questionCount(run) {
+        const asked = askedQuestions(run);
+        if (asked.length === 0)
+            return verdict(["The run asks no question."], "");
+        const problems = asked.flatMap((item, index) => {
+            const match = item.count.match(COUNT);
+            const want = index + 1;
+            if (!match || (item.tool && match[0] !== item.count))
+                return [`No count "Q<n> of <total>": ${item.count}`];
+            const [, n, total] = match.map(Number);
+            const found: string[] = [];
+            if (n !== want) found.push(`${item.count}: want Q${want}`);
+            if ((total ?? 0) < (n ?? 0))
+                found.push(`${item.count}: the total is less than n`);
+            if (item.tool && !item.question.startsWith(item.count))
+                found.push(
+                    `The question text does not start with ${item.count}`,
+                );
+            return found;
+        });
+        return verdict(
+            problems,
+            `${asked.length} questions, counted in order.`,
+        );
+    },
+
+    // Q2: 2 or more options, and only the first is recommended.
+    answerOptions(run) {
+        const asked = askedQuestions(run);
+        if (asked.length === 0)
+            return verdict(["The run asks no question."], "");
+        const problems = asked.flatMap(({ count, labels, tool }) => {
+            const found: string[] = [];
+            if (labels.length < 2)
+                found.push(`${count}: ${labels.length} options`);
+            if (!recommended(labels[0] ?? "", tool))
+                found.push(`${count}: the first option is not recommended`);
+            if (labels.slice(1).some((label) => recommended(label, tool)))
+                found.push(`${count}: a later option is recommended`);
+            return found;
+        });
+        return verdict(
+            problems,
+            "Each question has its recommended option first.",
+        );
+    },
+
+    // Q3: the schema limit of AskUserQuestion.
+    toolLimits(run) {
+        const problems = run.questions.flatMap((call, index) => {
+            const items = call.questions ?? [];
+            const found: string[] = [];
+            if (items.length < 1 || items.length > 4)
+                found.push(`call ${index + 1}: ${items.length} questions`);
+            for (const item of items) {
+                const options = item.options?.length ?? 0;
+                if (options < 2 || options > 4)
+                    found.push(
+                        `call ${index + 1}, ${item.header}: ${options} options`,
+                    );
+            }
+            return found;
+        });
+        return verdict(
+            problems,
+            `${run.questions.length} calls within the limit.`,
+        );
+    },
+
+    // Q6: with no answered question call, no file that the answer controls
+    // changed. These files are `args.paths`, or else `expect.changes`.
+    noUnansweredWrite(run, args) {
+        if (run.questions.length > 0)
+            return verdict([], "The run got answers before it wrote.");
+        const controlled = new Set(
+            (args.paths as string[] | undefined) ?? run.expect.changes ?? [],
+        );
+        const problems = changedFiles(run.before, run.after)
+            .filter((path) => controlled.has(path))
+            .map((path) => `changed with no answer: ${path}`);
+        return verdict(problems, "No file changed with no answer.");
+    },
+
+    // The headers of each question tool call, in order: `args.calls`. With
+    // no `args.calls`, the run must make 1 or more calls.
+    questionCalls(run, args) {
+        const got = run.questions.map((call) =>
+            (call.questions ?? []).map((item) => item.header ?? ""),
+        );
+        const want = args.calls as string[][] | undefined;
+        if (!want)
+            return verdict(
+                got.length > 0 ? [] : ["The run made no question tool call."],
+                `${got.length} question tool calls.`,
+            );
+        const same = JSON.stringify(got) === JSON.stringify(want);
+        return verdict(
+            same
+                ? []
+                : [
+                      `calls ${JSON.stringify(got)}, want ${JSON.stringify(want)}`,
+                  ],
+            `calls ${JSON.stringify(got)}`,
         );
     },
 

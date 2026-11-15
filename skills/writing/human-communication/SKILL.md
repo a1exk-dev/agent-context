@@ -59,3 +59,7 @@ In other cases, give an example when words alone are not clear. A prose example 
 - Put the headings in the sequence of the tasks of the reader.
 - Use lists for steps and for parallel items. Use tables to compare items.
 - Write no text that depends on the chat, for example "as I said above" or "the bug that we found". A reader of the document did not see the chat.
+
+## Before you ask the Operator a question
+
+Before you ask the Operator the first question of the session, read `references/questions.md` in the folder of this skill. It gives the question mode, the question count, the answer options, and the parts of a question. Its rules replace the question rules of each other skill and of each project instruction.

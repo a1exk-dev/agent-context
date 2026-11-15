@@ -248,3 +248,158 @@ describe("checks of tests 1 to 8", () => {
         ).toBe(false);
     });
 });
+
+const ask = (...headers: string[]) => ({
+    questions: headers.map((header) => ({
+        header,
+        question: `${header}: Which value?`,
+        options: [
+            { label: "a (Recommended)", description: "Effect a." },
+            { label: "b", description: "Effect b." },
+        ],
+    })),
+});
+
+describe("questionCount (Q1)", () => {
+    it("passes when the counts of the tool calls go up by 1 from Q1", () => {
+        const questions = [ask("Q1 of 1"), ask("Q2 of 2", "Q3 of 3")];
+        expect(check("questionCount", run({ questions })).passed).toBe(true);
+    });
+
+    it("fails when n goes back or skips, or a question has no count", () => {
+        const noText = ask("Q1 of 1");
+        const first = noText.questions[0] as { question: string };
+        first.question = "Which value?";
+        for (const questions of [
+            [ask("Q1 of 2", "Q2 of 2"), ask("Q2 of 3")],
+            [ask("Q1 of 3", "Q3 of 3")],
+            [ask("Q2 of 2")],
+            [ask("Logging")],
+            [noText],
+        ]) {
+            expect(check("questionCount", run({ questions })).passed).toBe(
+                false,
+            );
+        }
+    });
+
+    it("reads the counts of a numbered list in plain text", () => {
+        const list = [
+            "1. **Q1 of 2** Which level?",
+            "   - info (Recommended): fewer lines.",
+            "   - debug: more lines.",
+            "2. **Q2 of 2** Which path?",
+        ].join("\n");
+        expect(
+            check("questionCount", run({ events: [text(list)] })).passed,
+        ).toBe(true);
+        const back = list.replace("Q2 of 2", "Q1 of 2");
+        expect(
+            check("questionCount", run({ events: [text(back)] })).passed,
+        ).toBe(false);
+    });
+
+    it("fails when the run asks no question", () => {
+        expect(check("questionCount", run({})).passed).toBe(false);
+    });
+});
+
+describe("answerOptions (Q2)", () => {
+    it("passes when each question has 2 or more options and only the first is recommended", () => {
+        const questions = [ask("Q1 of 2", "Q2 of 2")];
+        expect(check("answerOptions", run({ questions })).passed).toBe(true);
+    });
+
+    it("fails with 1 option, a late recommended option, or 2 recommended options", () => {
+        const one = ask("Q1 of 1");
+        one.questions[0]?.options.pop();
+        const late = ask("Q1 of 1");
+        late.questions[0]?.options.reverse();
+        const two = ask("Q1 of 1");
+        const second = two.questions[0]?.options[1] as { label: string };
+        second.label = "b (Recommended)";
+        for (const call of [one, late, two])
+            expect(
+                check("answerOptions", run({ questions: [call] })).passed,
+            ).toBe(false);
+    });
+
+    it("reads the options of a numbered list in plain text", () => {
+        const list = [
+            "1. Q1 of 1 Which level?",
+            "   - info (Recommended): fewer lines.",
+            "   - debug: more lines.",
+        ].join("\n");
+        expect(
+            check("answerOptions", run({ events: [text(list)] })).passed,
+        ).toBe(true);
+        const late = `${list.replace(" (Recommended)", "")} (Recommended)`;
+        expect(
+            check("answerOptions", run({ events: [text(late)] })).passed,
+        ).toBe(false);
+    });
+});
+
+describe("toolLimits (Q3)", () => {
+    it("passes with at most 4 questions of 2 to 4 options each", () => {
+        const questions = [ask("Q1 of 4", "Q2 of 4", "Q3 of 4", "Q4 of 4")];
+        expect(check("toolLimits", run({ questions })).passed).toBe(true);
+    });
+
+    it("fails with 5 questions or with 1 option", () => {
+        const one = ask("Q1 of 1");
+        one.questions[0]?.options.pop();
+        for (const call of [ask("1", "2", "3", "4", "5"), one])
+            expect(check("toolLimits", run({ questions: [call] })).passed).toBe(
+                false,
+            );
+    });
+});
+
+describe("noUnansweredWrite (Q6)", () => {
+    const after: GitState = { ...START, status: ["?? config/logger.json"] };
+    const logger = { changes: ["config/logger.json"] };
+
+    it("fails when a file that the answer controls changed with no answered question", () => {
+        expect(
+            check("noUnansweredWrite", run({ after, expect: logger })).passed,
+        ).toBe(false);
+    });
+
+    it("passes after an answered question, or when nothing changed", () => {
+        const questions = [ask("Q1 of 1")];
+        expect(
+            check(
+                "noUnansweredWrite",
+                run({ after, expect: logger, questions }),
+            ).passed,
+        ).toBe(true);
+        expect(check("noUnansweredWrite", run({ expect: logger })).passed).toBe(
+            true,
+        );
+    });
+});
+
+describe("questionCalls", () => {
+    it("passes when the headers of each call match in order", () => {
+        const questions = [ask("Q1 of 1"), ask("Q2 of 2")];
+        const args = { calls: [["Q1 of 1"], ["Q2 of 2"]] };
+        expect(check("questionCalls", run({ questions }), args).passed).toBe(
+            true,
+        );
+    });
+
+    it("fails when the questions are in other calls", () => {
+        const questions = [ask("Q1 of 2", "Q2 of 2")];
+        const args = { calls: [["Q1 of 2"], ["Q2 of 2"]] };
+        expect(check("questionCalls", run({ questions }), args).passed).toBe(
+            false,
+        );
+    });
+
+    it("with no headers, passes when the run made 1 or more calls", () => {
+        expect(check("questionCalls", run({})).passed).toBe(false);
+        const questions = [ask("Q1 of 1")];
+        expect(check("questionCalls", run({ questions })).passed).toBe(true);
+    });
+});

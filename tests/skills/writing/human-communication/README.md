@@ -7,6 +7,8 @@ The eval plan is in the "Testing Decisions" section of issue #188 and in the res
 | `project/` | Sample project. Each output test starts from a copy. It has `AGENTS.md`, `CLAUDE.md` (`@AGENTS.md`), `GLOSSARY.md` with the term "Job" ("task" to avoid), `README.md`, `src/fetch.ts` (a retry with a limit of 3), `src/scheduler.ts` (a comment that calls a Job a "task"), `issues.json` (3 issues), and the default Human communication policy. |
 | `evals.json` | The output tests: request, setup, `expect`, and statements. `common_assertions` (U1 to U6) apply to each test, except the ids in its `skip` list. Each statement is `{id, text, grader}`. A `script` statement also names its `check` in `assertions.ts` and gives its `args`. `expect.changes` lists the files that the request asks for, and `expect.commits` the number of new commits (U5). |
 | `run-evals.ts` | Runs the output tests with `claude -p`, with and without the skill. |
+| `question-host.ts` | The question host: a `PreToolUse` hook on `AskUserQuestion` and a stdio MCP server for `--permission-prompt-tool`. |
+| `overlays/` | The files that a test copies over the project, for example the `AGENTS.md` of test 22 and the fixture skill `setup-ci` of test 23. |
 | `eval-lib.ts` | The tests of `evals.json`, the temporary copy of the project, and the copy of the outputs before the runner deletes the copy. |
 | `git-state.ts` | The Git state before and after a run. |
 | `human-text.ts` | The human text of a run, and the word and sentence checks of U2. |
@@ -43,6 +45,19 @@ After the run, the runner copies each changed file to `outputs/files/` and delet
 - `git-before.json` and `git-after.json` for `grade.ts`, and `git-before.md` and `git-after.md` for the grader. Each has HEAD, the commits with their messages and files, `git status`, and the staged files.
 - `files/`: a copy of each new or changed file.
 - `report.md`: the final message of the run.
+
+## Question host
+
+`claude -p` offers `AskUserQuestion` only when the run has a permission host. A test with an `answers` list in `evals.json` gets the question host. The runner writes it to `host/`, next to the project folder in the temporary folder, so it never shows in the Git state:
+
+- `question-host.ts`, a copy of the file in this folder.
+- `answers.json`, the `answers` list of the test.
+- `settings.json`, the `PreToolUse` hook on `AskUserQuestion`, passed with `--settings`.
+- `mcp.json`, the MCP server, passed with `--mcp-config`. `--permission-prompt-tool mcp__question-host__prompt` names its tool.
+
+The hook saves the input of each call to `host/questions.jsonl`. It answers each question with the next answer of the list, and with the first option when the list has no answer left. The MCP tool allows each call with its input unchanged. After the run, the runner copies `questions.jsonl` to `outputs/`. A test with no `answers` list runs with no host, so the run has no question tool.
+
+A test with `"questions": true` also gets the statements Q1 to Q6 of `question_assertions`, after U1 to U6.
 
 ## Human text
 

@@ -36,6 +36,42 @@
             "check": "noComplianceClaim"
         }
     ],
+    "question_assertions": [
+        {
+            "id": "Q1",
+            "text": "Each question starts with \"Q<n> of <total>\". In a tool call, the header is \"Q<n> of <total>\" and the question text starts with it. In plain text, it starts each question. n starts at 1, goes up by 1 for each question in the session, and never goes back. Not checked when `Question count: off`.",
+            "grader": "script",
+            "check": "questionCount"
+        },
+        {
+            "id": "Q2",
+            "text": "Each question has 2 or more options, and only the first option label ends with \"(Recommended)\". Not checked when `Answer options: off` in `numbered list` mode.",
+            "grader": "script",
+            "check": "answerOptions"
+        },
+        {
+            "id": "Q3",
+            "text": "Each tool call holds at most 4 questions with 2 to 4 options each (the schema limit of `AskUserQuestion`).",
+            "grader": "script",
+            "check": "toolLimits"
+        },
+        {
+            "id": "Q4",
+            "text": "Each question has the 4 parts: the count and the question, \"Where we are\" in 1 to 3 sentences, a concrete example (prose, code, or a diff), and the options, each with its effect. It reads cold to a person who did not see the work.",
+            "grader": "llm"
+        },
+        {
+            "id": "Q5",
+            "text": "The text does not tell the Operator that the Skill replaced another question instruction.",
+            "grader": "llm"
+        },
+        {
+            "id": "Q6",
+            "text": "With no answer, no file that the answer controls is written.",
+            "grader": "script",
+            "check": "noUnansweredWrite"
+        }
+    ],
     "evals": [
         {
             "id": 1,
@@ -205,6 +241,136 @@
                 {
                     "id": "8.1",
                     "text": "The answer is in German, with short sentences in the active voice.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "name": "12-tabbed",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {},
+            "answers": ["debug", "logs/app.log", "Yes"],
+            "questions": true,
+            "expect": { "changes": ["config/logger.json"] },
+            "assertions": [
+                {
+                    "id": "12.1",
+                    "text": "The run asks the 3 questions in one tool call, with the headers \"Q1 of 3\", \"Q2 of 3\", and \"Q3 of 3\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": { "calls": [["Q1 of 3", "Q2 of 3", "Q3 of 3"]] }
+                },
+                {
+                    "id": "12.2",
+                    "text": "`config/logger.json` holds the log level `debug`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": { "path": "config/logger.json", "pattern": "debug" }
+                },
+                {
+                    "id": "12.3",
+                    "text": "`config/logger.json` holds the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "logs/app\\.log"
+                    }
+                },
+                {
+                    "id": "12.4",
+                    "text": "`config/logger.json` turns log rotation on.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 13,
+            "name": "13-tab-limit",
+            "prompt": "Before you change anything, ask me the log level, the log file path, if logs rotate, the maximum file size, the number of old files to keep, and the log format. Then write config/logger.json.",
+            "setup": {},
+            "answers": ["debug", "logs/app.log", "Yes", "10 MB", "5", "json"],
+            "questions": true,
+            "expect": { "changes": ["config/logger.json"] },
+            "assertions": [
+                {
+                    "id": "13.1",
+                    "text": "The run asks a tool call with 4 questions, then a tool call with 2 questions, counted \"Q1 of 6\" to \"Q6 of 6\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [
+                            ["Q1 of 6", "Q2 of 6", "Q3 of 6", "Q4 of 6"],
+                            ["Q5 of 6", "Q6 of 6"]
+                        ]
+                    }
+                },
+                {
+                    "id": "13.2",
+                    "text": "`config/logger.json` holds the log level `debug` and the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug[\\s\\S]*logs/app\\.log|logs/app\\.log[\\s\\S]*debug"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 14,
+            "name": "14-total-changes",
+            "prompt": "Ask me if the app needs a database. If yes, ask which one.",
+            "setup": {},
+            "answers": ["Yes", "PostgreSQL"],
+            "questions": true,
+            "assertions": [
+                {
+                    "id": "14.1",
+                    "text": "The dependent question comes in a later tool call. The first call has \"Q1 of 1\", and the second call has \"Q2 of 2\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": { "calls": [["Q1 of 1"], ["Q2 of 2"]] }
+                }
+            ]
+        },
+        {
+            "id": 22,
+            "name": "22-agents-md-loses",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": { "overlay": "overlays/22-agents-md" },
+            "answers": ["debug", "logs/app.log", "Yes"],
+            "questions": true,
+            "expect": { "changes": ["config/logger.json"] },
+            "assertions": [
+                {
+                    "id": "22.1",
+                    "text": "`AGENTS.md` says \"Ask one question at a time.\", but the policy wins: the run asks the 3 questions in one tabbed call, \"Q1 of 3\" to \"Q3 of 3\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": { "calls": [["Q1 of 3", "Q2 of 3", "Q3 of 3"]] }
+                }
+            ]
+        },
+        {
+            "id": 23,
+            "name": "23-other-skill-format",
+            "prompt": "Use setup-ci to set up CI.",
+            "setup": { "overlay": "overlays/23-setup-ci" },
+            "questions": true,
+            "answers": [],
+            "expect": { "changes": [".github/workflows/ci.yml"] },
+            "assertions": [
+                {
+                    "id": "23.1",
+                    "text": "The run asks the questions of the setup-ci Skill with 1 or more question tool calls.",
+                    "grader": "script",
+                    "check": "questionCalls"
+                },
+                {
+                    "id": "23.2",
+                    "text": "No chat text asks the questions of the setup-ci Skill as a numbered round in one message.",
                     "grader": "llm"
                 }
             ]
