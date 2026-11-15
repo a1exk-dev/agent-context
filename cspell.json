@@ -9,7 +9,8 @@
         ".claude/worktrees/**",
         "bun.lock",
         "tests/**/project/**",
-        "tests/**/fixtures/**"
+        "tests/**/fixtures/**",
+        "docs/research/**"
     ],
     "words": [
         "actioned",
