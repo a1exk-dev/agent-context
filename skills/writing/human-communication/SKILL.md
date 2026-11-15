@@ -1,6 +1,6 @@
 ---
 name: human-communication
-description: "Before you write text that a human reads, use this skill. This text includes chat messages, progress lines, reports, questions to the Operator, code comments, and documents for persons. Examples of these documents are README.md, docs, issue bodies, and pull request text. When you ask the Operator a question, or when a prompt says \"write a doc\", \"explain\", \"summarize\", or \"report\", use this skill. It writes STE-based text (ASD-STE100), builds text per ISO 24495-1, and counts questions. It reads the human communication policy of the project in docs/agents/."
+description: "Before you write text that a human reads, use this skill. Each task ends with such text, so use this skill at the start of each task, before your first message. This text includes chat answers, explanations of code, summaries of commits and changes, progress lines, and reports. It also includes the final message after a fix or a rename, questions to the Operator, code comments, commit messages, and documents for persons. Examples of these documents are README.md, docs, issue bodies, and pull request text. When you ask the Operator a question, or when a prompt says \"how does\", \"what changed\", \"explain\", \"fix\", \"commit\", \"write a doc\", \"summarize\", or \"report\", use this skill. It writes STE-based text (ASD-STE100), builds text per ISO 24495-1, and counts questions. It reads the human communication policy of the project in docs/agents/."
 ---
 
 # Human communication
@@ -32,6 +32,11 @@ This skill tells you how to write text that a human reads. The text is clear on 
 
 - Obey the rules of the 2 reference files while you write. Do not read your text again for a check before the human sees it. Start no subagent to review your text. A second read makes each answer slower, and the rules already apply while you write.
 - Use the glossary term for each item that the glossary has. Do not use a word that the glossary tells you to avoid.
+- Agents break these rules of the reference files most often. Obey them also in short status sentences and in the final message:
+  - Give each sentence its actor as the subject. Write "I did not stage the file", not "The file is not staged". Write "The code sets the limit at `src/db.ts:6`", not "The limit is set at `src/db.ts:6`".
+  - Use one word for each item in the full text. When you name an item again, use the same word. For example, do not write "the project" and then "the repository", or "the wait" and then "the delay".
+  - Write "it" only when the sentence has one noun that "it" can refer to. Else write the noun again.
+  - Write no "should", "may", "might", "would", or "could". Write "will" for an expected result and "can" for a possibility.
 
 ## When the text needs an example
 

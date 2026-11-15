@@ -30,6 +30,8 @@ Use the `Question mode` of the Human communication policy.
 
 When the prompt gives the answer to a question, use that answer. Do not ask that question.
 
+When the prompt names the questions to ask, ask one question for each item that the prompt names, in the sequence of the prompt. The Operator can then compare each answer with the request.
+
 | Question mode | How you ask |
 |---|---|
 | `tabbed` | Put the questions of one topic in one call of the question tool, one tab for each question. When the topic has more questions than the limit of your question tool, make one more call. |
@@ -70,6 +72,7 @@ Call 2: Q2 of 2  Which database does the app use?
 - In the `numbered list` question mode, give answer options when the Human communication policy has the line `- Answer options: on`. When it has the line `- Answer options: off`, give no answer options. The Operator then answers in their own words.
 - Put the recommended option first. Add "(Recommended)" to the end of its label. The Operator can then accept it with one click.
 - Do not add "(Recommended)" to a different option.
+- Recommend an option also when the decision is only a preference of the Operator, for example "Yes" or "No". Recommend the option that you prefer.
 - In the description of each answer option, give the effect of that answer option.
 
 ## When you write a question
