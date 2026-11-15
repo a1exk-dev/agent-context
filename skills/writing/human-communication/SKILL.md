@@ -31,7 +31,6 @@ This skill tells you how to write text that a human reads. The text is clear on 
 ## While you write text that a human reads
 
 - Obey the rules of the 2 reference files while you write. Do not read your text again for a check before the human sees it. Start no subagent to review your text. A second read makes each answer slower, and the rules already apply while you write.
-- Keep code, code spans, commands, paths, URLs, names, and quoted text as they are. The writing rules do not apply to them.
 - Use the glossary term for each item that the glossary has. Do not use a word that the glossary tells you to avoid.
 
 ## When the text needs an example
@@ -182,17 +181,19 @@ When you have the answers, do these steps:
 
 No human can answer when you have no question tool, or when a call of the question tool fails. `references/questions.md` gives examples of these cases.
 
-Make no edit for the pointer text in these cases. Only the Operator can select the pointer text.
+The words "use the default human communication policy" answer only the policy question. They do not answer the pointer question.
 
 When the prompt gives a value for each Setting, or says "use the default human communication policy", do these steps:
 
 1. Write the Human communication policy with these values. Obey steps 1, 2, 4, and 5 of the steps after the answers.
-2. Continue with your own questions, as `references/questions.md` tells you for the case where no human can answer.
+2. If the prompt answers the pointer question with yes, obey step 3 of the steps after the answers, as for the answer `Yes`. If the prompt answers with no, make no edit for the pointer text.
+3. If the prompt does not answer the pointer question, make no edit for the pointer text. If a pointer target needs an edit, put the pointer question first in the list of your own questions.
+4. Continue with your own questions, as `references/questions.md` tells you for the case where no human can answer.
 
 When the prompt does not give these answers, do these steps:
 
-1. Write no file.
-2. In your final message, put the setup questions first. Then put your own questions. Write the questions in one numbered list, as `references/questions.md` tells you. The total of the question count is the number of questions in the list.
+1. Write no file, and make no edit for the pointer text.
+2. In your final message, put the setup questions first. When the prompt answers the pointer question, do not ask it. Then put your own questions. Write the questions in one numbered list, as `references/questions.md` tells you. The total of the question count is the number of questions in the list.
 3. Below the policy question, give the default Human communication policy in a code block.
 4. Tell the caller to answer the questions in a new request. As an alternative, the caller can say "use the default human communication policy".
 5. Stop the work that needs an answer.

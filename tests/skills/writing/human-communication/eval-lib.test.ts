@@ -33,18 +33,13 @@ describe("keepOutputs", () => {
         writeFileSync(join(work, "README.md"), "# Readme\n");
         const outputs = join(dir("hc-out-"), "outputs");
 
-        const files = keepOutputs(
-            root,
-            work,
-            ["docs/setup.md", "deleted.md"],
-            outputs,
-        );
+        keepOutputs(root, work, ["docs/setup.md", "deleted.md"], outputs);
 
-        expect(files).toEqual({ "docs/setup.md": "# Setup\n" });
+        const copied = readdirSync(join(outputs, "files"), { recursive: true });
+        expect(copied.sort()).toEqual(["docs", "docs/setup.md"]);
         expect(readFileSync(join(outputs, "files/docs/setup.md"), "utf8")).toBe(
             "# Setup\n",
         );
-        expect(existsSync(join(outputs, "files/README.md"))).toBe(false);
         expect(existsSync(root)).toBe(false);
     });
 

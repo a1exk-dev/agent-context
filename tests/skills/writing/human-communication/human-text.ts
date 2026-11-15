@@ -32,7 +32,7 @@ export type HumanSource = {
 
 export type HumanPart = { source: string; text: string };
 
-const DOCUMENT = /\.(md|mdx|markdown|txt)$/i;
+export const DOCUMENT = /\.(md|mdx|markdown|txt)$/i;
 
 // Each text that a human reads in a run: the text blocks of the main agent,
 // the final message when no text block holds it, each question with its

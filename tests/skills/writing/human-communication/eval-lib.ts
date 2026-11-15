@@ -219,14 +219,13 @@ export function installHost(
 
 // Copies each changed file that exists to outputs/files/, and the questions
 // that the question host saved to outputs/questions.jsonl. Then deletes the
-// temporary folder `root` of the run. Gives the text of each copied file.
+// temporary folder `root` of the run.
 export function keepOutputs(
     root: string,
     work: string,
     paths: string[],
     outputs: string,
-): Record<string, string> {
-    const files: Record<string, string> = {};
+): void {
     try {
         const questions = join(root, "host", "questions.jsonl");
         if (existsSync(questions)) {
@@ -239,10 +238,8 @@ export function keepOutputs(
             const target = join(outputs, "files", path);
             mkdirSync(dirname(target), { recursive: true });
             cpSync(source, target);
-            files[path] = readFileSync(source, "utf8");
         }
     } finally {
         rmSync(root, { recursive: true, force: true });
     }
-    return files;
 }

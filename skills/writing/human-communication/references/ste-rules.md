@@ -6,7 +6,7 @@ This skill keeps only the rules that help a human reader. Text that obeys them i
 
 ## When you select a word
 
-- Use only the modal verbs "can", "cannot", "must", and "will". Do not write "should", "may", "might", "would", "could", or "shall". Change each of these words to "can", "must", or a condition in the sentence.
+- Use only the modal verbs "can", "cannot", "must", and "will". Do not write "should", "may", "might", "would", "could", or "shall".
 - Do not write "ensure". Write the action that the reader does.
 - Use one term for each item, and the same term each time (rules 1.11 and 6.2).
 - When the glossary of the project has a term for the item, use that term.

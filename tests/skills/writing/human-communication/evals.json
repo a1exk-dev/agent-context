@@ -1381,11 +1381,11 @@
                 },
                 {
                     "id": "34.2",
-                    "text": "The final message lists the 3 own questions, numbered, \"Q1 of 3\" to \"Q3 of 3\".",
+                    "text": "The default policy words do not answer the pointer question. The final message lists the pointer question first and then the 3 own questions, numbered, \"Q1 of 4\" to \"Q4 of 4\".",
                     "grader": "script",
                     "check": "listedQuestions",
                     "args": {
-                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                        "counts": ["Q1 of 4", "Q2 of 4", "Q3 of 4", "Q4 of 4"]
                     }
                 },
                 {
@@ -1557,11 +1557,11 @@
                 },
                 {
                     "id": "38.2",
-                    "text": "The final message lists the 3 own questions, numbered, \"Q1 of 3\" to \"Q3 of 3\".",
+                    "text": "The default policy words do not answer the pointer question. The final message lists the pointer question first and then the 3 own questions, numbered, \"Q1 of 4\" to \"Q4 of 4\".",
                     "grader": "script",
                     "check": "listedQuestions",
                     "args": {
-                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                        "counts": ["Q1 of 4", "Q2 of 4", "Q3 of 4", "Q4 of 4"]
                     }
                 },
                 {

@@ -3,6 +3,7 @@
 // builds the Run of a saved run folder and calls the check. A later test adds
 // a check here only when no check fits with other `args`.
 
+import { mainCalls } from "../../engineering/eval-lib.ts";
 import {
     type ClaudeEvent,
     type ToolCall,
@@ -11,6 +12,7 @@ import {
 import type { Expect } from "./eval-lib.ts";
 import { changedFiles, type GitState, newCommits } from "./git-state.ts";
 import {
+    DOCUMENT,
     type HumanPart,
     humanText,
     prose,
@@ -61,7 +63,6 @@ const regex = (args: Record<string, unknown>) =>
 
 const SKILL_NAME = "human-communication";
 const WRITES = new Set(["write", "edit", "multiedit", "notebookedit"]);
-const DOCUMENT = /\.(md|mdx|markdown|txt)$/i;
 
 const pathOf = (call: ToolCall) =>
     String(
@@ -109,9 +110,6 @@ export function steps(events: ClaudeEvent[]): Step[] {
             );
         });
 }
-
-const mainCalls = (events: ClaudeEvent[]) =>
-    events.filter((event) => !event.parent_tool_use_id).flatMap(toolCalls);
 
 // Fenced code blocks of Markdown text, each with its info string.
 function codeBlocks(text: string): { lang: string; body: string }[] {
