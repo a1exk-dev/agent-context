@@ -454,6 +454,283 @@
             ]
         },
         {
+            "id": 15,
+            "name": "15-one-at-a-time",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/15-one-at-a-time"
+            },
+            "answers": ["debug", "logs/app.log", "Yes"],
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "15.1",
+                    "text": "The policy says `Question mode: one at a time`. The run asks 3 tool calls with 1 question each: \"Q1 of 3\", then \"Q2 of 3\", then \"Q3 of 3\".",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [["Q1 of 3"], ["Q2 of 3"], ["Q3 of 3"]]
+                    }
+                },
+                {
+                    "id": "15.2",
+                    "text": "`config/logger.json` holds the log level `debug`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug"
+                    }
+                },
+                {
+                    "id": "15.3",
+                    "text": "`config/logger.json` holds the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "logs/app\\.log"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 16,
+            "name": "16-numbered-list",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/16-numbered-list"
+            },
+            "answers": ["debug", "logs/app.log", "Yes"],
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "16.1",
+                    "text": "The policy says `Question mode: numbered list`. The run makes no `AskUserQuestion` call.",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": []
+                    }
+                },
+                {
+                    "id": "16.2",
+                    "text": "One chat message lists the 3 questions, numbered, each with its count \"Q1 of 3\" to \"Q3 of 3\". Q2 checks the options with the recommended option first.",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                    }
+                },
+                {
+                    "id": "16.3",
+                    "text": "The run stops after the message with the numbered list. It writes no file and does no more work after that message.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 17,
+            "name": "17-numbered-list-options-off",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/17-numbered-list-options-off"
+            },
+            "answers": ["debug", "logs/app.log", "Yes"],
+            "questions": true,
+            "skip": ["Q2"],
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "17.1",
+                    "text": "The policy says `Question mode: numbered list` and `Answer options: off`. The run makes no `AskUserQuestion` call.",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": []
+                    }
+                },
+                {
+                    "id": "17.2",
+                    "text": "One chat message lists the 3 questions, numbered, \"Q1 of 3\" to \"Q3 of 3\", and no question has answer options.",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"],
+                        "options": false
+                    }
+                }
+            ]
+        },
+        {
+            "id": 18,
+            "name": "18-tabbed-options-off",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/18-tabbed-options-off"
+            },
+            "answers": ["debug", "logs/app.log", "Yes"],
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "18.1",
+                    "text": "The policy says `Answer options: off`, but the mode is `tabbed`: the run asks the 3 questions in one tool call, \"Q1 of 3\" to \"Q3 of 3\". Q2 checks that each question still has options.",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": [["Q1 of 3", "Q2 of 3", "Q3 of 3"]]
+                    }
+                },
+                {
+                    "id": "18.2",
+                    "text": "`config/logger.json` holds the log level `debug`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug"
+                    }
+                },
+                {
+                    "id": "18.3",
+                    "text": "`config/logger.json` holds the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "logs/app\\.log"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 19,
+            "name": "19-count-off",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {
+                "overlay": "overlays/19-count-off"
+            },
+            "answers": ["debug", "logs/app.log", "Yes"],
+            "questions": true,
+            "skip": ["Q1"],
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "19.1",
+                    "text": "The run asks the 3 questions in one tool call.",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "sizes": [3]
+                    }
+                },
+                {
+                    "id": "19.2",
+                    "text": "The policy says `Question count: off`. No question and no chat text has \"Q<n> of <total>\", and each tool call header is a short topic name.",
+                    "grader": "script",
+                    "check": "noQuestionCount"
+                },
+                {
+                    "id": "19.3",
+                    "text": "`config/logger.json` holds the log level `debug`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug"
+                    }
+                },
+                {
+                    "id": "19.4",
+                    "text": "`config/logger.json` holds the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "logs/app\\.log"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 20,
+            "name": "20-failed-call",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {},
+            "answers": [],
+            "hostError": "request_user_input is unavailable in Default mode",
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "20.1",
+                    "text": "The run makes a question tool call, and the host denies it with the error \"request_user_input is unavailable in Default mode\".",
+                    "grader": "script",
+                    "check": "questionCalls"
+                },
+                {
+                    "id": "20.2",
+                    "text": "After the error, one chat message lists the 3 questions, numbered, each with its count \"Q1 of 3\" to \"Q3 of 3\". Q2 checks the options with the recommended option first.",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                    }
+                },
+                {
+                    "id": "20.3",
+                    "text": "The numbered list asks the same 3 questions as the denied call in `outputs/questions.jsonl`. The run stops after the list and writes no file.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 21,
+            "name": "21-prompt-override",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json. Ask me as a numbered list.",
+            "setup": {},
+            "answers": ["debug", "logs/app.log", "Yes"],
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "21.1",
+                    "text": "The prompt asks for a numbered list, so the run makes no `AskUserQuestion` call. The policy file stays unchanged (U5).",
+                    "grader": "script",
+                    "check": "questionCalls",
+                    "args": {
+                        "calls": []
+                    }
+                },
+                {
+                    "id": "21.2",
+                    "text": "One chat message lists the 3 questions, numbered, each with its count \"Q1 of 3\" to \"Q3 of 3\".",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                    }
+                }
+            ]
+        },
+        {
             "id": 22,
             "name": "22-agents-md-loses",
             "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
@@ -499,6 +776,74 @@
                 {
                     "id": "23.2",
                     "text": "No chat text asks the questions of the setup-ci Skill as a numbered round in one message.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 24,
+            "name": "24-no-human-questions",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json.",
+            "setup": {},
+            "questions": true,
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "24.1",
+                    "text": "The run has no question tool. The final message lists the 3 questions, numbered, each with its count \"Q1 of 3\" to \"Q3 of 3\". Q2 checks the options with the recommended option first.",
+                    "grader": "script",
+                    "check": "listedQuestions",
+                    "args": {
+                        "counts": ["Q1 of 3", "Q2 of 3", "Q3 of 3"]
+                    }
+                },
+                {
+                    "id": "24.2",
+                    "text": "The text states no assumption as a decision. For example, it does not say which log level, log file path, or rotation the file will use, and the run writes no file.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 25,
+            "name": "25-no-human-answers-given",
+            "prompt": "Before you change anything, ask me the log level, the log file path, and if logs rotate. Then write config/logger.json. My answers: the log level is debug, the log file path is logs/app.log, and logs rotate.",
+            "setup": {},
+            "expect": {
+                "changes": ["config/logger.json"]
+            },
+            "assertions": [
+                {
+                    "id": "25.1",
+                    "text": "The run has no question tool and asks no question: no question tool call and no question in the chat text.",
+                    "grader": "script",
+                    "check": "noQuestion"
+                },
+                {
+                    "id": "25.2",
+                    "text": "`config/logger.json` holds the log level `debug`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "debug"
+                    }
+                },
+                {
+                    "id": "25.3",
+                    "text": "`config/logger.json` holds the log file path `logs/app.log`.",
+                    "grader": "script",
+                    "check": "fileMatches",
+                    "args": {
+                        "path": "config/logger.json",
+                        "pattern": "logs/app\\.log"
+                    }
+                },
+                {
+                    "id": "25.4",
+                    "text": "`config/logger.json` turns log rotation on.",
                     "grader": "llm"
                 }
             ]

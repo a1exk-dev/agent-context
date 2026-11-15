@@ -8,7 +8,10 @@ import type { ClaudeEvent } from "../agent-instructions/eval-lib.ts";
 
 // The input of one AskUserQuestion call, as the question host saves it in
 // outputs/questions.jsonl.
+// `error` is the error of a question call that the host denied. A denied
+// call gives no answer.
 export type QuestionCall = {
+    error?: string;
     questions?: {
         header?: string;
         question?: string;

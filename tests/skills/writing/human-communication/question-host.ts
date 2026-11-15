@@ -9,9 +9,11 @@
 //                                          --permission-prompt-tool
 //
 // The hook saves each call input to <host-dir>/questions.jsonl and answers
-// each question with the next answer of <host-dir>/answers.json. The MCP
-// tool `prompt` allows each tool call with its input unchanged, so the
-// answers of the hook stay in the input.
+// each question with the next answer of <host-dir>/answers.json. When
+// <host-dir>/error.txt exists, the hook denies each call with its text as
+// the error, as a platform with no human does, and saves the call with that
+// `error`. The MCP tool `prompt` allows each tool call with its input
+// unchanged, so the answers of the hook stay in the input.
 
 import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -41,6 +43,18 @@ export function answerHook(stdin: string, dir: string): string {
     const event = JSON.parse(stdin) as { tool_input?: CallInput };
     const input = event.tool_input ?? {};
     const log = join(dir, "questions.jsonl");
+    const errorFile = join(dir, "error.txt");
+    if (existsSync(errorFile)) {
+        const error = readFileSync(errorFile, "utf8").trim();
+        appendFileSync(log, `${JSON.stringify({ ...input, error })}\n`);
+        return JSON.stringify({
+            hookSpecificOutput: {
+                hookEventName: "PreToolUse",
+                permissionDecision: "deny",
+                permissionDecisionReason: error,
+            },
+        });
+    }
     const answers = JSON.parse(
         readFileSync(join(dir, "answers.json"), "utf8"),
     ) as string[];

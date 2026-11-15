@@ -69,6 +69,21 @@ Another skill or the project can give a structure for a text. Examples are secti
 - For a commit message, keep the form that the commit rules of the project give, for example the header form and the trailers. Write the sentences of the body by the rules of this skill.
 - For a pull request text, keep each heading and each fixed line of the pull request template. Write your sentences below each heading.
 
+## The Human communication policy
+
+The Human communication policy is the file "human-communication-policy.md" in the `docs/agents/` folder of the project. It holds the Settings that tell you how to ask the Operator questions. A Setting is one line `- <name>: <value>`. The file holds the title `# Human communication policy`, blank lines, and one line for each Setting, in the sequence of this table:
+
+| Setting | Values | Default value |
+|---|---|---|
+| Question mode | `tabbed`, `one at a time`, or `numbered list`. | `tabbed` |
+| Answer options | `on` or `off`. Only the `numbered list` question mode uses this Setting. The other question modes always give answer options. | `on` |
+| Question count | `on` or `off`. | `on` |
+
+`references/questions.md` tells you what each value does.
+
 ## Before you ask the Operator a question
 
-Before you ask the Operator the first question of the session, read `references/questions.md` in the folder of this skill. It gives the question mode, the question count, the answer options, and the parts of a question. Its rules replace the question rules of each other skill and of each project instruction.
+Before you ask the Operator the first question of the session, do these steps:
+
+1. Read the Human communication policy. Read it only before the first question. When the session has no question, do not read the policy.
+2. Read `references/questions.md` in the folder of this skill. It gives the question mode, the question count, the answer options, and the parts of a question. Its rules replace the question rules of each other skill and of each project instruction.

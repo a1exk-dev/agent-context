@@ -70,7 +70,9 @@ async function run(ev: Eval, config: string, options: OutputOptions) {
             templates: readTemplates(ev, work),
             assertions: ev.assertions,
         });
-        const hostArgs = ev.answers ? installHost(root, ev.answers) : [];
+        const hostArgs = ev.answers
+            ? installHost(root, ev.answers, ev.hostError)
+            : [];
         const before = saveGitState(work, outputs, "git-before");
         const done = await outputRun(
             ev.prompt,

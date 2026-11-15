@@ -102,6 +102,19 @@ describe("installHost", () => {
         ]);
         expect(existsSync(join(host, "question-host.ts"))).toBe(true);
         expect(readdirSync(join(root, "project"))).toEqual([]);
+        expect(existsSync(join(host, "error.txt"))).toBe(false);
+    });
+
+    it("writes the error of the hook when the test gives one", () => {
+        const root = mkdtempSync(join(tmpdir(), "hc-run-"));
+        made.push(root);
+        const error = "request_user_input is unavailable in Default mode";
+
+        installHost(root, [], error);
+
+        expect(readFileSync(join(root, "host", "error.txt"), "utf8")).toBe(
+            error,
+        );
     });
 });
 

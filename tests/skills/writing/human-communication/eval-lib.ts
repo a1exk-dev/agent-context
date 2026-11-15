@@ -61,6 +61,9 @@ export type Eval = {
     // the first option of each question. A test with no `answers` runs with
     // no host, so the run has no question tool.
     answers?: string[];
+    // With `hostError`, the hook of the question host denies each call with
+    // this error, as a platform with no human does.
+    hostError?: string;
     // A test with `questions: true` also gets the question statements.
     questions?: boolean;
     expect?: Expect;
@@ -167,13 +170,19 @@ export function readTemplates(ev: Eval, work: string): Record<string, string> {
 // Writes the question host to `<root>/host`, next to the project folder, so
 // the host, its hook, and its settings exist only in the temporary copy and
 // never show in the Git state of the project. Gives the `claude` flags that
-// load them. The hook answers from `answers` in order.
-export function installHost(root: string, answers: string[]): string[] {
+// load them. The hook answers from `answers` in order. With `error`, the hook
+// denies each call with that error.
+export function installHost(
+    root: string,
+    answers: string[],
+    error?: string,
+): string[] {
     const host = join(root, "host");
     const script = join(host, "question-host.ts");
     mkdirSync(host, { recursive: true });
     cpSync(join(HERE, "question-host.ts"), script);
     writeFileSync(join(host, "answers.json"), JSON.stringify(answers));
+    if (error) writeFileSync(join(host, "error.txt"), error);
     const hook = [process.execPath, script, "hook", host]
         .map((part) => JSON.stringify(part))
         .join(" ");

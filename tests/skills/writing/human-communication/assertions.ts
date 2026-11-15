@@ -159,10 +159,15 @@ function plainQuestions(text: string): Asked[] {
     return asked;
 }
 
-// The questions of the tool calls. With no tool call, the questions of the
-// numbered lists in the chat text.
+// The question tool calls that got answers. A call that the host denied
+// gives no answer.
+const answered = (run: Run) => run.questions.filter((call) => !call.error);
+
+// The questions of the answered tool calls. With no answered tool call, the
+// questions of the numbered lists in the chat text, for example the plain
+// text after a denied call.
 function askedQuestions(run: Run): Asked[] {
-    const calls = run.questions.flatMap((call) =>
+    const calls = answered(run).flatMap((call) =>
         (call.questions ?? []).map((item) => ({
             count: item.header ?? "",
             question: item.question ?? "",
@@ -382,7 +387,7 @@ export const checks: Record<string, Check> = {
     // Q6: with no answered question call, no file that the answer controls
     // changed. These files are `args.paths`, or else `expect.changes`.
     noUnansweredWrite(run, args) {
-        if (run.questions.length > 0)
+        if (answered(run).length > 0)
             return verdict([], "The run got answers before it wrote.");
         const controlled = new Set(
             (args.paths as string[] | undefined) ?? run.expect.changes ?? [],
@@ -393,12 +398,94 @@ export const checks: Record<string, Check> = {
         return verdict(problems, "No file changed with no answer.");
     },
 
+    // The numbered list in plain text: one chat message asks the questions
+    // with the counts `args.counts`, in order, and no answered tool call
+    // asks them. With `args.options: false`, no question has options.
+    listedQuestions(run, args) {
+        const counts = args.counts as string[];
+        if (answered(run).length > 0)
+            return verdict(["A question tool call asked the questions."], "");
+        const list = chat(run)
+            .map(plainQuestions)
+            .find(
+                (asked) =>
+                    JSON.stringify(asked.map((item) => item.count)) ===
+                    JSON.stringify(counts),
+            );
+        if (!list)
+            return verdict(
+                [`No chat message lists ${JSON.stringify(counts)}.`],
+                "",
+            );
+        const problems =
+            args.options === false
+                ? list
+                      .filter((item) => item.labels.length > 0)
+                      .map(
+                          (item) =>
+                              `${item.count}: ${item.labels.length} options`,
+                      )
+                : [];
+        return verdict(
+            problems,
+            `One chat message lists ${counts.join(", ")}.`,
+        );
+    },
+
+    // The run asks no question: no question tool call, and no counted
+    // question in the chat text.
+    noQuestion(run) {
+        const calls = Math.max(
+            run.questions.length,
+            mainCalls(run.events).filter(
+                (call) => call.name === "AskUserQuestion",
+            ).length,
+        );
+        const problems = calls > 0 ? [`${calls} question tool calls.`] : [];
+        for (const item of chat(run).flatMap(plainQuestions))
+            problems.push(`A question in the chat text: ${item.question}`);
+        return verdict(problems, "The run asks no question.");
+    },
+
+    // `Question count: off`: no "Q<n> of <total>" in a question or in the
+    // chat text, and each tool call header is a topic name.
+    noQuestionCount(run) {
+        const any = /\bQ\d+ of \d+\b/;
+        const problems = run.questions.flatMap((call) =>
+            (call.questions ?? []).flatMap((item) => {
+                const found: string[] = [];
+                if (!item.header?.trim()) found.push("A header is empty.");
+                for (const value of [item.header, item.question])
+                    if (any.test(value ?? ""))
+                        found.push(`A count in the tool call: ${value}`);
+                return found;
+            }),
+        );
+        for (const value of chat(run))
+            if (any.test(value))
+                problems.push(
+                    `A count in the chat text: ${value.slice(0, 200)}`,
+                );
+        return verdict(problems, "No question count.");
+    },
+
     // The headers of each question tool call, in order: `args.calls`. With
-    // no `args.calls`, the run must make 1 or more calls.
+    // `args.sizes`, the number of questions of each call, in order. With
+    // neither, the run must make 1 or more calls.
     questionCalls(run, args) {
         const got = run.questions.map((call) =>
             (call.questions ?? []).map((item) => item.header ?? ""),
         );
+        const sizes = args.sizes as number[] | undefined;
+        if (sizes) {
+            const counted = JSON.stringify(got.map((call) => call.length));
+            return verdict(
+                counted === JSON.stringify(sizes)
+                    ? []
+                    : [`call sizes ${counted}, want ${JSON.stringify(sizes)}`],
+                `call sizes ${counted}`,
+            );
+        }
         const want = args.calls as string[][] | undefined;
         if (!want)
             return verdict(

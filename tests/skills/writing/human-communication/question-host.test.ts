@@ -84,6 +84,25 @@ describe("answerHook", () => {
             "Q1 of 1 Which CI?": "GitHub Actions (Recommended)",
         });
     });
+
+    it("denies each call with the error of error.txt and saves the call with that error", () => {
+        const dir = hostDir(["debug"]);
+        const error = "request_user_input is unavailable in Default mode";
+        writeFileSync(join(dir, "error.txt"), error);
+        const call = [question("Q1 of 1 Which log level?", ["info", "debug"])];
+
+        const out = JSON.parse(answerHook(hookInput(call), dir));
+
+        expect(out.hookSpecificOutput).toEqual({
+            hookEventName: "PreToolUse",
+            permissionDecision: "deny",
+            permissionDecisionReason: error,
+        });
+        const saved = JSON.parse(
+            readFileSync(join(dir, "questions.jsonl"), "utf8"),
+        );
+        expect(saved).toEqual({ questions: call, error });
+    });
 });
 
 describe("mcpResponse", () => {

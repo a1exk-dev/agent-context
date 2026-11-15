@@ -305,6 +305,141 @@ describe("questionCount (Q1)", () => {
     });
 });
 
+describe("a failed question call", () => {
+    const ERROR = "request_user_input is unavailable in Default mode";
+    const failed = { ...ask("Q1 of 2", "Q2 of 2"), error: ERROR };
+    const list = [
+        "1. Q1 of 2 Which level?",
+        "   - info (Recommended): fewer lines.",
+        "   - debug: more lines.",
+        "2. Q2 of 2 Which path?",
+        "   - logs/app.log (Recommended): one file.",
+        "   - stdout: no file.",
+    ].join("\n");
+    const retry = run({ questions: [failed], events: [text(list)] });
+
+    it("counts as no question, so Q1 and Q2 read the plain-text retry", () => {
+        expect(check("questionCount", retry).passed).toBe(true);
+        expect(check("answerOptions", retry).passed).toBe(true);
+        const back = list.replace("Q2 of 2", "Q1 of 2");
+        expect(
+            check(
+                "questionCount",
+                run({ questions: [failed], events: [text(back)] }),
+            ).passed,
+        ).toBe(false);
+    });
+
+    it("gives no answer, so Q6 fails when a file that the answer controls changed", () => {
+        const after: GitState = { ...START, status: ["?? config/logger.json"] };
+        const changed = run({
+            questions: [failed],
+            after,
+            expect: { changes: ["config/logger.json"] },
+        });
+        expect(check("noUnansweredWrite", changed).passed).toBe(false);
+    });
+});
+
+describe("listedQuestions", () => {
+    const counts = ["Q1 of 2", "Q2 of 2"];
+    const list = [
+        "Two questions before I write config/logger.json.",
+        "",
+        "1. Q1 of 2 Which level?",
+        "   Where we are: the logger is new.",
+        "   - info (Recommended): fewer lines.",
+        "   - debug: more lines.",
+        "2. Q2 of 2 Which path?",
+        "   - logs/app.log (Recommended): one file.",
+        "   - stdout: no file.",
+    ].join("\n");
+    const bare = "1. Q1 of 2 Which level?\n2. Q2 of 2 Which path?";
+
+    it("passes when one chat message lists the questions with these counts in order", () => {
+        expect(
+            check("listedQuestions", run({ events: [text(list)] }), { counts })
+                .passed,
+        ).toBe(true);
+    });
+
+    it("fails when the questions are in 2 messages, or a count is missing", () => {
+        const [first, second] = list.split("2. Q2");
+        for (const events of [
+            [text(first ?? ""), text(`2. Q2${second}`)],
+            [text(list.replace("2. Q2 of 2 Which path?", ""))],
+        ])
+            expect(
+                check("listedQuestions", run({ events }), { counts }).passed,
+            ).toBe(false);
+    });
+
+    it("fails when an answered question tool call asked the questions", () => {
+        const value = run({
+            events: [text(list)],
+            questions: [ask(...counts)],
+        });
+        expect(check("listedQuestions", value, { counts }).passed).toBe(false);
+    });
+
+    it("with options off, passes only when no question has options", () => {
+        const args = { counts, options: false };
+        expect(
+            check("listedQuestions", run({ events: [text(bare)] }), args)
+                .passed,
+        ).toBe(true);
+        expect(
+            check("listedQuestions", run({ events: [text(list)] }), args)
+                .passed,
+        ).toBe(false);
+    });
+});
+
+describe("noQuestionCount", () => {
+    const topic = (header: string, question: string) => ({
+        questions: [
+            {
+                header,
+                question,
+                options: [{ label: "a (Recommended)" }, { label: "b" }],
+            },
+        ],
+    });
+
+    it("passes when each header is a topic name and no text has a count", () => {
+        const questions = [topic("Log level", "Which log level?")];
+        expect(check("noQuestionCount", run({ questions })).passed).toBe(true);
+    });
+
+    it("fails with a count in a header, a question, or the chat text, or with no header", () => {
+        for (const value of [
+            run({ questions: [topic("Q1 of 1", "Which log level?")] }),
+            run({ questions: [topic("Log level", "Q1 of 1: Which level?")] }),
+            run({ questions: [topic("", "Which log level?")] }),
+            run({ events: [text("Q1 of 3 Which log level?")] }),
+        ])
+            expect(check("noQuestionCount", value).passed).toBe(false);
+    });
+});
+
+describe("noQuestion", () => {
+    it("passes when the run asks no question", () => {
+        expect(
+            check("noQuestion", run({ events: [text("I wrote the file.")] }))
+                .passed,
+        ).toBe(true);
+    });
+
+    it("fails with a question tool call or a counted question in the chat text", () => {
+        for (const value of [
+            run({ events: [tool("AskUserQuestion", { questions: [] })] }),
+            run({ questions: [ask("Q1 of 1")] }),
+            run({ events: [text("1. Q1 of 1 Which log level?")] }),
+        ])
+            expect(check("noQuestion", value).passed).toBe(false);
+    });
+});
+
 describe("answerOptions (Q2)", () => {
     it("passes when each question has 2 or more options and only the first is recommended", () => {
         const questions = [ask("Q1 of 2", "Q2 of 2")];
@@ -396,6 +531,17 @@ describe("questionCalls", () => {
         expect(check("questionCalls", run({ questions }), args).passed).toBe(
             false,
         );
+    });
+
+    it("with `sizes`, passes when the number of questions of each call matches", () => {
+        const questions = [ask("A", "B", "C")];
+        expect(
+            check("questionCalls", run({ questions }), { sizes: [3] }).passed,
+        ).toBe(true);
+        expect(
+            check("questionCalls", run({ questions }), { sizes: [1, 1, 1] })
+                .passed,
+        ).toBe(false);
     });
 
     it("with no headers, passes when the run made 1 or more calls", () => {

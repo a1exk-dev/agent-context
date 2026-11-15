@@ -73,8 +73,16 @@ After the run, the runner copies each changed file to `outputs/files/` and delet
 
 The hook saves the input of each call to `host/questions.jsonl`. It answers each question with the next answer of the list, and with the first option when the list has no answer left. The MCP tool allows each call with its input unchanged. After the run, the runner copies `questions.jsonl` to `outputs/`. A test with no `answers` list runs with no host, so the run has no question tool.
 
+A test with `hostError`, for example test 20, gets `host/error.txt` with that text. The hook then denies each call with the text as its error, as a platform with no human does. It saves each denied call with an `error` field. A denied call gives no answer, so Q1, Q2, and Q6 read the numbered list in the chat text after the error.
+
 A test with `"questions": true` also gets the statements Q1 to Q6 of `question_assertions`, after U1 to U6.
 
 ## Human text
 
 U2 and the other text checks read the human text: each text block of the main agent, the final message when no text block holds it, each question with its options in `outputs/questions.jsonl`, each new or changed Markdown or text file, and the body of each new commit message. Before the checks, `human-text.ts` removes code blocks. Before that, it removes each line that is equal to a line of a template in `templates`, because the fixed text of a template is not text of the agent. It puts 1 word in place of each code span, URL, path, and quoted text, because the writing rules do not apply to them.
+
+## Manual checklist
+
+The Operator runs these checks once in an interactive Claude Code session, before the build pull request merges, and records the results in the pull request. Each check starts in a copy of `project/` with the skill installed.
+
+- M3. With `Question mode: one at a time` in the policy, give the request of test 12. The agent waits for each answer before it asks the next question.
