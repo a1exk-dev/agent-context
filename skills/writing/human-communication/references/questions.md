@@ -34,7 +34,7 @@ When the prompt names the questions to ask, ask one question for each item that 
 
 | Question mode | How you ask |
 |---|---|
-| `tabbed` | Put the questions of one topic in one call of the question tool, one tab for each question. When the topic has more questions than the limit of your question tool, make one more call. |
+| `tabbed` | Put the questions of one topic in one call of the question tool, one tab for each question. When the topic has more questions than the limit of your question tool, fill the first call up to the limit. Put the other questions in the next call. |
 | `one at a time` | Put one question in each call of the question tool. Wait for the answer before you ask the next question. |
 | `numbered list` | Put all open questions in one chat message as a numbered list. Do not use the question tool. Then end your turn. "When you write a numbered list" gives the form. |
 

@@ -8,6 +8,7 @@ These rules make the text relevant: the reader gets what the reader needs.
 
 - Give the result first. Then give the details.
 - Keep only the details on the topic of the request. Remove the steps that you did and the facts that the reader does not need.
+- Do not add a side note that the request did not ask for. For example, do not report a style problem in a comment when the request asks what the code does.
 - "Short" has no word limit. A text is short when it gives the result first and keeps only the details on the topic.
 - Give the next step when one exists, for example the command that the reader runs or the decision that the reader makes.
 
