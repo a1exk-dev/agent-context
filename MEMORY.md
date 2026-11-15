@@ -12,25 +12,25 @@ Reason: A term or lesson only matters once its feature lands, and the Operator w
 
 Applies when: an Agent instruction, script, or test needs the writing instructions or dictionary entries of ASD-STE100.
 
-Guidance: Paraphrase the writing instructions in our own words, cite their numbers, and link to the official download. Load dictionary data only from the Operator's own copy of the standard. A shipped word list holds only our own technical nouns and verbs with our own meanings. It never holds a table that maps non-approved words to approved ones, because those pairs are dictionary content. Describe tools as STE-based, never as STE compliant or certified.
+Guidance: Paraphrase the writing instructions in our own words, cite their numbers, and link to the official download. Load dictionary data only from the Operator's own copy of the standard. A shipped word list holds only our own technical nouns and verbs with our own meanings. It never holds a table that maps non-approved words to approved ones, because those pairs are dictionary content. Describe tools as STE-based, never as STE compliant or certified. Before you change this guidance, read the ASD-STE100 research in `docs/research/asd-ste100.md`.
 
-Reason: ASD reserves every reproduction of the standard "in whole or in part", and certifies no tool. See the ASD-STE100 research on `research/asd-ste100`.
+Reason: ASD reserves every reproduction of the standard "in whole or in part", and certifies no tool.
 
 ## ISO standard text stays outside agent reads
 
 Applies when: an agent researches or checks work against an ISO standard, for example ISO 24495-1.
 
-Guidance: Work from the ISO catalogue page, the bodies that drafted the standard, and other public secondary sources. Cite the standard by number and title, and paraphrase its principles in our own words. Before an agent reads ISO preview pages or a purchased copy, get the Operator's confirmation that the licence allows AI use.
+Guidance: Work from the ISO catalogue page, the bodies that drafted the standard, and other public secondary sources. Cite the standard by number and title, and paraphrase its principles in our own words. Before an agent reads ISO preview pages or a purchased copy, get the Operator's confirmation that the licence allows AI use. Before you change this guidance, read the ISO 24495-1 research in `docs/research/iso-24495-1.md`.
 
-Reason: The ISO Online Browsing Platform terms (2026-09-18) forbid AI ingestion, restatement, or summary of ISO content. ISO copyright covers every part of a standard. See the ISO 24495-1 research on `research/iso-24495-1`.
+Reason: The ISO Online Browsing Platform terms (2026-09-18) forbid AI ingestion, restatement, or summary of ISO content. ISO copyright covers every part of a standard.
 
 ## Skills and Rules target Codex, OpenCode, and Claude Code
 
 Applies when: writing or changing a Skill or Rule, or deciding which agent platforms it supports.
 
-Guidance: Make each Skill and Rule work on Codex, OpenCode, and Claude Code. Use only `name` and `description` frontmatter for behaviour, and point to other files with a plain sentence, not `@path`. Leave other platforms, for example Copilot and Cursor, for a later effort.
+Guidance: Make each Skill and Rule work on Codex, OpenCode, and Claude Code. Use only `name` and `description` frontmatter for behaviour, and point to other files with a plain sentence, not `@path`. Leave other platforms, for example Copilot and Cursor, for a later effort. Before you change this guidance, read the agent platform research in `docs/research/agent-platforms.md`.
 
-Reason: The Operator supports these three platforms for now and plans to add others later. See "Which jobs does the agent-instructions skill do?" (#6). Only Claude Code reads other frontmatter fields or expands `@path`. See the agent platform research on `research/agent-platforms`.
+Reason: The Operator supports these three platforms for now and plans to add others later. See "Which jobs does the agent-instructions skill do?" (#6). Only Claude Code reads other frontmatter fields or expands `@path`.
 
 ## A SKILL.md stays at 20,000 bytes or less
 
