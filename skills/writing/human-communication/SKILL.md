@@ -35,8 +35,10 @@ This skill tells you how to write text that a human reads. The text is clear on 
 - Agents break these rules of the reference files most often. Obey them also in short status sentences and in the final message:
   - Give each sentence and each clause its actor as the subject. Write "I did not commit the file", not "The file is not committed". Write "When a Job starts at midnight", not "When a Job is set for midnight". Also do not write "get" with a past participle, for example "Long lines get cut".
   - Use one word for each item in the full text, also in lists, steps, and summaries. When you name an item again, use the same word. For example, do not write "the project" and then "the repository", "the function" and then "the code", or "the SQLite file" and then "the database file".
+  - When the code names the item, use the word of the code each time. For example, write "the delay" for `DELAY_MS` in each sentence, also in a sentence that says how the delay grows.
   - Write "it" only when the sentence has one noun that "it" can refer to. Else write the noun again. For example, write "`runDue` keeps the Job after the Job runs", not "after it runs".
   - Write no "should", "may", "might", "would", or "could". Write "will" for an expected result and "can" for a possibility.
+  - Write a maximum of 25 words in each sentence, also in a sentence that compares the old and the new behavior. When a sentence adds a second fact with "plus", "and", or "which", write two sentences.
 
 ## When the text needs an example
 
