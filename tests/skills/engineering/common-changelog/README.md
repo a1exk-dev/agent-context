@@ -1,14 +1,16 @@
-# Tests for the common-changelog skill
+# Tests for the common-changelog Skill
 
-The eval plan is in the "Testing Decisions" section of issue #100. These files run it.
+The section "Testing Decisions" of [Spec: common-changelog Skill](https://github.com/a1exk-dev/agent-context/issues/100) gives the eval plan. These files run it.
 
 | File | Purpose |
 |---|---|
 | `project/` | Sample project. Each output test starts from a copy. Its Changelog policy is the default. |
-| `fixtures/<test>/` | Files that replace or add project files for one test. |
+| `fixtures/<test>/` | Files that replace or add project files for one or more tests. |
 | `evals.json` | The output tests: request, setup, and statements. `common_assertions` (C1 to C6) apply to each test. |
-| `run-evals.ts` | Runs the output tests with `claude -p`, with and without the skill. |
-| `eval-lib.ts` | The test repository, the repository state, and the tool-call audit. `eval-lib.test.ts` tests them. |
+| `run-evals.ts` | Runs the output tests with `claude -p`, with and without the Skill. |
+| `load-requests.json` | The 20 load requests of the description test, each with the expected result. Some requests also give `steps` for the test repository. |
+| `run-load-test.ts` | Runs the load test with `claude -p`. `eval-lib.ts` gives the load decision. |
+| `eval-lib.ts` | The test repository, the repository state, the tool-call audit, and the load decision. `eval-lib.test.ts` tests them. The general runner code comes from `tests/skills/engineering/eval-lib.ts` and `tests/skills/writing/agent-instructions/eval-lib.ts`. |
 | `grader.md` | Instructions for the grader subagent that checks each statement. |
 
 ## Run
@@ -19,28 +21,44 @@ The runner needs [Bun](https://bun.sh) and Git on the host, because it starts `c
 bun tests/skills/engineering/common-changelog/run-evals.ts --out /tmp/cc-evals/iteration-1 --ids 19,20
 ```
 
+The runner runs a maximum of 5 runs at the same time (`--jobs 5`), and refuses a `--jobs` value above 5. When a run hits the usage limit, the runner writes a `LIMIT_HIT` file in the folder of the run. Run that test again later.
+
 Then give `grader.md` and one eval folder to a fresh grader subagent, one grader for each run.
+
+## Load test
+
+```sh
+bun tests/skills/engineering/common-changelog/run-load-test.ts --out /tmp/cc-load/round-1.json
+```
+
+The load test runs each request 3 times (`--runs 3`), a maximum of 5 runs at the same time. Each run starts from a test repository with the Skill in `.claude/skills/common-changelog/`, but with no system prompt that names the Skill. Before the run, the runner makes these changes in the repository, so that each request fits the repository:
+
+1. It commits a typo in `README.md`.
+2. It stages a fix in `src/price.ts`.
+3. It runs the `steps` of the request.
+
+A run counts as a load when the agent calls the Skill or reads its `SKILL.md` before its first change to `CHANGELOG.md`, and within its first 8 tool calls. Then the runner stops the run. A request is correct when its load rate is on the correct side of 0.5. `--ids 1,9` runs only the requests at these positions in `load-requests.json`, for example the requests that failed.
 
 ## Manual checks
 
-The output tests run with no human, so these checks test the human paths. The Operator runs them once on Claude Code, in an interactive session, before the build pull request merges, and records the results in that pull request. Start each check in a copy of `project/` with the fixed history of `eval-lib.ts` and the Skill in `.claude/skills/common-changelog/`, as the runner makes it, and commit the setup of the check first.
+The output tests run with no human, so these checks test the human paths. The Operator runs them once on Claude Code, in an interactive session, before the build pull request merges. The Operator records the results in that pull request. Start each check in a copy of `project/` with the fixed history of `eval-lib.ts`, as the runner makes it. Put the Skill in `.claude/skills/common-changelog/`. Commit the setup of the check first.
 
 | Check | Setup | Pass when |
 |---|---|---|
-| M1 | Delete `docs/agents/changelog-policy.md`. Ask "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6)." Answer `Use defaults`. | Before the question, the Skill shows the 8-line default Changelog policy. Then it writes that file, adds the item under `## Unreleased`, and stages nothing: `git diff --cached` is empty. |
+| M1 | Delete `docs/agents/changelog-policy.md`. Ask "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6)." Answer `Use defaults`. | Before the question, the Skill shows the default Changelog policy with its 8 Settings. Then it writes that file, adds the item under `## Unreleased`, and stages nothing: `git diff --cached` is empty. |
 | M2 | Delete `docs/agents/changelog-policy.md`. Ask "review the changelog". Answer `Choose each setting`. Answer the default value for each question, but for `Release branches` type `release/*, x y`, then type `release`. | The Skill asks 8 questions, one at a time, in this sequence: References, Notice, Authors, Version links, Host, Unreleased, Release branches, Draft approval. Each question gives the default value as the recommended first answer (`auto` for Host, `off` for Draft approval). After `release/*, x y`, it asks the `Release branches` question again. The file holds the answers with `- Release branches: release`, and the Review runs. |
 | M3 | Delete the line `- Unreleased: on` from `docs/agents/changelog-policy.md`. Ask for a changelog entry. Then ask for a second changelog entry. | The first request asks one question about `Unreleased`, with `on` as the recommended answer. The Skill adds `- Unreleased: on` after `- Host: auto`, and does not commit the change. The second request asks no question. |
 | M4 | Switch to the branch `release/1.3.0`. Ask "Release the changelog as 1.4.0." | The Skill names the versions 1.3.0 and 1.4.0 and asks which one to use. `CHANGELOG.md` does not change before the answer. After the answer, the release entry has the selected version. |
 | M5 | Switch to the branch `hotfix/login`. Ask "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6)." Answer `1.2.1` when the Skill asks for the version. | The Skill asks for the version and does not change `CHANGELOG.md` before the answer. After the answer, the first section after `# Changelog` is `## [1.2.1] - <today>` with the new item and the old Unreleased items, each with its commit reference, and there is no `## Unreleased` section. |
 | M6 | Set `- Notice: major` in `docs/agents/changelog-policy.md`. Ask "Release the changelog as 2.0.0." Answer "_See the [upgrade guide](UPGRADING.md) for 2.0.0._" when the Skill asks for a notice. | The Skill asks for an upgrade-guide notice. The `## [2.0.0] - <today>` entry has the given text as its notice, directly after the heading and before the groups. |
 | M7 | Put conflict markers inside the `## [1.2.0]` entry of `CHANGELOG.md`, as the setup of output test 18 does. Ask "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6)." | The Skill stops and asks the Operator to resolve the conflict. It says that the conflict is outside the Unreleased section and gives its line numbers. `CHANGELOG.md` is unchanged, conflict markers included. |
-| M8 | Also install the git-commit Skill in `.claude/skills/git-commit/`. Copy `tests/skills/engineering/git-commit/project/docs/agents/commit-policy.md` into `docs/agents/`, set `- Commit approval: confirm`, and commit these files. Ask the request of M7 with no conflict markers. Then ask "Commit the changelog change." Answer `Commit`. | The common-changelog Skill asks for no approval before or after its Write. The Commit review of the git-commit Skill shows `CHANGELOG.md` (and the new Changelog policy, if the run made one), and the Operator approves the change there. |
+| M8 | Also install the git-commit Skill in `.claude/skills/git-commit/`. Copy `tests/skills/engineering/git-commit/project/docs/agents/commit-policy.md` into `docs/agents/`, set `- Commit approval: confirm`, and commit these files. Ask the request of M7 with no conflict markers. Then ask "Commit the changelog change." Answer `Commit`. | The common-changelog Skill asks for no approval before or after its Write. The Commit review of the git-commit Skill shows `CHANGELOG.md` (and the new Changelog policy, if the run made one), and the Operator approves the change in that Commit review. |
 | M9 | Set `- Draft approval: on` in `docs/agents/changelog-policy.md`. Merge a pull request #7 with the commit `feat: add search option` into the branch. Ask "add a changelog entry for this branch". Approve the draft. | Before it changes `CHANGELOG.md`, the Skill shows the draft item about the search option with `[#7](https://github.com/example/demo/pull/7)` and waits for approval. After the approval, it writes the item under `## Unreleased` in `### Added`, runs the Review, and the report says that the item is a draft. |
 | M10 | Copy `fixtures/39-keep-a-changelog/CHANGELOG.md` into the project, with the setup history of output test 39 (`beforeTag` in `evals.json`). Ask "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6)." Answer `No` to the conversion question. Then, in the same session, ask "Add a changelog entry: add `truncate()` options (pull request #8)." | After the first Write, the Skill asks one question: "Convert the old lines to Common Changelog form?" Before the question, the item is in `CHANGELOG.md` under `## Unreleased` and the old lines are unchanged. After `No`, the file has no other change. The second Write adds its item and asks no question. |
-| M11 | The setup of M10. Ask the first request of M10, and answer `Yes` to the conversion question. | The Skill converts the file as output test 41 tells: Common Changelog headings, groups, items, and links, the #3 commit reference and `(Dave)` for "Add dark mode". Then the Skill runs the Review and its report gives the findings, for example "Add export" as a §2.4.2 error. Nothing is staged. |
+| M11 | The setup of M10. Ask the first request of M10, and answer `Yes` to the conversion question. | The Skill converts the file as output test 41 tells: Common Changelog headings, groups, items, and links, the #3 commit reference and `(Dave)` for "Add dark mode". Then the Skill runs the Review. Its report gives the findings, for example "Add export" as a §2.4.2 error. The Skill stages nothing. |
 | M12 | Copy `fixtures/47-history/HISTORY.md` into the project and delete `CHANGELOG.md`, as output test 47 does. Ask "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6)." Answer `Rename HISTORY.md to CHANGELOG.md`. | The Skill asks to rename `HISTORY.md` or to make a new `CHANGELOG.md`, and changes no file before the answer. After the answer, `HISTORY.md` is gone, `CHANGELOG.md` holds the old text of `HISTORY.md` and the new item under `## Unreleased`, and `git diff --cached` is empty. |
-| M13 | Set the remote `origin` to `https://git.example.com/team/demo.git`. Ask "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6)." Answer `gitlab`. Then ask "Add a changelog entry: add `truncate()` options (pull request #8)." | The first request asks one question with the options `github`, `gitlab`, `bitbucket`, and `No references`, and changes no file before the answer. After `gitlab`, the Changelog policy has `- Host: gitlab` in place of `- Host: auto`, the change is not staged, and the item has `[!6](https://git.example.com/team/demo/-/merge_requests/6)`. The second request asks no question. |
-| M14 | The setup of M13. Ask the first request of M13, and answer `No references`. | The Changelog policy has `- Host: none` in place of `- Host: auto`, the change is not staged, and the new item has no reference. |
-| M15 | Remove the remote: `git remote remove origin`. Ask "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6)." Answer `Stop`. | The Skill asks one question with the options `No references` and `Stop`. After `Stop`, no file changed: `git status --porcelain` is empty. |
+| M13 | Set the remote `origin` to `https://git.example.com/team/demo.git`. Ask "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6)." Answer `gitlab`. Then ask "Add a changelog entry: add `truncate()` options (pull request #8)." | The first request asks one question with the options `github`, `gitlab`, `bitbucket`, and `No references`, and changes no file before the answer. After `gitlab`, the Changelog policy has `- Host: gitlab` in place of `- Host: auto`. The Skill does not stage the change, and the item has `[!6](https://git.example.com/team/demo/-/merge_requests/6)`. The second request asks no question. |
+| M14 | The setup of M13. Ask the first request of M13, and answer `No references`. | The Changelog policy has `- Host: none` in place of `- Host: auto`. The Skill does not stage the change, and the new item has no reference. |
+| M15 | Remove the remote: `git remote remove origin`. Ask "Add a changelog entry: fix `slugify` keeping leading spaces (pull request #6)." Answer `Stop`. | The Skill asks one question with the options `No references` and `Stop`. After `Stop`, the Skill changed no file: `git status --porcelain` is empty. |
 | M16 | Copy `fixtures/52-bitbucket/` into the project, with the remote `origin` `https://bitbucket.org/example/demo.git` and the merge messages of output test 64 (`mergeMessage` in `evals.json`). Switch to the branch `feature/APP-42-login`. Use a session with no Jira MCP server. Ask the request of M15. Give `https://acme.atlassian.net/browse/APP-42` as the issue link. | The Skill asks for the link of the Jira issue `APP-42`, with an option to skip, and says that a Jira MCP server removes the question. After the answer, the item has `([APP-42](https://acme.atlassian.net/browse/APP-42))` and `[#6](https://bitbucket.org/example/demo/pull-requests/6)`. The Changelog policy is unchanged. |
 | M17 | Copy `fixtures/61-old-link-form/CHANGELOG.md` into the project. Ask the request of M15. Answer `Yes` to the conversion question. | The only question is "Convert the old lines to Common Changelog form?". After `Yes`, each link in `CHANGELOG.md` uses the GitHub form of `references/links.md`, for example `https://github.com/example/demo/commit/3f2a9c1` for `formatPrice()`. |
