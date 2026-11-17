@@ -1,14 +1,14 @@
-# Tests for the git-commit skill
+# Tests for the git-commit Skill
 
-The eval plan is in the "Testing Decisions" section of issue #67. These files run it.
+The section "Testing Decisions" of [Spec: git-commit Skill](https://github.com/a1exk-dev/agent-context/issues/67) gives the eval plan. These files run it.
 
 | File | Purpose |
 |---|---|
 | `project/` | Sample project. Each output test starts from a copy. Its Commit policy is the default with `Commit approval: automatic`. |
 | `fixtures/<test>/` | Files that replace or add project files for one test. |
 | `evals.json` | The output tests: request, setup, and statements. `common_assertions` (S1 to S6) apply to each test. |
-| `run-evals.ts` | Runs the output tests with `claude -p`, with and without the skill. |
-| `eval-lib.ts` | The test repository, the git state, and the git-command audit. `eval-lib.test.ts` tests the audit. The general runner code comes from `tests/skills/writing/agent-instructions/eval-lib.ts`. |
+| `run-evals.ts` | Runs the output tests with `claude -p`, with and without the Skill. |
+| `eval-lib.ts` | The test repository, the git state, and the git-command audit. `eval-lib.test.ts` tests the audit. The general runner code comes from `tests/skills/engineering/eval-lib.ts` and `tests/skills/writing/agent-instructions/eval-lib.ts`. |
 | `grader.md` | Instructions for the grader subagent that checks each statement. |
 | `load-requests.json` | The 20 load requests of the description test, each with the expected result. |
 | `run-load-test.ts` | Runs the load test with `claude -p`. `eval-lib.ts` gives the load decision, and `eval-lib.test.ts` tests it. |
@@ -21,7 +21,7 @@ The runner needs [Bun](https://bun.sh) and Git on the host, because it starts `c
 bun tests/skills/engineering/git-commit/run-evals.ts --out /tmp/gc-evals/iteration-1
 ```
 
-It runs a maximum of 5 runs at the same time (`--jobs 5`), and refuses a `--jobs` value above 5. A run that hits the usage limit gets a `LIMIT_HIT` file in its folder. Run it again later.
+The runner runs a maximum of 5 runs at the same time (`--jobs 5`), and refuses a `--jobs` value above 5. When a run hits the usage limit, the runner writes a `LIMIT_HIT` file in the folder of the run. Run that test again later.
 
 Then give `grader.md` and one eval folder to a fresh grader subagent, one grader for each run.
 
@@ -31,21 +31,28 @@ Then give `grader.md` and one eval folder to a fresh grader subagent, one grader
 bun tests/skills/engineering/git-commit/run-load-test.ts --out /tmp/gc-load/round-1.json
 ```
 
-The load test runs each request 3 times (`--runs 3`), a maximum of 5 runs at the same time. Each run starts from a test repository with the Skill in `.claude/skills/git-commit/`, but with no system prompt that names the Skill. Before the run, the repository gets the branch `feature/search`, 2 commits that are not pushed, one staged change, one unstaged change, one new file, and a stub `gh`, so that each request fits the repository. A run counts as a load when the agent calls the Skill or reads its `SKILL.md` before its first `git add`, `git commit`, `git merge`, or `git revert`, and within its first 8 tool calls. Then the runner stops the run. A request is correct when its load rate is on the correct side of 0.5. `--ids 1,11` runs only the requests at these positions in `load-requests.json`, for example the requests that failed.
+The load test runs each request 3 times (`--runs 3`), a maximum of 5 runs at the same time. Each run starts from a test repository with the Skill in `.claude/skills/git-commit/`, but with no system prompt that names the Skill. Before the run, the runner adds these items to the repository, so that each request fits the repository:
+
+- The branch `feature/search` with one commit.
+- 2 commits on `develop` that the runner does not push.
+- One staged change, one unstaged change, and one new file.
+- A stub `gh`.
+
+A run counts as a load when the agent calls the Skill or reads its `SKILL.md` before its first `git add`, `git commit`, `git merge`, or `git revert`, and within its first 8 tool calls. Then the runner stops the run. A request is correct when its load rate is on the correct side of 0.5. `--ids 1,11` runs only the requests at these positions in `load-requests.json`, for example the requests that failed.
 
 ## The test repository
 
-For each run, the runner copies `project/` and the test's overlay to a temporary folder outside this repository, and deletes the paths in the test's `setup.remove`. Tests 6, 7, and 8 delete `docs` in this way, so the start commit has no Commit policy. It runs `git init -b develop`, makes a start commit with a fixed date, and pushes it to a local bare repository as `origin`. Then it runs the shell commands in the test's `setup.steps`, for example a change to a file that must stay out of the commit, or a commit that a test amends, reverts, or merges. `git-before.md` shows the commits of these steps. For each name in `setup.stubs`, the runner puts a stub command first on `PATH`. The stub records its arguments in `outputs/stub-calls.txt` and does nothing else. Test 14 uses a stub `gh` in this way. No test needs the network.
+For each run, the runner copies `project/` and the test's overlay to a temporary folder outside this repository, and deletes the paths in the test's `setup.remove`. Tests 6, 7, and 8 delete `docs` in this way, so the start commit has no Commit policy. The runner runs `git init -b develop`, makes a start commit with a fixed date, and pushes the start commit to a local bare repository as `origin`. Then the runner runs the shell commands in the test's `setup.steps`. An example is a change to a file that must stay out of the commit. Another example is a commit that a test amends, reverts, or merges. `git-before.md` shows the commits of these steps. For each name in `setup.stubs`, the runner puts a stub command first on `PATH`. The stub records its arguments in `outputs/stub-calls.txt` and does nothing else. Test 14 uses a stub `gh` in this way. No test needs the network.
 
-Runs with the skill install it in `.claude/skills/git-commit/` before the start commit and add "Use the git-commit skill for this task." to the system prompt. `--setting-sources project,local` keeps user skills and user memory out of the run.
+For a run with the Skill, the runner puts the Skill in `.claude/skills/git-commit/` before the start commit. The runner also adds "Use the git-commit skill for this task." to the system prompt. `--setting-sources project,local` keeps user skills and user memory out of the run.
 
 The runner saves the git state before and after the run in `outputs/git-before.md` and `outputs/git-after.md`, and the audit of the git commands in `outputs/audit.json`.
 
 ## Manual checks
 
-The output tests run with no human, so these checks test the human paths. The Operator runs them once on Claude Code, in an interactive session, before the build pull request merges, and records the results in that pull request. Start each check in a copy of `project/` with the Skill in `.claude/skills/git-commit/`, as the runner makes it.
+The output tests run with no human, so these checks test the human paths. The Operator runs them once on Claude Code, in an interactive session, before the build pull request merges. The Operator records the results in that pull request. Start each check in a copy of `project/` with the Skill in `.claude/skills/git-commit/`, as the runner makes it.
 
-The checks M4 and M5 use the request of the next paragraph and have no Commit policy. For the checks M1, M2, M3, M8, M9, and M10, first set `- Commit approval: confirm` in `docs/agents/commit-policy.md` and commit that change. For the check M7, set `- Push: confirm` and keep `- Commit approval: automatic`. Commit that change and push it. Then make the change of the check. Except in M8, the request in these checks is "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it."
+The checks M4 and M5 use the request of the next paragraph and start with no Commit policy. For the checks M1, M2, M3, M8, M9, and M10, first set `- Commit approval: confirm` in `docs/agents/commit-policy.md` and commit that change. For the check M7, set `- Push: confirm` and keep `- Commit approval: automatic`. Commit that change and push it. Then make the change of the check. Except in M8, the request in these checks is "Add a function `capitalize(text: string): string` to `src/strings.ts` that returns the text with its first letter in upper case. Then commit it."
 
 | Check | Setup | Pass when |
 |---|---|---|

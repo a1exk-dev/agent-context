@@ -10,7 +10,7 @@
 // fits it. A run counts as a load when the agent calls the Skill or reads its
 // SKILL.md before its first text, its first question, and its first document
 // write, and within its first 8 tool calls. A request is correct when its
-// load rate is above 0.5.
+// load rate is 0.5 or more.
 // cspell:ignore fixd
 
 import { mkdirSync, readFileSync } from "node:fs";
