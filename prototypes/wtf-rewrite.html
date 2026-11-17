@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>wtf rewrite prototype</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<style>
+:root{--bg:#fafaf7;--fg:#1d1d1b;--muted:#6b6b66;--card:#fff;--line:#deddd6;--acc:#2b5fd9;--add:#e9f6ec;--note:#fff6dd}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17171a;--fg:#e8e8e3;--muted:#9a9a94;--card:#202024;--line:#34343a;--acc:#7aa2ff;--add:#1d3324;--note:#3a3220}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,sans-serif}
+header{padding:16px;border-bottom:1px solid var(--line)}
+header h1{margin:0 0 4px;font-size:18px}
+header p{margin:0;color:var(--muted);font-size:13px;max-width:900px}
+.wrap{display:grid;grid-template-columns:260px 1fr;gap:16px;padding:16px;max-width:1300px}
+@media (max-width:800px){.wrap{grid-template-columns:1fr}}
+nav button{display:block;width:100%;text-align:left;margin:0 0 8px;padding:10px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;cursor:pointer;font:inherit}
+nav button.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+nav small{display:block;color:var(--muted)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tabs button{padding:6px 10px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;cursor:pointer;font:inherit;font-size:13px}
+.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.forms{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;margin:0 0 10px;padding:8px 10px;border:1px dashed var(--line);border-radius:8px}
+.forms.off{opacity:.4;pointer-events:none}
+.meta{font-size:13px;color:var(--muted);margin-bottom:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 18px;overflow-x:auto}
+.card pre{white-space:pre-wrap}
+.card table{border-collapse:collapse}.card td,.card th{border:1px solid var(--line);padding:3px 8px}
+.extra{background:var(--note);border-radius:6px;padding:2px 10px;margin:10px 0}
+.ask{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 16px;margin-top:16px;font-size:14px}
+.ask h3{margin:4px 0;font-size:14px}
+code{font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1>wtf rewrite prototype (throwaway)</h1>
+<p>Prototype for "What does a wtf rewrite look like?" (#230). Select a message on the left. The tabs show the original, the old <code>/wait-what</code> rewrite (when one exists), each method alone, and the 4 methods together. The output-form switches add parts to the "All 4" rewrite. The word count compares each version with the original.</p>
+</header>
+<div class="wrap">
+<nav id="nav"></nav>
+<main>
+<div class="tabs" id="tabs"></div>
+<div class="forms" id="forms">
+<strong>Output form for "All 4":</strong>
+<label><input type="checkbox" id="f-ctx"> context line first</label>
+<label><input type="checkbox" id="f-chg"> "What I changed" note</label>
+<label><input type="checkbox" id="f-chk"> check question at the end</label>
+</div>
+<div class="meta" id="meta"></div>
+<div class="card" id="out"></div>
+<div class="ask">
+<h3>What I see in the 30 real /wait-what uses</h3>
+<ul>
+<li>In 19 of 30 uses, the confusing message was a long grilling round (3,000 to 8,000 characters). The argument pointed to one question, for example "Q2 on #82".</li>
+<li>In messages 3 and 4, the old rewrite of one question was about 3 times longer than that question (458 and 444 words for 146 and 167). The old rewrites added background, examples, and bold glossary terms.</li>
+<li>In message 2, the tabs "2 Examples", "3 Glossary terms", and "4 Simple sentences" show only the changed parts. Their word counts are not complete.</li>
+<li>Each old rewrite of a question asked the question again at the end, for example "Do you agree with Option A?".</li>
+<li>The old <code>/wait-what</code> prompt asked for "a little bit of context". None of the 4 methods adds context. The "context line first" switch shows this fifth part.</li>
+</ul>
+</div>
+</main>
+</div>
+
+<!-- ===================== Message 1 ===================== -->
+<script type="text/markdown" id="1-orig">
+Round 1 is at group 7 of 14: the git-commit SKILL.md reviewers are running. These 6 files are done, with each report saved and run through the report form:
+
+| File | Blocking findings | Advisory findings |
+|---|---|---|
+| AGENTS.md | 15 | 7 |
+| GLOSSARY.md | 9 | 2 |
+| MEMORY.md | 22 | 5 |
+| domain.md | 34 | 5 |
+| issue-tracker.md | 41 | 8 |
+| triage-labels.md | 12 | 7 |
+
+Most of these blocking findings are in lines this PR did not change, so they go to warnings and stay uncorrected. The confirmers run after all 14 files' reviewers.
+</script>
+<script type="text/markdown" id="1-m1">
+Review round 1: 6 of 14 files are done. The reviewers of git-commit `SKILL.md` run now.
+
+| File | Blocking | Advisory |
+|---|---|---|
+| AGENTS.md | 15 | 7 |
+| GLOSSARY.md | 9 | 2 |
+| MEMORY.md | 22 | 5 |
+| domain.md | 34 | 5 |
+| issue-tracker.md | 41 | 8 |
+| triage-labels.md | 12 | 7 |
+
+Most blocking findings are in lines that this PR did not change. I list them as warnings and do not correct them. The Confirmers start after all 14 files.
+</script>
+<script type="text/markdown" id="1-m2">
+Round 1 is at group 7 of 14: the git-commit SKILL.md reviewers are running. These 6 files are done, with each report saved and run through the report form:
+
+| File | Blocking findings | Advisory findings |
+|---|---|---|
+| AGENTS.md | 15 | 7 |
+| GLOSSARY.md | 9 | 2 |
+| MEMORY.md | 22 | 5 |
+| domain.md | 34 | 5 |
+| issue-tracker.md | 41 | 8 |
+| triage-labels.md | 12 | 7 |
+
+Most of these blocking findings are in lines this PR did not change, so they go to warnings and stay uncorrected.
+
+**Example:** AGENTS.md has 15 blocking findings. If 13 of them are in old lines, I correct only the other 2. The report lists the 13 as warnings, and the round does not fail for them.
+
+The confirmers run after all 14 files' reviewers.
+</script>
+<script type="text/markdown" id="1-m3">
+Round 1 is at file 7 of 14: the reviewers of git-commit `SKILL.md` are running. These 6 files are done, with each report saved and run through the report form:
+
+| File | Blocking findings | Advisory findings |
+|---|---|---|
+| AGENTS.md | 15 | 7 |
+| GLOSSARY.md | 9 | 2 |
+| MEMORY.md | 22 | 5 |
+| domain.md | 34 | 5 |
+| issue-tracker.md | 41 | 8 |
+| triage-labels.md | 12 | 7 |
+
+A blocking finding is a problem with a **Blocking rule**: a rule that makes the review round fail. An advisory finding is a problem with an **Advisory rule**, and it never makes the round fail.
+
+Most of these blocking findings are in lines this PR did not change, so they go to warnings and stay uncorrected. The **Confirmers** run after the reviewers of all 14 files. A Confirmer is a new subagent that answers yes or no for each blocking finding.
+</script>
+<script type="text/markdown" id="1-m4">
+I am in review round 1. I am at file 7 of 14. The reviewers of git-commit `SKILL.md` run now.
+
+6 files are done. I saved the report of each file. I put each report in the report form.
+
+| File | Blocking findings | Advisory findings |
+|---|---|---|
+| AGENTS.md | 15 | 7 |
+| GLOSSARY.md | 9 | 2 |
+| MEMORY.md | 22 | 5 |
+| domain.md | 34 | 5 |
+| issue-tracker.md | 41 | 8 |
+| triage-labels.md | 12 | 7 |
+
+Most blocking findings are in lines that this PR did not change. I do not correct these findings. I list them as warnings. The Confirmers run after the reviewers of all 14 files.
+</script>
+<script type="text/markdown" id="1-all">
+Review round 1: 6 of 14 files are done. The reviewers of git-commit `SKILL.md` run now.
+
+| File | Blocking | Advisory |
+|---|---|---|
+| AGENTS.md | 15 | 7 |
+| GLOSSARY.md | 9 | 2 |
+| MEMORY.md | 22 | 5 |
+| domain.md | 34 | 5 |
+| issue-tracker.md | 41 | 8 |
+| triage-labels.md | 12 | 7 |
+
+A blocking finding makes the round fail. An advisory finding never does.
+
+Most blocking findings are in lines that this PR did not change. I list them as warnings and do not correct them. For example, if 13 of the 15 in AGENTS.md are in old lines, I correct only 2.
+
+Then the Confirmers start. A Confirmer is a new subagent that answers yes or no for each blocking finding.
+</script>
+<script type="text/markdown" id="1-ctx">
+**Where we are:** you asked me to review the Agent instructions that the git-commit PR touches. I review 14 files, one at a time.
+</script>
+<script type="text/markdown" id="1-chg">
+*What I changed: shorter text, 1 example, and 2 terms explained (blocking finding, Confirmer).*
+</script>
+<script type="text/markdown" id="1-chk">
+Which part is still not clear?
+</script>
+
+<!-- ===================== Message 2 ===================== -->
+<script type="text/markdown" id="2-orig">
+Yes, I'd rename it. On 2026-09-24 the upstream repo renamed its glossary file from `CONTEXT.md` to `GLOSSARY.md` (upstream commit `b1f3390`). The skills we just installed now look only for `GLOSSARY.md`, and none of them mention `CONTEXT.md`. If we keep the old name:
+
+- **`domain-modeling` would create a second glossary.** It creates `GLOSSARY.md` when it settles its first term, so we'd end up with two glossaries that disagree. That breaks your rule of one source for each term.
+- **`tdd`, `pr` and `codebase-design` wouldn't see your terms.** They read `GLOSSARY.md` "if it exists", so they'd skip `CONTEXT.md` without any warning.
+
+A note in `docs/agents/domain.md` wouldn't fix this, because these skills look for the file name directly and never read that doc.
+
+**What the rename touches** (tracked files that mention `CONTEXT.md`):
+- `CONTEXT.md` → `GLOSSARY.md`, and its title.
+- `AGENTS.md` (3 mentions), `docs/agents/domain.md` (7) and `MEMORY.md` (5). This includes the entry "A Skill term follows the CONTEXT.md term".
+- Your own `agent-instructions` skill and its tests: about 40 mentions across `SKILL.md`, the reference files, `evals.json` and `load-requests.json`. I'd add `GLOSSARY.md` there rather than replace `CONTEXT.md`. Other projects that install your skill may still use `CONTEXT.md`, so the skill should handle both names.
+
+**What stays the same:** `MEMORY.md`. It has no equivalent upstream. You don't use upstream's `docs/adr/`, and `MEMORY.md` already covers that role.
+
+I'd do this on its own branch, `feature/glossary-rename` from `develop`, separate from `feature/agent-skills-setup`. The skill and test edits change what `agent-instructions` does, so its evals may need to run again.
+
+Should I go ahead with that branch?
+</script>
+<script type="text/markdown" id="2-m1">
+Yes, rename `CONTEXT.md` to `GLOSSARY.md`. Since 2026-09-24 (commit `b1f3390` in `mattpocock/skills`), the Skills that we installed read only `GLOSSARY.md`. With the old name:
+
+- `domain-modeling` makes a second glossary, `GLOSSARY.md`.
+- `tdd`, `pr`, and `codebase-design` do not see your terms, and give no warning.
+
+A note in `docs/agents/domain.md` does not help, because these Skills never read it.
+
+The rename changes:
+- `CONTEXT.md` (new name and title), `AGENTS.md` (3), `docs/agents/domain.md` (7), `MEMORY.md` (5).
+- About 40 lines in the `agent-instructions` Skill and its tests. There I add `GLOSSARY.md` and keep `CONTEXT.md`, because other projects can still use `CONTEXT.md`. Its evals can need a new run.
+
+`MEMORY.md` stays as it is.
+
+I will use a new branch, `feature/glossary-rename`, from `develop`. Do I start it?
+</script>
+<script type="text/markdown" id="2-m2">
+Yes, I'd rename it. On 2026-09-24 the upstream repo renamed its glossary file from `CONTEXT.md` to `GLOSSARY.md` (upstream commit `b1f3390`). The skills we just installed now look only for `GLOSSARY.md`. If we keep the old name:
+
+- **`domain-modeling` would create a second glossary.** Example: you settle the term "Operator" with `domain-modeling`. It finds no `GLOSSARY.md`, so it writes a new `GLOSSARY.md` with only "Operator". `CONTEXT.md` keeps your other terms. An agent that reads one file does not see the other.
+- **`tdd`, `pr` and `codebase-design` wouldn't see your terms.** Example: `pr` writes "user" in a PR text, because it never read that `CONTEXT.md` says "Operator".
+
+(… the list of touched files as in the original …)
+
+In the `agent-instructions` Skill, I'd add `GLOSSARY.md` and keep `CONTEXT.md`:
+
+```diff
+- Read `CONTEXT.md` for the project terms.
++ Read `GLOSSARY.md` for the project terms. If the project has only
++ `CONTEXT.md`, read `CONTEXT.md`.
+```
+
+I'd do this on its own branch, `feature/glossary-rename` from `develop`. Should I go ahead with that branch?
+</script>
+<script type="text/markdown" id="2-m3">
+Yes, I'd rename it. On 2026-09-24, `mattpocock/skills` (the repo that the installed Skills come from) renamed its glossary file from `CONTEXT.md` to `GLOSSARY.md` (commit `b1f3390`). The glossary is the file that gives the terms of the project. The Skills we just installed now look only for `GLOSSARY.md`. If we keep the old name:
+
+- **`domain-modeling` would create a second glossary.** …
+- **`tdd`, `pr` and `codebase-design` wouldn't see your terms.** …
+
+(… the list of touched files as in the original …)
+
+**What stays the same:** `MEMORY.md`. `mattpocock/skills` keeps design decisions in `docs/adr/`, one file for each decision. You do not use that folder, because `MEMORY.md` already holds these decisions.
+
+I'd do this on its own branch, `feature/glossary-rename` from `develop`. The Skill and test edits change what `agent-instructions` does, so its output tests can need a new run.
+
+Should I go ahead with that branch?
+</script>
+<script type="text/markdown" id="2-m4">
+Yes, I recommend the rename. On 2026-09-24, the upstream repo renamed its glossary file. The old name was `CONTEXT.md`. The new name is `GLOSSARY.md` (commit `b1f3390`). The Skills that we installed now read only `GLOSSARY.md`.
+
+If we keep the old name, two problems occur:
+
+- `domain-modeling` makes a second glossary. It makes `GLOSSARY.md` when it adds its first term. Then two glossaries exist, and they do not agree.
+- `tdd`, `pr`, and `codebase-design` do not see your terms. They read `GLOSSARY.md` only. They skip `CONTEXT.md`. They give no warning.
+
+A note in `docs/agents/domain.md` does not help. These Skills look for the file name. They never read that file.
+
+(… the list of touched files, in short sentences …)
+
+I will make a new branch for this work. Its name is `feature/glossary-rename`. I make it from `develop`. The edits change the `agent-instructions` Skill. Its evals can need a new run.
+
+Do I start that branch?
+</script>
+<script type="text/markdown" id="2-all">
+Yes, rename `CONTEXT.md` to `GLOSSARY.md`. Since 2026-09-24, the Skills that we installed from `mattpocock/skills` read only `GLOSSARY.md` (commit `b1f3390`).
+
+With the old name, two problems occur:
+
+- `domain-modeling` makes a second glossary. For example, it adds "Operator" to a new `GLOSSARY.md`, and your other terms stay in `CONTEXT.md`.
+- `tdd`, `pr`, and `codebase-design` do not see your terms. They give no warning.
+
+The rename changes these files:
+- `CONTEXT.md`: the new name and title.
+- `AGENTS.md` (3 lines), `docs/agents/domain.md` (7), and `MEMORY.md` (5).
+- About 40 lines in the `agent-instructions` Skill and its tests. There I add `GLOSSARY.md` and keep `CONTEXT.md`, because other projects can still use `CONTEXT.md`. Its output tests can need a new run.
+
+```diff
+- Read `CONTEXT.md` for the project terms.
++ Read `GLOSSARY.md` for the project terms. If the project has only
++ `CONTEXT.md`, read `CONTEXT.md`.
+```
+
+I will use a new branch, `feature/glossary-rename`, from `develop`. Do I start it?
+</script>
+<script type="text/markdown" id="2-ctx">
+**Where we are:** you asked if we rename `CONTEXT.md` to `GLOSSARY.md`. I checked the Skills that we installed today.
+</script>
+<script type="text/markdown" id="2-chg">
+*What I changed: shorter text, 1 example and 1 diff, "upstream" replaced by the repo name. I removed the reason about `docs/adr/`.*
+</script>
+<script type="text/markdown" id="2-chk">
+Which part is still not clear?
+</script>
+
+<!-- ===================== Message 3 ===================== -->
+<script type="text/markdown" id="3-orig">
+❓ **Q2** — **Is the identity platform-global or channel-scoped?** Within one platform, is the key `(platform, nativeId)` — the same chatter is one participant wherever they're seen — or `(platform, channel, nativeId)`? The reads push the other way on each platform: YouTube's identifiers are all *channel* ids while the credential is account-scoped, and Twitch's Shared Chat means a message in your channel can originate in another broadcaster's channel and carry *that* channel's badges, so "the channel this message belongs to" is already two fields. At 1.0.0 there's one owned channel per platform, so the distinction only bites in storage shape and in Shared Chat.
+
+➡️ Yes to platform-global: the key is `(platform, nativeId)`. The channel is recorded on the **message** (both the watched channel and, on Twitch, the source channel), never inside the participant's identity. This keeps the map's "schema still records the channel" promise without making a chatter two participants.
+</script>
+<script type="text/markdown" id="3-old">
+Here is the same question again, with more context. I use short sentences and simple words. `GLOSSARY.md` has no chat terms yet, so I write "chatter", "channel" and "platform" in plain words. This ticket makes those terms official.
+
+**The context.** ChatTop keeps the chat messages of the last 30 days. Each stored message must say who wrote it. We must choose the key that answers one question: "did these two messages come from the same person?" You said yes to Q1. Therefore the key always contains the platform. Twitch and YouTube are never the same person.
+
+**The remaining question.** Does the key also contain the channel?
+
+- **Option A, platform-global.** The key is the platform and the person's id on that platform. Example: `twitch:142131003`. The same chatter is one chatter, in all channels.
+- **Option B, channel-scoped.** The key is the platform, the channel, and the person's id. Example: `twitch:yourchannel:142131003`. The same chatter in two channels is two chatters.
+
+**Why I ask.** Today you own one channel on each platform. In one channel, the two options give the same result. Two facts make the question real.
+
+1. Twitch has a function with the name Shared Chat. Two streamers connect their chats. Then a message in your chat can come from the other streamer's channel. The message gives you that other channel, and it gives you the badges of that other channel. Therefore one message has two channels: your channel, and the channel of origin.
+2. The map keeps the channel in the stored data. More channels are possible after 1.0.0. The key that you choose now controls what that later work costs.
+
+**What changes with each option.** Click a chatter to see all their messages. With Option A, you see their messages in all channels. With Option B, you see their messages in one channel only. A ban is not affected: Q3 makes a ban an action on one chatter in one channel. Both options support that.
+
+**My recommendation: Option A.** The person's id on a platform is already unique on that platform. The channel is a fact about the message, not about the person. Therefore put the channel on the message. Option B puts the same person in the data two times. Then you must join the records to see one history.
+
+**The risk of Option A.** The roles are different in each channel. A chatter is a moderator in your channel, and is not a moderator in the other channel. Option A keeps the roles on the message, and not on the chatter. This agrees with the two platforms: Twitch says to read the badges on each message and not to keep them, and YouTube sends four role flags on each message.
+
+Do you agree with Option A?
+</script>
+<script type="text/markdown" id="3-m1">
+**Q2: Is the chatter key `(platform, nativeId)` or `(platform, channel, nativeId)`?**
+
+Today you have one channel on each platform, so the two keys give the same result. They differ in the storage shape and in Twitch Shared Chat. There, one message has two channels: your channel and the source channel. On YouTube, all ids are channel ids, but the login is for the account.
+
+➡️ I recommend `(platform, nativeId)`. The message records the channels: the watched channel, and on Twitch the source channel. One chatter stays one participant. The schema still records the channel, as the map promises.
+</script>
+<script type="text/markdown" id="3-m2">
+❓ **Q2** — **Is the identity platform-global or channel-scoped?**
+
+- Platform-global key: `twitch:142131003`
+- Channel-scoped key: `twitch:yourchannel:142131003`
+
+**Example:** chatter `142131003` writes "hi" in your chat. Later, with Twitch Shared Chat on, the same chatter writes "gg" in the chat of streamer B, and that line shows in your chat too.
+
+| Key | What ChatTop shows when you click the chatter |
+|---|---|
+| platform-global | 1 chatter, 2 messages: "hi" and "gg" |
+| channel-scoped | 2 chatters, 1 message each |
+
+At 1.0.0 there's one owned channel per platform, so the distinction only bites in storage shape and in Shared Chat.
+
+➡️ Yes to platform-global: the key is `(platform, nativeId)`. The channel is recorded on the **message** (both the watched channel and, on Twitch, the source channel), never inside the participant's identity.
+</script>
+<script type="text/markdown" id="3-m3">
+❓ **Q2** — **Does one chatter have one identity on a platform, or one identity in each channel?**
+
+The identity is the key that tells ChatTop "these two messages come from the same chatter". `nativeId` is the id that the platform gives the chatter. The two choices are `(platform, nativeId)` and `(platform, channel, nativeId)`.
+
+The research on each platform points the other way. On YouTube, each id is a channel id, but the login belongs to the Google account. On Twitch, **Shared Chat** joins the chats of two streamers. Then a message in your chat can come from the other streamer's channel and show that channel's badges (the icons for roles such as moderator). So one message already has two channels. At 1.0.0 you have one channel on each platform, so the difference shows only in the storage shape and in Shared Chat.
+
+➡️ I recommend one identity on each platform: `(platform, nativeId)`. The **message** records the channel (your channel, and on Twitch the source channel). The identity never holds a channel. The schema still records the channel, as the map promises, and one chatter stays one participant.
+</script>
+<script type="text/markdown" id="3-m4">
+❓ **Q2** — **Does the identity include the channel?**
+
+One platform has many channels. Two keys are possible: `(platform, nativeId)` and `(platform, channel, nativeId)`. With the first key, a chatter is one participant in all channels. With the second key, a chatter is one participant in each channel.
+
+The research shows two facts. On YouTube, each id is a channel id. But the login is for the account. On Twitch, Shared Chat can send a message from a different channel into your chat. That message has the badges of the other channel. So one message has two channels.
+
+At 1.0.0 you own one channel on each platform. So the two keys give the same result, except in storage and in Shared Chat.
+
+➡️ I recommend the first key, `(platform, nativeId)`. The message keeps the channel. On Twitch, the message also keeps the source channel. The identity never keeps a channel. So one chatter stays one participant.
+</script>
+<script type="text/markdown" id="3-all">
+❓ **Q2: Does the chatter identity include the channel?**
+
+The identity is the key that tells ChatTop "these two messages come from the same chatter". You have two choices:
+
+- `(platform, nativeId)`, for example `twitch:142131003`. A chatter is one participant in all channels.
+- `(platform, channel, nativeId)`, for example `twitch:yourchannel:142131003`. A chatter is one participant in each channel.
+
+At 1.0.0 you have one channel on each platform, so the two keys give the same result. They differ only in Twitch **Shared Chat**, which joins the chats of two streamers. Example: chatter `142131003` writes "hi" in your chat, then "gg" in the chat of streamer B, and "gg" shows in your chat too. With the first key, a click on the chatter shows 2 messages. With the second key, ChatTop shows 2 chatters with 1 message each.
+
+On YouTube, each id is a channel id, but the login is for the account. This does not change the result.
+
+➡️ I recommend `(platform, nativeId)`. The message keeps the channel, and on Twitch also the source channel. The identity never keeps a channel.
+</script>
+<script type="text/markdown" id="3-ctx">
+**Where we are:** ticket #64 decides how ChatTop knows that two chat messages come from the same chatter. You said yes to Q1: the key always holds the platform.
+</script>
+<script type="text/markdown" id="3-chg">
+*What I changed: shorter text, 1 example with 2 keys, Shared Chat and identity explained.*
+</script>
+<script type="text/markdown" id="3-chk">
+Do you agree with `(platform, nativeId)`? If a part is still not clear, tell me which part.
+</script>
+
+<!-- ===================== Message 4 ===================== -->
+<script type="text/markdown" id="4-orig">
+❓ **Q2** — **The retention window reaches an outbound message**: ADR 0011 held that it does *not* reach a moderation action, because a ban is permanent and a trimmed action handle is a ban nothing can lift. Sending has no such claim on the future: an outbound message's reason to exist is the line it draws and the echoes it suppresses, and both of those die with the chat around them at thirty days. Exempting it would be inheriting ADR 0011's exception without inheriting its argument.
+
+Its own clock is ChatTop's — the instant it was typed — which is also what the timeline orders it by, never revised afterwards even when an echo supplies the platform's send time. That keeps one rule per kind of thing in the store, and it keeps the operator's line where they typed it rather than having it jump when YouTube's stamp arrives.
+
+➡️ Yes: trimmed on the same thirty-day window as chat, ordered by the instant it was typed, and that instant is never revised.
+</script>
+<script type="text/markdown" id="4-old">
+Here is Q2 again, in smaller pieces.
+
+**The background**
+
+ChatTop keeps a **stored message** for the **retention window**: the 30 days before now. The **trim** deletes each stored message that is older than the window ([ADR 0007](docs/adr/0007-stored-message-and-retention.md)).
+
+A **moderation action** is different. The trim does not delete it ([ADR 0011](docs/adr/0011-moderation-action-model.md)). There are two reasons. A **ban** has no end, so it can be older than 30 days and still be **in force**. And the **action handle** is the only way to **lift** a YouTube ban. If the trim deleted the moderation action, the ban would stay forever.
+
+**What Q1 added**
+
+You agreed to Q1. So ChatTop now keeps a third thing: an **outbound message**. This is one line that the **operator** typed. The **chat timeline** shows the outbound message itself as the line. ChatTop hides the echo of that line that comes back from each platform.
+
+**What Q2 asks**
+
+Q2 asks two questions about this new outbound message.
+
+**Question one: does the trim delete it?**
+
+I recommend yes. Delete an outbound message when it is more than 30 days old, in the same way as a stored message.
+
+The outbound message does two jobs. It draws one line in the chat timeline, and it hides the echoes of that line. The trim deletes those echoes at 30 days. After that, the outbound message has no job. So it can go at the same time.
+
+The moderation action keeps its special treatment, because its reasons are its own. An outbound message has no ban to lift and nothing to keep.
+
+**Question two: what instant puts it in sequence?**
+
+A chat timeline puts each line in sequence by its **order time**. For a stored message, the order time is the **send time** if the platform gives one, or the **capture time** if the platform gives none.
+
+An outbound message has no platform send time at the start. ChatTop makes the line before it speaks to any platform. Later, the echo from YouTube can carry a send time.
+
+I recommend this rule: the order time of an outbound message is ChatTop's own clock, at the moment the operator sent the line. Do not change it later.
+
+If ChatTop changed the order time when the echo came, the operator's line would move on the screen some seconds after they typed it. The line can move up or down past other lines. One rule, set one time, keeps the line where the operator put it.
+
+**In one sentence**
+
+Delete an outbound message at 30 days, like chat, not like a moderation action; and sequence it by ChatTop's clock at the moment of the send, for all of its life.
+</script>
+<script type="text/markdown" id="4-m1">
+❓ **Q2** — **Does the 30-day trim delete an outbound message, and which time orders it?**
+
+ADR 0011 keeps a moderation action after 30 days, because a ban has no end and only its action handle can lift it. An outbound message has no such need. It draws one line and hides the echoes of that line, and the trim deletes the echoes at 30 days.
+
+The order time is ChatTop's clock when the operator typed the line. ChatTop never changes it, also when the YouTube echo brings a send time. So the line does not jump on the screen.
+
+➡️ I recommend: trim it at 30 days like chat, order it by the time it was typed, and never change that time.
+</script>
+<script type="text/markdown" id="4-m2">
+❓ **Q2** — **The retention window reaches an outbound message**: ADR 0011 held that it does *not* reach a moderation action, because a ban is permanent and a trimmed action handle is a ban nothing can lift. Sending has no such claim on the future.
+
+**Example of the trim:** you send "welcome!" on 1 March. The YouTube and Twitch echoes of that line are stored messages, so the trim deletes them on 31 March. Without the echoes, the outbound message hides nothing. The trim deletes it on 31 March too.
+
+**Example of the order time:**
+
+```text
+12:00:01  viewer1: hi
+12:00:03  you: welcome!      <- ChatTop clock when you pressed Enter
+12:00:04  viewer2: lol
+```
+
+The YouTube echo arrives later with send time 12:00:05. If ChatTop took that time, "welcome!" would jump below "lol". The rule keeps it at 12:00:03.
+
+➡️ Yes: trimmed on the same thirty-day window as chat, ordered by the instant it was typed, and that instant is never revised.
+</script>
+<script type="text/markdown" id="4-m3">
+❓ **Q2** — **Does ChatTop delete an outbound message after 30 days, like chat?**
+
+An **outbound message** is a line that you type and ChatTop sends. The **retention window** is the 30 days of chat that ChatTop keeps. The **trim** deletes what is older.
+
+ADR 0011 (the decision about moderation actions) keeps a **moderation action**, for example a ban, after 30 days. A ban has no end, and only its **action handle** (the id that the platform gives the ban) can lift it. An outbound message has no such need. It draws one line, and it hides each **echo**: the copy of your line that comes back from the platform. The trim deletes the echoes at 30 days.
+
+The **order time** decides where a line shows in the timeline. For an outbound message, it is ChatTop's clock when you typed the line. ChatTop never changes it, also when the YouTube echo brings its own send time. So your line stays where you typed it.
+
+➡️ Yes: trimmed on the same 30-day window as chat, ordered by the time you typed it, and that time never changes.
+</script>
+<script type="text/markdown" id="4-m4">
+❓ **Q2** — **Does the trim delete an outbound message?**
+
+ChatTop keeps chat for 30 days. Then the trim deletes it. ADR 0011 keeps moderation actions longer. A ban has no end. Only the action handle can lift the ban. So ChatTop keeps the moderation action.
+
+An outbound message is different. It has two jobs. It draws one line. It hides the echoes of that line. The trim deletes the echoes after 30 days. Then the outbound message has no job.
+
+The order time of an outbound message is ChatTop's clock. ChatTop reads the clock when you type the line. ChatTop never changes this time. The YouTube echo can bring a different send time. ChatTop ignores it. So the line does not move on the screen.
+
+➡️ I recommend yes. Trim the outbound message after 30 days. Order it by the time you typed it. Never change that time.
+</script>
+<script type="text/markdown" id="4-all">
+❓ **Q2: Does ChatTop delete an outbound message after 30 days, and which time puts it in order?**
+
+An **outbound message** is a line that you type and ChatTop sends. ChatTop keeps chat for 30 days, and then the trim deletes it.
+
+ADR 0011 keeps a moderation action longer, because a ban has no end and only its action handle can lift it. An outbound message has no such need. It draws your line and hides the **echoes** of that line (the copies that come back from each platform). The trim deletes the echoes after 30 days. Then the outbound message has no job.
+
+For example, you send "welcome!" on 1 March. The trim deletes its echoes on 31 March, and the outbound message too.
+
+The order time is ChatTop's clock when you press Enter. ChatTop never changes it:
+
+```text
+12:00:01  viewer1: hi
+12:00:03  you: welcome!      <- stays here
+12:00:04  viewer2: lol
+```
+
+The YouTube echo can say 12:00:05. If ChatTop used that time, your line would jump below "lol".
+
+➡️ I recommend: delete it after 30 days like chat, and order it by the time you typed it.
+</script>
+<script type="text/markdown" id="4-ctx">
+**Where we are:** Q1 added the outbound message to ChatTop, so ChatTop now stores your own sent lines. Q2 asks how long ChatTop keeps them.
+</script>
+<script type="text/markdown" id="4-chg">
+*What I changed: shorter text, 2 examples, 3 terms explained (outbound message, echo, order time).*
+</script>
+<script type="text/markdown" id="4-chk">
+Do you agree with both parts? If a part is still not clear, tell me which part.
+</script>
+
+<script>
+const MSGS=[
+ {id:'1',title:'Review status table',src:'agent-context, review round of the git-commit PR',why:'Dense status. Terms with no explanation: group, blocking, advisory, confirmers.'},
+ {id:'2',title:'Rename CONTEXT.md?',src:'agent-context, answer to "should we adjust CONTEXT.md to GLOSSARY.md"',why:'Long answer. "upstream", "evals", reasons inside reasons.'},
+ {id:'3',title:'ChatTop Q2: identity key',src:'chattop, real /wait-what use, ticket #64',why:'Operator ran /wait-what on Q2 of a 4-question grilling round.'},
+ {id:'4',title:'ChatTop Q2: outbound retention',src:'chattop, real /wait-what use, ticket #82',why:'Operator ran /wait-what on Q2 of a 6-question grilling round.'}];
+const TABS=[['orig','Original'],['old','Old /wait-what'],['m1','1 Shorter'],['m2','2 Examples'],['m3','3 Glossary terms'],['m4','4 Simple sentences'],['all','All 4']];
+let cur='1',tab='orig';
+const $=id=>document.getElementById(id);
+const md=t=>window.marked?marked.parse(t):'<pre>'+t.replace(/</g,'&lt;')+'</pre>';
+const src=k=>{const e=$(k);return e?e.textContent.trim():null};
+const words=t=>t.replace(/```[\s\S]*?```/g,' ').split(/\s+/).filter(w=>/[A-Za-z0-9]/.test(w)).length;
+function render(){
+ $('nav').innerHTML=MSGS.map(m=>`<button class="${m.id===cur?'on':''}" data-id="${m.id}">${m.title}<small>${m.src}</small></button>`).join('');
+ $('tabs').innerHTML=TABS.filter(([k])=>src(cur+'-'+k)).map(([k,l])=>`<button class="${k===tab?'on':''}" data-t="${k}">${l}</button>`).join('');
+ if(!src(cur+'-'+tab))tab='orig';
+ const m=MSGS.find(x=>x.id===cur);
+ let body=src(cur+'-'+tab),html='';
+ const isAll=tab==='all';
+ $('forms').classList.toggle('off',!isAll);
+ if(isAll&&$('f-ctx').checked){html+='<div class="extra">'+md(src(cur+'-ctx'))+'</div>';body=src(cur+'-ctx')+'\n'+body}
+ html+=md(src(cur+'-'+tab));
+ if(isAll&&$('f-chk').checked){html+='<div class="extra">'+md(src(cur+'-chk'))+'</div>';body+='\n'+src(cur+'-chk')}
+ if(isAll&&$('f-chg').checked){html+='<div class="extra">'+md(src(cur+'-chg'))+'</div>';body+='\n'+src(cur+'-chg')}
+ const o=words(src(cur+'-orig')),n=words(body);
+ $('meta').innerHTML=`<b>${m.title}</b>. ${m.why} · ${n} words, ${Math.round(n/o*100)}% of the original (${o} words)`;
+ $('out').innerHTML=html;
+}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.id){cur=b.dataset.id;tab='orig'}if(b.dataset.t)tab=b.dataset.t;render()});
+document.querySelectorAll('.forms input').forEach(i=>i.addEventListener('change',render));
+render();
+</script>
+</body>
+</html>
