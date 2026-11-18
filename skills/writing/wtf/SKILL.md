@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # wtf
 
-This Skill writes one of your messages again in a clearer form. The Operator calls this Skill after a message that the Operator did not understand. Use this Skill only for a message of yours in the session. When the Operator asks for a change to a file, for example a shorter text in a project document, do not use this Skill.
+This Skill writes one of your messages again in a clearer form. The Operator calls this Skill after a message that the Operator did not understand.
 
 ## Terms in this Skill
 
@@ -32,11 +32,8 @@ This Skill writes one of your messages again in a clearer form. The Operator cal
 ## When you write the rewrite
 
 - Keep each fact and each required part of the message. The facts and the required parts are more important than method 1. Method 1 makes only the text around the facts and the required parts shorter.
-- Keep each fact as the message gives it, also when you think that the fact is wrong. The rewrite does not correct a fact of the message. Also keep when each action occurs, for example "before I commit".
-- When you make a label or a heading shorter, keep the words that tell what its numbers count.
-- Add no new part other than the context line, for example a new question or a new offer of a next step. For a short message, also keep the rewrite short.
 - Obey your other writing instructions together with the 4 methods. Do not let the 4 methods replace these instructions.
-- Keep the rewrite near the length of the message. An agent without this Skill often writes a rewrite that is about 3 times longer than the message.
+- Keep the rewrite near the length of the message. Without this Skill, an agent often writes a rewrite that is much longer than the message.
 - Change no file. For example, do not record a lesson in `MEMORY.md`. This Skill gives only the rewrite.
 
 ## When you give the rewrite
@@ -45,6 +42,6 @@ Give these parts in this sequence:
 
 1. The context line. Write it in 1 or 2 sentences, not more. It gives the task and the decision that the message is about, so that the Operator knows where the work is after a break. When the message is about no decision, the context line gives only the task. An example is "Where we are: Q1 added the outbound message to ChatTop, so ChatTop now stores your own sent lines. Q2 asks how long ChatTop keeps them."
 2. The rewritten text.
-3. The question of the message, only when the message asked a question. When you rewrite only a part of the message, give only the question of that part. Put the question at the end, so that the Operator can answer it directly. When the message gives a recommended answer, put the recommended answer before the question.
+3. The question of the message, only when the message asked a question. When you rewrite only a part of the message, give only the question of that part. Put the question at the end, so that the Operator can answer it directly.
 
 Give only these parts. Add no note about the changes. Ask no question about whether the rewrite is clear. Ask no question that the message did not ask. Each added part makes the rewrite longer for the Operator.
