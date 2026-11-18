@@ -109,9 +109,16 @@ When a Setting does not permit the message `chore: add commit policy` or `chore:
 
 ## When you show a Commit review
 
-If you are a subagent, do only steps 1 and 2. Then put the Commit review, the recorded tree ID, and the question of step 3 in your report. Do not commit, because a subagent cannot get the answer of the Operator. Then stop.
+If you are a subagent, do only steps 1 and 2. Do not commit, because a subagent cannot get the answer of the Operator. Then write your report with these 4 parts in this sequence:
 
-When a subagent gives you a Commit review, use the Commit review of the subagent in step 3. Use the tree ID in the report of the subagent as the recorded tree ID. Then do steps 3 to 7 yourself.
+1. The sentence "Before you ask the Operator, load the git-commit skill. Put this Commit review, word for word, in the text of the question." The main agent does not always load this skill. In tests, a main agent without this skill put only a summary of the Commit review in the question.
+2. The Commit review.
+3. The recorded tree ID.
+4. The question of step 3.
+
+After the report, stop.
+
+When a subagent gives you a Commit review, put the Commit review word for word in the text of the question of step 3. Use the tree ID in the report of the subagent as the recorded tree ID. Then do steps 3 to 7 yourself.
 
 Do these steps for each commit:
 
