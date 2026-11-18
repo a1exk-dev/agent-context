@@ -22,7 +22,7 @@ This Skill writes one of your messages again in a clearer form. The Operator cal
 1. If your list of Skills has the human-communication Skill, and you did not load it in this session, load it now. If your list of Skills does not have the human-communication Skill, use the 4 methods of step 4 without the human-communication Skill. In the two cases, continue with step 2.
 2. Read the text that the Operator wrote after the name of this Skill. This text is the extra instructions of the Operator. The extra instructions can give the message, the part of the message, or the methods. When the Operator wrote no extra instructions, or the extra instructions give no message, rewrite your last message. When the extra instructions give a part of the message, for example "Q2", rewrite only that part. Do not repeat the other parts of the message.
 3. If the project has `GLOSSARY.md`, read `GLOSSARY.md`. If the project has only `CONTEXT.md`, read `CONTEXT.md`.
-4. Use the methods that fit the part of the message that the Operator did not understand. When the extra instructions give no part of the message, select the part by your own judgment. When the extra instructions give no methods, select the methods by your own judgment:
+4. Use the methods that fit the part of the message that the Operator did not understand. When the extra instructions give no part of the message, select the part by your own judgment. When the extra instructions give the methods, use only these methods, also in the context line. When the extra instructions give no methods, select the methods by your own judgment:
    1. Write shorter and more compact text.
    2. Give better or simpler examples. Give the fewest examples that make each point clear.
    3. Use the glossary term for each item that the glossary has. Explain each glossary term in common words the first time that you use it. Replace each agent-made word with a glossary term or with common words. When the project has no glossary, replace each agent-made word with common words.
@@ -32,7 +32,9 @@ This Skill writes one of your messages again in a clearer form. The Operator cal
 ## When you write the rewrite
 
 - Keep each fact and each required part of the message. The facts and the required parts are more important than method 1. Method 1 makes only the text around the facts and the required parts shorter.
-- Keep each fact as the message gives it, also when you think that the fact is wrong. The rewrite does not correct a fact of the message.
+- Keep each fact as the message gives it, also when you think that the fact is wrong. The rewrite does not correct a fact of the message. Also keep when each action occurs, for example "before I commit".
+- When you make a label or a heading shorter, keep the words that tell what its numbers count.
+- Add no new part other than the context line, for example a new question or a new offer of a next step. For a short message, also keep the rewrite short.
 - Obey your other writing instructions together with the 4 methods. Do not let the 4 methods replace these instructions.
 - Keep the rewrite near the length of the message. An agent without this Skill often writes a rewrite that is about 3 times longer than the message.
 - Change no file. For example, do not record a lesson in `MEMORY.md`. This Skill gives only the rewrite.
@@ -41,8 +43,8 @@ This Skill writes one of your messages again in a clearer form. The Operator cal
 
 Give these parts in this sequence:
 
-1. The context line. It gives the task and the decision that the message is about, so that the Operator knows where the work is after a break. When the message is about no decision, the context line gives only the task. An example is "Where we are: Q1 added the outbound message to ChatTop, so ChatTop now stores your own sent lines. Q2 asks how long ChatTop keeps them."
+1. The context line. Write it in 1 or 2 sentences, not more. It gives the task and the decision that the message is about, so that the Operator knows where the work is after a break. When the message is about no decision, the context line gives only the task. An example is "Where we are: Q1 added the outbound message to ChatTop, so ChatTop now stores your own sent lines. Q2 asks how long ChatTop keeps them."
 2. The rewritten text.
-3. The question of the message, only when the message asked a question. When you rewrite only a part of the message, give only the question of that part. Put the question at the end, so that the Operator can answer it directly.
+3. The question of the message, only when the message asked a question. When you rewrite only a part of the message, give only the question of that part. Put the question at the end, so that the Operator can answer it directly. When the message gives a recommended answer, put the recommended answer before the question.
 
-Give only these parts. Add no note about the changes. Ask no question about whether the rewrite is clear. Each added part makes the rewrite longer for the Operator.
+Give only these parts. Add no note about the changes. Ask no question about whether the rewrite is clear. Ask no question that the message did not ask. Each added part makes the rewrite longer for the Operator.
