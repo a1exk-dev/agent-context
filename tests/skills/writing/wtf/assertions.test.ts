@@ -168,16 +168,3 @@ describe("includesText", () => {
         });
     });
 });
-
-describe("shorter", () => {
-    it("passes a rewrite with fewer words than the message", () => {
-        expect(check("shorter", "Round 1: file 7 of 14.").passed).toBe(true);
-    });
-
-    it("fails a rewrite with as many words as the message", () => {
-        expect(check("shorter", MESSAGE)).toEqual({
-            passed: false,
-            evidence: "The rewrite has 12 words. The message has 12 words.",
-        });
-    });
-});

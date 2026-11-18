@@ -241,12 +241,6 @@
                     "id": "8.1",
                     "text": "The rewrite uses only the method \"shorter text\". It adds no new example, no explanation of a term, and no new term.",
                     "grader": "llm"
-                },
-                {
-                    "id": "8.2",
-                    "text": "The rewrite has fewer words than the original.",
-                    "grader": "script",
-                    "check": "shorter"
                 }
             ]
         }

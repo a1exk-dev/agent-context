@@ -31,6 +31,13 @@ describe("evals.json", () => {
         expect(readEvals("7")[0]?.messages).toHaveLength(2);
     });
 
+    it("gives test 8 only the single-method statement of the spec", () => {
+        const own = readEvals("8")[0]?.assertions.filter(
+            (s) => !s.id.startsWith("W"),
+        );
+        expect(own?.map((s) => [s.id, s.grader])).toEqual([["8.1", "llm"]]);
+    });
+
     it("names only script checks that exist", () => {
         for (const ev of evals)
             for (const statement of ev.assertions)

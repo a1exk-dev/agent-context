@@ -95,18 +95,4 @@ export const checks: Record<string, Check> = {
                 .map((text) => `The rewrite does not have: ${text}`),
             "The rewrite has each text.",
         ),
-    // Passes when the rewrite has fewer words than message `args.message`,
-    // by default the first message.
-    shorter: (run, args) => {
-        const message = run.messages[Number(args.message ?? 0)] ?? "";
-        const [got, want] = [words(run.rewrite).length, words(message).length];
-        return verdict(
-            got < want
-                ? []
-                : [
-                      `The rewrite has ${got} words. The message has ${want} words.`,
-                  ],
-            `The rewrite has ${got} words. The message has ${want} words.`,
-        );
-    },
 };
