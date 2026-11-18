@@ -6,7 +6,7 @@ These rules come from the Agent Skills specification at https://agentskills.io/s
 
 Select the folder first, as the section "When you select the folder for the Skill" tells you.
 
-A Manual-only Skill is a Skill that an agent loads only when the user calls it by name. A Manual-only Skill also has the file `<name>/agents/openai.yaml`, where `<name>` is the folder of the Skill. In this file, write `allow_implicit_invocation: false` under `policy:`, because Codex does not read `disable-model-invocation` in the frontmatter. OpenCode 2 is version 2 of OpenCode.
+A Manual-only Skill is a Skill that an agent loads only when the user calls it by name. OpenCode 2 is version 2 of OpenCode.
 
 - Tier 1: A Skill is a folder with a `SKILL.md` file. The file starts with YAML frontmatter, and Markdown text comes after it. (blocking)
 - Tier 1: Give `name` 1 to 64 characters: lowercase letters, digits, and hyphens. Put no hyphen at the start or at the end, and no `--`. Use the folder name. If the user gives a name that does not obey this rule, correct the name. Give the change in the Summary part. (script check)
@@ -18,6 +18,28 @@ A Manual-only Skill is a Skill that an agent loads only when the user calls it b
 - Tier 1: When the user tells you clearly to write `license`, `compatibility`, `metadata`, or `allowed-tools`, write it. Then add a warning that gives the platforms that do not read the field. (advisory)
 - Tier 1: If the user tells you to write a field that is not permitted, do not write it. Add a warning that gives the field and the error. (advisory)
 - Tier 4: Write `description` as one line in quotation marks. Some checks read only the first line of a value. In the value, write `\"` for each double quotation mark. (advisory)
+
+## When you write or edit a Skill: the agents/openai.yaml file
+
+Codex reads the file `<name>/agents/openai.yaml`, where `<name>` is the folder of the Skill. Codex shows the values of `display_name` and `short_description` in its list of Skills, and obeys the value of `allow_implicit_invocation`. Claude Code and OpenCode do not read the file, and the file does not change how they load the Skill. The rules in this section come from the Codex documentation, not from the Agent Skills specification. The tier 1 rule is a loading rule of Codex. The tier 4 rules are recommendations of Codex. This example shows the form of the file for a Skill with the name `git-commit`:
+
+```yaml
+interface:
+  display_name: "Git Commit"
+  short_description: "Stage the files of a task and write the commit message"
+  default_prompt: "Use $git-commit to commit my changes."
+policy:
+  allow_implicit_invocation: true
+```
+
+- Tier 4: In the write job, write `agents/openai.yaml` for each Skill that you write. (blocking)
+- Tier 4: In the edit job, when the Skill has no `agents/openai.yaml` and is not a Manual-only Skill, do not write the file. Add a warning that recommends the file. In the warning, give the full text of the file. (advisory)
+- Tier 1: In the edit job, when a Manual-only Skill has no `agents/openai.yaml`, write the file, because Codex does not read `disable-model-invocation`. (blocking)
+- Tier 1: In a Manual-only Skill, write `allow_implicit_invocation: false` under `policy:`, because Codex does not read `disable-model-invocation` in the frontmatter. In each other Skill, write `allow_implicit_invocation: true`. (blocking)
+- Tier 4: Write `display_name`, `short_description`, and `default_prompt` under `interface:`. Write no other field under `interface:`. (advisory)
+- Tier 4: Put each value that is not `true` or `false` in double quotation marks. Do not put a key in quotation marks. (advisory)
+- Tier 4: Give `short_description` 25 to 64 characters. (advisory)
+- Tier 4: Write `default_prompt` as one short sentence that asks for a task. In this sentence, write the name of the Skill as `$<name>`. (advisory)
 
 ## When you write the description
 

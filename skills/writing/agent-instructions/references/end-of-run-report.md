@@ -46,6 +46,7 @@ In the Warnings part, add one item for each of these warnings that is applicable
 - A file size that is more than its limit after you moved text, or after a new Rule. Give the measured file size and the limit.
 - A technical noun that is not in the base list and not in the glossary. Give the recommended glossary entry.
 - A Skill folder that a target platform does not load, with that platform.
+- In the edit job, a Skill that has no `agents/openai.yaml`, with the full text of the recommended file.
 
 Obey these rules for the moved text and the extraction candidates:
 

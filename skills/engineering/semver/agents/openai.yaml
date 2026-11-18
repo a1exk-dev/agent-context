@@ -1,0 +1,6 @@
+interface:
+  display_name: "Semver"
+  short_description: "Pick versions and start or finish Git Flow branches"
+  default_prompt: "Use $semver to start a feature branch for this work."
+policy:
+  allow_implicit_invocation: true

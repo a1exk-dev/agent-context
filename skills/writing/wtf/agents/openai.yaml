@@ -1,2 +1,6 @@
+interface:
+  display_name: "WTF"
+  short_description: "Write the last agent message again in a clearer form"
+  default_prompt: "Use $wtf to write your last message again in a clearer form."
 policy:
   allow_implicit_invocation: false

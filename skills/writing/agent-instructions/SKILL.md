@@ -73,6 +73,7 @@ This table gives the known cases where two sources do not agree, and the decisio
 | The specification "give freedom where many approaches work" and the STE modal verbs | Use CAN or a condition that you write in the sentence. |
 | ISO neutral tone and CAUTION | You can use CAUTION. Use no other emphasis. |
 | The rule "Write each pointer as a sentence that gives the file" and the rule "Make no sequences of pointers" | When a reference file refers to a different reference file that `SKILL.md` also points to, give the file name. This text is not a sequence of pointers. |
+| The rule "Write only features that Codex, OpenCode, and Claude Code all read" and the file `agents/openai.yaml`, which only Codex reads | When you write or edit a Skill, obey the rules for `agents/openai.yaml` in `references/agent-skills-spec.md`. The file does not change how Claude Code and OpenCode load the Skill. |
 | File size | When you examine the file size, use only the limits in `references/loading-rules.md` and `references/agent-skills-spec.md`. |
 | File-size limit and the edit-job rule 'change only the changed part' | Move whole sections without changes. |
 | The rule "Copy the format of the entries" for the glossary and `MEMORY.md`, and the STE rule "Do not omit words" | Copy the format of the entries. If the entries start the definition without the term, start the new definition without the term. |

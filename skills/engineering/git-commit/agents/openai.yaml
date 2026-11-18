@@ -1,0 +1,6 @@
+interface:
+  display_name: "Git Commit"
+  short_description: "Stage the files of a task and write the commit message"
+  default_prompt: "Use $git-commit to commit my changes."
+policy:
+  allow_implicit_invocation: true
