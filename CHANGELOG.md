@@ -13,3 +13,7 @@
 - Add the `semver` Skill, which picks and checks versions and starts and finishes Git Flow branches by the Semver policy of the project ([#187](https://github.com/a1exk-dev/agent-context/pull/187)) (Aliaksandr Katkou)
 - Add `agents/openai.yaml` to each Skill, so that Codex shows its display name, short description, and default prompt, and make `bun run check` fail for a Skill without this file ([#241](https://github.com/a1exk-dev/agent-context/pull/241)) (Aliaksandr Katkou)
 - Add the MIT License in `LICENSE`, and add a License section to `README.md` ([#242](https://github.com/a1exk-dev/agent-context/pull/242)) (Aliaksandr Katkou)
+
+### Fixed
+
+- Show the Commit review of the `git-commit` Skill in the text of the approval question, with one stat line for each staged file in place of the full diff ([#243](https://github.com/a1exk-dev/agent-context/pull/243)) (Aliaksandr Katkou)
