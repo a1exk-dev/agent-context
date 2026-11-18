@@ -32,6 +32,7 @@ This Skill writes one of your messages again in a clearer form. The Operator cal
 ## When you write the rewrite
 
 - Keep each fact and each required part of the message. The facts and the required parts are more important than method 1. Method 1 makes only the text around the facts and the required parts shorter.
+- When the message gives a recommended answer, keep the recommended answer.
 - Obey your other writing instructions together with the 4 methods. Do not let the 4 methods replace these instructions.
 - Keep the rewrite near the length of the message. Without this Skill, an agent often writes a rewrite that is much longer than the message.
 - Change no file. For example, do not record a lesson in `MEMORY.md`. This Skill gives only the rewrite.
@@ -44,4 +45,4 @@ Give these parts in this sequence:
 2. The rewritten text.
 3. The question of the message, only when the message asked a question. When you rewrite only a part of the message, give only the question of that part. Put the question at the end, so that the Operator can answer it directly.
 
-Give only these parts. Add no note about the changes. Ask no question about whether the rewrite is clear. Ask no question that the message did not ask. Each added part makes the rewrite longer for the Operator.
+Give only these parts. Add no note about the changes. Ask no question about whether the rewrite is clear. Ask no new question that the message did not ask, for example "Do you approve?". Each added part makes the rewrite longer for the Operator.
