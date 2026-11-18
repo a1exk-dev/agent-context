@@ -165,13 +165,15 @@ The 3 reviewers of the agent-instructions Skill examined only `wtf/SKILL.md`, af
 |---|---|---|---|
 | 1 | All | 1 of 2 | `fb7f3ac` corrects the finding. |
 | 2 | "When you write the rewrite" | 0 | The round passes. |
+| 3 | "When you write the rewrite" and "When you give the rewrite", after `1d53081` | 0 | The round passes. |
 
 - The confirmed finding: "An agent without this Skill often writes a rewrite that is about 3 times longer than the message." The baseline of this report is 1.73 times the original. The sentence now says "much longer".
 - The Confirmers rejected the finding about "the part" in step 4 of `SKILL.md`. Steps 2 and 4 use "part of the message" for the same item.
 - The author rejected 2 advisory findings. The section "When you write the rewrite" stays in `SKILL.md`, because each run uses it and the file has 4,535 bytes. The description gets no user phrase, because a Manual-only Skill must not load on a phrase.
+- In round 3, the author rejected 3 advisory findings, because the Operator permitted no other rule change.
 - No reader test examined the changes.
 
-### Output tests
+### Output tests, round 1
 
 One round ran the 8 tests with the Skill, with no baseline. Each run got a fresh grader, and each "no" got 2 Confirmers. In test 6, the copy turn refused 2 times to copy the message, because the sample project has no test file. The third run counts.
 
@@ -194,6 +196,36 @@ One round ran the 8 tests with the Skill, with no baseline. Each run got a fresh
 - W8 failed in tests 3, 5, and 7, at 1.8 to 2.1 times the original. Without the example in `grader.md`, the graders judged these lengths as "much longer".
 - Test 5, 5.1: the context line repeats the Q1 decision. Test 5, W9: the rewrite does not tell that "invalidate-on-write" is the first choice.
 
-The round shows a regression in 3 tests. The removed rules prevented 2 of the failures. Decide if `SKILL.md` gets these 2 rules again, as a spec change in #234.
+The round shows a regression in 3 tests. The removed rules prevented 2 of the failures.
 
-The round data is in `wtf-evals-review/` in the scratchpad of the session: `iteration-1/` for the runs and `review-rounds/` for the reviews.
+### Output tests, round 2
+
+The Operator decided on 2026-11-18 to restore the 2 rules in a short form. Commit `1d53081` adds these sentences to `SKILL.md`:
+
+- "When the message gives a recommended answer, keep the recommended answer."
+- "Ask no new question that the message did not ask, for example "Do you approve?"."
+
+Round 2 ran the 8 tests with the Skill in the same way as round 1. In test 6, the copy turn refused 1 time. The second run counts.
+
+| Test | Words of the original | Words with the Skill | Confirmed false statements |
+|---|---|---|---|
+| 1 Review status | 110 | 157 | W4 |
+| 2 Glossary rename | 258 | 311 | none |
+| 3 Identity key | 151 | 235 | none |
+| 4 Outbound retention | 172 | 277 | none |
+| 5 Grilling round, Q2 | 107 (Q2 only) | 208 | W8, W9 |
+| 6 Diff and command | 132 | 245 | W5, W8, W9 |
+| 7 Earlier message | 69 | 117 | none |
+| 8 Only shorter | 258 | 220 | none |
+| Total | 1,257 | 1,770 | 6 in 3 tests |
+
+- 5 of 8 tests have each statement true, the same number as in round 5.
+- The restored rules worked in this run. Test 4 keeps the recommendation, and test 7 adds no question.
+- The rewrite has 1.41 times the words of the original.
+- Test 1, W4: the context line gives the task and the progress, but not the decision that the findings in unchanged lines go to warnings. W4 also failed in round 5.
+- Test 5, W8 and W9: the rewrite has 1.9 times the words of Q2. It calls the first choice "Delete" but asks "Do you agree with invalidate-on-write?". Its context line says "Q1 picked Redis", but Q1 only recommends Redis. The Confirmers rejected 5.1.
+- Test 6, W5, W8, and W9: the rewrite starts with "One correction first: ... I did not run the test 200 times". It corrects a fact of the message, and it drops the race of the mock server. The sample project has no test file, so the agent did not trust the message.
+
+Test 6 is the only test where the agent corrects the message. The sample project of test 6 does not have the files that the message names. The same project makes the copy turn of test 6 refuse the message in some runs.
+
+The round data is in `wtf-evals-review/` in the scratchpad of the session: `iteration-1/` and `iteration-2/` for the runs, and `review-rounds/` for the reviews.
