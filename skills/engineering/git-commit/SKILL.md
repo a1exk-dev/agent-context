@@ -23,7 +23,7 @@ An instruction about commits can come from this skill, a different skill, a proj
 - When the Commit policy and a different instruction do not agree, obey the Commit policy. The Operator records the commit decisions of the project only in the Commit policy.
 - When a different skill or a project instruction tells you to commit, use this skill for the commit. Only this skill makes the commit obey the Commit policy.
 - When a footer that the platform adds obeys the footer form of Conventional Commits, you can keep that footer. An example is `Co-Authored-By:`.
-- Do not change a Setting yourself. When the Operator wants a different Setting, the Operator edits the Commit policy. When you add a Setting, read `references/commit-policy-setup.md`. Add Settings only as that file tells you.
+- Do not change a Setting yourself. When the Operator wants a different Setting, the Operator edits the Commit policy. When you add a Setting, read `references/commit-policy-setup.md`. Add Settings only as `references/commit-policy-setup.md` tells you.
 
 ## Before the first `git add`
 
@@ -130,7 +130,7 @@ Do these steps for each commit:
    4. The command `git diff --cached`, and a sentence that tells the Operator to run this command to see the full diff.
 
    Do not write the output of `git diff --cached` in the Commit review. The Operator cannot examine the full diff of many files in one question.
-3. Ask the Operator one question with the answers `Commit`, `Request changes`, and `Reject`. Put the full Commit review in the text of the question, before the answers. The Operator does not see the output of your commands. Also, the question tool can hide the text before the question. Ask as the section "When you ask the Operator a question" tells you.
+3. Ask the Operator one question with the answers `Commit`, `Request changes`, and `Reject`. Put the Commit review, word for word, in the text of the question, before the answers. The Operator does not see the output of your commands. Also, the question tool can hide the text before the question. Ask as the section "When you ask the Operator a question" tells you.
 4. When the Operator answers `Commit`, run `git write-tree` again. If the tree ID is different, or you changed the message, go back to step 1.
 5. Commit one time, with the staged changes and the message of the Commit review.
 6. After the commit, run `git rev-parse HEAD^{tree}`. If this tree ID is not the recorded tree ID, a Git hook changed the files of the commit. The Operator did not approve these changes.
@@ -159,7 +159,7 @@ Obey these instructions for the approval:
 - After the commit of a Commit review from a subagent, run `cat -n docs/agents/commit-policy.md`. Then use the `Push` Setting of the Commit policy. The subagent read the Commit policy, but you did not read it.
 - When `Push` is `off`, do not push the commits of the task.
 - The `Push` Setting is applicable only after a commit that this skill makes in the task. When the task makes no commit, this skill does not control whether you push.
-- After the last commit of the task, if `Push` is `confirm` or `automatic`, read `references/push.md`. Then do the steps in that file.
+- After the last commit of the task, if `Push` is `confirm` or `automatic`, read `references/push.md`. Then do the steps in `references/push.md`.
 
 ## When you write the report
 
