@@ -83,6 +83,12 @@ describe("noChangeNote", () => {
         ).toBe(true);
     });
 
+    it("passes a label that heads the file changes of the message", () => {
+        const rewrite =
+            "**Changes:**\n- Rename `CONTEXT.md` to `GLOSSARY.md`.\n\nShould I go ahead?";
+        expect(check("noChangeNote", rewrite).passed).toBe(true);
+    });
+
     it.each([
         "*What I changed: shorter text, 1 example.*",
         "Changes: I removed the reason about docs/adr/.",

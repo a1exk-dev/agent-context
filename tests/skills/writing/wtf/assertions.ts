@@ -57,8 +57,10 @@ export function rewriteText(events: ClaudeEvent[]): string {
     return events.findLast((event) => event.type === "result")?.result ?? "";
 }
 
+// A "Changes:" line is a change note only when text follows the colon. A
+// bare "Changes:" label can head the file changes of the original message.
 const CHANGE_NOTE =
-    /\bwhat I changed\b|^\W*changes\b.*:|\bI (changed|shortened|simplified|rewrote|explained)\b/i;
+    /\bwhat I changed\b|^\W*changes\b[^:]*:\W*\w|\bI (changed|shortened|simplified|rewrote|explained)\b/i;
 const QUESTION = /\?|\btell me\b/i;
 const CHECK =
     /\b(un)?clear|\bmake sense|\bwhich part|\bany (other )?questions|\bdoes this help/i;
