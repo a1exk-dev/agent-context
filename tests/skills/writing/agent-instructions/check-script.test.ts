@@ -431,7 +431,7 @@ describe("check script, loading rules", () => {
                     path: "a/SKILL.md",
                     line: 4,
                     problem:
-                        'The frontmatter field "disable-model-invocation" is not permitted.',
+                        'The frontmatter field "disable-model-invocation" is permitted only in a Manual-only Skill. A Manual-only Skill also has agents/openai.yaml with "allow_implicit_invocation: false" under "policy:".',
                 },
             ),
         ]);

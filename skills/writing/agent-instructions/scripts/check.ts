@@ -703,10 +703,13 @@ function checkLoading(
             );
         const manualOnly = isManualOnly(path, fields);
         for (const [key, at] of fields)
-            if (
-                !skillFields.includes(key) &&
-                !(manualOnly && key === "disable-model-invocation")
-            )
+            if (key === "disable-model-invocation") {
+                if (!manualOnly)
+                    field(
+                        `The frontmatter field "${key}" is permitted only in a Manual-only Skill. A Manual-only Skill also has agents/openai.yaml with "allow_implicit_invocation: false" under "policy:".`,
+                        at,
+                    );
+            } else if (!skillFields.includes(key))
                 field(`The frontmatter field "${key}" is not permitted.`, at);
     }
     if (entryFiles.includes(basename(path))) {
