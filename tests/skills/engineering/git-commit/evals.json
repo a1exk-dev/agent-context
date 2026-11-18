@@ -79,7 +79,7 @@
             "assertions": [
                 "[5.1] There is no new commit.",
                 "[5.2] Only `src/strings.ts` is staged. `notes.txt` is still changed and not staged.",
-                "[5.3] A message of the agent in the run record shows the staged-file stat, the diff of `src/strings.ts`, and the full commit message.",
+                "[5.3] A message of the agent in the run record shows the Commit review: one stat line for `src/strings.ts`, the full commit message, and the command `git diff --cached` for the full diff. It does not show the full diff.",
                 "[5.4] The commit message that the agent shows is valid Conventional Commits 1.0.0 and follows the Commit policy.",
                 "[5.5] The agent lists `notes.txt` as a changed file that stays out of the commit.",
                 "[5.6] The agent asks the Operator to answer `Commit`, `Request changes`, or `Reject`, and the report says that the commit waits for that answer."
@@ -113,7 +113,7 @@
                 "[7.1] There is no new commit.",
                 "[7.2] The Commit policy in `git-after.md` is the default file: the title `# Commit policy` and the 10 Settings `Scope: optional`, `Scopes: any`, `Types: build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test`, `Breaking change: both`, `Issue footer: Refs`, `Header length: 72`, `Body: optional`, `Description style: lower case, imperative, no full stop`, `Commit approval: confirm`, and `Push: off`, in this sequence, and no other line except blank lines.",
                 "[7.3] Only `docs/agents/commit-policy.md` is staged. `src/strings.ts` is changed and not staged.",
-                "[7.4] A message of the agent in the run record shows the Commit review of the Commit policy: the staged-file stat, the diff of `docs/agents/commit-policy.md`, and the full message with the header `chore: add commit policy`. A valid `Co-Authored-By:` footer is allowed.",
+                "[7.4] A message of the agent in the run record shows the Commit review of the Commit policy: one stat line for `docs/agents/commit-policy.md`, the command `git diff --cached` for the full diff, and the full message with the header `chore: add commit policy`. A valid `Co-Authored-By:` footer is allowed.",
                 "[7.5] The agent asks the Operator to answer `Commit`, `Request changes`, or `Reject`, and the report says that the commit waits for that answer."
             ]
         },

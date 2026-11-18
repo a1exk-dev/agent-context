@@ -15,7 +15,7 @@ This Skill makes each change to the changelog obey Common Changelog (https://com
 - A **Policy** is a file `docs/agents/<name>-policy.md` of a project. It holds only the Settings that one Skill obeys.
 - The **Changelog policy** is the Policy of this Skill: `docs/agents/changelog-policy.md`.
 - A **Setting** is one line `- <name>: <value>` of a Policy. The Skill that reads the Policy gives each name and the form of its value.
-- A **Commit review** is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message. But for a diff of more than 500 lines, the Commit review gives the command that shows the diff, not the full diff. The commit occurs only after the Operator approves that review.
+- A **Commit review** is what an agent shows the Operator before one commit. It gives one line for each staged file, the exact message, the other changed files, and the command `git diff --cached`. The commit occurs only after the Operator approves that Commit review.
 - This Skill has 3 jobs. The **Create** job makes the changelog. The **Write** job makes each change to the changelog. The **Review** job examines the changelog and changes no file.
 - The **Unreleased section** is the section `## Unreleased` directly after the title `# Changelog`. It collects the items that no release contains yet.
 - A **release entry** is a section `## [X.Y.Z] - YYYY-MM-DD` and its groups. A **group** is a section `### Changed`, `### Added`, `### Removed`, or `### Fixed`. An **item** is one list line in a group.
@@ -79,7 +79,7 @@ The default Changelog policy is this file:
   - The caller asks for a conversion.
 - Before the Write job or the Review job, read `references/links.md`. Take each URL form from `references/links.md`, not from the links in the changelog.
 - Do not stage, commit, or push. The Operator approves the change in the Commit review of the commit that follows.
-- Do not ask for approval before a Write job. The Commit review gives the Operator the change. The only exception is a draft when `Draft approval` is `on`.
+- Do not ask for approval before a Write job. The report gives the Operator each item that you wrote, and the Commit review gives only one line for each staged file. The only exception is a draft when `Draft approval` is `on`.
 
 ## When you ask the Operator a question
 
