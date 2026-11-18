@@ -8,7 +8,6 @@
 // installed Skill. After the run, the runner copies the changed files to the
 // run folder and deletes the copy.
 
-import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import {
     cpSync,
@@ -27,7 +26,10 @@ import {
     outputTestMain,
 } from "../../engineering/eval-lib.ts";
 import { claudeEnv, writeJson } from "../agent-instructions/eval-lib.ts";
-import { keepOutputs } from "../human-communication/eval-lib.ts";
+import {
+    keepOutputs,
+    run as runFixed,
+} from "../human-communication/eval-lib.ts";
 import {
     changedFiles,
     collectGitState,
@@ -49,26 +51,6 @@ export const BASELINE =
 const copyPrompt = (message: string) =>
     `Reply with exactly this text:\n\n${message}`;
 
-// A fixed identity and date make the start commit the same in each run.
-const START_ENV = {
-    GIT_AUTHOR_NAME: "eval",
-    GIT_AUTHOR_EMAIL: "eval@example.com",
-    GIT_COMMITTER_NAME: "eval",
-    GIT_COMMITTER_EMAIL: "eval@example.com",
-    GIT_AUTHOR_DATE: "2026-01-01T00:00:00Z",
-    GIT_COMMITTER_DATE: "2026-01-01T00:00:00Z",
-};
-
-function git(cwd: string, args: string[]): void {
-    const result = spawnSync("git", args, {
-        cwd,
-        env: { ...process.env, ...START_ENV },
-        encoding: "utf8",
-    });
-    if (result.status !== 0)
-        throw new Error(`git ${args.join(" ")} failed:\n${result.stderr}`);
-}
-
 // Copies project/ to a new folder outside this repository and makes the
 // start commit. A run with the Skill gets wtf in .claude/skills/. Delete
 // `root` after the run.
@@ -81,10 +63,10 @@ function prepare(withSkill: boolean, prefix: string) {
         cpSync(join(HERE, "project"), work, { recursive: true });
         if (withSkill)
             cpSync(SKILL, join(work, SKILL_DIR), { recursive: true });
-        git(work, ["init", "-q", "-b", "main"]);
-        git(work, ["config", "commit.gpgsign", "false"]);
-        git(work, ["add", "-A"]);
-        git(work, ["commit", "-q", "-m", "start"]);
+        runFixed(work, "git", ["init", "-q", "-b", "main"]);
+        runFixed(work, "git", ["config", "commit.gpgsign", "false"]);
+        runFixed(work, "git", ["add", "-A"]);
+        runFixed(work, "git", ["commit", "-q", "-m", "start"]);
     } catch (error) {
         rmSync(root, { recursive: true, force: true });
         throw error;

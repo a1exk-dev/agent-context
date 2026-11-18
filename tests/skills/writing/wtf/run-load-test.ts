@@ -20,7 +20,6 @@ import {
 } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import type { LoadRequest } from "../../engineering/eval-lib.ts";
 import {
     type ClaudeEvent,
@@ -35,6 +34,7 @@ import {
     usageError,
     writeJson,
 } from "../agent-instructions/eval-lib.ts";
+import { HERE } from "./eval-lib.ts";
 import {
     type CodexRolloutItem,
     claudeLoad,
@@ -44,7 +44,6 @@ import {
     SKILL_NAME,
 } from "./load-decision.ts";
 
-const HERE = dirname(fileURLToPath(import.meta.url));
 const SKILL = join(HERE, "../../../../skills/writing/wtf");
 
 const PLATFORMS = {

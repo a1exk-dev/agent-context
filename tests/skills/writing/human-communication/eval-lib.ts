@@ -112,7 +112,9 @@ const START_ENV = {
     GIT_COMMITTER_DATE: "2026-01-01T00:00:00Z",
 };
 
-function run(cwd: string, command: string, args: string[]): void {
+// Runs one command in `cwd` with the fixed identity and date of
+// START_ENV. Throws when the command fails.
+export function run(cwd: string, command: string, args: string[]): void {
     const result = spawnSync(command, args, {
         cwd,
         env: { ...process.env, ...START_ENV },
