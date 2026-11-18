@@ -1,0 +1,6 @@
+interface:
+  display_name: "Common Changelog"
+  short_description: "Write and review CHANGELOG.md in Common Changelog form"
+  default_prompt: "Use $common-changelog to add a changelog entry for this change."
+policy:
+  allow_implicit_invocation: true

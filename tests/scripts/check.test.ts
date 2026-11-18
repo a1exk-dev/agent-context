@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
     checkBunPin,
     checkInstructions,
+    checkOpenaiYaml,
     checkRepo,
 } from "../../scripts/check.ts";
 
@@ -242,6 +243,100 @@ describe("checkRepo", () => {
                 level: "error",
                 message:
                     "skills/writing/next/SKILL.md: name 'other' does not match folder 'next'",
+            },
+        ]);
+    });
+});
+
+describe("checkOpenaiYaml", () => {
+    const foo = skill("skills/writing/foo/SKILL.md", {
+        name: "foo",
+        description: "Does foo.",
+    });
+    const openai = (yaml: object) => ({
+        path: "skills/writing/foo/agents/openai.yaml",
+        text: JSON.stringify(yaml),
+    });
+    const valid = {
+        interface: {
+            display_name: "Foo",
+            short_description: "Does foo for the current project",
+            default_prompt: "Use $foo to do foo.",
+        },
+        policy: { allow_implicit_invocation: true },
+    };
+
+    it("passes a Skill with a valid agents/openai.yaml", () => {
+        expect(checkOpenaiYaml([foo, openai(valid)], parseYaml)).toEqual([]);
+    });
+
+    it("fails a Skill without agents/openai.yaml", () => {
+        expect(checkOpenaiYaml([foo], parseYaml)).toEqual([
+            {
+                level: "error",
+                message:
+                    "skills/writing/foo/agents/openai.yaml: missing, each Skill needs agents/openai.yaml",
+            },
+        ]);
+    });
+
+    it("fails invalid YAML", () => {
+        const bad = {
+            path: "skills/writing/foo/agents/openai.yaml",
+            text: "{",
+        };
+        expect(checkOpenaiYaml([foo, bad], parseYaml)).toEqual([
+            {
+                level: "error",
+                message: "skills/writing/foo/agents/openai.yaml: invalid YAML",
+            },
+        ]);
+    });
+
+    it("passes a 25- and 64-character short_description and fails 24 and 65", () => {
+        const sized = (length: number) =>
+            openai({
+                ...valid,
+                interface: {
+                    ...valid.interface,
+                    short_description: "x".repeat(length),
+                },
+            });
+        const problem = {
+            level: "error",
+            message:
+                "skills/writing/foo/agents/openai.yaml: interface.short_description must be 25-64 characters",
+        };
+        expect(checkOpenaiYaml([foo, sized(25)], parseYaml)).toEqual([]);
+        expect(checkOpenaiYaml([foo, sized(64)], parseYaml)).toEqual([]);
+        expect(checkOpenaiYaml([foo, sized(24)], parseYaml)).toEqual([problem]);
+        expect(checkOpenaiYaml([foo, sized(65)], parseYaml)).toEqual([problem]);
+    });
+
+    it("fails each missing field", () => {
+        expect(checkOpenaiYaml([foo, openai({})], parseYaml)).toEqual(
+            [
+                "interface.display_name must be a string",
+                "interface.short_description must be 25-64 characters",
+                "interface.default_prompt must mention $foo",
+                "policy.allow_implicit_invocation must be true or false",
+            ].map((problem) => ({
+                level: "error",
+                message: `skills/writing/foo/agents/openai.yaml: ${problem}`,
+            })),
+        );
+    });
+
+    it("fails a default_prompt that does not mention the Skill", () => {
+        const yaml = openai({
+            ...valid,
+            interface: { ...valid.interface, default_prompt: "Do foo." },
+        });
+        expect(checkOpenaiYaml([foo, yaml], parseYaml)).toEqual([
+            {
+                level: "error",
+                message:
+                    "skills/writing/foo/agents/openai.yaml: interface.default_prompt must mention $foo",
             },
         ]);
     });

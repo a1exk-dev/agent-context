@@ -1,0 +1,6 @@
+interface:
+  display_name: "Human Communication"
+  short_description: "Write clear STE-based text and questions for humans"
+  default_prompt: "Use $human-communication to explain what this change does."
+policy:
+  allow_implicit_invocation: true

@@ -91,6 +91,52 @@ export function checkRepo(files: RepoFile[], parseYaml: ParseYaml): Finding[] {
     return findings;
 }
 
+// Each Skill has agents/openai.yaml, the Codex metadata file. The fields and
+// limits follow the openai_yaml.md reference of the OpenAI skill-creator Skill.
+export function checkOpenaiYaml(
+    files: RepoFile[],
+    parseYaml: ParseYaml,
+): Finding[] {
+    const findings: Finding[] = [];
+    const error = (path: string, problem: string) =>
+        findings.push({ level: "error", message: `${path}: ${problem}` });
+    const paths = new Map(files.map((file) => [file.path, file.text]));
+
+    for (const file of files) {
+        const parts = file.path.split("/");
+        if (parts[0] !== "skills" || parts.length !== 4) continue;
+        if (parts[3] !== "SKILL.md") continue;
+        const name = parts[2];
+        const path = `skills/${parts[1]}/${name}/agents/openai.yaml`;
+        const text = paths.get(path);
+        if (text === undefined) {
+            error(path, "missing, each Skill needs agents/openai.yaml");
+            continue;
+        }
+        const yaml = parseMapping(text, parseYaml);
+        if (!yaml) {
+            error(path, "invalid YAML");
+            continue;
+        }
+        const ui = (yaml.interface ?? {}) as Record<string, unknown>;
+        const policy = (yaml.policy ?? {}) as Record<string, unknown>;
+        if (typeof ui.display_name !== "string" || ui.display_name === "")
+            error(path, "interface.display_name must be a string");
+        const short = ui.short_description;
+        if (typeof short !== "string" || short.length < 25 || short.length > 64)
+            error(path, "interface.short_description must be 25-64 characters");
+        const prompt = ui.default_prompt;
+        if (typeof prompt !== "string" || !prompt.includes(`$${name}`))
+            error(path, `interface.default_prompt must mention $${name}`);
+        if (typeof policy.allow_implicit_invocation !== "boolean")
+            error(
+                path,
+                "policy.allow_implicit_invocation must be true or false",
+            );
+    }
+    return findings;
+}
+
 // The Docker image and CI must run the same Bun, so both pins must match.
 export function checkBunPin(
     packageJson: string,
@@ -226,7 +272,12 @@ function parseMapping(
 function readRepoFiles(): RepoFile[] {
     return ["skills", "rules"].flatMap((root) =>
         readdirSync(root, { recursive: true, withFileTypes: true })
-            .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
+            .filter(
+                (entry) =>
+                    entry.isFile() &&
+                    (entry.name.endsWith(".md") ||
+                        entry.name === "openai.yaml"),
+            )
             .map((entry) => join(entry.parentPath, entry.name))
             .sort()
             .map((path) => ({ path, text: readFileSync(path, "utf8") })),
@@ -235,8 +286,10 @@ function readRepoFiles(): RepoFile[] {
 
 if (import.meta.main) {
     process.chdir(join(import.meta.dir, ".."));
+    const repoFiles = readRepoFiles();
     const findings = [
-        ...checkRepo(readRepoFiles(), Bun.YAML.parse),
+        ...checkRepo(repoFiles, Bun.YAML.parse),
+        ...checkOpenaiYaml(repoFiles, Bun.YAML.parse),
         ...checkBunPin(
             readFileSync("package.json", "utf8"),
             readFileSync("Dockerfile", "utf8"),
