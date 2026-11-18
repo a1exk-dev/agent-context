@@ -1,0 +1,74 @@
+{
+    "info": {
+        "id": "ses_e13f3fc66ffe03GgB2rUrNZcfy"
+    },
+    "messages": [
+        {
+            "id": "msg_1ec0c03dc001k1YhontB5gd98e",
+            "text": "Read the file .opencode/skills/wtf/SKILL.md with your read tool. Then say done.",
+            "type": "user"
+        },
+        {
+            "id": "msg_1ec0c053d001xpjyidRXbyvjTy",
+            "type": "assistant",
+            "agent": "build",
+            "model": {
+                "id": "claude-haiku-4-5",
+                "providerID": "anthropic",
+                "variant": "default"
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "I'll read the file and load the skill for you."
+                },
+                {
+                    "type": "tool",
+                    "id": "toolu_013u5irKqxqDfDYpiaPWfUNM",
+                    "name": "read",
+                    "executed": false,
+                    "state": {
+                        "status": "completed",
+                        "input": {
+                            "path": ".opencode/skills/wtf/SKILL.md"
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Read file .opencode/skills/wtf/SKILL.md, lines 1-9\n1: ---\n2: name: wtf\n3: description: Rewrites the last agent message in a clearer form. Load only when the Operator calls this Skill by name. Never load it on your own judgment.\n4: disable-model-invocation: true\n5: ---\n6: \n7: # wtf\n8: \n9: Write your last message again, shorter and simpler. Start with one context line."
+                            }
+                        ],
+                        "metadata": {
+                            "truncated": false
+                        }
+                    }
+                }
+            ],
+            "finish": "tool-calls",
+            "rawFinish": "tool_use"
+        },
+        {
+            "id": "msg_1ec0c09f9001Df2m2Y2weJKJO3",
+            "type": "assistant",
+            "agent": "build",
+            "model": {
+                "id": "claude-haiku-4-5",
+                "providerID": "anthropic",
+                "variant": "default"
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Done."
+                }
+            ],
+            "finish": "stop",
+            "rawFinish": "end_turn"
+        },
+        {
+            "id": "msg_1ec0c0c30001LdOrB2aXe80KzE",
+            "type": "idle",
+            "outcome": "succeeded"
+        }
+    ]
+}
