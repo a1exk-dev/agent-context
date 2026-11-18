@@ -47,7 +47,7 @@ This Skill writes one of your messages again in a clearer form. The Operator cal
 
 Give these parts in this sequence:
 
-1. The context line. Write it in 1 or 2 sentences, not more. It gives the task and the decision that the message is about, so that the Operator knows where the work is after a break. When the message is about no decision, the context line gives only the task. An example is "Where we are: Q1 added the outbound message to ChatTop, so ChatTop now stores your own sent lines. Q2 asks how long ChatTop keeps them."
+1. The context line. Write it in 1 or 2 sentences, not more. In the context line, give the task and the decision of the message. Then the Operator knows where the work is after a break. When the message is about no decision, give only the task in the context line. An example is "Where we are: Q1 added the outbound message to ChatTop, so ChatTop now stores your own sent lines. Q2 asks how long ChatTop keeps them."
 2. The rewritten text.
 3. The question of the message, only when the message asked a question. When you rewrite only a part of the message, give only the question of that part. Put the question at the end, so that the Operator can answer it directly.
 
