@@ -698,7 +698,13 @@
     {
         "path": "skills/writing/wtf/SKILL.md",
         "rule": "When you put the text in sections and lists",
-        "text": "Use `GLOSSARY.md`, and use `CONTEXT.md` only when the project has no `GLOSSARY.md`.",
+        "text": "Use `CONTEXT.md` only when the project has no `GLOSSARY.md`.",
+        "cause": "The path is an example of a file in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/wtf/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "If the project has only `CONTEXT.md`, read `CONTEXT.md`.",
         "cause": "The path is an example of a file in a project that installs the Skill."
     }
 ]

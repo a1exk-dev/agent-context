@@ -6,7 +6,7 @@ These rules come from the Agent Skills specification at https://agentskills.io/s
 
 Select the folder first, as the section "When you select the folder for the Skill" tells you.
 
-A Manual-only Skill is a Skill that an agent loads only when the user calls it by name. A Manual-only Skill also has the file `<name>/agents/openai.yaml`, where `<name>` is the folder of the Skill. In this file, write `allow_implicit_invocation: false` under `policy:`, because Codex reads only this file.
+A Manual-only Skill is a Skill that an agent loads only when the user calls it by name. A Manual-only Skill also has the file `<name>/agents/openai.yaml`, where `<name>` is the folder of the Skill. In this file, write `allow_implicit_invocation: false` under `policy:`, because Codex does not read `disable-model-invocation` in the frontmatter. OpenCode 2 is version 2 of OpenCode.
 
 - Tier 1: A Skill is a folder with a `SKILL.md` file. The file starts with YAML frontmatter, and Markdown text comes after it. (blocking)
 - Tier 1: Give `name` 1 to 64 characters: lowercase letters, digits, and hyphens. Put no hyphen at the start or at the end, and no `--`. Use the folder name. If the user gives a name that does not obey this rule, correct the name. Give the change in the Summary part. (script check)
