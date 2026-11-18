@@ -32,7 +32,7 @@ A Setting is one line `- <name>: <value>` of a Policy. The Skill that reads the 
 _Avoid_: option, rule
 
 **Commit review**:
-A Commit review is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message. But for a diff of more than 500 lines, the Commit review gives the command that shows the diff, not the full diff. The commit occurs only after the Operator approves that review.
+A Commit review is what an agent shows the Operator before one commit. It gives the exact commit message, the changed files that stay out of the commit, and one line for each staged file. Each of these lines gives the path of the file and the number of its added and deleted lines. A Commit review gives the command `git diff --cached`, not the output of that command. The commit occurs only after the Operator approves that Commit review.
 _Avoid_: commit preview, approval request
 
 **Blocking rule**:

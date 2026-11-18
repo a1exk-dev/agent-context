@@ -12,7 +12,7 @@ This skill makes each commit of an agent obey Conventional Commits 1.0.0 and the
 - The **Operator** is the person who controls a project and the agents that operate in it. Only the Operator answers the questions of an agent and gives approval. An agent never acts as the Operator.
 - The **Commit policy** is the file `docs/agents/commit-policy.md` of a project. It contains the title `# Commit policy` and the Settings that each commit by this skill obeys, and no other text.
 - A **Setting** is one line `- <name>: <value>` of a Commit policy. This skill gives each name and its possible values.
-- A **Commit review** is what an agent shows the Operator before one commit: the staged files, the full diff, and the exact message. The commit occurs only after the Operator approves that review.
+- A **Commit review** is what an agent shows the Operator before one commit. It gives one line for each staged file, the exact message, the other changed files, and the command `git diff --cached`. The commit occurs only after the Operator approves that Commit review.
 - The **task files** are the files that the current task changed, added, or deleted.
 - The **header** is the first line of the commit message. The **description** is the text after `: ` in the header. The **type**, the **scope**, the **body**, the **footer**, the **footer token**, and the **breaking change** have their meanings from Conventional Commits 1.0.0.
 
@@ -109,23 +109,25 @@ When a Setting does not permit the message `chore: add commit policy` or `chore:
 
 ## When you show a Commit review
 
-If you are a subagent, do only step 1 and the 4 parts of step 2. Then put the Commit review, the recorded tree ID, and the question of step 3 in your report. Do not commit, because a subagent cannot get the answer of the Operator. Then stop.
+If you are a subagent, do only steps 1 and 2. Then put the Commit review, the recorded tree ID, and the question of step 3 in your report. Do not commit, because a subagent cannot get the answer of the Operator. Then stop.
 
-When a subagent gives you a Commit review, show the Commit review to the Operator. Use the tree ID in the report of the subagent as the recorded tree ID. Then do steps 3 to 7 yourself.
+When a subagent gives you a Commit review, use the Commit review of the subagent in step 3. Use the tree ID in the report of the subagent as the recorded tree ID. Then do steps 3 to 7 yourself.
 
 Do these steps for each commit:
 
 1. Run `git write-tree`. Record the tree ID that this command gives. This ID identifies the staged changes of the Commit review.
-2. Show the Commit review to the Operator as text, before the question. Write these 4 parts in this sequence:
-   1. The output of `git diff --cached --stat`.
-   2. The output of `git diff --cached`. If the output has more than 500 lines, write the command `git diff --cached` in place of the output. Tell the Operator to run this command before the answer. The Operator cannot read more than 500 lines of diff in one message.
-   3. The full message in a code block.
-   4. The other changed files from `git status --porcelain`, and a sentence that tells that these files are not in the commit.
-3. Ask the Operator one question with the answers `Commit`, `Request changes`, and `Reject`. Ask as the section "When you ask the Operator a question" tells you.
+2. Write the Commit review. Write these 4 parts in this sequence:
+   1. The output of `git diff --cached --compact-summary --stat=1000 --stat-graph-width=20`. This output gives one line for each staged file, with the full path and the number of added and deleted lines. It also marks each new file with `(new)` and each deleted file with `(gone)`.
+   2. The full message in a code block.
+   3. The other changed files from `git status --porcelain`, and a sentence that tells that these files are not in the commit.
+   4. The command `git diff --cached`, and a sentence that tells the Operator to run this command to see the full diff.
+
+   Do not write the output of `git diff --cached` in the Commit review. The Operator cannot examine the full diff of many files in one question.
+3. Ask the Operator one question with the answers `Commit`, `Request changes`, and `Reject`. Put the full Commit review in the text of the question, before the answers. The Operator does not see the output of your commands. Also, the question tool can hide the text before the question. Ask as the section "When you ask the Operator a question" tells you.
 4. When the Operator answers `Commit`, run `git write-tree` again. If the tree ID is different, or you changed the message, go back to step 1.
 5. Commit one time, with the staged changes and the message of the Commit review.
 6. After the commit, run `git rev-parse HEAD^{tree}`. If this tree ID is not the recorded tree ID, a Git hook changed the files of the commit. The Operator did not approve these changes.
-7. If the tree IDs are different, undo the commit with `git reset --soft HEAD@{1}`. The changes stay staged. Then go back to step 1. In the new Commit review, tell the Operator that a Git hook changed the files.
+7. If the tree IDs are different, undo the commit with `git reset --soft HEAD@{1}`. The changes stay staged. Run `git diff <recorded tree ID> <tree ID of step 6>`. This output shows the change of the Git hook. Then go back to step 1. In the new Commit review, tell the Operator that a Git hook changed the files. Also give the output of that `git diff` command.
 
 When the Operator answers `Request changes`, the Operator tells you what to change. Change the files or the message. Stage the task files again. Then go back to step 1.
 
@@ -137,7 +139,7 @@ When the Operator answers `Reject`, do these steps:
 Obey these instructions for the approval:
 
 - Only the Operator approves a Commit review. Do not answer the question for the Operator. This instruction is also applicable when a subagent gives you the question.
-- An answer `Commit` approves one Commit review only. If the staged changes or the message are different, show a new Commit review.
+- An answer `Commit` approves one Commit review only. If the staged changes or the message are different, go back to step 1.
 - Do not use an approval that the Operator gave before the Commit review. An example is "commit when you're done" in the prompt. The Operator did not see the staged changes or the message at that time.
 
 ## When you amend, revert, or merge

@@ -9,13 +9,11 @@ Before the first step of each section, read the Commit policy as the section "Be
 1. Amend only the last commit of the branch. If the task tells you to amend a different commit, do not amend it. In your report, tell that this skill amends only the last commit. Only `git rebase` can change a different commit, and this skill does not run `git rebase`.
 2. Run `git branch -r --contains HEAD`. If the output gives a remote branch, do not amend the commit. In your report, give that remote branch. `git commit --amend` replaces the commit. Only `git push --force` or `git push --force-with-lease` can replace a commit on a remote branch. This skill never pushes with these options.
 3. When you amend a commit, stage the task files as the section "When you stage files" of `SKILL.md` tells you. When the task changes only the message, stage no file.
-4. When you amend a commit, write its full message as the section "When you write the commit message" of `SKILL.md` tells you. Keep the old message when it agrees with the amended commit and the task does not change it.
-5. When you amend a commit, commit with `git commit --amend -F <file>`, as the section "When you commit" of `SKILL.md` tells you.
-
-When `Commit approval` is `confirm`, do the steps of the section "When you show a Commit review" of `SKILL.md` before you commit in step 5. Do the steps of that section with these 2 differences:
-
-- In step 2 of that section, first give the short SHA and the header of the commit that `git commit --amend` replaces. In parts 1 and 2, use `git diff --cached --stat HEAD~1` and `git diff --cached HEAD~1`. Then the Operator sees all changes of the amended commit, not only the new changes.
-- In step 5 of that section, commit with `git commit --amend -F <file>`.
+4. When you amend a commit, write its full message as the section "When you write the commit message" of `SKILL.md` tells you. Keep the old message when the old message agrees with the amended commit and the task does not change the old message.
+5. When `Commit approval` is `confirm`, do the steps of the section "When you show a Commit review" of `SKILL.md` in place of step 6. Do the steps of that section with these 2 differences:
+   - In step 2 of that section, before part 1, write the short SHA and the header of the commit that `git commit --amend` replaces. In part 1, write the output of `git diff --cached --compact-summary --stat=1000 --stat-graph-width=20 HEAD~1`. In part 4, write the command `git diff --cached HEAD~1`. Then the Operator sees all changes of the amended commit, not only the new changes.
+   - In step 5 of that section, commit with `git commit --amend -F <file>`.
+6. When you amend a commit, commit with `git commit --amend -F <file>`, as the section "When you commit" of `SKILL.md` tells you.
 
 ## When you revert a commit
 
@@ -49,8 +47,8 @@ This skill does not decide to merge a branch. Merge a branch only when the task 
 
 When `Commit approval` is `confirm`, do the steps of the section "When you show a Commit review" of `SKILL.md` before you commit in step 6. Do the steps of that section with these 3 differences:
 
-- In part 2 of step 2 of that section, write the output of `git log --oneline HEAD..MERGE_HEAD` in place of `git diff --cached`. This output gives one line for each commit that `<branch>` adds to the current branch.
-- After `git reset --soft HEAD@{1}` in step 7 of that section, Git has no merge state. Then run `git rev-parse <branch> > "$(git rev-parse --git-path MERGE_HEAD)"`. Then the next commit is again a merge commit. In the new Commit review, also give the output of `git diff <previous tree ID> <new tree ID>`. This output shows the change of the Git hook.
+- In step 2 of that section, before part 1, write the output of `git log --oneline HEAD..MERGE_HEAD`. This output gives one line for each commit that `<branch>` adds to the current branch.
+- After `git reset --soft HEAD@{1}` in step 7 of that section, Git has no merge state. Then run `git rev-parse <branch> > "$(git rev-parse --git-path MERGE_HEAD)"`. Then the next commit is again a merge commit.
 - When the Operator answers `Reject`, run `git merge --abort` in place of `git restore --staged`. The commits of `<branch>` stay on `<branch>`.
 
 ## When you run `gh pr merge`

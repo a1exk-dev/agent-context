@@ -127,3 +127,11 @@ Applies when: writing a unit test that `docker compose run --rm bun run check` r
 Guidance: Do not run `git` in a unit test. Keep the code that runs Git small, and test its parsers with saved Git output. The eval runners run Git on the host.
 
 Reason: The `oven/bun` image of `Dockerfile` has no Git, so a unit test that runs `git` fails in the check. The semver eval frame (#165) tests its Git state parser with saved output.
+
+## The question text holds the data of an approval
+
+Applies when: a Skill asks the Operator to approve a change with a question tool, for example a Commit review or a push.
+
+Guidance: Tell the agent to put the data of the approval in the text of the question, before the answers. Do not tell the agent to show the data in a message before the question. Keep the data short: for a commit, one stat line for each file, not the full diff.
+
+Reason: In interactive Claude Code sessions, the question dialog can hide the text that the agent writes before the question. The Operator also does not see the output of a command. The M1, M2, and M3 runs of the git-commit Skill showed only a one-line summary before the question. See "Commit review shows a one-line summary instead of the diff and message" (#91).
