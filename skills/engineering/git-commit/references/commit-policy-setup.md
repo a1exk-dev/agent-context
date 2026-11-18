@@ -1,5 +1,7 @@
 # New Commit policy and new Settings
 
+## Before you use this file
+
 Read this file when the project has no Commit policy. Also read this file when a name in the Setting table has no Setting. The Setting table and the sections that this file refers to are in `SKILL.md` of this skill. If `SKILL.md` is not in your context window, read it before you use this file.
 
 ## When a Setting is not in the Commit policy
@@ -12,7 +14,7 @@ When the Commit policy has no incorrect line and a name in the table has no Sett
 4. Stage only `docs/agents/commit-policy.md`. Commit it alone with the message `chore: update commit policy`, as the sections "When you write the commit message" and "When you commit" tell you. Then the change to the Commit policy is not in a commit of the task. The `Commit approval` Setting of the changed Commit policy is applicable to this commit.
 
    When you stop after this step and before the commit, do not stage the task files. An example of this stop is a Commit review that has no answer. Only the Commit policy stays staged. When the Operator answers `Commit` later, commit the Commit policy first. Then do step 5.
-5. Then stage the task files as the section "When you stage files" tells you. Then commit the task files.
+5. After this commit, stage the task files as the section "When you stage files" tells you. Then commit the task files.
 
 ## When the Commit policy is not there
 
@@ -30,5 +32,5 @@ Before the first `git add`, do these steps:
 8. Write the file `docs/agents/commit-policy.md`. Write the title `# Commit policy`, a blank line, and one Setting for each name in the sequence of the table. Use the values of step 6.
 9. Stage only `docs/agents/commit-policy.md`. Commit it alone with the message `chore: add commit policy`, as the sections "When you write the commit message" and "When you commit" tell you. Then the new Commit policy is not in a commit of the task. The `Commit approval` Setting of the new Commit policy is applicable to this commit.
 
-   When you stop after this step and before the commit, do not stage the task files. An example of this stop is a Commit review that has no answer. The Commit policy must be in a commit alone. Only the Commit policy stays staged. When the Operator answers `Commit` later, commit the Commit policy first. Then do step 10.
+   When you stop after this step and before the commit, do not stage the task files. An example of this stop is a Commit review that has no answer. Only the Commit policy stays staged. When the Operator answers `Commit` later, commit the Commit policy first. Then do step 10.
 10. After this commit, stage the task files as the section "When you stage files" tells you. Then commit the task files.
