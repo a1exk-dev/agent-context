@@ -1,0 +1,27 @@
+[
+    { "query": "I don't get your last message", "should_trigger": false },
+    { "query": "explain that again, simpler", "should_trigger": false },
+    { "query": "what do you mean?", "should_trigger": false },
+    { "query": "wtf does that mean?", "should_trigger": false },
+    {
+        "query": "I don't understand your last message. Write it again more clearly.",
+        "should_trigger": false
+    },
+    { "query": "can you say that in plain words?", "should_trigger": false },
+    {
+        "query": "too long, give me the short version",
+        "should_trigger": false
+    },
+    {
+        "query": "which part of your message is the question?",
+        "should_trigger": false
+    },
+    {
+        "query": "rewrite your last answer without the jargon",
+        "should_trigger": false
+    },
+    { "query": "wait, what?", "should_trigger": false },
+    { "query": "/wtf", "should_trigger": true, "platform": "claude" },
+    { "query": "$wtf", "should_trigger": true, "platform": "codex" },
+    { "query": "@wtf", "should_trigger": true, "platform": "opencode" }
+]

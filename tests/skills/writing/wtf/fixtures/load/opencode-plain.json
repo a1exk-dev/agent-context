@@ -1,0 +1,35 @@
+{
+    "info": {
+        "id": "ses_e13f3c302ffeUEnl0SIguf7XHi"
+    },
+    "messages": [
+        {
+            "id": "msg_1ec0c3d49001mNXY4wCHbAbgM1",
+            "text": "I don't get your last message",
+            "type": "user"
+        },
+        {
+            "id": "msg_1ec0c3ecf0010UBMuqf2v9wSsq",
+            "type": "assistant",
+            "agent": "build",
+            "model": {
+                "id": "claude-haiku-4-5",
+                "providerID": "anthropic",
+                "variant": "default"
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "I don't have a previous message in our conversation history. This appears to be the start of our chat!\n\nCould you let me know what you'd like help with? I'm here to assist with:\n\n- **Coding and development** \u2013 writing, debugging, refactoring code\n- **File management** \u2013 creating, editing, reading files\n- **Web research** \u2013 searching for information online\n- **Document creation** \u2013 reports, docs, spreadsheets, presentations\n- **Desktop applications** \u2013 if you're using the desktop app, I can help with computer control and browser tasks\n- And much more!\n\nWhat would you like to work on?"
+                }
+            ],
+            "finish": "stop",
+            "rawFinish": "end_turn"
+        },
+        {
+            "id": "msg_1ec0c46c0001kDfVtRPn50k2XC",
+            "type": "idle",
+            "outcome": "succeeded"
+        }
+    ]
+}

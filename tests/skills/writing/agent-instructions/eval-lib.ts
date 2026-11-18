@@ -169,9 +169,10 @@ export async function runPool<T, R>(
 export function spawnTimed<
     const Out extends SpawnOptions.Readable,
     const Err extends SpawnOptions.Readable,
+    const In extends SpawnOptions.Writable = "ignore",
 >(
     cmd: string[],
-    options: SpawnOptions.SpawnOptions<"ignore", Out, Err>,
+    options: SpawnOptions.SpawnOptions<In, Out, Err>,
     timeoutSeconds: number,
 ) {
     const start = performance.now();

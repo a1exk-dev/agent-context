@@ -55,6 +55,7 @@ bun run fix
 |---|---|---|
 | agent-instructions | writing | [README.md](tests/skills/writing/agent-instructions/README.md) |
 | human-communication | writing | [README.md](tests/skills/writing/human-communication/README.md) |
+| wtf | writing | [README.md](tests/skills/writing/wtf/README.md) |
 | common-changelog | engineering | [README.md](tests/skills/engineering/common-changelog/README.md) |
 | git-commit | engineering | [README.md](tests/skills/engineering/git-commit/README.md) |
 | semver | engineering | [README.md](tests/skills/engineering/semver/README.md) |

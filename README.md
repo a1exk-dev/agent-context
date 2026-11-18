@@ -13,6 +13,7 @@ A Skill is a folder with a `SKILL.md` file and the other files that the Skill us
 | [semver](skills/engineering/semver/SKILL.md) | engineering | Picks the next Semantic Versioning 2.0.0 version, and starts and finishes the Git Flow branches. |
 | [agent-instructions](skills/writing/agent-instructions/SKILL.md) | writing | Writes and corrects the files that an agent reads as instructions, for example `SKILL.md`, `AGENTS.md`, and `CLAUDE.md`. |
 | [human-communication](skills/writing/human-communication/SKILL.md) | writing | Writes clear text for a human reader. At setup, the Skill asks the Operator questions. Then the Skill adds a pointer to `AGENTS.md` or `CLAUDE.md`. |
+| [wtf](skills/writing/wtf/SKILL.md) | writing | Writes the last agent message again in a clearer form. The Operator calls the Skill by name: `/wtf` on Claude Code, `$wtf` on Codex, and `@wtf` on OpenCode 2. No agent loads it on its own. |
 
 The Operator is the person who controls the project and its agents.
 

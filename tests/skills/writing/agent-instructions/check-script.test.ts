@@ -401,6 +401,42 @@ describe("check script, loading rules", () => {
         ]);
     });
 
+    it("passes disable-model-invocation in a Manual-only Skill", () => {
+        const folder = project({
+            "a/SKILL.md": skill(
+                "a",
+                "When you test, use this skill.",
+                "disable-model-invocation: true\n",
+            ),
+            "a/agents/openai.yaml":
+                "policy:\n  allow_implicit_invocation: false\n",
+        });
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([]);
+    });
+
+    it("finds disable-model-invocation in a Skill with no Codex manual-only file", () => {
+        const folder = project({
+            "a/SKILL.md": skill(
+                "a",
+                "When you test, use this skill.",
+                "disable-model-invocation: true\n",
+            ),
+        });
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+            loading(
+                "references/agent-skills-spec.md",
+                "When you write the folder and the frontmatter",
+                {
+                    text: "disable-model-invocation: true",
+                    path: "a/SKILL.md",
+                    line: 4,
+                    problem:
+                        'The frontmatter field "disable-model-invocation" is permitted only in a Manual-only Skill. A Manual-only Skill also has agents/openai.yaml with "allow_implicit_invocation: false" under "policy:".',
+                },
+            ),
+        ]);
+    });
+
     it("finds a name that is not the folder name, and a long description", () => {
         const folder = project({
             "a/SKILL.md": skill("b", "x".repeat(1025)),

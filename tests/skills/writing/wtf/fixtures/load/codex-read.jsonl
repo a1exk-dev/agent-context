@@ -1,0 +1,4 @@
+{"type": "response_item", "payload": {"type": "message", "role": "user", "content": [{"type": "input_text", "text": "Read .agents/skills/wtf/SKILL.md, then say done."}]}}
+{"type": "response_item", "payload": {"type": "function_call", "name": "exec_command", "arguments": "{\"cmd\": \"cat .agents/skills/wtf/SKILL.md\"}", "call_id": "call_1"}}
+{"type": "response_item", "payload": {"type": "function_call_output", "call_id": "call_1", "output": "---\nname: wtf\n..."}}
+{"type": "response_item", "payload": {"type": "message", "role": "assistant", "content": [{"type": "output_text", "text": "Done."}]}}

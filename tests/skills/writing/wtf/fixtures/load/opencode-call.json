@@ -1,0 +1,42 @@
+{
+    "info": {
+        "id": "ses_e13f42d96ffe5GPAj5OTKzhiTN"
+    },
+    "messages": [
+        {
+            "id": "msg_1ec0bd2ab0011JxGl3levjUUCi",
+            "text": "@wtf",
+            "skills": [
+                {
+                    "id": "wtf",
+                    "name": "wtf",
+                    "text": "<skill_content name=\"wtf\">\n# Skill: wtf\n\n# wtf\n\nWrite your last message again, shorter and simpler. Start with one context line.\n\nBase directory for this skill: /w/.opencode/skills/wtf\nRelative paths in this skill (e.g., scripts/, reference/) are relative to this base directory.\nNote: file list is sampled.\n\n<skill_files>\n<file>/w/.opencode/skills/wtf/agents/openai.yaml</file>\n</skill_files>\n</skill_content>"
+                }
+            ],
+            "type": "user"
+        },
+        {
+            "id": "msg_1ec0bd430001y5skfh29r4XYVi",
+            "type": "assistant",
+            "agent": "build",
+            "model": {
+                "id": "claude-haiku-4-5",
+                "providerID": "anthropic",
+                "variant": "default"
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "I'm ready to help! The `/wtf` skill lets me rewrite my previous message in a shorter, simpler way with context.\n\nHowever, I don't see a previous message to condense yet. Could you:\n\n1. **Ask me your question or request**, and I'll provide a detailed answer\n2. **Then use `/wtf`** if you want me to make it shorter and simpler\n\nWhat would you like help with?"
+                }
+            ],
+            "finish": "stop",
+            "rawFinish": "end_turn"
+        },
+        {
+            "id": "msg_1ec0bdad4001H8QMuqTJ76SMgD",
+            "type": "idle",
+            "outcome": "succeeded"
+        }
+    ]
+}

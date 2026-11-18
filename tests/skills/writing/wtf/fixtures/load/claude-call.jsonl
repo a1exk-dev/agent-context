@@ -1,0 +1,3 @@
+{"type": "user", "message": {"role": "user", "content": "<command-message>wtf</command-message>\n<command-name>/wtf</command-name>"}, "parent_tool_use_id": null, "isReplay": true}
+{"type": "assistant", "parent_tool_use_id": null, "message": {"role": "assistant", "content": [{"type": "text", "text": "I haven't sent a message yet\u2014this is the start of our conversation. What would you like help with?"}]}}
+{"type": "result", "subtype": "success", "is_error": false, "result": "I haven't sent a message yet\u2014this is the start of our conversation. What would you like help with?"}

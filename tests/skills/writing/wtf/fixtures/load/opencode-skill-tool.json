@@ -1,0 +1,76 @@
+{
+    "info": {
+        "id": "ses_e13f3fc66ffe03GgB2rUrNZcfy"
+    },
+    "messages": [
+        {
+            "id": "msg_1ec0c03dc001k1YhontB5gd98e",
+            "text": "Load the skill wtf with your skill tool. Then say done.",
+            "type": "user"
+        },
+        {
+            "id": "msg_1ec0c053d001xpjyidRXbyvjTy",
+            "type": "assistant",
+            "agent": "build",
+            "model": {
+                "id": "claude-haiku-4-5",
+                "providerID": "anthropic",
+                "variant": "default"
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "I'll read the file and load the skill for you."
+                },
+                {
+                    "type": "tool",
+                    "id": "toolu_0171H5f2b3G3JRRiaVNQK63J",
+                    "name": "skill",
+                    "executed": false,
+                    "state": {
+                        "status": "completed",
+                        "input": {
+                            "id": "wtf"
+                        },
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "<skill_content name=\"wtf\">\n# Skill: wtf\n\n# wtf\n\nWrite your last message again, shorter and simpler. Start with one context line.\n\nBase directory for this skill: /w/.opencode/skills/wtf\nRelative paths in this skill (e.g., scripts/, reference/) are relative to this base directory.\nNote: file list is sampled.\n\n<skill_files>\n<file>/w/.opencode/skills/wtf/agents/openai.yaml</file>\n</skill_files>\n</skill_content>"
+                            }
+                        ],
+                        "metadata": {
+                            "name": "wtf",
+                            "directory": "/w/.opencode/skills/wtf",
+                            "truncated": false
+                        }
+                    }
+                }
+            ],
+            "finish": "tool-calls",
+            "rawFinish": "tool_use"
+        },
+        {
+            "id": "msg_1ec0c09f9001Df2m2Y2weJKJO3",
+            "type": "assistant",
+            "agent": "build",
+            "model": {
+                "id": "claude-haiku-4-5",
+                "providerID": "anthropic",
+                "variant": "default"
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Done."
+                }
+            ],
+            "finish": "stop",
+            "rawFinish": "end_turn"
+        },
+        {
+            "id": "msg_1ec0c0c30001LdOrB2aXe80KzE",
+            "type": "idle",
+            "outcome": "succeeded"
+        }
+    ]
+}
