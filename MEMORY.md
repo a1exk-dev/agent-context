@@ -28,9 +28,9 @@ Reason: The ISO Online Browsing Platform terms (2026-09-18) forbid AI ingestion,
 
 Applies when: writing or changing a Skill or Rule, or deciding which agent platforms it supports.
 
-Guidance: Make each Skill and Rule work on Codex, OpenCode, and Claude Code. Use only `name` and `description` frontmatter for behaviour, and point to other files with a plain sentence, not `@path`. Leave other platforms, for example Copilot and Cursor, for a later effort. Before you change this guidance, read the agent platform research in `docs/research/agent-platforms.md`.
+Guidance: Make each Skill and Rule work on Codex, OpenCode, and Claude Code. Use only `name` and `description` frontmatter for behaviour, and point to other files with a plain sentence, not `@path`. Exception: a Manual-only Skill also has `disable-model-invocation: true` in its frontmatter, and `skills/<category>/<name>/agents/openai.yaml` with `policy.allow_implicit_invocation: false`. Give these 2 parts only to a Manual-only Skill. Leave other platforms, for example Copilot and Cursor, for a later effort. Before you change this guidance, read the agent platform research in `docs/research/agent-platforms.md`.
 
-Reason: The Operator supports these three platforms for now and plans to add others later. See "Which jobs does the agent-instructions skill do?" (#6). Only Claude Code reads other frontmatter fields or expands `@path`.
+Reason: The Operator supports these three platforms for now and plans to add others later. See "Which jobs does the agent-instructions skill do?" (#6). Only Claude Code reads other frontmatter fields or expands `@path`. OpenCode 2 also reads `disable-model-invocation`, and Codex reads `<name>/agents/openai.yaml` in its place. OpenCode 1 is not a target, so a Manual-only Skill gives OpenCode 1 no manual-only part. See "Spec: wtf Skill" (#234).
 
 ## A SKILL.md stays at 20,000 bytes or less
 

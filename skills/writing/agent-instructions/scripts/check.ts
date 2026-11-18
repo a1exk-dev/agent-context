@@ -701,8 +701,12 @@ function checkLoading(
                 `The description has ${length} characters. The limit is 1 to 1024 characters.`,
                 description,
             );
+        const manualOnly = isManualOnly(path, fields);
         for (const [key, at] of fields)
-            if (!skillFields.includes(key))
+            if (
+                !skillFields.includes(key) &&
+                !(manualOnly && key === "disable-model-invocation")
+            )
                 field(`The frontmatter field "${key}" is not permitted.`, at);
     }
     if (entryFiles.includes(basename(path))) {
@@ -737,6 +741,18 @@ function checkLoading(
         }
     }
     return findings;
+}
+
+// A Manual-only Skill has `disable-model-invocation: true` in SKILL.md, and
+// `agents/openai.yaml` in its folder with `allow_implicit_invocation: false`
+// under `policy:`.
+function isManualOnly(path: string, fields: Map<string, Field>) {
+    if (fields.get("disable-model-invocation")?.value !== "true") return false;
+    const openai = join(dirname(resolve(path)), "agents", "openai.yaml");
+    if (!isFile(openai)) return false;
+    return /^policy:[ \t]*\r?\n(?:[ \t]+.*\r?\n)*?[ \t]+allow_implicit_invocation:[ \t]*false[ \t]*$/m.test(
+        readFileSync(openai, "utf8"),
+    );
 }
 
 // Gives the total file size of the entry files in each folder from the

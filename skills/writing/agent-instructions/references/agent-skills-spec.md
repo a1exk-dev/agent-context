@@ -6,13 +6,15 @@ These rules come from the Agent Skills specification at https://agentskills.io/s
 
 Select the folder first, as the section "When you select the folder for the Skill" tells you.
 
+A Manual-only Skill is a Skill that an agent loads only when the user calls it by name. A Manual-only Skill also has the file `<name>/agents/openai.yaml`, where `<name>` is the folder of the Skill. In this file, write `allow_implicit_invocation: false` under `policy:`, because Codex reads only this file.
+
 - Tier 1: A Skill is a folder with a `SKILL.md` file. The file starts with YAML frontmatter, and Markdown text comes after it. (blocking)
 - Tier 1: Give `name` 1 to 64 characters: lowercase letters, digits, and hyphens. Put no hyphen at the start or at the end, and no `--`. Use the folder name. If the user gives a name that does not obey this rule, correct the name. Give the change in the Summary part. (script check)
 - Tier 1: Give `description` 1 to 1024 characters. (script check)
-- Tier 1: In the frontmatter, write no top-level field other than `name`, `description`, `license`, `compatibility`, `metadata`, and `allowed-tools`. (script check)
+- Tier 1: In the frontmatter, write no top-level field other than `name`, `description`, `license`, `compatibility`, `metadata`, and `allowed-tools`. Exception: in a Manual-only Skill, also write `disable-model-invocation: true`. (script check)
 - Tier 1: Give `compatibility` a maximum of 500 characters. Write each key and each value in `metadata` as text. (blocking)
 - Tier 1: Write frontmatter that the YAML parser reads with no errors. Put a value that contains `: ` in quotation marks. You can also start the value on the next line after `|` or `>`. (blocking)
-- Tier 1: Write only `name` and `description` in the frontmatter. Only these two fields operate on Codex, OpenCode, and Claude Code. A field that is not in the list of permitted fields, for example `disable-model-invocation`, also gives an error in `skills-ref validate`. (blocking)
+- Tier 1: Write only `name` and `description` in the frontmatter. Only these two fields operate on Codex, OpenCode, and Claude Code. A field that is not in the list of permitted fields, for example `disable-model-invocation`, also gives an error in `skills-ref validate`. Exception: in a Manual-only Skill, also write `disable-model-invocation: true`, because Claude Code and OpenCode 2 read it. (blocking)
 - Tier 1: When the user tells you clearly to write `license`, `compatibility`, `metadata`, or `allowed-tools`, write it. Then add a warning that gives the platforms that do not read the field. (advisory)
 - Tier 1: If the user tells you to write a field that is not permitted, do not write it. Add a warning that gives the field and the error. (advisory)
 - Tier 4: Write `description` as one line in quotation marks. Some checks read only the first line of a value. In the value, write `\"` for each double quotation mark. (advisory)

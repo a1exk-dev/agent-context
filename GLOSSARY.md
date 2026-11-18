@@ -5,7 +5,7 @@ This repository gives Skills and Rules to other projects. Agents in these projec
 ## Language
 
 **Skill**:
-A Skill is a folder `skills/<category>/<name>/` that contains a `SKILL.md` file and all other files that the Skill uses. An agent loads a Skill only when a task makes it necessary.
+A Skill is a folder `skills/<category>/<name>/` that contains a `SKILL.md` file and all other files that the Skill uses. An agent loads a Skill only when a task makes it necessary, or when the Operator calls a Manual-only Skill.
 _Avoid_: plugin, skill package
 
 **Rule**:
@@ -50,3 +50,7 @@ _Avoid_: verifier, second reviewer
 **Review target**:
 A Review target is the Agent instructions that one self-check of the agent-instructions Skill examines. The reviewers find the files of a Review target from its first file, for example `AGENTS.md`. The Review target of a Skill is the Markdown files in the folder of that Skill.
 _Avoid_: review scope, file set
+
+**Manual-only Skill**:
+A Manual-only Skill is a Skill that an agent loads only when the Operator calls it by name. An agent never loads it because a task makes it necessary.
+_Avoid_: manual skill, user-invoked skill, slash command
