@@ -694,5 +694,11 @@
         "rule": "When you put the text in sections and lists",
         "text": "If your platform has no Skill tool, read its SKILL.md.",
         "cause": "The pointer text of the human-communication Skill, word for word. SKILL.md is the file of that Skill, not a file in the root folder."
+    },
+    {
+        "path": "skills/writing/wtf/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "Use `GLOSSARY.md`, and use `CONTEXT.md` only when the project has no `GLOSSARY.md`.",
+        "cause": "The path is an example of a file in a project that installs the Skill."
     }
 ]

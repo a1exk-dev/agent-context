@@ -1,0 +1,254 @@
+{
+    "common_assertions": [
+        {
+            "id": "W1",
+            "text": "The rewrite has no \"What I changed\" note.",
+            "grader": "script",
+            "check": "noChangeNote"
+        },
+        {
+            "id": "W2",
+            "text": "The rewrite has no check question, for example \"Which part is still not clear?\".",
+            "grader": "script",
+            "check": "noCheckQuestion"
+        },
+        {
+            "id": "W3",
+            "text": "The run changes no file.",
+            "grader": "script",
+            "check": "noChangedFile"
+        },
+        {
+            "id": "W4",
+            "text": "The rewrite starts with a context line of 1 or 2 sentences: the task, and the decision that the message is about.",
+            "grader": "llm"
+        },
+        {
+            "id": "W5",
+            "text": "The rewrite keeps each fact of the fact list of the test.",
+            "grader": "llm"
+        },
+        {
+            "id": "W6",
+            "text": "The rewrite keeps each required part, for example a diff, a command, and the parts of a question.",
+            "grader": "llm"
+        },
+        {
+            "id": "W7",
+            "text": "The rewrite ends with the original question only when the message asked one.",
+            "grader": "llm"
+        },
+        {
+            "id": "W8",
+            "text": "The length of the rewrite is near the length of the original.",
+            "grader": "llm"
+        },
+        {
+            "id": "W9",
+            "text": "The rewrite is clearer than the original.",
+            "grader": "llm"
+        }
+    ],
+    "evals": [
+        {
+            "id": 1,
+            "name": "01-review-status",
+            "messages": ["fixtures/messages/1-review-status.md"],
+            "call": "/wtf",
+            "question": null,
+            "facts": [
+                "Review round 1 is at group 7 of 14.",
+                "The reviewers of the git-commit SKILL.md run now.",
+                "6 of 14 files are done. The report of each of these files is saved and run through the report form.",
+                "AGENTS.md has 15 blocking findings and 7 advisory findings.",
+                "GLOSSARY.md has 9 blocking findings and 2 advisory findings.",
+                "MEMORY.md has 22 blocking findings and 5 advisory findings.",
+                "domain.md has 34 blocking findings and 5 advisory findings.",
+                "issue-tracker.md has 41 blocking findings and 8 advisory findings.",
+                "triage-labels.md has 12 blocking findings and 7 advisory findings.",
+                "Most blocking findings are in lines that this PR did not change.",
+                "These findings go to warnings and stay uncorrected.",
+                "The Confirmers run after the reviewers of all 14 files."
+            ],
+            "assertions": []
+        },
+        {
+            "id": 2,
+            "name": "02-glossary-rename",
+            "messages": ["fixtures/messages/2-glossary-rename.md"],
+            "call": "/wtf",
+            "question": "Should I go ahead with that branch?",
+            "facts": [
+                "The agent recommends the rename of CONTEXT.md to GLOSSARY.md.",
+                "On 2026-09-24 the upstream repo renamed its glossary file from CONTEXT.md to GLOSSARY.md, in commit b1f3390.",
+                "The installed Skills look only for GLOSSARY.md.",
+                "With the old name, domain-modeling creates a second glossary, GLOSSARY.md, when it settles its first term.",
+                "Two glossaries break the rule of one source for each term.",
+                "With the old name, tdd, pr, and codebase-design do not see the terms, and give no warning.",
+                "A note in docs/agents/domain.md does not help, because these Skills never read that file.",
+                "The rename changes CONTEXT.md to GLOSSARY.md, and its title.",
+                "The rename changes AGENTS.md (3 mentions), docs/agents/domain.md (7), and MEMORY.md (5), with the entry \"A Skill term follows the CONTEXT.md term\".",
+                "The agent-instructions Skill and its tests have about 40 mentions, in SKILL.md, the reference files, evals.json, and load-requests.json.",
+                "In the agent-instructions Skill, the agent adds GLOSSARY.md and keeps CONTEXT.md, because other projects can still use CONTEXT.md.",
+                "MEMORY.md stays as it is: it has no upstream equivalent, and the project does not use docs/adr/.",
+                "The work goes on its own branch, feature/glossary-rename, from develop, separate from feature/agent-skills-setup.",
+                "The edits change what agent-instructions does, so its evals can need a new run."
+            ],
+            "assertions": []
+        },
+        {
+            "id": 3,
+            "name": "03-identity-key",
+            "messages": ["fixtures/messages/3-identity-key.md"],
+            "call": "/wtf",
+            "question": "Q2: Is the identity platform-global or channel-scoped?",
+            "facts": [
+                "The two keys are (platform, nativeId) and (platform, channel, nativeId).",
+                "With (platform, nativeId), the same chatter is one participant wherever the chatter is seen.",
+                "On YouTube, the identifiers are channel ids, but the credential is for the account.",
+                "With Twitch Shared Chat, a message in your channel can come from the channel of another broadcaster and carry the badges of that channel.",
+                "So the channel of a message is already two fields.",
+                "At 1.0.0 there is one owned channel on each platform, so the difference shows only in the storage shape and in Shared Chat.",
+                "The agent recommends platform-global: the key is (platform, nativeId).",
+                "The message records the channel: the watched channel, and on Twitch also the source channel. The identity of the participant never holds a channel.",
+                "This keeps the promise of the map that the schema still records the channel, and one chatter does not become two participants."
+            ],
+            "assertions": []
+        },
+        {
+            "id": 4,
+            "name": "04-outbound-retention",
+            "messages": ["fixtures/messages/4-outbound-retention.md"],
+            "call": "/wtf",
+            "question": "Q2: Does the retention window reach an outbound message?",
+            "facts": [
+                "ADR 0011 says that the retention window does not reach a moderation action, because a ban is permanent and a trimmed action handle is a ban that nothing can lift.",
+                "Sending has no such claim on the future.",
+                "An outbound message exists for the line that it draws and the echoes that it hides. Both end with the chat around them at 30 days.",
+                "An exemption for the outbound message takes the exception of ADR 0011 without its argument.",
+                "The clock of an outbound message is the ChatTop clock: the instant when the Operator typed it.",
+                "The timeline orders the outbound message by that instant.",
+                "ChatTop never changes that instant, also when an echo brings the send time of the platform.",
+                "This keeps one rule for each kind of item in the store.",
+                "The line stays where the Operator typed it, and does not jump when the YouTube time stamp arrives.",
+                "The agent recommends yes: trim the outbound message on the same 30-day window as chat, order it by the instant it was typed, and never change that instant."
+            ],
+            "assertions": []
+        },
+        {
+            "id": 5,
+            "name": "05-grilling-q2",
+            "messages": ["fixtures/messages/5-cache-grilling.md"],
+            "call": "/wtf Q2",
+            "question": "Do you agree with invalidate-on-write?",
+            "facts": [
+                "Q2 asks if a write invalidates the cache key or updates the cached value.",
+                "On a write, the handler can delete the key, and the next read loads the value from Postgres again. Or the handler can write the new value through.",
+                "Write-through saves the cache miss.",
+                "With write-through, a concurrent read that loaded the old row before the commit can store the old value after the commit.",
+                "The old value then stays in the cache for the full TTL of 10 minutes.",
+                "Invalidate-on-write has the same race, but the window is one read, not one TTL.",
+                "The agent recommends invalidate-on-write: delete the key after the commit, and never write the value through.",
+                "The cost is one extra Postgres read for each write."
+            ],
+            "assertions": [
+                {
+                    "id": "5.1",
+                    "text": "The rewrite covers only Q2. It does not rewrite or repeat Q1 or Q3.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "name": "06-diff-and-command",
+            "messages": ["fixtures/messages/6-flaky-test-fix.md"],
+            "call": "/wtf",
+            "question": "Shall I commit the fix?",
+            "facts": [
+                "The flaky test is `retries the upload after a 503` in test/upload.test.ts.",
+                "backoffMs reads Date.now() before the fake timers are installed, so the first delay uses real time.",
+                "The second response of the mock server then races the retry timer.",
+                "The assertion on calls.length sees 1 call instead of 2 in about 1 run of 20.",
+                "The fix moves vi.useFakeTimers() into beforeEach, before the client is made.",
+                "The agent ran the test 200 times locally with no failure.",
+                "The Operator can run the command to confirm the fix before the commit."
+            ],
+            "assertions": [
+                {
+                    "id": "6.1",
+                    "text": "The rewrite keeps each line of the diff and the command word for word.",
+                    "grader": "script",
+                    "check": "includesText",
+                    "args": {
+                        "texts": [
+                            "-  const client = makeClient(server.url);",
+                            "-  beforeEach(() => vi.useFakeTimers());",
+                            "+  let client: Client;",
+                            "+  beforeEach(() => {",
+                            "+    vi.useFakeTimers();",
+                            "+    client = makeClient(server.url);",
+                            "+  });",
+                            "for i in $(seq 1 200); do npx vitest run test/upload.test.ts || break; done"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "name": "07-earlier-message",
+            "messages": [
+                "fixtures/messages/7-release-status.md",
+                "fixtures/messages/7-readme-typo.md"
+            ],
+            "call": "/wtf the first message, about the 0.4.0 release",
+            "question": null,
+            "facts": [
+                "Version 0.4.0 is staged on the branch release/0.4.0.",
+                "The changelog entry is in, and the version change is in package.json.",
+                "CI passed on the second attempt, after a cspell cache miss.",
+                "The tag waits for the approval of the Operator.",
+                "The main ruleset needs the source-branch job, and that job runs only when the PR from release/0.4.0 exists.",
+                "The sequence is: PR, passed check, merge, then the agent tags v0.4.0 on the merge commit."
+            ],
+            "assertions": [
+                {
+                    "id": "7.1",
+                    "text": "The rewrite covers the first message, about the 0.4.0 release, and not the second message, about the README typo.",
+                    "grader": "llm"
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "name": "08-only-shorter",
+            "messages": ["fixtures/messages/2-glossary-rename.md"],
+            "call": "/wtf only shorter",
+            "question": "Should I go ahead with that branch?",
+            "facts": [
+                "The agent recommends the rename of CONTEXT.md to GLOSSARY.md.",
+                "The installed Skills look only for GLOSSARY.md.",
+                "With the old name, domain-modeling creates a second glossary.",
+                "With the old name, tdd, pr, and codebase-design do not see the terms, and give no warning.",
+                "The rename changes CONTEXT.md, AGENTS.md (3), docs/agents/domain.md (7), MEMORY.md (5), and about 40 mentions in the agent-instructions Skill and its tests.",
+                "In the agent-instructions Skill, the agent adds GLOSSARY.md and keeps CONTEXT.md.",
+                "MEMORY.md stays as it is.",
+                "The work goes on its own branch, feature/glossary-rename, from develop."
+            ],
+            "assertions": [
+                {
+                    "id": "8.1",
+                    "text": "The rewrite uses only the method \"shorter text\". It adds no new example, no explanation of a term, and no new term.",
+                    "grader": "llm"
+                },
+                {
+                    "id": "8.2",
+                    "text": "The rewrite has fewer words than the original.",
+                    "grader": "script",
+                    "check": "shorter"
+                }
+            ]
+        }
+    ]
+}
