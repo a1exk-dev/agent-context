@@ -4,7 +4,7 @@ This report gives the results of [Run the full eval matrix and the reviewers on 
 
 ## Result
 
-- The self-check of the agent-instructions Skill ran 3 review rounds and 2 reader-test rounds. Each confirmed blocking finding in a changed section is corrected.
+- The self-check of the agent-instructions Skill ran 3 review rounds and 2 reader-test rounds. The build corrected each confirmed blocking finding in a changed section.
 - The output tests stopped after 5 rounds, as the stop rule tells. In round 5, 3 statements are still false. The section "Statements that are still false" gives them.
 - The load test is correct on Claude Code: 11 of 11 requests. On OpenCode 2, 10 of 11 requests are correct. The plain request "wtf does that mean?" loaded `wtf`. On Codex, the load test did not run, because Codex has no login.
 - With the Skill, a rewrite has 1.31 times the words of the original. The baseline rewrite has 1.73 times the words. The baseline lost facts in 5 of 8 tests. The Skill lost 1 fact in 1 test.
@@ -32,7 +32,7 @@ These findings did not cause a change:
 - 31 confirmed blocking findings are in sections that the build did not change, for example the MEMORY.md entry "ASD-STE100 content stays outside the repo". The edit job does not change these sections.
 - The check script reports "rules" in `wtf/SKILL.md` as a breach of rule 6.2. Rule 6.2 permits "rule" in lowercase with its base-list meaning. The check script does not have this exception. A later rewrite removed the word.
 - The check script reports "user" in the new sentence of `agent-skills-spec.md`. The agent-instructions Skill defines "user" in its own terms and uses it in each file.
-- The advisory finding to add a user phrase to the description is rejected. A Manual-only Skill must not load on a phrase.
+- The build rejected the advisory finding to add a user phrase to the description. A Manual-only Skill must not load on a phrase.
 - `docs/research/agent-platforms.md` tells that OpenCode does not read `disable-model-invocation`. `MEMORY.md` and the spec tell that OpenCode 2 reads it. The OpenCode 2 load test agrees with `MEMORY.md`: OpenCode 2 attached `wtf` for no plain request.
 
 ### Reader test
@@ -45,7 +45,7 @@ The reader test examined `wtf/SKILL.md`, `MEMORY.md`, and `agent-skills-spec.md`
 
 ## Output tests
 
-Each test ran in a 2-turn `claude -p` session. Only `wtf` is installed. Each run got a fresh grader, and each "no" got 2 Confirmers.
+Each test ran in a 2-turn `claude -p` session. The runner installed only `wtf`. Each run got a fresh grader, and each "no" got 2 Confirmers.
 
 | Round | Tests | Skill version | Tests with each statement true |
 |---|---|---|---|
@@ -115,7 +115,7 @@ Each request ran 3 times in a fresh, empty project, with one turn.
 | OpenCode 2 | 10 of 11 | `@wtf` loaded `wtf` in 3 of 3 runs. "wtf does that mean?" loaded `wtf` in 2 of 3 runs, and in 3 of 3 runs of a second test. The 9 other plain requests did not load `wtf`. |
 | Codex | not run | `codex login status` gives "Not logged in". |
 
-On OpenCode 2, the wrong loads are not loads by the platform. OpenCode did not attach `wtf`, and the agent did not call the skill tool. The empty project has only `.opencode/skills/wtf/`, and the request names "wtf". The agent looked at the project, and it read `.opencode/skills/wtf/SKILL.md` as a file. The load decision counts each read of `SKILL.md` as a load, as the spec tells. The `wtf` Skill text cannot stop this read.
+On OpenCode 2, the wrong loads are not loads by the platform. OpenCode did not attach `wtf`, and the agent did not call the skill tool. The empty project has only `.opencode/skills/wtf/`, and the request names "wtf". The agent looked at the project, and it read `.opencode/skills/wtf/SKILL.md` as a file. `load-decision.ts` counts each read of `SKILL.md` as a load. The spec does not give this rule. The `wtf` Skill text cannot stop this read.
 
 ## Defaults of this run
 
