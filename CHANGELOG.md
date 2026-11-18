@@ -17,3 +17,4 @@
 ### Fixed
 
 - Show the Commit review of the `git-commit` Skill in the text of the approval question, with one stat line for each staged file in place of the full diff ([#243](https://github.com/a1exk-dev/agent-context/pull/243)) (Aliaksandr Katkou)
+- Make the main agent load the `git-commit` Skill and show the Commit review of a subagent word for word in the approval question, and show the default Commit policy in the text of its setup question ([#244](https://github.com/a1exk-dev/agent-context/pull/244)) (Aliaksandr Katkou)

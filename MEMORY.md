@@ -135,3 +135,11 @@ Applies when: a Skill asks the Operator to approve a change with a question tool
 Guidance: Tell the agent to put the data of the approval in the text of the question, before the answers. Do not tell the agent to show the data in a message before the question. Keep the data short: for a commit, one stat line for each file, not the full diff.
 
 Reason: In interactive Claude Code sessions, the question dialog can hide the text that the agent writes before the question. The Operator also does not see the output of a command. The M1, M2, and M3 runs of the git-commit Skill showed only a one-line summary before the question. See "Commit review shows a one-line summary instead of the diff and message" (#91).
+
+## A subagent report carries the instructions for the main agent
+
+Applies when: a Skill tells a subagent to stop and give a result to the main agent, for example a Commit review.
+
+Guidance: Tell the subagent to put the instruction for the main agent at the start of its report, for example "load the git-commit skill". Do not rely only on an instruction in the Skill for the main agent.
+
+Reason: In M10 of the git-commit Skill, the main agent did not load the Skill in 3 of 3 runs. It put only a summary of the Commit review of the subagent in the question. With the instruction in the report, the main agent loaded the Skill and showed the full Commit review in 2 of 2 runs. See "Commit review shows a one-line summary instead of the diff and message" (#91).
