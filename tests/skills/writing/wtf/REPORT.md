@@ -145,3 +145,55 @@ bun tests/skills/writing/wtf/run-load-test.ts --platform codex --out /tmp/wtf-lo
 - Decide if a read of `SKILL.md` while the agent looks at an empty project counts as a wrong load on OpenCode 2. Else, give the load-test project other files, so that the Skill folder is not the only content.
 - The check script of the agent-instructions Skill does not have the exception of rule 6.2 for "rule" in lowercase.
 - `docs/research/agent-platforms.md` tells that OpenCode does not read `disable-model-invocation`. Correct it for OpenCode 2, or record why it stays.
+
+## Round after the code review
+
+The code review of the branch found rules in `wtf/SKILL.md` that the spec does not ask for. Commit `fb7f3ac` removes them:
+
+- The word-for-word list of what the rewrite keeps: facts as the message gives them, the time of each action, and the words of a shorter label. The spec rule "facts and required parts win" covers these items.
+- "Use this Skill only for a message of yours", "put the recommended answer before the question", and "Add no new part other than the context line".
+
+`SKILL.md` keeps "Add no note about the changes", "Ask no question about whether the rewrite is clear", and "Ask no question that the message did not ask". These sentences repeat the spec decisions "no change note", "no check question", and "ends with the original question only when the message asked one".
+
+Statement 8.2 is gone, because the spec asks only for the single-method statement in test 8. W8 in `grader.md` no longer gives "2 times the words" as an example, because the spec sets no length band. The default "The example '2 times the length' ... stays" in "Defaults of this run" is therefore no longer true.
+
+### Review of the final SKILL.md
+
+The 3 reviewers of the agent-instructions Skill examined only `wtf/SKILL.md`, after the removals.
+
+| Round | Sections | Confirmed blocking findings | Result |
+|---|---|---|---|
+| 1 | All | 1 of 2 | `fb7f3ac` corrects the finding. |
+| 2 | "When you write the rewrite" | 0 | The round passes. |
+
+- The confirmed finding: "An agent without this Skill often writes a rewrite that is about 3 times longer than the message." The baseline of this report is 1.73 times the original. The sentence now says "much longer".
+- The Confirmers rejected the finding about "the part" in step 4 of `SKILL.md`. Steps 2 and 4 use "part of the message" for the same item.
+- The author rejected 2 advisory findings. The section "When you write the rewrite" stays in `SKILL.md`, because each run uses it and the file has 4,535 bytes. The description gets no user phrase, because a Manual-only Skill must not load on a phrase.
+- No reader test examined the changes.
+
+### Output tests
+
+One round ran the 8 tests with the Skill, with no baseline. Each run got a fresh grader, and each "no" got 2 Confirmers. In test 6, the copy turn refused 2 times to copy the message, because the sample project has no test file. The third run counts.
+
+| Test | Words of the original | Words with the Skill | Confirmed false statements |
+|---|---|---|---|
+| 1 Review status | 110 | 155 | none |
+| 2 Glossary rename | 258 | 314 | none |
+| 3 Identity key | 151 | 270 | W8 |
+| 4 Outbound retention | 172 | 223 | W5 |
+| 5 Grilling round, Q2 | 107 (Q2 only) | 209 | W8, W9, 5.1 |
+| 6 Diff and command | 132 | 174 | none |
+| 7 Earlier message | 69 | 142 | W7, W8 |
+| 8 Only shorter | 258 | 236 | none |
+| Total | 1,257 | 1,723 | 7 in 4 tests |
+
+- 4 of 8 tests have each statement true. Round 5 had 5 of 8. The false statements of round 5 (test 1 W4, test 2 W5, test 8 W9) are now true.
+- The rewrite has 1.37 times the words of the original. Round 5 had 1.31 times.
+- Test 4, W5: the rewrite drops the recommendation "Yes" and asks a neutral question. The removed rule "put the recommended answer before the question" covered this case.
+- Test 7, W7: the rewrite ends with "Do you approve this order?", but the message asked no question. The removed rule "Add no new part other than the context line" named a new question as an example.
+- W8 failed in tests 3, 5, and 7, at 1.8 to 2.1 times the original. Without the example in `grader.md`, the graders judged these lengths as "much longer".
+- Test 5, 5.1: the context line repeats the Q1 decision. Test 5, W9: the rewrite does not tell that "invalidate-on-write" is the first choice.
+
+The round shows a regression in 3 tests. The removed rules prevented 2 of the failures. Decide if `SKILL.md` gets these 2 rules again, as a spec change in #234.
+
+The round data is in `wtf-evals-review/` in the scratchpad of the session: `iteration-1/` for the runs and `review-rounds/` for the reviews.
