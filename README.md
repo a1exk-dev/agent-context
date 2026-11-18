@@ -46,3 +46,7 @@ To change this repository, read [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Changelog
 
 [CHANGELOG.md](CHANGELOG.md) gives the changes to the Skills and Rules.
+
+## License
+
+This repository uses the [MIT License](LICENSE). You can use, copy, change, and share the Skills and Rules. Keep the copyright notice and the license text in each copy.
