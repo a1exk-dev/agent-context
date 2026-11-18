@@ -229,3 +229,42 @@ Round 2 ran the 8 tests with the Skill in the same way as round 1. In test 6, th
 Test 6 is the only test where the agent corrects the message. The sample project of test 6 does not have the files that the message names. The same project makes the copy turn of test 6 refuse the message in some runs.
 
 The round data is in `wtf-evals-review/` in the scratchpad of the session: `iteration-1/` and `iteration-2/` for the runs, and `review-rounds/` for the reviews.
+
+## Round after the writing instructions for the case without human-communication
+
+Commit `19aacf5` adds 5 writing instructions to step 1 of `SKILL.md`. An agent obeys them when its list of Skills does not have the human-communication Skill. The instructions are our own words for a part of ASD-STE100 and ISO 24495-1: result first, 25 words maximum, active voice, one term for each item, and no "should", "may", "might", or "would".
+
+### Review of SKILL.md
+
+The 3 reviewers of the agent-instructions Skill examined `wtf/SKILL.md` in 2 rounds.
+
+| Round | Sections | Confirmed blocking findings | Result |
+|---|---|---|---|
+| 1 | All | 1 of 2 | Item 1 of "When you give the rewrite" now says "give only the task in the context line". |
+| 2 | Item 1 of "When you give the rewrite" | 1 of 1 | The sentence before it is now also in the imperative: "In the context line, give the task and the decision of the message." |
+
+No reviewer examined the round 2 correction. Statement W4 of the output tests examines the context line.
+
+### Output tests
+
+One round ran the 8 tests with the Skill, as in round 2 of "Round after the code review". The runner installs only `wtf`, so each run used the new writing instructions. In test 3, the first copy turn changed its message. The second run counts.
+
+| Test | Words of the original | Words, round 2 | Words, this round | Confirmed false, round 2 | Confirmed false, this round |
+|---|---|---|---|---|---|
+| 1 Review status | 110 | 157 | 158 | W4 | none |
+| 2 Glossary rename | 258 | 311 | 323 | none | none |
+| 3 Identity key | 151 | 235 | 232 | none | none |
+| 4 Outbound retention | 172 | 277 | 262 | none | none |
+| 5 Grilling round, Q2 | 107 (Q2 only) | 208 | 178 | W8, W9 | 5.1 |
+| 6 Diff and command | 132 | 245 | 201 | W5, W8, W9 | W5, W9 |
+| 7 Earlier message | 69 | 117 | 141 | none | W8 |
+| 8 Only shorter | 258 | 220 | 211 | none | none |
+| Total | 1,257 | 1,770 | 1,706 | 6 in 3 tests | 5 in 3 tests |
+
+- 5 of 8 tests have each statement true, the same number as in round 2.
+- The rewrite has 1.36 times the words of the original. Round 2 had 1.41 times.
+- Outside code, the rewrites of round 2 had 8 instances of "should", "may", "might", "would", or "could". This round has 2. Each of the 2 is in "Should I go ahead with that branch?", the question of the message. No rewrite in the 2 rounds has a sentence of more than 25 words.
+- Test 1, W4: the context line is now true.
+- Test 5, 5.1: the context line repeats the Q1 decision: "Q1 put the cache in Redis, so all 3 replicas share one cache." The example of the context line in `SKILL.md` also names the result of Q1.
+- Test 6, W5 and W9: the rewrite again starts with "Correction first: ... I did not loop the test 200 times", and it drops the race of the mock server. The sample project has no test file.
+- Test 7, W8: the rewrite has 141 words for a message of 69 words. It adds explanations of terms, for example "the version label on a commit".
