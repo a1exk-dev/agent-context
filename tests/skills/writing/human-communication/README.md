@@ -154,7 +154,7 @@ It also examines the setup of the Skill in this repository:
 
 ## Manual checklist
 
-The Operator runs these checks one time in an interactive Claude Code session, before the build pull request merges. The Operator records the results in the pull request. Each check starts in a copy of `project/` with the Skill installed.
+An agent runs each check in an interactive Claude Code session in `tmux`, as the test driver. The test driver sends the request and the answers of the check, and does not act as the Operator. "When you run a manual check" in `skills/writing/agent-instructions/references/review.md` gives the steps. A change runs each check whose human path the change touches: a question to the Operator, an approval, or a handoff between agents. A check runs 1 time. After a fix for a failed check, the check must pass in 2 runs. The agent records the evidence of each run in the pull request of the change. The Operator runs a check only when the agent cannot start an interactive session, or when the check needs the rendered UI. Each check starts in a copy of `project/` with the Skill installed.
 
 - M1. Delete `docs/agents/human-communication-policy.md`, give the request of test 12, and select `Use defaults`. The question UI shows the 2 setup tabs with the headers "Q1 of 2" and "Q2 of 2". The questions of the task then start at Q3.
 - M2. Give a request with a question whose options differ in code, for example "Ask me which retry limit to use in src/fetch.ts, then change it". The question UI shows the example in the preview of each option.

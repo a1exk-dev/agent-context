@@ -32,6 +32,9 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - The **review target** is the Agent instructions that one self-check examines. For a Skill, the review target is the Markdown files in the folder of that Skill.
 - The **self-check** is the review of the changed sections by one reviewer subagent of each class, in a maximum of 3 rounds.
 - The **reader test** is a dry run of 3 tasks by new reader subagents after the self-check.
+- An **output test** is a test of the project that runs an agent on one request and examines the result with its statements.
+- A **manual check** is a test of the project that examines a human path in an interactive session. A **human path** is a question to the user, an approval, or a handoff between agents.
+- A **load test** is a test of the project that finds which requests make an agent load a Skill from its `description`.
 - In the edit job, the **changed part** is the text that the user wants to change. It also includes each line that you add. When you move a line of that text to a different section, the line stays in the changed part. Each other part of the file is an **unchanged part**.
 - An **extraction candidate** is a whole section of an unchanged part that the author recommends to move in the edit job. In the edit job, "When you recommend text to move" in `references/loading-rules.md` gives these sections.
 
@@ -98,7 +101,8 @@ Do these steps in the write job and in the edit job.
 7. Before you write text, read `references/ste-rules.md`, `references/plain-language-checks.md`, and `references/technical-terms.md`. If the file that you write or edit is a Skill, also read `references/agent-skills-spec.md`. In the edit job, first use these rules to examine each section that you will change. A new section has no previous text to examine. The Summary part then gives no problem for that section. Record each problem before you correct it. Keep the list of these problems for the Summary part. Then write the text by these rules. In the write job, also move text to reference files as "When the write job makes a SKILL.md or entry-file text" in `references/loading-rules.md` tells you. In the edit job, move text as "When the edit job changes a SKILL.md or an entry file" in that file tells you.
 8. Before the self-check, read `references/review.md`. Then do the self-check that it gives. In each job, also for a small change, do the vote of the confirmers that `references/review.md` gives. Do the vote also when you expect to reject the findings.
 9. After the self-check, do the reader test that `references/review.md` gives, also for a small change. The self-check does not examine how a new reader obeys the file.
-10. Write the end-of-run report.
+10. After the reader test passes, do the output tests and the manual checks that "After the reader test: the output tests and the manual checks" in `references/review.md` gives. Only these tests show how an agent obeys the file in a run.
+11. Write the end-of-run report.
 
 ### When a reviewer gives a finding
 
