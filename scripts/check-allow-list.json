@@ -248,6 +248,30 @@
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "1.8",
+        "text": "An **output test** is a test of the project that runs an agent on one request and examines the result with its statements.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **manual check** is a test of the project that examines a human path in an interactive session.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **human path** is a question to the user, an approval, or a handoff between agents.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **load test** is a test of the project that finds which requests make an agent load a Skill from its `description`.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
         "text": "In the edit job, the **changed part** is the text that the user wants to change.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     },

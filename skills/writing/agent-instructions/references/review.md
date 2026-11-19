@@ -306,6 +306,45 @@ In each line of part 2 and part 3, use quotation marks only around the quote fro
 Give only these 3 parts. Write each step and each quote from the instruction on a different line. Put long text, for example a prompt, at the end of part 1.
 ```
 
+## After the reader test: the output tests and the manual checks
+
+Start these steps only after a reader-test round passes. An output test or a manual check costs more than a reader test, so run it only on text that a reader understands.
+
+1. Find the output tests, the load test, and the manual checks of each changed file in the project. A project often keeps the tests of a Skill in a folder with a `README.md` file, for example `tests/skills/<category>/<name>/`. If the project has no output test and no manual check for the changed files, the reader test is enough. Then write the end-of-run report.
+2. Select the touched output tests. An output test is touched when one of its statements examines the result of a new or changed rule. Read each statement to decide. If you are not sure, select the test.
+3. Select the touched manual checks. A manual check is touched when a new or changed rule changes its human path. Read the setup and the pass criteria of each check to decide. If you are not sure, select the check.
+4. If the change makes a new human path that no manual check examines, add a manual check for that path. Write its setup and its pass criteria in the form of the other manual checks of the project. Then select the new check.
+5. For each selected test, record the new or changed rule that it examines. The end-of-run report gives these rules.
+6. Run only the selected output tests. Give their identifiers to the runner of the project, for example with `--ids 3,7`. Do not run all output tests, because the full set costs too many tokens for one change. Run and grade each test as the `README.md` of the tests tells you.
+7. Run the load test only when the change edits the `description` of a Skill. Only the `description` changes the result of the load test.
+8. Run each selected manual check 1 time, as "When you run a manual check" tells you.
+9. When a test fails, correct the text. Then run only the failed tests again. Do not run a test again when it passed. After a correction for a failed manual check, that check must pass in 2 runs.
+
+### When you run a manual check
+
+In a manual check, you are the test driver, not the user. The test driver starts the session, sends the request of the check, and gives the answers that the check gives. Answer only the questions of the test session, and only with these answers.
+
+Do not run a manual check in these 2 cases. Put the check in a warning, and write that the user must run it.
+
+- You cannot start an interactive session, for example because `tmux` or the command of the agent is not available.
+- A pass criterion examines the user interface as the user sees it, for example the color or the layout of a dialog. The screen text of `tmux` does not show these items.
+
+Do these steps for each run of a manual check:
+
+1. Make a copy of the test project in a new folder that is not in the project, for example with `mktemp -d`. Make the setup of the check in that copy, as the `README.md` of the tests tells you.
+2. Start the agent in a new `tmux` session in the copy:
+
+   ```sh
+   tmux new-session -d -s <session name> -x 200 -y 50 -c <copy folder> '<agent command>'
+   ```
+
+3. Send the request of the check with `tmux send-keys -t <session name> '<request>' Enter`. Send each answer of the check in the same way.
+4. Before each answer, read the screen with `tmux capture-pane -p -t <session name>`. Read the screen again until the agent asks a question or stops.
+5. Save the screen text of each question and of the end of the session to a new file in the round folder.
+6. Compare the result with each pass criterion of the check. When a pass criterion gives a file or Git data, examine the copy.
+7. Stop the session with `tmux kill-session -t <session name>`.
+8. Record the evidence: the check, the result of each pass criterion, and the path of the screen-text file. If the change has a pull request, add the evidence to the pull request. If not, give the evidence in the end-of-run report.
+
 ## When no subagent is available
 
 This section is applicable when no tool starts a subagent. It is also applicable to the checks that item 6 of "When you do a round" gives.

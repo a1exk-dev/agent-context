@@ -41,7 +41,7 @@ A run counts as a load when the agent calls the Skill or reads its `SKILL.md` be
 
 ## Manual checks
 
-The output tests run with no human, so these checks test the human paths. The Operator runs them once on Claude Code, in an interactive session, before the build pull request merges. The Operator records the results in that pull request. Start each check in a copy of `project/` with the fixed history of `eval-lib.ts`, as the runner makes it. Put the Skill in `.claude/skills/common-changelog/`. Commit the setup of the check first.
+The output tests run with no human, so these checks test the human paths. An agent runs each check in an interactive Claude Code session in `tmux`, as the test driver. The test driver sends the request and the answers of the check, and does not act as the Operator. "When you run a manual check" in `skills/writing/agent-instructions/references/review.md` gives the steps. A change runs each check whose human path the change touches: a question to the Operator, an approval, or a handoff between agents. A check runs 1 time. After a fix for a failed check, the check must pass in 2 runs. The agent records the evidence of each run in the pull request of the change. The Operator runs a check only when the agent cannot start an interactive session, or when the check needs the rendered UI. Start each check in a copy of `project/` with the fixed history of `eval-lib.ts`, as the runner makes it. Put the Skill in `.claude/skills/common-changelog/`. Commit the setup of the check first.
 
 | Check | Setup | Pass when |
 |---|---|---|

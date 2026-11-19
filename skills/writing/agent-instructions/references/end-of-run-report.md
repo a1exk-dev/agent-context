@@ -18,6 +18,9 @@ The job stops with one report. Use this structure. Do not write a part that has 
 ## Warnings
 - <One item for each warning that is applicable.>
 
+## Output tests and manual checks
+- <Test>: <passed, failed, or not run> - "<the new or changed rule that the test examines>"
+
 ## Extraction candidates
 - <Section> → <recommended file>. Pointer: "<pointer sentence>"
 
@@ -34,6 +37,7 @@ In the Warnings part, add one item for each of these warnings that is applicable
 - Each finding that item 5 of "During and after a review round" in `references/review.md` tells you to put in a warning.
 - In the edit job, each pointer in an unchanged part that does not give the condition to read its target. The pointer list of the check script gives each sentence that names a file path.
 - Each problem from the reader test that you cannot correct.
+- Each selected manual check that you did not run, with its cause. Write that the user must run it.
 - Each new or changed rule that no tested quote of a reader task is from. Write that no reader task tested these rules.
 - Each text that a round 3 correction changed. Also each text that changed after the reader test when you did all 3 review rounds. Write that no reviewer examined these texts.
 - Each text that a correction of an unclear part after the last reader-test round changed. Write that no reader examined these texts.
@@ -57,5 +61,7 @@ Obey these rules for the moved text and the extraction candidates:
 - In the edit job, before you write the report, read "When you recommend text to move" in `references/loading-rules.md`. Then find each extraction candidate in the unchanged parts as it tells you. Write each candidate in the Extraction candidates part, also when the file is less than its size limit.
 - A reviewer other than the loading reviewer can tell you to move text in an unchanged part. Then find the section of that text. If "When you recommend text to move" in `references/loading-rules.md` gives that section, add it to the Extraction candidates part.
 - Use the heading of each section as the name of its candidate.
+
+In the Output tests and manual checks part, give each output test and each manual check that you selected. Give the rule that each test examines, in quotation marks. For a manual check, also give the evidence that "When you run a manual check" in `references/review.md` tells you to record.
 
 The last part gives each base-list word that has a different meaning in the glossary.
