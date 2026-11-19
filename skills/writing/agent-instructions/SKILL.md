@@ -23,7 +23,7 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - A **finding** is one problem that a reviewer subagent gives in its report. The check script also gives findings.
 - A **blocking rule** is a rule in a reference file of this skill. The rule ends with the mark "(blocking)". When you accept a confirmed finding for a blocking rule, the review round of that finding fails.
 - An **advisory rule** is a rule in a reference file of this skill. The rule ends with the mark "(advisory)". A finding for an advisory rule never makes a review round fail.
-- A **confirmer** is a new subagent that answers "yes" or "no", with one sentence, for each problem in its prompt. These problems come from a check other than the confirmer. In a review round, a confirmer gets all blocking findings of one reviewer. A confirmer gets the rule, the quoted text, and the files, but not the cause that the other check gives. A problem is confirmed when one or more confirmers answer "yes" for it.
+- A **confirmer** is a new subagent that answers "yes" or "no", with one sentence, for each problem in its prompt. These problems come from a check other than the confirmer. In a review round, a confirmer gets all blocking findings of one reviewer. A confirmer gets the rule, the quoted text, and the files, but not the cause that the other check gives. The number of "yes" answers that confirm a problem depends on the check that found the problem. `references/review.md` gives this number for each check.
 - A **warning** is one item in the Warnings part of the end-of-run report. It is not the STE signal word WARNING, which this skill does not use.
 - A **tier** is one position in the sequence of the sources.
 - An **ADR** is an architecture decision record: a file that records one design decision and its cause.
@@ -128,7 +128,7 @@ node <skill folder>/scripts/check.ts --reports --file <file under review> <repor
 ```
 
 - The script gives JSON with 3 lists of findings: blocking, advisory, and dropped. It drops each finding that has a missing field, a quotation that is not in the files, or no rule with a mark.
-- The JSON also gives the confirm list. This list gives each report that has one or more findings in the blocking list. When a subagent is available, give the blocking findings of each report in the confirm list to the 2 confirmers of its reviewer. Start no confirmers for a reviewer that has no report in a confirm list.
+- The JSON also gives the confirm list. This list gives each report that has one or more findings in the blocking list. When a subagent is available, give the blocking findings of each report in the confirm list to the confirmers of its reviewer. Start no confirmers for a reviewer that has no report in a confirm list.
 - The exit codes are the same as in the first form. Exit code 1 shows one or more findings in the blocking list or the advisory list.
 
 For the reader reports of one file, also give the saved copy and the tasks file that `references/review.md` gives. Give the reports in the sequence of the tasks:
