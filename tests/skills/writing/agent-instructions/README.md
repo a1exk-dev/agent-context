@@ -51,6 +51,21 @@ The runner copies `project/` to a temporary folder outside this repository. Thus
 
 `process.ts` sorts each subagent by the `Check class:` line of its prompt. It reads `transcript.jsonl` or `sessions/`. `evals.json` no longer has the statements [1], [2], or [4], because the runs skip the review rounds. See [Eval matrix: no reviewer rounds, only the Skill's job and the reader test](https://github.com/a1exk-dev/agent-context/issues/211). `grade.ts` still grades these statements in a recorded run whose `eval_metadata.json` has them.
 
+## The budget of a change
+
+The budget of a change to an Agent instruction is a number of rounds and test runs. "When a blocking problem stays open at a limit" in `references/review.md` of the Skill gives the limits: 2 review rounds, 2 reader-test rounds, 1 fix for a failed output test or manual check, 2 runs of an output test, and 3 runs of a manual check. Statement [4] fails a recorded run with more than 2 review rounds or more than 2 reader-test rounds. The agent does not measure tokens. This table gives the Operator an estimate. See [Which round limits and token budget does a change get?](https://github.com/a1exk-dev/agent-context/issues/255).
+
+| Check | Tokens | Source |
+|---|---|---|
+| 1 reviewer | about 115K | #248: 9 reviewers, about 1.03M |
+| 1 Confirmer | about 44K | #248: 8 Confirmers, about 0.35M |
+| 1 review round | max about 0.75M | 3 reviewers and max 9 Confirmers |
+| 1 reader-test round | about 0.3M | 3 readers and max 4 Confirmers, a reader counted as about 50K |
+| 1 output-test run | about 2.7M | #211 matrix: 27.3M for 10 runs on Opus, graders not counted |
+| 1 manual check run | no data | The implementation effort records the cost of the first runs |
+
+Example: a change that touches 1 output test and no manual check costs at most about 2 × 0.75M + 2 × 0.3M + 2 × 2.7M = 7.5M tokens. Most changes pass round 1 and cost much less.
+
 ## Load test
 
 The load test adds no system prompt. It checks only the description of the Skill. Each request runs 3 times.

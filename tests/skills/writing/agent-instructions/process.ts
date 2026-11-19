@@ -1128,10 +1128,12 @@ export function readers(run: Run): Verdict {
     );
 }
 
+// [4]: a change gets a maximum of 2 review rounds and 2 reader-test rounds,
+// also with the rounds after a fix (#255).
 export function roundLimits(run: Run): Verdict {
     const found = findRounds(run);
     return {
-        passed: found.review.length <= 3 && found.reader.length <= 3,
+        passed: found.review.length <= 2 && found.reader.length <= 2,
         evidence: `${found.review.length} review rounds and ${found.reader.length} reader-test rounds.`,
     };
 }
