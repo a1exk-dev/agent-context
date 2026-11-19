@@ -392,12 +392,16 @@ const reviewerPrompt = (
             : []),
         "",
     ].join("\n");
-const readerPrompt = (task: string, file = "AGENTS.md") =>
-    `Check class: reader\nThis task is a dry run.\n\nInstruction file: ${WORK}/${file}\nProject folder: ${WORK}\nTask: ${task}\n`;
+// The reader prompt: the first file of the review target, then each changed
+// file.
+const instructionFiles = (files: string[]) =>
+    `Instruction files: ${files.map((file) => `${WORK}/${file}`).join(" ")}`;
+const readerPrompt = (task: string, files = ["AGENTS.md"]) =>
+    `Check class: reader\nThis task is a dry run.\n\n${instructionFiles(files)}\nProject folder: ${WORK}\nTask: ${task}\n`;
 const confirmerPrompt = (reports: string[]) =>
     `Check class: confirmer\nThis task is read-only.\n\nReports: ${reports.join(" ")}\nFindings: 1. ${WORK}/AGENTS.md "rule" "text"\n`;
-const stepConfirmerPrompt = (report: string, file = "AGENTS.md") =>
-    `Check class: confirmer\nThis task is read-only.\n\nInstruction file: ${WORK}/${file}\nProject folder: ${WORK}\nTask: ${TASKS[0]}\nReport: ${report}\nSteps: 1. "Run make test." "Run \`make test\`."\n`;
+const stepConfirmerPrompt = (report: string, files = ["AGENTS.md"]) =>
+    `Check class: confirmer\nThis task is read-only.\n\n${instructionFiles(files)}\nProject folder: ${WORK}\nTask: ${TASKS[0]}\nReport: ${report}\nSteps: 1. "Run make test." "Run \`make test\`."\n`;
 
 // A reviewer report with one finding. Its Text quote is not in the file, so
 // the report form drops it.
@@ -693,8 +697,8 @@ const readerReports = (round: number) =>
     );
 const closedLists = (round: number) =>
     [1, 2].map((task) => `${DIR}/reader-round-${round}/closed-list-${task}.md`);
-const readerForm = (file = "AGENTS.md", round = 1) =>
-    `${CHECK} --reports --file ${WORK}/${file} --copy ${DIR}/copy.md --tasks ${DIR}/tasks.json ${readerReports(round).join(" ")} > ${DIR}/reader-round-${round}/form.json`;
+const readerForm = (files = ["AGENTS.md"], round = 1) =>
+    `${CHECK} --reports ${files.map((file) => `--file ${WORK}/${file} --copy ${DIR}/copies/${file}`).join(" ")} --tasks ${DIR}/tasks.json ${readerReports(round).join(" ")} > ${DIR}/reader-round-${round}/form.json`;
 
 // Saves the copy of each file of a review round and the report of each
 // reviewer for each file, as review.md tells. `reports` gives the report
@@ -766,7 +770,6 @@ function startReviewers(run: Builder, options: ReviewerStart = {}) {
 type RoundOptions = {
     round?: number;
     files?: string[];
-    file?: string;
     reports?: string[];
     reads?: (index: number) => string[];
     closed?: string[];
@@ -790,24 +793,26 @@ const reviewRound = (run: Builder, options: RoundOptions = {}) => {
     return run;
 };
 
-// One reader-test round of one file: the copy, the 3 readers in one message,
-// the saved reports and the report form for reader reports, the closed
-// lists, the vote, then the correction.
+// One reader-test round of a change: the copy of each file, the 3 readers in
+// one message with the files of the change, the saved reports and the report
+// form for reader reports, the closed lists, the vote, then the correction.
 const readerRound = (run: Builder, options: RoundOptions = {}) => {
-    const { round = 1, file = "AGENTS.md" } = options;
-    run.save(`${DIR}/reader-round-${round}/${file}`, BEFORE);
+    const { round = 1, files = ["AGENTS.md"] } = options;
+    for (const file of files)
+        run.save(`${DIR}/reader-round-${round}/${file}`, BEFORE);
     run.agents(
-        TASKS.map((task) => readerPrompt(task, file)),
+        TASKS.map((task) => readerPrompt(task, files)),
         { report: READER_REPORT, calls: options.calls },
     );
     for (const path of readerReports(round)) run.save(path, READER_REPORT);
-    run.bash(readerForm(file, round));
+    run.bash(readerForm(files, round));
     const closed = options.closed ?? [CLOSED_YES, CLOSED_YES];
     closedLists(round).forEach((path, index) => {
         if (closed[index] !== undefined) run.save(path, closed[index]);
     });
     options.vote?.(run);
-    return run.edit(file);
+    for (const file of files) run.edit(file);
+    return run;
 };
 
 // Starts confirmers in groups of 3, one message for each group.
@@ -914,7 +919,7 @@ describe("process statements", () => {
         it(`passes [1] and [2] for ${platform} reviewers of 2 files with 6 reports`, () => {
             const run = start();
             reviewRound(run, { files: ["AGENTS.md", DEPLOY] });
-            readerRound(run);
+            readerRound(run, { files: ["AGENTS.md", DEPLOY] });
             const verdicts = processVerdicts(run.record(), PROCESS, TWO_FILES);
             expect(passed(verdicts)).toEqual(PROCESS);
             expect(verdicts["2"].evidence).toMatch(
@@ -958,7 +963,7 @@ describe("process statements", () => {
             startReviewers(run, { files });
             run.bash(files.map((file) => reportForm(file)).join("\n"));
             for (const file of files) run.edit(file);
-            readerRound(run);
+            readerRound(run, { files });
             expect(
                 passed(processVerdicts(run.record(), PROCESS, TWO_FILES)),
             ).toEqual(PROCESS);
@@ -1256,7 +1261,7 @@ describe("process statements", () => {
             const run = start();
             reviewRound(run, { files: ["AGENTS.md", DEPLOY] });
             reviewRound(run, { round: 2 });
-            readerRound(run);
+            readerRound(run, { files: ["AGENTS.md", DEPLOY] });
             const verdicts = processVerdicts(run.record(), PROCESS, TWO_FILES);
             expect(passed(verdicts)).toEqual(PROCESS);
             expect(verdicts["2"].evidence).toMatch(
@@ -1279,7 +1284,7 @@ describe("process statements", () => {
             for (const task of tasks)
                 run.write(
                     `${DIR}/reader-round-1/reader-${task}.md`,
-                    `Reader-test round 1, AGENTS.md, reader task ${task}\n${READER_REPORT}`,
+                    `Reader-test round 1, reader task ${task}\n${READER_REPORT}`,
                 );
             return processVerdicts(run.record(), ["10.2"], TWO_FILES)["10.2"];
         };
@@ -1295,7 +1300,7 @@ describe("process statements", () => {
         it(`fails [10.2] for a ${platform} run without one reader task`, () => {
             expect(selfRun([], [1, 3])).toMatchObject({
                 passed: false,
-                evidence: "Reader-test round 1, AGENTS.md has the tasks: 1, 3.",
+                evidence: "Reader-test round 1 has the tasks: 1, 3.",
             });
         });
 
@@ -1469,25 +1474,94 @@ describe("process statements", () => {
         });
     });
 
-    // A reader-test round whose first closed list has `first`, with `count`
-    // confirmers for that list and `others` for the second list.
-    const stepVote = (first: string, count: number, others = 0) => {
+    // A reader-test round whose closed lists have `first` and `second`, with
+    // `count` confirmers for the first list and `others` for the second
+    // list, in groups of 3.
+    const stepVote = (
+        first: string,
+        count: number,
+        others = 0,
+        second = CLOSED_YES,
+    ) => {
         const run = claude();
         const [one, two] = closedLists(1);
+        const prompts = [
+            ...Array(count).fill(stepConfirmerPrompt(one)),
+            ...Array(others).fill(stepConfirmerPrompt(two)),
+        ];
         reviewRound(run);
         readerRound(run, {
-            closed: [first, CLOSED_YES],
-            vote: (round) =>
-                round.agents(
-                    [
-                        ...Array(count).fill(stepConfirmerPrompt(one)),
-                        ...Array(others).fill(stepConfirmerPrompt(two)),
-                    ],
-                    { report: "1. yes: The step does not run the tests." },
-                ),
+            closed: [first, second],
+            vote: (round) => {
+                for (let index = 0; index < prompts.length; index += 3)
+                    round.agents(prompts.slice(index, index + 3), {
+                        report: "1. yes: The step does not run the tests.",
+                    });
+            },
         });
         return processVerdicts(run.record())["3a"];
     };
+
+    it("passes [3a] for 4 confirmers of 2 closed lists with a no", () => {
+        expect(stepVote(CLOSED_NO, 2, 2, CLOSED_NO)).toMatchObject({
+            passed: true,
+        });
+    });
+
+    it("fails [3a] for 5 confirmers in a reader-test round", () => {
+        expect(stepVote(CLOSED_NO, 3, 2, CLOSED_NO)).toMatchObject({
+            passed: false,
+            evidence: expect.stringContaining(
+                "Reader-test round 1 has 5 confirmers.",
+            ),
+        });
+    });
+
+    it("passes [3a] and [3c] for 3 readers of a change to 2 files", () => {
+        const run = claude();
+        const files = TWO_FILES.map((file) => file.path);
+        readerRound(run, { files });
+        const verdicts = processVerdicts(run.record(), ["3a", "3c"], TWO_FILES);
+        expect(passed(verdicts)).toEqual(["3a", "3c"]);
+        expect(verdicts["3c"].evidence).toMatch(
+            /Reader-test round 1, docs\/agents\/deploy\.md: the report form ran/,
+        );
+    });
+
+    it("fails [3a] for readers that do not get a changed file", () => {
+        const run = claude();
+        readerRound(run);
+        expect(
+            processVerdicts(run.record(), ["3a"], TWO_FILES)["3a"],
+        ).toMatchObject({
+            passed: false,
+            evidence: expect.stringContaining(
+                `Reader-test round 1: the reader of "${TASKS[0]}" does not get ${DEPLOY}.`,
+            ),
+        });
+    });
+
+    it("fails [3a] for 3 readers of each file of a change to 2 files", () => {
+        const run = claude();
+        for (const file of TWO_FILES)
+            run.agents(
+                TASKS.map((task) =>
+                    readerPrompt(`${task} ${file.path}`, [file.path]),
+                ),
+                { report: READER_REPORT },
+            );
+        closedLists(1).forEach((path) => {
+            run.save(path, CLOSED_YES);
+        });
+        expect(
+            processVerdicts(run.record(), ["3a"], TWO_FILES)["3a"],
+        ).toMatchObject({
+            passed: false,
+            evidence: expect.stringContaining(
+                "Reader-test round 1 has 6 reader tasks, not 3.",
+            ),
+        });
+    });
 
     it("passes [3a] for 2 confirmers of a closed list with a no", () => {
         expect(stepVote(CLOSED_NO, 2)).toMatchObject({ passed: true });
@@ -1518,7 +1592,7 @@ describe("process statements", () => {
         expect(processVerdicts(run.record())["3a"]).toMatchObject({
             passed: false,
             evidence: expect.stringContaining(
-                "Reader-test round 1: 1 closed lists for 1 files. Each file has 2 typical tasks.",
+                "Reader-test round 1: 1 closed lists. The round has 2 typical tasks.",
             ),
         });
     });

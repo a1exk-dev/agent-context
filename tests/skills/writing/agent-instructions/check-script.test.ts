@@ -1515,20 +1515,42 @@ function checkReaders(input: {
     tasks: ReaderTask[];
     reports: string[];
 }) {
+    return checkReaderFiles({
+        files: [{ path: "AGENTS.md", text: input.text, copy: input.copy }],
+        tasks: input.tasks,
+        reports: input.reports,
+    });
+}
+
+// Runs the report form on the reader reports for the files of the readers,
+// with one --file and one --copy for each file, in the sequence of `files`.
+function checkReaderFiles(input: {
+    files: { path: string; text: string; copy: string | null }[];
+    tasks: ReaderTask[];
+    reports: string[];
+}) {
     const folder = project({
-        "AGENTS.md": input.text,
         "tasks.json": JSON.stringify(input.tasks),
-        ...(input.copy === null ? {} : { "copy.md": input.copy }),
+        ...Object.fromEntries(
+            input.files.flatMap((file) => [
+                [file.path, file.text],
+                ...(file.copy === null
+                    ? []
+                    : [[`copies/${file.path}`, file.copy]]),
+            ]),
+        ),
         ...Object.fromEntries(
             input.reports.map((report, i) => [`reader-${i + 1}.md`, report]),
         ),
     });
     const result = run([
         "--reports",
-        "--file",
-        join(folder, "AGENTS.md"),
-        "--copy",
-        input.copy === null ? "none" : join(folder, "copy.md"),
+        ...input.files.flatMap((file) => [
+            "--file",
+            join(folder, file.path),
+            "--copy",
+            file.copy === null ? "none" : join(folder, "copies", file.path),
+        ]),
         "--tasks",
         join(folder, "tasks.json"),
         ...input.reports.map((_, i) => join(folder, `reader-${i + 1}.md`)),
@@ -1589,6 +1611,7 @@ describe("check script, report form for reader reports", () => {
                 kind: "out-of-scope",
                 report: expect.stringMatching(/reader-3\.md$/),
                 text: release,
+                file: expect.stringMatching(/AGENTS\.md$/),
                 line: 4,
                 problem:
                     "The out-of-scope task uses a part that the job added or changed.",
@@ -1633,6 +1656,7 @@ describe("check script, report form for reader reports", () => {
                 kind: "typical",
                 report: expect.stringMatching(/reader-2\.md$/),
                 text: "release branch from main",
+                file: expect.stringMatching(/AGENTS\.md$/),
                 line: 4,
                 problem: "Part 2 of the report does not use the tested quote.",
             },
@@ -1657,14 +1681,14 @@ describe("check script, report form for reader reports", () => {
                 reportLine: 7,
                 part: 2,
                 text: "Make a hotfix branch.",
-                reason: "The quote is not in the file under review.",
+                reason: "The quote is not in the files under review.",
             },
             {
                 report: expect.stringMatching(/reader-2\.md$/),
                 reportLine: 8,
                 part: 3,
                 text: "Make a bugfix branch.",
-                reason: "The quote is not in the file under review.",
+                reason: "The quote is not in the files under review.",
             },
         ]);
     });
@@ -1688,6 +1712,7 @@ describe("check script, report form for reader reports", () => {
                 reportLine: 8,
                 part: 3,
                 text: "release branch",
+                file: expect.stringMatching(/AGENTS\.md$/),
                 line: 4,
             },
         ]);
@@ -1768,5 +1793,97 @@ describe("check script, report form for reader reports", () => {
         });
         expect(result.code).toBe(2);
         expect(result.stderr).toMatch(/3 tasks, but there are 1 reports/);
+    });
+
+    // The 3 readers of a change get the first file of the review target and
+    // each changed file. The first file has no change in this test.
+    const first = {
+        path: "AGENTS.md",
+        text: "# Agents\n\nBefore you make a release, read `docs/release.md`.\n",
+        copy: "# Agents\n\nBefore you make a release, read `docs/release.md`.\n",
+    };
+    const pointer = "Before you make a release, read `docs/release.md`.";
+    const releaseFile = {
+        path: "docs/release.md",
+        text: "# Release\n\nMake a release branch from main.\n",
+        copy: null,
+    };
+
+    it("checks the reports of a change against each file of the readers", () => {
+        const result = checkReaderFiles({
+            files: [first, releaseFile],
+            tasks: readerTasks,
+            reports: [
+                readerReport([pointer, release]),
+                readerReport([release], ["release branch"]),
+                readerReport([pointer], ["Make a hotfix branch."]),
+            ],
+        });
+        expect(result.code).toBe(1);
+        expect(result.problems).toEqual([]);
+        expect(result.unclear).toEqual([
+            {
+                report: expect.stringMatching(/reader-2\.md$/),
+                reportLine: 8,
+                part: 3,
+                text: "release branch",
+                file: expect.stringMatching(/docs\/release\.md$/),
+                line: 3,
+            },
+        ]);
+        expect(result.dropped).toEqual([
+            expect.objectContaining({
+                report: expect.stringMatching(/reader-3\.md$/),
+                text: "Make a hotfix branch.",
+                reason: "The quote is not in the files under review.",
+            }),
+        ]);
+    });
+
+    it("fails the out-of-scope task of a change when it uses a new line of a second file", () => {
+        const result = checkReaderFiles({
+            files: [first, releaseFile],
+            tasks: readerTasks,
+            reports: [
+                readerReport([release]),
+                readerReport([release]),
+                readerReport([pointer, release]),
+            ],
+        });
+        expect(result.code).toBe(1);
+        expect(result.problems).toEqual([
+            {
+                task: 3,
+                kind: "out-of-scope",
+                report: expect.stringMatching(/reader-3\.md$/),
+                text: release,
+                file: expect.stringMatching(/docs\/release\.md$/),
+                line: 3,
+                problem:
+                    "The out-of-scope task uses a part that the job added or changed.",
+            },
+        ]);
+    });
+
+    it("gives exit code 2 when the files and the copies are not one for each file", () => {
+        const folder = project({
+            "AGENTS.md": newText,
+            "docs/release.md": releaseFile.text,
+            "tasks.json": JSON.stringify(readerTasks),
+        });
+        const result = run([
+            "--reports",
+            "--file",
+            join(folder, "AGENTS.md"),
+            "--file",
+            join(folder, "docs/release.md"),
+            "--copy",
+            "none",
+            "--tasks",
+            join(folder, "tasks.json"),
+            join(folder, "reader-1.md"),
+        ]);
+        expect(result.code).toBe(2);
+        expect(result.stderr).toMatch(/one --copy for each --file/);
     });
 });

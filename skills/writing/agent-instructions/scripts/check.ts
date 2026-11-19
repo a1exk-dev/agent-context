@@ -40,20 +40,22 @@ confirm list gives each report with one or more findings in the blocking
 list, and tells the author to give these findings to the 2 confirmers of
 the reviewer of that report.
 
-Report form for reader reports: add --copy <saved copy|none> and --tasks
-<tasks file>, and give one reader report for each task, in the sequence of
-the tasks. The tasks file is a JSON array:
+Report form for reader reports: give --file <file> --copy <saved copy|none>
+for each file of the readers, add --tasks <tasks file>, and give one reader
+report for each task, in the sequence of the tasks. The tasks file is a JSON
+array:
 [ { "task": "...", "kind": "typical", "tested": ["<quote>", ...] },
   { "task": "...", "kind": "out-of-scope" } ]
 Each reader report has the headings "Part 1", "Part 2", and "Part 3". Each
 line of part 2 or part 3 with a quotation gives one quote. Writes JSON:
-{ "problems": [ { task, kind, report, text, line, problem } ],
-  "unclear": [ { report, reportLine, part, text, line } ],
+{ "problems": [ { task, kind, report, text, file, line, problem } ],
+  "unclear": [ { report, reportLine, part, text, file, line } ],
   "dropped": [ { report, reportLine, part, text, reason } ] }
-It drops each quote that is not in the file. An out-of-scope task fails when
-each place of a part-2 quote is on a line that is not in the copy ("none":
-all lines are new). A typical task fails when no part-2 quote overlaps a
-tested quote. A tested quote that is not in the file gives exit code 2.
+It drops each quote that is not in the files. An out-of-scope task fails when
+each place of a part-2 quote is on a line that is not in the copy of its file
+("none": all lines are new). A typical task fails when no part-2 quote
+overlaps a tested quote. A tested quote that is not in the files gives exit
+code 2.
 
 Exit code: 0 for no findings, 1 for one or more findings (in the report form:
 blocking or advisory; for reader reports: problems or unclear parts), 2 when
@@ -1491,15 +1493,16 @@ type RuleUnit = {
 function reportForm(argv: string[]): number {
     let file: string;
     let reports: string[];
-    let readers: { copy: string; tasks: string } | null = null;
+    let readers: { files: string[]; copies: string[]; tasks: string } | null =
+        null;
     try {
         const { values, positionals } = parseArgs({
             args: argv,
             allowPositionals: true,
             options: {
                 reports: { type: "boolean" },
-                file: { type: "string" },
-                copy: { type: "string" },
+                file: { type: "string", multiple: true },
+                copy: { type: "string", multiple: true },
                 tasks: { type: "string" },
             },
         });
@@ -1511,21 +1514,27 @@ function reportForm(argv: string[]): number {
             throw new UsageError(
                 "Give --copy <path|none> and --tasks <path> together.",
             );
-        const paths = [values.file, values.copy, values.tasks, ...positionals];
+        const files = values.file;
+        const copies = values.copy ?? [];
+        if (values.tasks === undefined && files.length > 1)
+            throw new UsageError("Give one --file for the reviewer reports.");
+        if (values.tasks !== undefined && copies.length !== files.length)
+            throw new UsageError("Give one --copy for each --file.");
+        const paths = [...files, ...copies, values.tasks, ...positionals];
         for (const path of paths)
             if (path !== undefined && /[$*]/.test(path))
                 throw new UsageError(
                     `The path "${path}" has "$" or "*". Write the full path of each file without shell variables or "*".`,
                 );
-        file = values.file;
+        file = files[0];
         reports = positionals;
-        if (values.copy !== undefined && values.tasks !== undefined)
-            readers = { copy: values.copy, tasks: values.tasks };
+        if (values.tasks !== undefined)
+            readers = { files, copies, tasks: values.tasks };
     } catch (error) {
         process.stderr.write(`${(error as Error).message}\n\n${usage}\n`);
         return 2;
     }
-    if (readers !== null) return readerForm(file, readers, reports);
+    if (readers !== null) return readerForm(readers, reports);
     let source: string;
     let units: RuleUnit[];
     const sources: [string, string][] = [];
@@ -1624,38 +1633,48 @@ type ReaderQuote = {
     text: string;
 };
 
-// The text of the file under review, with the lines that the job added or
+// The text of a file of the readers, with the lines that the job added or
 // changed.
 type Target = {
+    file: string;
     source: string;
     text: string;
     offsets: number[];
     changed: Set<number>;
 };
 
+// One place of a quote: its file of the readers, and its start and end
+// offsets in the comparable text of that file.
+type Place = { target: Target; start: number; end: number };
+
 class ReaderError extends Error {}
 
 // The report form for reader reports: checks the reports of the reader tasks
-// of one file. The reports are in the sequence of the tasks.
+// of one change against the files of the readers. The reports are in the
+// sequence of the tasks.
 function readerForm(
-    file: string,
-    input: { copy: string; tasks: string },
+    input: { files: string[]; copies: string[]; tasks: string },
     reports: string[],
 ): number {
-    let target: Target;
+    const targets: Target[] = [];
     let tasks: ReaderTask[];
     const quotes: ReaderQuote[][] = [];
     // The places of each tested quote of each task.
-    const testedPlaces: [number, number][][][] = [];
+    const testedPlaces: Place[][][] = [];
     try {
-        const source = readFileSync(file, "utf8");
-        const copy =
-            input.copy === "none" ? null : readFileSync(input.copy, "utf8");
-        target = {
-            source,
-            ...comparableWithOffsets(source),
-            changed: changedLines(copy, source),
-        };
+        input.files.forEach((file, i) => {
+            const source = readFileSync(file, "utf8");
+            const copy =
+                input.copies[i] === "none"
+                    ? null
+                    : readFileSync(input.copies[i], "utf8");
+            targets.push({
+                file,
+                source,
+                ...comparableWithOffsets(source),
+                changed: changedLines(copy, source),
+            });
+        });
         tasks = readerTasks(readFileSync(input.tasks, "utf8"));
         if (tasks.length !== reports.length)
             throw new ReaderError(
@@ -1664,10 +1683,10 @@ function readerForm(
         tasks.forEach((task, i) => {
             testedPlaces.push(
                 task.tested.map((quote) => {
-                    const found = occurrences(target, quote);
+                    const found = occurrences(targets, quote);
                     if (found.length === 0)
                         throw new ReaderError(
-                            `The tested quote "${quote}" of task ${i + 1} is not in the file under review.`,
+                            `The tested quote "${quote}" of task ${i + 1} is not in the files under review.`,
                         );
                     return found;
                 }),
@@ -1687,23 +1706,23 @@ function readerForm(
     const unclear: object[] = [];
     const dropped: object[] = [];
     tasks.forEach((task, i) => {
-        const used: [number, number][][] = [];
+        const used: Place[][] = [];
         for (const quote of quotes[i]) {
-            const found = occurrences(target, quote.text);
+            const found = occurrences(targets, quote.text);
             if (found.length === 0) {
                 dropped.push({
                     ...quote,
-                    reason: "The quote is not in the file under review.",
+                    reason: "The quote is not in the files under review.",
                 });
                 continue;
             }
-            const line = lineOf(target, found[0][0]);
+            const where = placeOf(found[0]);
             if (quote.part === 3) {
-                unclear.push({ ...quote, line });
+                unclear.push({ ...quote, ...where });
                 continue;
             }
             used.push(found);
-            const changed = found.every(([start, end]) => {
+            const changed = found.every(({ target, start, end }) => {
                 for (
                     let k = lineOf(target, start);
                     k <= lineOf(target, end - 1);
@@ -1718,15 +1737,20 @@ function readerForm(
                     kind: task.kind,
                     report: quote.report,
                     text: quote.text,
-                    line,
+                    ...where,
                     problem:
                         "The out-of-scope task uses a part that the job added or changed.",
                 });
         }
         for (const [k, tested] of testedPlaces[i].entries()) {
-            const overlaps = tested.some(([start, end]) =>
+            const overlaps = tested.some(({ target, start, end }) =>
                 used.some((places) =>
-                    places.some(([s, e]) => s < end && start < e),
+                    places.some(
+                        (place) =>
+                            place.target === target &&
+                            place.start < end &&
+                            start < place.end,
+                    ),
                 ),
             );
             if (!overlaps)
@@ -1735,7 +1759,7 @@ function readerForm(
                     kind: task.kind,
                     report: reports[i],
                     text: task.tested[k],
-                    line: lineOf(target, tested[0][0]),
+                    ...placeOf(tested[0]),
                     problem:
                         "Part 2 of the report does not use the tested quote.",
                 });
@@ -1746,6 +1770,12 @@ function readerForm(
     );
     return problems.length + unclear.length === 0 ? 0 : 1;
 }
+
+// The file and the line of a place, for the JSON of the report form.
+const placeOf = (place: Place) => ({
+    file: place.target.file,
+    line: lineOf(place.target, place.start),
+});
 
 // Reads the tasks file: a JSON array with one object for each reader task.
 function readerTasks(source: string): ReaderTask[] {
@@ -1803,18 +1833,18 @@ function readerQuotes(report: string, text: string): ReaderQuote[] {
     return result;
 }
 
-// Gives the start and end offsets in the comparable text of each place of the
-// quote.
-function occurrences(target: Target, quote: string): [number, number][] {
+// Gives each place of the quote in the files of the readers.
+function occurrences(targets: Target[], quote: string): Place[] {
     const wanted = comparable(quote);
-    const result: [number, number][] = [];
+    const result: Place[] = [];
     if (wanted === "") return result;
-    for (
-        let at = target.text.indexOf(wanted);
-        at >= 0;
-        at = target.text.indexOf(wanted, at + 1)
-    )
-        result.push([at, at + wanted.length]);
+    for (const target of targets)
+        for (
+            let at = target.text.indexOf(wanted);
+            at >= 0;
+            at = target.text.indexOf(wanted, at + 1)
+        )
+            result.push({ target, start: at, end: at + wanted.length });
     return result;
 }
 
