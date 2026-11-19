@@ -385,10 +385,9 @@ describe("checkInstructions", () => {
     });
 
     it("checks repo files with GLOSSARY.md and shipped files with no glossary", () => {
-        const ask = "Ask the user for the branch.\n";
+        const ask = "Ask the **Operator** for the branch.\n";
         const root = project({
-            "GLOSSARY.md":
-                "**Operator**:\nThe Operator is a human.\n_Avoid_: user\n",
+            "GLOSSARY.md": "**Operator**:\nThe Operator is a human.\n",
             "AGENTS.md": ask,
             "CLAUDE.md": ask,
             "MEMORY.md": ask,
@@ -400,15 +399,14 @@ describe("checkInstructions", () => {
             "rules/writing/baz.md": ask,
             ".claude/skills/other/SKILL.md": "You should run it.\n",
         });
-        const avoid = (path: string) => ({
+        const bold = (path: string) => ({
             level: "error",
-            message: `${path}:1: The sentence has "user", which the glossary gives after _Avoid_. [1.11] "Ask the user for the branch."`,
+            message: `${path}:${path.endsWith("SKILL.md") ? 5 : 1}: The bold term "Operator" is not in the glossary or in the base list of technical-terms.md. [1.8] "Ask the **Operator** for the branch."`,
         });
         expect(checkInstructions(root, [])).toEqual([
-            avoid("AGENTS.md"),
-            avoid("CLAUDE.md"),
-            avoid("MEMORY.md"),
-            avoid("docs/agents/domain.md"),
+            bold("skills/writing/foo/SKILL.md"),
+            bold("skills/writing/foo/references/bar.md"),
+            bold("rules/writing/baz.md"),
         ]);
     });
 

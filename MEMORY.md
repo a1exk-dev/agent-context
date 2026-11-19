@@ -64,11 +64,11 @@ Guidance: Run a maximum of 5 runs or subagents at the same time. Ask the Operato
 
 Reason: More runs at the same time hit the Operator's usage limit. A run that hits the limit stops early, and its result does not count.
 
-## Fix failed eval topics before the full matrix
+## Fix failed output tests before the full matrix
 
 Applies when: output tests for a Skill or Rule fail in the full matrix at the end of an effort.
 
-Guidance: Run only the failed topics until every statement for those topics passes. Then run the full matrix again. For the output tests of one change, obey "After the reader test: the output tests and the manual checks" in `skills/writing/agent-instructions/references/review.md`: run only the touched tests with `--ids`, and correct the text one time.
+Guidance: Run only the failed output tests until every statement of these tests passes. Then run the full matrix again. For the output tests of one change, obey "After the reader test: the output tests and the manual checks" in `skills/writing/agent-instructions/references/review.md`. That section tells you to run only the touched tests with `--ids`. It also tells you to correct the text only one time.
 
 Reason: The Operator wants agents to fix failures before they repeat tests that passed. The full matrix then checks the other topics. The full matrix runs one time at the end of an effort, because it costs too many tokens for one change. See "Spec: agent-instructions reviews that stop" (#256).
 
@@ -143,3 +143,11 @@ Applies when: a Skill tells a subagent to stop and give a result to the main age
 Guidance: Tell the subagent to put the instruction for the main agent at the start of its report, for example "load the git-commit skill". Do not rely only on an instruction in the Skill for the main agent.
 
 Reason: In M10 of the git-commit Skill, the main agent did not load the Skill in 3 of 3 runs. It put only a summary of the Commit review of the subagent in the question. With the instruction in the report, the main agent loaded the Skill and showed the full Commit review in 2 of 2 runs. See "Commit review shows a one-line summary instead of the diff and message" (#91).
+
+## The glossary only permits a word in a review
+
+Applies when: changing the reviewers of the agent-instructions Skill, its rule marks, or the glossary checks of its `scripts/check.ts`.
+
+Guidance: Give no reviewer `MEMORY.md` or the glossary as a rule source. A reviewer reads the glossary only to examine a word that it found, and the glossary can then permit the word. Give no mark and no script check to a rule that compares the text with the glossary. A reviewer reviews `MEMORY.md` or the glossary only when the job changed that file.
+
+Reason: The Skill runs in projects that have no glossary and no `MEMORY.md`. In round 4 of "One review and one full output-test matrix" (#265), 2 of the 6 confirmed findings came only from the `_Avoid_` list of this repo. The Operator decided this in "Reviewers do not depend on the glossary or MEMORY.md" (#268).

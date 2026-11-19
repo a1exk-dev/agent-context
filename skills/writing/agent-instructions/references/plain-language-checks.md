@@ -44,9 +44,10 @@ The checks are in four groups. Each group agrees with one of the four principles
 ## When you select the words and the tone
 
 - For words that the reader knows, and for clear, short sentences and paragraphs, obey the rules in `ste-rules.md`.
-- When the project has a glossary, use each project term with its meaning in that file. (blocking)
-- Do not use the word of a glossary term with a different meaning. This rule is also applicable when you write the word in lowercase letters. (blocking)
-- Make sure that all parts of the file agree. When the file has a pointer, also make sure that the file agrees with the pointer target. When the project has a glossary, also make sure that the file agrees with the glossary. (advisory)
+- When the project has a glossary, use each glossary term with its meaning in that file.
+- Do not use the word of a glossary term with a different meaning. This rule is also applicable when you write the word in lowercase letters, and in the definition of that term.
+- Make sure that all parts of the file agree. When the file has a pointer, also make sure that the file agrees with the pointer target. (advisory)
+- When the project has a glossary, make sure that the file agrees with the glossary.
 - Use no images and no Mermaid diagrams. (script check)
 - Show a sequence or a structure as a numbered list or a table. You can also use a tree with indents in a code block. (advisory)
 - Use a neutral and direct tone. Write no text that tells the agent about a punishment or a reward. Write no text that tells the agent good things about itself. (advisory)

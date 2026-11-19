@@ -18,7 +18,7 @@ The check script of this skill examines each rule that ends with "(script check)
 
 ## When you do a round
 
-Each round contains the checks of all files that it examines. Do not do a different series of rounds for each file. For the round limits, count the rounds of all files together, because the limits are for the full task. "When a blocking problem stays open at a limit" gives the limits. A review round has 3 reviewers: one reviewer of each class for the sections in the `Changes:` line.
+Each round contains the checks of all files that it examines. Do not do a different series of rounds for each file. For the round limits, count the rounds of all files together, because the limits are for the full change. "When a blocking problem stays open at a limit" gives the limits. A review round has 3 reviewers: one reviewer of each class for the sections in the `Changes:` line.
 
 The Markdown files of a review target are these files:
 
@@ -63,12 +63,12 @@ In each round, start 3 new reviewer subagents for the sections in the `Changes:`
 | Reviewer | Checks | Reference files |
 |---|---|---|
 | Loading reviewer | The loading rules for each file type, and the Agent Skills specification for a Skill | `review.md`, `loading-rules.md`, `agent-skills-spec.md` for a Skill, and the pointer targets |
-| ASD-STE100 reviewer | The STE rules | `review.md`, `ste-rules.md`, `technical-terms.md`, the glossary, and the pointer targets |
-| ISO 24495-1 reviewer | The plain-language checks | `review.md`, `plain-language-checks.md`, the glossary, and the pointer targets |
+| ASD-STE100 reviewer | The STE rules | `review.md`, `ste-rules.md`, `technical-terms.md`, and the pointer targets |
+| ISO 24495-1 reviewer | The plain-language checks | `review.md`, `plain-language-checks.md`, and the pointer targets |
 
-The pointer targets are the files that the pointers in the files of the review target identify. Each reviewer reads the prompt in this file to know the requirements for its reports. A reviewer does only the review that the author gave to it.
+The pointer targets are the files that the pointers in the files of the review target identify. The glossary and `MEMORY.md` are not pointer targets. A reviewer reviews them only when the job changed them, through the `Changes:` line. Each reviewer reads the prompt in this file to know the requirements for its reports. A reviewer does only the review that the author gave to it.
 
-Copy this prompt for each reviewer. Replace only the placeholders. Do not change the report requirements. Keep the lines for the reviewer that you start. Remove the label in angle brackets from these lines. Remove the lines for the other reviewers. In the write job, also remove the lines for the loading reviewer in the edit job. Give the same `Review target:` line, `Changes:` line, and pointer targets to each reviewer. In round 1, give the changed sections of each file in the `Changes:` line.
+Copy this prompt for each reviewer. Replace only the placeholders. Do not change the report requirements. Keep the lines for the reviewer that you start. Remove the label in angle brackets from these lines. Remove the lines for the other reviewers. In the write job, also remove the lines for the loading reviewer in the edit job. Give the same `Review target:` line, `Changes:` line, and pointer targets to each reviewer.
 
 ```text
 You are the <name> reviewer for Agent instructions: files that an agent reads as instructions.
@@ -97,7 +97,9 @@ Review only the files in the Changes line.
 The check script findings give the pointer list: each sentence that names a file path, with its line and heading.
 Before you give a finding, read each file in the Pointer targets line and each file that a sentence in the pointer list names.
 Give no finding for a problem that one of these files already solves.
-Read these files only for context: the files of the review target and the pointer targets that are not in the Changes line, and the files in the folder of a Skill that are not Markdown. Give no finding for these files.
+Read the glossary only to examine a word that you found for a rule. When the glossary has that word with its meaning in the text, give no finding for the word.
+Do not compare the text with the glossary or with MEMORY.md. Give no finding that only the glossary or MEMORY.md causes.
+Read each file of the review target that is not in the Changes line only for context. Also read each pointer target that is not in the Changes line only for context. Read each file that is not Markdown in the folder of a Skill only for context. Give no finding for these files.
 In each tool call that reads a file, give the absolute path of that file. Do not use `cd`, `*`, or a loop to read files, because the tool calls must show each file that you read.
 The number in round-<n> of your report folder is the number of the round.
 In each round, the sections under review are only the sections in the Changes line.
@@ -249,7 +251,7 @@ Do the reader test in each job, also for a small change. Also do the reader test
 
 4. Use the same tasks and the same tested quotes in each reader-test round. Change a tested quote only when a correction changes its text. Then write the new text in the tasks file.
 5. At the start of each reader-test round, save a copy of each file that the round tests as `<round folder>/reader-round-<n>/<file path>`. Save each copy as "When you save a file or run a command in a round" tells you. Each reader-test round has the 3 tasks of the change. A reader-test round has a maximum of 3 readers. Give each task to a different new subagent. Start the subagents as "When you do a round" tells you.
-   - Give each reader the files of the readers. The first file of the review target is the first file of the readers. Then give each new or changed file.
+   - Give each reader the files of the readers. The first file of the review target is the first file of the readers. For a Skill, the first file is its `SKILL.md`. For an Agent instruction that is not in a Skill, the first file is each changed entry file. When no entry file changed, the first file is the entry file of the project, for example `AGENTS.md`. Then give each new or changed file.
    - Also give a file that contains only an `@path` line or only moved sections. A reader can find that a line identifies an incorrect file.
    - The reader starts the task from the first file, as an agent starts a task. Then the reader can also find a pointer that does not identify a changed file.
 6. Make sure that each subagent does a dry run. The first line of the reader prompt tells the subagent to do a dry run.
@@ -300,21 +302,22 @@ Part 3: Unclear parts
 - "<a part of the instruction that was not clear to you>" - <one sentence that gives the cause>
 If a step uses 2 quotes from the instruction, write 2 lines with the same step number in part 2.
 If all of the instruction was clear to you, write "None" in part 3.
-Copy each quote from the instruction word for word. A script compares each quotation with the instruction files.
+Copy each quote from the instruction word for word. A script compares each quote with the instruction files.
+Quote only the instruction files. Do not quote this prompt.
 In each line of part 2 and part 3, use quotation marks only around the quote from the instruction.
 Give only these 3 parts. Write each step and each quote from the instruction on a different line. Put long text, for example a prompt, at the end of part 1.
 ```
 
 ## After the reader test: the output tests and the manual checks
 
-Start these steps only after a reader-test round passes. An output test or a manual check costs more than a reader test, so run it only on text that a reader understands.
+Start these steps only after a reader-test round passes. An output test or a manual check costs more than a reader test. Run these tests only on text that a reader understands.
 
 1. Find the output tests, the load test, and the manual checks of each changed file in the project. A project often keeps the tests of a Skill in a folder with a `README.md` file, for example `tests/skills/<category>/<name>/`. If the project has no output test and no manual check for the changed files, the reader test is enough. Then write the end-of-run report.
 2. Select the touched output tests. An output test is touched when one of its statements examines the result of a new or changed rule. Read each statement to decide. If you are not sure, select the test.
 3. Select the touched manual checks. A manual check is touched when a new or changed rule changes its human path. Read the setup and the pass criteria of each check to decide. If you are not sure, select the check.
 4. If the change makes a new human path that no manual check examines, add a manual check for that path. Write its setup and its pass criteria in the form of the other manual checks of the project. Then select the new check.
 5. For each selected test, record the new or changed rule that it examines. The end-of-run report gives these rules.
-6. Run only the selected output tests. Give their identifiers to the runner of the project, for example with `--ids 3,7`. Do not run all output tests, because the full set costs too many tokens for one change. Run and grade each test as the `README.md` of the tests tells you.
+6. Run only the selected output tests. Give their identifiers to the runner of the project, for example with `--ids 3,7`. Do not run all output tests, because the full set costs too many tokens for one change. Run each test as the `README.md` of the tests tells you. Then grade each test as that `README.md` tells you.
 7. Run the load test only when the change edits the `description` of a Skill. Only the `description` changes the result of the load test.
 8. Run each selected manual check 1 time, as "When you run a manual check" tells you.
 9. When a test fails, correct the text one time. Then do these checks on the text that the correction changed:
@@ -366,15 +369,17 @@ A blocking problem is one of these problems that you did not correct:
 - A problem of the script or a confirmed wrong step in a reader-test round.
 - An output test or a manual check that failed in its last run.
 
-At a limit, each blocking problem stays open. Do not do more rounds or test runs for it. Do all other checks of the change first. Then do these steps:
+At a limit, each blocking problem stays open. Do not do more rounds or test runs for it. Do all other checks of the change first.
+
+When no user can answer the question, do not ask it. Examples are a subagent and an output test of this skill. Put the question, its blocking problems, and its 3 answers in the end-of-run report. Do not write in the report that the change passed.
+
+When a user can answer the question, do these steps:
 
 1. Ask the user one question. In the text of the question, give each blocking problem: its check, its file, and its text in quotation marks or its failed test. Put the problems before the answers. Give these 3 answers:
    - Correct again: Correct each blocking problem. Then examine the corrected text with new rounds and test runs. The same limits are applicable to them.
    - Accept with a warning: Put each blocking problem in a warning.
    - Stop the change: Do not change a file again. In the Summary part of the end-of-run report, write that the user stopped the change.
 2. Do the action of the answer. Then write the end-of-run report.
-
-When no user can answer the question, do not ask it. Examples are a subagent and an output test of this skill. Put the question, its blocking problems, and its 3 answers in the end-of-run report. Do not write in the report that the change passed.
 
 ## When no subagent is available
 
@@ -395,7 +400,7 @@ If you find an error in a saved report, do not correct that file. Give the corre
 
 In each round, do each check again. Do not copy a report of an earlier round, also when the text of that check did not change. Make each report from a check that you do in the current round.
 
-Do not save 2 reports in one tool call or in one message. Do not send 2 tool calls at the same time. This rule is applicable in each round, also when the reports of a round are short. It is also applicable when a round examines only one line, and when a report gives "No findings". The sequence of the messages shows that you did the checks one after the other.
+Do not save 2 reports in one tool call or in one message. Do not send 2 tool calls at the same time. These 2 rules are applicable in each round, also when the reports of a round are short. These 2 rules are also applicable when a round examines only one line, and when a report gives "No findings". The sequence of the messages shows that you did the checks one after the other.
 
 Write each report in full. In each finding, write the full rule. Do not refer to a different finding or a different report.
 

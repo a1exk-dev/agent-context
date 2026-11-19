@@ -48,11 +48,6 @@
                     "grader": "llm"
                 },
                 {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
-                },
-                {
                     "id": "9b",
                     "text": "The new text uses each `CONTEXT.md` term with its glossary meaning.",
                     "grader": "llm"
@@ -134,11 +129,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -224,11 +214,6 @@
                     "grader": "llm"
                 },
                 {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
-                },
-                {
                     "id": "9b",
                     "text": "The new text uses each `CONTEXT.md` term with its glossary meaning.",
                     "grader": "llm"
@@ -307,11 +292,6 @@
                     "grader": "llm"
                 },
                 {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
-                },
-                {
                     "id": "9b",
                     "text": "The new text uses each `CONTEXT.md` term with its glossary meaning.",
                     "grader": "llm"
@@ -382,11 +362,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -466,11 +441,6 @@
                     "grader": "llm"
                 },
                 {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
-                },
-                {
                     "id": "9b",
                     "text": "The new text uses each `CONTEXT.md` term with its glossary meaning.",
                     "grader": "llm"
@@ -537,11 +507,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -616,11 +581,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -699,11 +659,6 @@
                     "grader": "llm"
                 },
                 {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
-                },
-                {
                     "id": "9b",
                     "text": "The new text uses each `CONTEXT.md` term with its glossary meaning.",
                     "grader": "llm"
@@ -773,11 +728,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
