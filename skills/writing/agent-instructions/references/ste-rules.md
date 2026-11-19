@@ -22,9 +22,10 @@ Always replace these words. This list gives no replacement words, because a tabl
 
 - When you select a technical noun, use a noun from the glossary or the base list in `technical-terms.md` (rule 1.8). (advisory)
 - When the glossary and the base list have no noun for an item, do the steps in "When a word is not in the base list or in the glossary" in `technical-terms.md`.
-- Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). When the glossary has a term for the item, use that term, not a different word with the same meaning. (blocking)
+- Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)
+- When the glossary has a term for the item, use that term, not a different word with the same meaning.
 - Write a term in bold only when the glossary or the base list in `technical-terms.md` has it (rule 1.8). (script check)
-- Do not use a word that the glossary gives after `_Avoid_` (rule 1.11). (script check)
+- Do not use a word that the glossary gives after `_Avoid_` (rule 1.11).
 
 ## When you write a multi-word noun
 
@@ -46,7 +47,7 @@ Always replace these words. This list gives no replacement words, because a tabl
 - Each sentence has a maximum of 25 words. This limit is applicable to all text. (script check)
 - Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)
 - Use the same terms and the same words for the same type of step (rule 9.4). (advisory)
-- Write each glossary term in the same case as the glossary (rule 6.2). A capital letter at the start of a sentence is permitted. A word in your text can have the letters of a glossary term but a different meaning. Then do not write that word in a different case to show the different meaning. Write a different word, because the agent reads the glossary meaning in each case of the word. A noun group with a glossary term, for example "<Term> branch", is a different technical noun. Obey "When a word is not in the base list or in the glossary" in `technical-terms.md` for it. Exception: you can write the base-list term "rule" in lowercase with its base-list meaning, also when the glossary has the term "Rule". "When you add a word to the base list" in `technical-terms.md` gives the two meanings. (script check)
+- Write each glossary term in the same case as the glossary (rule 6.2). A capital letter at the start of a sentence is permitted. A word in your text can have the letters of a glossary term but a different meaning. Then do not write that word in a different case to show the different meaning. Write a different word, because the agent reads the glossary meaning in each case of the word. A noun group with a glossary term, for example "<Term> branch", is a different technical noun. Obey "When a word is not in the base list or in the glossary" in `technical-terms.md` for it. Exception: you can write the base-list term "rule" in lowercase with its base-list meaning, also when the glossary has the term "Rule". When you write "rule" in lowercase, read "When you add a word to the base list" in `technical-terms.md` for the two meanings.
 - When "with" can have two meanings in a sentence, write a different sentence (GR-2). (blocking)
 - Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)
 

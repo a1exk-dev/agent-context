@@ -37,6 +37,7 @@ In the Warnings part, add one item for each of these warnings that is applicable
 - Each finding that item 5 of "During and after a review round" in `references/review.md` tells you to put in a warning.
 - In the edit job, each pointer in an unchanged part that does not give the condition to read its target. The pointer list of the check script gives each sentence that names a file path.
 - Each problem from the reader test that you cannot correct.
+- In the edit job, each problem that you find in an unchanged part of a file that you change. Give its text in quotation marks and its rule. Do not correct it.
 - Each selected manual check that you did not run, with its cause. Write that the user must run it.
 - Each new or changed rule that no tested quote of a reader task is from. Write that no reader task tested these rules.
 - Each text that only the check script examined: a correction after review round 2, and each later correction when you did 2 review rounds. Write that no reviewer examined these texts. If no reader examined a text, write that no reviewer or reader examined it.

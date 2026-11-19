@@ -28,7 +28,7 @@ Write only features that Codex, OpenCode, and Claude Code all read. This rule is
 - When you write a Manual-only Skill, read "When you write the folder and the frontmatter" in `agent-skills-spec.md`. That section gives the exception for `disable-model-invocation`.
 - Write no `@path` line, but you can write the `@AGENTS.md` line in `CLAUDE.md`. (script check)
 
-When the user tells you clearly to write a feature that only one platform reads, write it. This rule is also applicable to the items in the list above. Put an `@path` line in `CLAUDE.md` after the `@AGENTS.md` line. Then add a warning. The warning gives the platforms that do not read the feature and the alternative that all three platforms read. For an `@path` line in `CLAUDE.md`, the alternative is a pointer sentence in `AGENTS.md`. If `AGENTS.md` has a pointer to the same file, the alternative is a change to the condition of that pointer. When the user wants the file in each session, use the condition "At the start of each session". When two rules give a warning for the same feature, write one warning.
+When the user tells you clearly to write a feature that only one platform reads, write it. This rule is also applicable to the items in the list above. For an `@path` line, put the line in `CLAUDE.md` after the `@AGENTS.md` line. Then add a warning. The warning gives the platforms that do not read the feature and the alternative that all three platforms read. For an `@path` line in `CLAUDE.md`, the alternative is a pointer sentence in `AGENTS.md`. If `AGENTS.md` has a pointer to the same file, the alternative is a change to the condition of that pointer. When the user wants the file in each session, use the condition "At the start of each session". When two rules give a warning for the same feature, write one warning.
 
 ## When you write or edit an entry file
 
@@ -57,7 +57,7 @@ Move text to reference files from a new `SKILL.md` and from new entry-file text.
 
 1. Move this text to a reference file:
    - Each template, each prompt in a code block, and each example of a full task, also when they are short. (advisory)
-   - Long policy text and long background text. You decide which text is long. (advisory)
+   - Long text of decisions and long background text. You decide which text is long. (advisory)
    - Each section that has a specified condition and 3 or more rules. Move such a section also when the condition can occur at each step. The agent then reads its rules only when the condition occurs. A section has a specified condition when its heading or a sentence at its start gives the condition. Examples are the heading "Before a release" and the sentence "Obey the rules in this section only when the user asks for a deploy." Count each instruction as one rule, also when one sentence or one list item gives 2 or more instructions. The number of rules does not change when you write them in fewer sentences. For example, "stop, keep the branch, and tell the user" gives 3 rules. (advisory)
 2. Keep this text in its file, also when item 1 tells you to move it. The agent uses the steps, the terms, and the pointers in each task. A pointer to a section with only 1 or 2 rules makes the file almost no shorter. Move this text only when a file-size rule in this file or the user tells you to move it. This text is:
    - The numbered steps of the main task of a Skill, also under a heading that gives a condition. (advisory)

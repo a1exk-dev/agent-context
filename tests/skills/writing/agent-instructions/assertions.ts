@@ -395,12 +395,6 @@ export const scriptStatements: Record<string, (run: Run) => Verdict> = {
             },
             "No @path line on an added line, except the permitted ones.",
         ),
-    "9a": (run) =>
-        findingVerdict(
-            run,
-            (finding) => finding.rule === "1.11" || finding.rule === "6.2",
-            "No _Avoid_ word and no glossary term in a different case on an added line.",
-        ),
     "1.1": (run) => {
         const fields = [
             ...frontmatter(after(run, RELEASE_SKILL_MD) ?? "").keys(),

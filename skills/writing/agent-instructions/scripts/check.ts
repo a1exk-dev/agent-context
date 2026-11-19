@@ -25,8 +25,8 @@ the rule files of the agent-instructions Skill. Writes JSON to stdout:
 { "findings": [ { reviewer, rule, ruleFile, heading, text, path, line, problem } ],
   "pointers": [ { path, line, heading, text, targets } ] }
 The pointers list gives each sentence that names a file path. The glossary
-gives the terms and their _Avoid_ words. The base list of technical terms
-comes from references/technical-terms.md of the Skill.
+and the base list of technical terms in references/technical-terms.md of the
+Skill give the terms that a bold word can have.
 
 Report form: checks the findings (Rule, Text, Problem, Correction) of the
 3 reviewer reports of one file under review. Writes JSON to stdout:
@@ -136,9 +136,9 @@ function main(argv: string[]): number {
     try {
         const glossary = args.glossary
             ? readGlossary(readFileSync(args.glossary, "utf8"))
-            : { terms: [], avoid: [] };
+            : { terms: [] };
         const base = readBaseList(readFileSync(technicalTerms, "utf8"));
-        rules = [...wordRules, ...glossaryRules(glossary, base)];
+        rules = [...wordRules, boldTermRule(glossary, base)];
     } catch (error) {
         process.stderr.write(
             `Cannot read the glossary or the base list: ${error}\n`,
@@ -303,63 +303,13 @@ function isParticiple(word: string) {
     );
 }
 
-// Gives the rules that use the glossary terms, their `_Avoid_` words, and the
-// base list of technical-terms.md.
-function glossaryRules(glossary: Glossary, base: string[]): WordRule[] {
-    const rules: WordRule[] = [];
+// Gives the rule for bold terms. The glossary and the base list of
+// technical-terms.md only permit a bold term: the glossary gives no finding.
+function boldTermRule(glossary: Glossary, base: string[]): WordRule {
     const known = new Set(
         [...base, ...glossary.terms].map((term) => term.toLowerCase()),
     );
-    const words = (word: string, plural: boolean) =>
-        new RegExp(
-            `(?<![\\p{L}\\p{N}_-])${escapeRegExp(word).replace(/\s+/g, "\\s+")}${plural ? "(?:e?s)?" : ""}(?![\\p{L}\\p{N}_-])`,
-            "giu",
-        );
-    const places = glossary.terms.map((term) => ({
-        term,
-        pattern: words(term, true),
-    }));
-    // Tells whether the match is in a place of a glossary term, in any case,
-    // other than the term `except`.
-    const inTerm = (found: RegExpMatchArray, except: string | null) => {
-        const from = found.index ?? 0;
-        const to = from + found[0].length;
-        return places.some(
-            ({ term, pattern }) =>
-                term !== except &&
-                [...(found.input ?? "").matchAll(pattern)].some(
-                    (place) =>
-                        (place.index ?? 0) <= from &&
-                        (place.index ?? 0) + place[0].length >= to,
-                ),
-        );
-    };
-    for (const avoid of glossary.avoid)
-        rules.push({
-            rule: "1.11",
-            heading: "When you select a technical noun",
-            pattern: words(avoid, false),
-            problem: (word, _atStart, found) =>
-                inTerm(found, null)
-                    ? null
-                    : `The sentence has "${word}", which the glossary gives after _Avoid_.`,
-        });
-    for (const term of glossary.terms)
-        rules.push({
-            rule: "6.2",
-            heading: "When you write a sentence",
-            pattern: words(term, true),
-            problem: (word, atStart, found) => {
-                if (inTerm(found, term)) return null;
-                const stem = word.slice(0, term.length);
-                if (stem === term) return null;
-                const capital = term[0].toUpperCase() + term.slice(1);
-                if (atStart && stem === capital) return null;
-                const fixed = term + word.slice(term.length);
-                return `The sentence has "${word}", but the glossary term is "${term}". If "${word}" has the meaning of the glossary term, write "${fixed}". If not, do not change the case: write a different word.`;
-            },
-        });
-    rules.push({
+    return {
         rule: "1.8",
         heading: "When you select a technical noun",
         pattern: /\*\*([^*\n]+?)\*\*/g,
@@ -374,30 +324,17 @@ function glossaryRules(glossary: Glossary, base: string[]): WordRule[] {
                 return null;
             return `The bold term "${term}" is not in the glossary or in the base list of technical-terms.md.`;
         },
-    });
-    return rules;
+    };
 }
 
-function escapeRegExp(text: string) {
-    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+type Glossary = { terms: string[] };
 
-type Glossary = { terms: string[]; avoid: string[] };
-
-// Reads the terms (`**Term**:`) and the `_Avoid_:` words of a glossary.
+// Reads the terms (`**Term**:`) of a glossary.
 function readGlossary(source: string): Glossary {
-    const glossary: Glossary = { terms: [], avoid: [] };
-    for (const line of source.split(/\r?\n/)) {
-        const term = /^\*\*([^*]+)\*\*:/.exec(line);
-        if (term) glossary.terms.push(term[1].trim());
-        const avoid = /^_Avoid_:\s*(.*)$/.exec(line);
-        if (avoid)
-            for (const word of avoid[1].split(",")) {
-                const clean = word.replace(/["“”.]/g, "").trim();
-                if (clean !== "") glossary.avoid.push(clean);
-            }
-    }
-    return glossary;
+    const terms = [...source.matchAll(/^\*\*([^*]+)\*\*:/gm)].map((match) =>
+        match[1].trim(),
+    );
+    return { terms };
 }
 
 // Reads the terms of the base list in technical-terms.md: the first cell of

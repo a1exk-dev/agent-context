@@ -596,104 +596,18 @@ describe("check script, glossary rules", () => {
     ].join("\n");
 
     const term = (rule: string, text: string, line: number, problem: string) =>
-        ste(
-            rule,
-            rule === "6.2"
-                ? "When you write a sentence"
-                : "When you select a technical noun",
-            {
-                text,
-                line,
-                problem,
-            },
-        );
+        ste(rule, "When you select a technical noun", { text, line, problem });
 
-    it("finds each _Avoid_ word of the glossary in any case", () => {
+    // The glossary only permits a word. Round 4 of #265 confirmed 2 findings
+    // that came only from the _Avoid_ list of a glossary.
+    it("gives no finding for an _Avoid_ word or a term in a different case", () => {
         const folder = project({
             "GLOSSARY.md": glossary,
-            "AGENTS.md":
-                "Ask the user-facing team. Ask the User.\n\nAsk the project\nowner. Ask the `user`.\n",
+            "AGENTS.md": "Ask the user. The operators approve. Do a Dry run.\n",
         });
         expect(
             checkFiles(folder, ["AGENTS.md"], "GLOSSARY.md").findings,
-        ).toEqual([
-            term(
-                "1.11",
-                "Ask the User.",
-                1,
-                'The sentence has "User", which the glossary gives after _Avoid_.',
-            ),
-            term(
-                "1.11",
-                "Ask the project\nowner.",
-                3,
-                'The sentence has "project\nowner", which the glossary gives after _Avoid_.',
-            ),
-        ]);
-    });
-
-    // The case problem tells the author to keep the case of a word with a
-    // different meaning. Run 04 of #145 wrote "Release branch" for a branch.
-    const caseProblem = (word: string, term: string, fixed: string) =>
-        `The sentence has "${word}", but the glossary term is "${term}". If "${word}" has the meaning of the glossary term, write "${fixed}". If not, do not change the case: write a different word.`;
-
-    it("finds a glossary term in a different case", () => {
-        const folder = project({
-            "GLOSSARY.md": glossary,
-            "AGENTS.md":
-                "Operator approves. The operators approve. Dry run first. Do a Dry run.\n",
-        });
-        expect(
-            checkFiles(folder, ["AGENTS.md"], "GLOSSARY.md").findings,
-        ).toEqual([
-            term(
-                "6.2",
-                "The operators approve.",
-                1,
-                caseProblem("operators", "Operator", "Operators"),
-            ),
-            term(
-                "6.2",
-                "Do a Dry run.",
-                1,
-                caseProblem("Dry run", "dry run", "dry run"),
-            ),
-        ]);
-    });
-
-    it("does not find an _Avoid_ word or a term case in a glossary term", () => {
-        const folder = project({
-            "GLOSSARY.md": [
-                "**Rule**:",
-                "A short file.",
-                "",
-                "**Setting**:",
-                "One line of a policy.",
-                "_Avoid_: option, rule",
-                "",
-                "**Blocking rule**:",
-                "A rule that fails a round.",
-                "",
-            ].join("\n"),
-            "AGENTS.md":
-                "Each Rule applies. A Blocking rule fails. Each blocking rule fails. The rule applies.\n",
-        });
-        expect(
-            checkFiles(folder, ["AGENTS.md"], "GLOSSARY.md").findings,
-        ).toEqual([
-            term(
-                "6.2",
-                "Each blocking rule fails.",
-                1,
-                caseProblem("blocking rule", "Blocking rule", "Blocking rule"),
-            ),
-            term(
-                "6.2",
-                "The rule applies.",
-                1,
-                caseProblem("rule", "Rule", "Rule"),
-            ),
-        ]);
+        ).toEqual([]);
     });
 
     it("skips the _Avoid_ lines of the glossary", () => {
