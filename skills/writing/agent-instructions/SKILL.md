@@ -23,7 +23,7 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - A **finding** is one problem that a reviewer subagent gives in its report. The check script also gives findings.
 - A **blocking rule** is a rule in a reference file of this skill. The rule ends with the mark "(blocking)". When you accept a confirmed finding for a blocking rule in the changed text, the review round of that finding fails.
 - An **advisory rule** is a rule in a reference file of this skill. The rule ends with the mark "(advisory)". A finding for an advisory rule never makes a review round fail.
-- A **confirmer** is a new subagent that answers "yes" or "no", with one sentence, for each problem in its prompt. These problems come from a check other than the confirmer. In a review round, the first 2 confirmers of a reviewer get all blocking findings of that reviewer. A third confirmer gets only the findings with one "yes" and one "no". A confirmer gets the rule, the quoted text, and the files, but not the cause that the other check gives. The number of "yes" answers that confirm a problem depends on the check that found the problem. `references/review.md` gives this number for each check.
+- A **confirmer** is a new subagent that answers "yes" or "no", with one sentence, for each problem in its prompt. These problems come from a check other than the confirmer. In a review round, the first 2 confirmers of a reviewer get all blocking findings of that reviewer. A third confirmer gets only the findings with one "yes" and one "no". A confirmer gets the rule, the quoted text, and the files, but not the cause that the other check gives. The number of "yes" answers that confirm a problem depends on the check that found the problem.
 - A **warning** is one item in the Warnings part of the end-of-run report. It is not the STE signal word WARNING, which this skill does not use.
 - A **tier** is one position in the sequence of the sources.
 - An **ADR** is an architecture decision record: a file that records one design decision and its cause.
@@ -32,7 +32,7 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - The **review target** is the Agent instructions that one self-check examines. For a Skill, the review target is the Markdown files in the folder of that Skill.
 - The **self-check** is the review of the changed sections by one reviewer subagent of each class, in a maximum of 2 rounds.
 - The **reader test** is a dry run of 3 tasks by new reader subagents after the self-check.
-- An **output test** is a test of the project that runs an agent on one request and examines the result with its statements.
+- An **output test** is a test of the project that runs an agent on one request. The statements of the test examine the result.
 - A **manual check** is a test of the project that examines a human path in an interactive session. A **human path** is a question to the user, an approval, or a handoff between agents.
 - A **load test** is a test of the project that finds which requests make an agent load a Skill from its `description`.
 - In the edit job, the **changed part** is the text that the user wants to change. It also includes each line that you add. When you move a line of that text to a different section, the line stays in the changed part. Each other part of the file is an **unchanged part**.

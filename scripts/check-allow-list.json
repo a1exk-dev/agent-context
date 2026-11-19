@@ -248,7 +248,7 @@
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "1.8",
-        "text": "An **output test** is a test of the project that runs an agent on one request and examines the result with its statements.",
+        "text": "An **output test** is a test of the project that runs an agent on one request.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     },
     {

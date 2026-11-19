@@ -18,7 +18,7 @@ The check script of this skill examines each rule that ends with "(script check)
 
 ## When you do a round
 
-Each round contains the checks of all files that it examines. Do not do a different series of rounds for each file. For the round limits, count the rounds of all files together, because the limits are for the full task. "When a blocking problem stays open at a limit" gives the limits. A review round has 3 reviewers: one reviewer of each class for the sections in the `Changes:` line.
+Each round contains the checks of all files that it examines. Do not do a different series of rounds for each file. For the round limits, count the rounds of all files together, because the limits are for the full change. "When a blocking problem stays open at a limit" gives the limits. A review round has 3 reviewers: one reviewer of each class for the sections in the `Changes:` line.
 
 The Markdown files of a review target are these files:
 
@@ -68,7 +68,7 @@ In each round, start 3 new reviewer subagents for the sections in the `Changes:`
 
 The pointer targets are the files that the pointers in the files of the review target identify. Each reviewer reads the prompt in this file to know the requirements for its reports. A reviewer does only the review that the author gave to it.
 
-Copy this prompt for each reviewer. Replace only the placeholders. Do not change the report requirements. Keep the lines for the reviewer that you start. Remove the label in angle brackets from these lines. Remove the lines for the other reviewers. In the write job, also remove the lines for the loading reviewer in the edit job. Give the same `Review target:` line, `Changes:` line, and pointer targets to each reviewer. In round 1, give the changed sections of each file in the `Changes:` line.
+Copy this prompt for each reviewer. Replace only the placeholders. Do not change the report requirements. Keep the lines for the reviewer that you start. Remove the label in angle brackets from these lines. Remove the lines for the other reviewers. In the write job, also remove the lines for the loading reviewer in the edit job. Give the same `Review target:` line, `Changes:` line, and pointer targets to each reviewer.
 
 ```text
 You are the <name> reviewer for Agent instructions: files that an agent reads as instructions.
@@ -314,7 +314,7 @@ Start these steps only after a reader-test round passes. An output test or a man
 3. Select the touched manual checks. A manual check is touched when a new or changed rule changes its human path. Read the setup and the pass criteria of each check to decide. If you are not sure, select the check.
 4. If the change makes a new human path that no manual check examines, add a manual check for that path. Write its setup and its pass criteria in the form of the other manual checks of the project. Then select the new check.
 5. For each selected test, record the new or changed rule that it examines. The end-of-run report gives these rules.
-6. Run only the selected output tests. Give their identifiers to the runner of the project, for example with `--ids 3,7`. Do not run all output tests, because the full set costs too many tokens for one change. Run and grade each test as the `README.md` of the tests tells you.
+6. Run only the selected output tests. Give their identifiers to the runner of the project, for example with `--ids 3,7`. Do not run all output tests, because the full set costs too many tokens for one change. Run each test as the `README.md` of the tests tells you. Then grade each test as that `README.md` tells you.
 7. Run the load test only when the change edits the `description` of a Skill. Only the `description` changes the result of the load test.
 8. Run each selected manual check 1 time, as "When you run a manual check" tells you.
 9. When a test fails, correct the text one time. Then do these checks on the text that the correction changed:
@@ -366,15 +366,17 @@ A blocking problem is one of these problems that you did not correct:
 - A problem of the script or a confirmed wrong step in a reader-test round.
 - An output test or a manual check that failed in its last run.
 
-At a limit, each blocking problem stays open. Do not do more rounds or test runs for it. Do all other checks of the change first. Then do these steps:
+At a limit, each blocking problem stays open. Do not do more rounds or test runs for it. Do all other checks of the change first.
+
+When no user can answer the question, do not ask it. Examples are a subagent and an output test of this skill. Put the question, its blocking problems, and its 3 answers in the end-of-run report. Do not write in the report that the change passed.
+
+When a user can answer the question, do these steps:
 
 1. Ask the user one question. In the text of the question, give each blocking problem: its check, its file, and its text in quotation marks or its failed test. Put the problems before the answers. Give these 3 answers:
    - Correct again: Correct each blocking problem. Then examine the corrected text with new rounds and test runs. The same limits are applicable to them.
    - Accept with a warning: Put each blocking problem in a warning.
    - Stop the change: Do not change a file again. In the Summary part of the end-of-run report, write that the user stopped the change.
 2. Do the action of the answer. Then write the end-of-run report.
-
-When no user can answer the question, do not ask it. Examples are a subagent and an output test of this skill. Put the question, its blocking problems, and its 3 answers in the end-of-run report. Do not write in the report that the change passed.
 
 ## When no subagent is available
 

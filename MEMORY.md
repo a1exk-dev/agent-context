@@ -68,7 +68,7 @@ Reason: More runs at the same time hit the Operator's usage limit. A run that hi
 
 Applies when: output tests for a Skill or Rule fail in the full matrix at the end of an effort.
 
-Guidance: Run only the failed topics until every statement for those topics passes. Then run the full matrix again. For the output tests of one change, obey "After the reader test: the output tests and the manual checks" in `skills/writing/agent-instructions/references/review.md`: run only the touched tests with `--ids`, and correct the text one time.
+Guidance: Run only the failed topics until every statement for those topics passes. Then run the full matrix again. For the output tests of one change, obey "After the reader test: the output tests and the manual checks" in `skills/writing/agent-instructions/references/review.md`. That section tells you to run only the touched tests with `--ids`. It also tells you to correct the text only one time.
 
 Reason: The Operator wants agents to fix failures before they repeat tests that passed. The full matrix then checks the other topics. The full matrix runs one time at the end of an effort, because it costs too many tokens for one change. See "Spec: agent-instructions reviews that stop" (#256).
 
