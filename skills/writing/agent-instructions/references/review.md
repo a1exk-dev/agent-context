@@ -165,8 +165,10 @@ Do not add other notes or questions.
 Do this vote for each reviewer with one or more reports in the confirm lists of the round. Do the vote in each job, also for a small change. Also do the vote when you expect to reject the findings, because only the vote decides which blocking findings count.
 
 1. In the confirmer prompt below, give the paths of the reports of that reviewer in the confirm lists. Also give each finding of these reports in the blocking lists, with the path of its file, its rule, and its text. Give the findings numbers in one series across all files. Do not give the Problem field or the Correction field of the reviewer.
-2. Start 2 new, read-only confirmer subagents for the reviewer, as "When you do a round" tells you. The confirmers are checks of the same round. Start them in groups of 3. Start the 2 confirmers also when the reports have many findings, because only a confirmer can confirm a blocking finding. Wait for the reports of the 2 confirmers, also when the first confirmer answers "yes" for each finding. A round is complete only after each check gives its report. A review round has a maximum of 6 confirmers: 2 for each reviewer.
-3. A blocking finding is confirmed when one or more of its 2 confirmers answer "yes". When a confirmer gives no answer line for a finding, that confirmer answered "yes" for that finding.
+2. Start 2 new, read-only confirmer subagents for the reviewer, as "When you do a round" tells you. The confirmers are checks of the same round. Start them in groups of 3. Start the 2 confirmers also when the reports have many findings, because only a confirmer can confirm a blocking finding. Wait for the reports of the 2 confirmers, also when the first confirmer answers "yes" for each finding. A round is complete only after each check gives its report.
+3. When a confirmer gives no answer line for a finding, that confirmer answered "no" for that finding. A split is a finding with one "yes" and one "no" from the 2 confirmers.
+4. If the reviewer has one or more splits, start 1 new, read-only confirmer subagent for the reviewer after the reports of the 2 confirmers. Give it the same Reports line as the 2 confirmers. In its Findings line, give only the splits, with their numbers from the first 2 confirmers. Wait for its report. A review round has a maximum of 9 confirmers: 2 for each reviewer, and a third confirmer for each reviewer with splits.
+5. A blocking finding is confirmed when 2 of its confirmers answer "yes".
 
 Copy this prompt for each confirmer. Replace only the placeholders.
 
