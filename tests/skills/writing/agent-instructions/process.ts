@@ -776,10 +776,10 @@ function savedReports(run: Run, found: Process, kind: Kind) {
 
 // The vote of a review round. The report form has the 3 reviewer reports of
 // each file of the round. Each reviewer with blocking findings has 2
-// confirmers whose Reports lines give each of its reports with blocking
-// findings, and only reports of that reviewer. A reviewer without blocking
-// findings has no confirmer. The round has a maximum of 6 confirmers, after
-// the last report of the round. A round that the run did itself, or a
+// confirmers, and a third confirmer for its splits. Their Reports lines give
+// each of its reports with blocking findings, and only reports of that
+// reviewer. A reviewer without blocking findings has no confirmer. The round
+// has a maximum of 9 confirmers, after the last report of the round. A round that the run did itself, or a
 // reviewer whose 2 confirmers failed, has no vote.
 function reviewVote(
     run: Run,
@@ -841,7 +841,7 @@ function reviewVote(
         if (
             (count > 0 && ok.length < 2 && !noVote) ||
             (count === 0 && started.length > 0) ||
-            ok.length > 2
+            ok.length > 3
         )
             problems.push(
                 `${name}: the ${reviewer} has ${count} blocking findings and ${started.length} confirmers.`,
@@ -854,7 +854,7 @@ function reviewVote(
                     );
     }
     const total = confirmers.filter((check) => !check.failed).length;
-    if (total > 6) problems.push(`${name} has ${total} confirmers.`);
+    if (total > 9) problems.push(`${name} has ${total} confirmers.`);
     return problems;
 }
 
@@ -1097,7 +1097,7 @@ export function reviewers(run: Run): Verdict {
         );
     return verdict(
         problems,
-        `${found.review.length} review rounds with 1 reviewer of each class in one message, a report of each reviewer for each file, 2 confirmers for each reviewer with blocking findings, and no file change before the last report.`,
+        `${found.review.length} review rounds with 1 reviewer of each class in one message, a report of each reviewer for each file, 2 or 3 confirmers for each reviewer with blocking findings, a maximum of 9 confirmers, and no file change before the last report.`,
     );
 }
 

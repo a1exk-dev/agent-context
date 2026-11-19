@@ -533,8 +533,17 @@ function checkPlainLanguage(
                     sentence.line,
                     `The pointer target "${target}" does not exist.`,
                 );
-            else if (found !== resolve(path) && isFile(found))
-                targets.set(target, found);
+            else if (isFile(found)) {
+                const missing = missingHeadings(sentence.text, target, found);
+                for (const heading of missing)
+                    finding(
+                        "When you put the text in sections and lists",
+                        sentence.text,
+                        sentence.line,
+                        `The pointer target "${target}" has no heading "${heading}".`,
+                    );
+                if (found !== resolve(path)) targets.set(target, found);
+            }
         }
     }
     for (const [line, text] of fenceLines(source))
@@ -568,6 +577,22 @@ function checkPlainLanguage(
             );
     }
     return { findings, pointers };
+}
+
+// Gives each heading that a pointer sentence quotes for a target, as
+// "<heading>" in <target> or "<heading>" of <target>, and that the target
+// file does not have.
+function missingHeadings(text: string, target: string, found: string) {
+    const quoted = [...text.matchAll(/"([^"]+)"\s+(?:in|of)\s+(\S+)/g)]
+        .filter(
+            ([, , token]) => token.replace(/^`|`?[.,:;!?)]*$/g, "") === target,
+        )
+        .map(([, heading]) => collapseSpaces(heading));
+    if (quoted.length === 0) return [];
+    const headings = segments(readFileSync(found, "utf8"))
+        .filter((segment) => segment.heading)
+        .map((segment) => collapseSpaces(segment.visible));
+    return [...new Set(quoted)].filter((h) => !headings.includes(h));
 }
 
 // Gives the text with one space for each run of white space, and no white
