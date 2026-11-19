@@ -30,7 +30,7 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - **Loading rules** are the rules that a file must obey. If a file does not obey them, one of 3 results occurs. A platform does not load the file, a check gives an error, or the platform does not read all of the file.
 - The **loading reviewer**, the **ASD-STE100 reviewer**, and the **ISO 24495-1 reviewer** are the 3 reviewer subagents.
 - The **review target** is the Agent instructions that one self-check examines. For a Skill, the review target is the Markdown files in the folder of that Skill.
-- The **self-check** is the review of the changed sections by one reviewer subagent of each class, in a maximum of 3 rounds.
+- The **self-check** is the review of the changed sections by one reviewer subagent of each class, in a maximum of 2 rounds.
 - The **reader test** is a dry run of 3 tasks by new reader subagents after the self-check.
 - An **output test** is a test of the project that runs an agent on one request and examines the result with its statements.
 - A **manual check** is a test of the project that examines a human path in an interactive session. A **human path** is a question to the user, an approval, or a handoff between agents.
@@ -88,7 +88,7 @@ If two sources do not agree in a case that is not in this table, use the tier se
 Do these steps in the write job and in the edit job.
 
 1. Before you select target platforms, read `references/loading-rules.md`. Then find the target platforms as that file tells you.
-2. If the project has a glossary, read `GLOSSARY.md` or `CONTEXT.md`, as "Terms in this skill" tells you. The terms of the glossary are technical nouns for this task. Before you write text, find each project fact, command, and path that the task makes necessary. If no project file gives one or more of these items, speak to the user one time. Ask about all of these items in that time. An example of a project fact is a branch name. After you start to write text, do not stop the job for a question to the user. The end-of-run report gives all questions to the user. Put each question that you find after you start to write text in the Warnings part of the end-of-run report.
+2. If the project has a glossary, read `GLOSSARY.md` or `CONTEXT.md`, as "Terms in this skill" tells you. The terms of the glossary are technical nouns for this task. Before you write text, find each project fact, command, and path that the task makes necessary. If no project file gives one or more of these items, speak to the user one time. Ask about all of these items in that time. An example of a project fact is a branch name. After you start to write text, do not stop the job for a question to the user. The end-of-run report gives all questions to the user. The only exception is the question at a limit that `references/review.md` gives. Put each question that you find after you start to write text in the Warnings part of the end-of-run report.
 3. Find when the file loads: in each session, only when a task makes it necessary, or through a pointer. Use the result to select the file type and the file-size limit.
 4. In the write job, select the file type:
    - If the user gives a file type, write that type. If that type is not correct for the text, add a warning.
@@ -102,7 +102,8 @@ Do these steps in the write job and in the edit job.
 8. Before the self-check, read `references/review.md`. Then do the self-check that it gives. In each job, also for a small change, do the vote of the confirmers that `references/review.md` gives. Do the vote also when you expect to reject the findings.
 9. After the self-check, do the reader test that `references/review.md` gives, also for a small change. The self-check does not examine how a new reader obeys the file.
 10. After the reader test passes, do the output tests and the manual checks that "After the reader test: the output tests and the manual checks" in `references/review.md` gives. Only these tests show how an agent obeys the file in a run.
-11. Write the end-of-run report.
+11. If a blocking problem stays open at a limit, do the steps in "When a blocking problem stays open at a limit" in `references/review.md`.
+12. Write the end-of-run report.
 
 ### When a reviewer gives a finding
 

@@ -18,7 +18,7 @@ The check script of this skill examines each rule that ends with "(script check)
 
 ## When you do a round
 
-Each round contains the checks of all files that it examines. Do not do a different series of rounds for each file. For the round limits, count the rounds of all files together, because the limits are for the full task. A review round has 3 reviewers: one reviewer of each class for the sections in the `Changes:` line.
+Each round contains the checks of all files that it examines. Do not do a different series of rounds for each file. For the round limits, count the rounds of all files together, because the limits are for the full task. "When a blocking problem stays open at a limit" gives the limits. A review round has 3 reviewers: one reviewer of each class for the sections in the `Changes:` line.
 
 The Markdown files of a review target are these files:
 
@@ -80,7 +80,7 @@ Do not run commands that change files, Git data, or external services.
 Exception: save your reports in your report folder, as this prompt tells you. Write no other file.
 
 Review target: <for each review target: the absolute path of its first file, for example the SKILL.md file of a Skill, or AGENTS.md>
-Changes: <for each Markdown file that the job made or changed: its absolute path and its changed sections, or "all" for a new file. For a new file that contains only moved sections, write "no changed sections". In rounds 2 and 3, give only the sections that the previous round changed. In the edit job, include the pointer of each section that you moved, but not the text of that section>
+Changes: <for each Markdown file that the job made or changed: its absolute path and its changed sections, or "all" for a new file. For a new file that contains only moved sections, write "no changed sections". In round 2, give only the sections that the previous round changed. In the edit job, include the pointer of each section that you moved, but not the text of that section>
 Report folder: <absolute path of <round folder>/round-<n>/loading/, <round folder>/round-<n>/ste/, or <round folder>/round-<n>/iso/>
 Job: <"the write job" or "the edit job">
 Project folder: <absolute path>
@@ -155,9 +155,9 @@ Do not add other notes or questions.
    - Each finding about text that is not in the changed text.
    - Each finding about the words of a moved section, also a finding of the loading reviewer about the place of these words.
    - Each new finding for a different rule on a sentence that you changed for a confirmed blocking finding in the previous round. This tie-break ranks no rules. It stops 2 rules from changing one sentence again in each round.
-6. A round passes when you accept no script finding and no confirmed blocking finding in the changed text. A finding that you reject with a warning does not make the round fail. A finding in a warning never makes a round fail. The self-check stops when a round passes, or after round 3.
+6. A round passes when you accept no script finding and no confirmed blocking finding in the changed text. A finding that you reject with a warning does not make the round fail. A finding in a warning never makes a round fail. The self-check stops when a round passes, or after round 2.
 7. If the round does not pass, start all 3 reviewers again in the next round, but only for the sections that the previous round changed. Give these sections in the `Changes:` line. A section is changed when one or more of its lines changed. To find these sections, compare each file and its copy in the folder of the previous round, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
-8. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.
+8. After round 2, do not correct the text for a confirmed blocking finding that you accept. Each of these findings stays open as a blocking problem. Correct the script findings. Then do the check in "After the last review round" on the text that these corrections changed.
 
 ### When a reviewer has blocking findings
 
@@ -219,7 +219,7 @@ Give only these lines. Do not give the work to a subagent.
 
 ### After the last review round
 
-Do this check on each round 3 correction. Also do it on each correction after the reader test when you did all 3 review rounds.
+Do this check on each correction after review round 2. When you did 2 review rounds, also do it on each later correction. Examples are a correction after a reader-test round or after a failed output test.
 
 1. Run the check script on the full file of each changed file, as "When you run the check script" in `SKILL.md` tells you.
 2. Correct each script finding in the text that the corrections changed. After each correction, do items 1 and 2 again.
@@ -262,10 +262,10 @@ Do the reader test in each job, also for a small change. Also do the reader test
 10. For each typical-task report, write a closed list: each step, its quote, and "yes" or "no". Write "yes" when the step obeys its quote for the task. Save each closed list to a new file in `<round folder>/reader-round-<n>/`, as "When you save a file or run a command in a round" tells you. Start the file name with `closed-list-`. Write one line for each step in this form: `<number>. <yes or no>: "<step>" - "<quote>"`. For each report with one or more "no" answers, do the vote in "When a reader step does not obey the instruction".
 11. Do not change the instruction file until all readers and confirmers of the round give their reports. Then all checks of a round read the same text.
 12. Correct your text for each problem of the script and each confirmed wrong step. For each quote in the unclear list, correct your text or write a warning. An unclear part never starts a new reader-test round.
-13. A reader-test round passes when it has no problem of the script and no confirmed wrong step. If the round does not pass, do the test again after your correction. Do a maximum of 3 reader-test rounds.
-14. If you cannot correct a problem without help from the user, put it in a warning. Do not stop the reader test for a question to the user, because the user reads all questions in the end-of-run report.
-15. After a reader-test round, a correction can change text. If you did fewer than 3 review rounds, start the reviewers again for that text before the next reader-test round. This review round is one of the 3 review rounds.
-16. If you did all 3 review rounds, do the check in "After the last review round". Then do the next reader-test round, if the limit permits it.
+13. A reader-test round passes when it has no problem of the script and no confirmed wrong step. If the round does not pass, do the test again after your correction. Do a maximum of 2 reader-test rounds. After reader-test round 2, do not correct the text for a problem of the script or a confirmed wrong step. Each of these problems stays open as a blocking problem.
+14. If you cannot correct a problem without help from the user, the problem stays open as a blocking problem. Do not stop the reader test for a question to the user. Ask the question that "When a blocking problem stays open at a limit" gives.
+15. After a reader-test round, a correction can change text. If you did fewer than 2 review rounds, start the reviewers again for that text before the next reader-test round. This review round is one of the 2 review rounds.
+16. If you did 2 review rounds, do the check in "After the last review round". Then do the next reader-test round, if the limit permits it.
 17. If you correct an unclear part after the last reader-test round, run the check script on the full file. Correct each script finding in the text that this correction changed. Add a warning that tells that no reader examined this text.
 
 Use this prompt for each reader:
@@ -317,7 +317,11 @@ Start these steps only after a reader-test round passes. An output test or a man
 6. Run only the selected output tests. Give their identifiers to the runner of the project, for example with `--ids 3,7`. Do not run all output tests, because the full set costs too many tokens for one change. Run and grade each test as the `README.md` of the tests tells you.
 7. Run the load test only when the change edits the `description` of a Skill. Only the `description` changes the result of the load test.
 8. Run each selected manual check 1 time, as "When you run a manual check" tells you.
-9. When a test fails, correct the text. Then run only the failed tests again. Do not run a test again when it passed. After a correction for a failed manual check, that check must pass in 2 runs.
+9. When a test fails, correct the text one time. Then do these checks on the text that the correction changed:
+   - If you did fewer than 2 review rounds, do 1 review round. If not, do the check in "After the last review round".
+   - If you did fewer than 2 reader-test rounds, do 1 reader-test round. If not, add a warning that tells that no reader examined this text.
+10. Then run only the failed tests again. Do not run a test again when it passed. After a correction for a failed manual check, run that check 2 times. The check passes only when it passes in the 2 runs.
+11. If a test fails again, do not correct the text again. The failed test stays open as a blocking problem. An output test runs a maximum of 2 times. A manual check runs a maximum of 3 times.
 
 ### When you run a manual check
 
@@ -343,6 +347,34 @@ Do these steps for each run of a manual check:
 6. Compare the result with each pass criterion of the check. When a pass criterion gives a file or Git data, examine the copy.
 7. Stop the session with `tmux kill-session -t <session name>`.
 8. Record the evidence: the check, the result of each pass criterion, and the path of the screen-text file. If the change has a pull request, add the evidence to the pull request. If not, give the evidence in the end-of-run report.
+
+## When a blocking problem stays open at a limit
+
+The budget of a change is a number of rounds and test runs, not a number of tokens. These limits are for the full change. Count each round, also a round after a correction for a failed test.
+
+| Check | Limit for the change |
+|---|---|
+| Review rounds | 2 |
+| Reader-test rounds | 2 |
+| Corrections for a failed output test or manual check | 1 |
+| Runs of one output test | 2 |
+| Runs of one manual check | 3 |
+
+A blocking problem is one of these problems that you did not correct:
+
+- A confirmed blocking finding in the changed text.
+- A problem of the script or a confirmed wrong step in a reader-test round.
+- An output test or a manual check that failed in its last run.
+
+At a limit, each blocking problem stays open. Do not do more rounds or test runs for it. Do all other checks of the change first. Then do these steps:
+
+1. Ask the user one question. In the text of the question, give each blocking problem: its check, its file, and its text in quotation marks or its failed test. Put the problems before the answers. Give these 3 answers:
+   - Correct again: Correct each blocking problem. Then examine the corrected text with new rounds and test runs. The same limits are applicable to them.
+   - Accept with a warning: Put each blocking problem in a warning.
+   - Stop the change: Do not change a file again. In the Summary part of the end-of-run report, write that the user stopped the change.
+2. Do the action of the answer. Then write the end-of-run report.
+
+When no person can answer the question, do not ask it. Examples are a subagent and an output test of this skill. Put the question, its blocking problems, and its 3 answers in the end-of-run report. Do not write in the report that the change passed.
 
 ## When no subagent is available
 
@@ -386,7 +418,7 @@ Do the checks in this sequence:
 ## When a reviewer gives a finding
 
 - When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.
-- If you cannot correct a finding without help from the user, do not stop the job for a question to the user. The user reads all questions in the end-of-run report. An example is a word that makes a new technical noun in the project necessary. Do the review rounds and the reader-test rounds until each one stops. Then put the finding and the question in the Warnings part of the end-of-run report.
+- If you cannot correct a finding without help from the user, do not stop the job for a question to the user. The user reads all questions in the end-of-run report. An example is a word that makes a new technical noun in the project necessary. Do the review rounds and the reader-test rounds until each one stops. Then put the finding and the question in the Warnings part of the end-of-run report. A confirmed blocking finding in the changed text is an exception: it stays open as a blocking problem. Ask about it as "When a blocking problem stays open at a limit" tells you.
 - A finding comes only from a reviewer report or from the check script. When you find a problem yourself, give it in a warning, not as a finding. In that warning, give the text in quotation marks and the problem.
 
 ## When you save a file or run a command in a round

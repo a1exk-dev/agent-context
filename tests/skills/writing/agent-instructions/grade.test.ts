@@ -1420,16 +1420,40 @@ describe("process statements", () => {
         expect(processVerdicts(run.record())["3a"].passed).toBe(false);
     });
 
-    it("fails [4] for a run with 4 review rounds", () => {
+    // Review round, reader-test round, and review round again: the limits of
+    // #255 count each round of the change, also a round after a fix.
+    const limitRun = (review: number, reader: number) => {
         const run = claude();
-        for (let round = 1; round <= 4; round++) reviewRound(run, { round });
-        readerRound(run);
-        const verdicts = processVerdicts(run.record());
+        for (let round = 1; round <= Math.max(review, reader); round++) {
+            if (round <= review) reviewRound(run, { round });
+            if (round <= reader) readerRound(run, { round });
+        }
+        return processVerdicts(run.record());
+    };
+
+    it("passes [4] for a run with 2 review rounds and 2 reader-test rounds", () => {
+        expect(limitRun(2, 2)["4"]).toMatchObject({
+            passed: true,
+            evidence: "2 review rounds and 2 reader-test rounds.",
+        });
+    });
+
+    it("fails [4] for a run with 3 review rounds", () => {
+        const verdicts = limitRun(3, 2);
         expect(verdicts["4"]).toMatchObject({
             passed: false,
-            evidence: "4 review rounds and 1 reader-test rounds.",
+            evidence: "3 review rounds and 2 reader-test rounds.",
         });
         expect(verdicts["1"].passed).toBe(true);
+    });
+
+    it("fails [4] for a run with 3 reader-test rounds", () => {
+        const verdicts = limitRun(2, 3);
+        expect(verdicts["4"]).toMatchObject({
+            passed: false,
+            evidence: "2 review rounds and 3 reader-test rounds.",
+        });
+        expect(verdicts["3a"].passed).toBe(true);
     });
 
     it("fails [1] for a subagent whose prompt has no class line", () => {

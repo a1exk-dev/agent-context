@@ -32,14 +32,14 @@ In the Summary part of the edit job, include each problem that you recorded befo
 
 In the Warnings part, add one item for each of these warnings that is applicable:
 
-- Each finding that you did not correct after round 3, with its rule.
+- Each blocking problem that stayed open at a limit, with the question to the user and the answer. "When a blocking problem stays open at a limit" in `references/review.md` gives these problems. When no person was available to answer, give the question with its 3 answers. Then write that the change did not pass.
 - Each finding that you rejected, with the rule that permits the text.
 - Each finding that item 5 of "During and after a review round" in `references/review.md` tells you to put in a warning.
 - In the edit job, each pointer in an unchanged part that does not give the condition to read its target. The pointer list of the check script gives each sentence that names a file path.
 - Each problem from the reader test that you cannot correct.
 - Each selected manual check that you did not run, with its cause. Write that the user must run it.
 - Each new or changed rule that no tested quote of a reader task is from. Write that no reader task tested these rules.
-- Each text that a round 3 correction changed. Also each text that changed after the reader test when you did all 3 review rounds. Write that no reviewer examined these texts.
+- Each text that only the check script examined: a correction after review round 2, and each later correction when you did 2 review rounds. Write that no reviewer examined these texts. If no reader examined a text, write that no reviewer or reader examined it.
 - Each text that a correction of an unclear part after the last reader-test round changed. Write that no reader examined these texts.
 - Each check that you did yourself because no subagent was available or because a new subagent also failed. Give the path of the report folder. Write that no vote occurred for the blocking findings and the wrong steps of these checks. If you did a reader task yourself, write that you were not a new reader for that task.
 - Each finding that you cannot correct without help from the user.

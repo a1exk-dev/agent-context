@@ -236,7 +236,7 @@
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "1.8",
-        "text": "The **self-check** is the review of the changed sections by one reviewer subagent of each class, in a maximum of 3 rounds.",
+        "text": "The **self-check** is the review of the changed sections by one reviewer subagent of each class, in a maximum of 2 rounds.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     },
     {
