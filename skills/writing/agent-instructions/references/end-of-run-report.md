@@ -32,7 +32,7 @@ In the Summary part of the edit job, include each problem that you recorded befo
 
 In the Warnings part, add one item for each of these warnings that is applicable:
 
-- Each blocking problem that stayed open at a limit, with the question to the user and the answer. "When a blocking problem stays open at a limit" in `references/review.md` gives these problems. When no person was available to answer, give the question with its 3 answers. Then write that the change did not pass.
+- Each blocking problem that stayed open at a limit, with the question to the user and the answer. "When a blocking problem stays open at a limit" in `references/review.md` gives these problems. When no user was available to answer, give the question with its 3 answers. Then write that the change did not pass.
 - Each finding that you rejected, with the rule that permits the text.
 - Each finding that item 5 of "During and after a review round" in `references/review.md` tells you to put in a warning.
 - In the edit job, each pointer in an unchanged part that does not give the condition to read its target. The pointer list of the check script gives each sentence that names a file path.
