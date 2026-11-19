@@ -2,13 +2,14 @@
 
 ## When you write the end-of-run report
 
-The job stops with one report. Use this structure. Do not write a part that has no items.
+The job stops with one report. Use this template. Do not write a part that has no items.
 
-1. Write the report in the structure below. Obey the rules for each part. These rules are below the template.
-2. When you write the report, compare it with each reviewer report. Include each warning that this skill or its reference files tell you to add. In the edit job, also include each extraction candidate. For each finding in a warning, give its rule, its text in quotation marks, and its problem.
-3. Save the full report to a file in a temporary folder that is not in the project.
-4. After you save the report file, read it. Then your last message gives the full lists, not a short summary.
-5. Send the full text of the file as your last message. Copy the text without changes. Do not write the report again in different words. Then the user can see the full lists and select the changes that they want.
+1. In the edit job, find each extraction candidate before you write the report. The rules for the extraction candidates are below the template.
+2. Write the report in the template below. Obey the rules for each part. These rules are below the template.
+3. When you write the report, compare it with each reviewer report. Include each warning that this skill or its reference files tell you to add. In the edit job, also include each extraction candidate. For each finding in a warning, give its rule, its text in quotation marks, and its problem.
+4. Save the full report to a file in a temporary folder that is not in the project.
+5. After you save the report file, read it. Then your last message gives the full lists, not a short summary.
+6. Send the full text of the file as your last message. Copy the text without changes. Do not write the report again in different words. Then the user can see the full lists and select the changes that they want.
 
 ```markdown
 ## Summary
@@ -22,17 +23,17 @@ The job stops with one report. Use this structure. Do not write a part that has 
 - <Test>: <passed, failed, or not run> - "<the new or changed rule that the test examines>"
 
 ## Extraction candidates
-- <Section> → <recommended file>. Pointer: "<pointer sentence>"
+- <Section> → <recommended file>. Pointer: "<pointer>"
 
 ## Base-list words with a project meaning
 - <Word>: <the meaning in the glossary>
 ```
 
-In the Summary part of the edit job, include each problem that you recorded before you changed the file. Give the cause and the change that corrected it.
+In the Summary part of the edit job, include each problem that you recorded before you changed the file. Give the cause of each problem and the change that corrected the problem.
 
 In the Warnings part, add one item for each of these warnings that is applicable:
 
-- Each blocking problem that stayed open at a limit, with the question to the user and the answer. "When a blocking problem stays open at a limit" in `references/review.md` gives these problems. When no user was available to answer, give the question with its 3 answers. Then write that the change did not pass.
+- Each blocking problem that stayed open at a limit, with the question to the user and the answer. When you write this item, find these problems in "When a blocking problem stays open at a limit" in `references/review.md`. When no user was available to answer, give the question with its 3 answers. Then write that the change did not pass.
 - Each finding that you rejected, with the rule that permits the text.
 - Each finding that item 5 of "During and after a review round" in `references/review.md` tells you to put in a warning.
 - In the edit job, each pointer in an unchanged part that does not give the condition to read its target. The pointer list of the check script gives each sentence that names a file path.
@@ -44,7 +45,7 @@ In the Warnings part, add one item for each of these warnings that is applicable
 - Each text that a correction of an unclear part after the last reader-test round changed. Write that no reader examined these texts.
 - Each check that you did yourself because no subagent was available or because a new subagent also failed. Give the path of the report folder. Write that no vote occurred for the blocking findings and the wrong steps of these checks. If you did a reader task yourself, write that you were not a new reader for that task.
 - Each finding that you cannot correct without help from the user.
-- Each case where two sources do not agree and that the table does not give, with the obeyed tier.
+- Each case where two sources do not agree and that the table in "When two sources do not agree" in `SKILL.md` does not give, with the obeyed tier.
 - A feature that only one platform reads, if you wrote it because the user told you to write it.
 - A file type that is not correct for the text, also when you found it during the edit job.
 - An entry-file layout that gives no copy of the text to a target platform.
@@ -65,4 +66,4 @@ Obey these rules for the moved text and the extraction candidates:
 
 In the Output tests and manual checks part, give each output test and each manual check that you selected. Give the rule that each test examines, in quotation marks. For a manual check, also give the evidence that "When you run a manual check" in `references/review.md` tells you to record.
 
-The last part gives each base-list word that has a different meaning in the glossary.
+In the last part, give each base-list word that has a different meaning in the glossary.

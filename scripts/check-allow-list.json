@@ -398,7 +398,7 @@
     {
         "path": "skills/writing/agent-instructions/references/plain-language-checks.md",
         "rule": "When you select the text",
-        "text": "It defines the terms, the tiers, and the end-of-run report.",
+        "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
     },
     {
@@ -434,7 +434,7 @@
     {
         "path": "skills/writing/agent-instructions/references/ste-rules.md",
         "rule": "When you select the text",
-        "text": "It defines the terms, the tiers, and the end-of-run report.",
+        "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
     },
     {
@@ -446,7 +446,7 @@
     {
         "path": "skills/writing/agent-instructions/references/technical-terms.md",
         "rule": "When you select the text",
-        "text": "It defines the terms, the tiers, and the end-of-run report.",
+        "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
     },
     {
@@ -718,6 +718,18 @@
         "rule": "When you put the text in sections and lists",
         "text": "If your platform has no Skill tool, read its SKILL.md.",
         "cause": "The pointer text of the human-communication Skill, word for word. SKILL.md is the file of that Skill, not a file in the root folder."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/agent-skills-spec.md",
+        "rule": "When you select the text",
+        "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/loading-rules.md",
+        "rule": "When you select the text",
+        "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
     },
     {
         "path": "skills/writing/wtf/SKILL.md",

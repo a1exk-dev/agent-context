@@ -1,6 +1,10 @@
 # ASD-STE100 rules
 
-ASD-STE100 is tier 2. If `SKILL.md` of this skill is not in your context window, read it before you use this file. It defines the terms, the tiers, and the end-of-run report. This file gives the rules of Issue 9 in words that we wrote, with their rule numbers. ASD publishes the standard at https://www.asd-ste100.org/STE_downloads.html.
+ASD-STE100 is tier 2. This file gives the rules of Issue 9 in words that we wrote, with their rule numbers. ASD publishes the standard at https://www.asd-ste100.org/STE_downloads.html.
+
+## Before you use this file
+
+If `SKILL.md` of this skill is not in your context window, read it before you use this file. `SKILL.md` defines the terms, the tiers, and the end-of-run report.
 
 ## When you use STE for text
 
@@ -8,7 +12,7 @@ ASD-STE100 is tier 2. If `SKILL.md` of this skill is not in your context window,
 - STE is applicable to all text in natural language: body text, headings, list items, table cells, and the frontmatter `description`.
 - The word rules are not applicable to text that the author cannot change (rule 8.6). This text is user phrases in quotation marks, names, code spans, file paths, commands, URLs, and code in code blocks.
 - The punctuation rules are also not applicable to code in code blocks.
-- A prompt that an agent reads as an instruction is not in this group. A prompt in a code block is also not in this group. Write it by all STE rules. An example is the text that a Skill gives to a subagent.
+- A prompt that an agent reads as an instruction is not in this group. A prompt in a code block is also not in this group. Write these prompts by all STE rules. An example is the text that a Skill gives to a subagent.
 - The general recommendations GR-2, GR-3, and GR-4 are not STE rules. This Skill makes them rules.
 
 ## When you select a word
@@ -29,7 +33,7 @@ Always replace these words. This list gives no replacement words, because a tabl
 
 ## When you write a multi-word noun
 
-- A multi-word noun has a maximum of 3 words (rule 2.1). (advisory)
+- Write a multi-word noun of a maximum of 3 words (rule 2.1). (advisory)
 - When a technical noun has more than 3 words, write it in full the first time (rule 2.2). After that, you can use a shorter form or an abbreviation. (advisory)
 - Do not connect more than 3 words with hyphens to make one noun (rule 2.2). (script check)
 
@@ -44,7 +48,7 @@ Always replace these words. This list gives no replacement words, because a tabl
 ## When you write a sentence
 
 - Write short and clear sentences (rule 4.1). Give the action or the fact, not a general statement. (advisory)
-- Each sentence has a maximum of 25 words. This limit is applicable to all text. (script check)
+- Write a maximum of 25 words in each sentence. This limit is applicable to all text. (script check)
 - Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)
 - Use the same terms and the same words for the same type of step (rule 9.4). (advisory)
 - Write each glossary term in the same case as the glossary (rule 6.2). A capital letter at the start of a sentence is permitted. A word in your text can have the letters of a glossary term but a different meaning. Then do not write that word in a different case to show the different meaning. Write a different word, because the agent reads the glossary meaning in each case of the word. A noun group with a glossary term, for example "<Term> branch", is a different technical noun. Obey "When a word is not in the base list or in the glossary" in `technical-terms.md` for it. Exception: you can write the base-list term "rule" in lowercase with its base-list meaning, also when the glossary has the term "Rule". When you write "rule" in lowercase, read "When you add a word to the base list" in `technical-terms.md` for the two meanings.
@@ -76,7 +80,7 @@ Always replace these words. This list gives no replacement words, because a tabl
   - A number, or a number with its unit.
   - An abbreviation, or an identifier with letters and digits.
   - Quoted text. In Agent instructions, a code span, a file path, a command, and a URL are quoted text.
-  - A title, a heading, or a label.
+  - A title.
 - A name counts as its number of words, for example "Claude Code" counts as 2 words. This rule is stricter than rule 8.6, which counts a name as 1 word.
 - A hyphenated word counts as 1 word (rule 8.7).
 - Each word of a multi-word noun counts as 1 word. For example, "pull request" counts as 2 words.

@@ -1,12 +1,16 @@
 # Rules for a Skill
 
-These rules come from the Agent Skills specification at https://agentskills.io/specification. Obey them only for a Skill that you write or edit. They are not applicable to other files with frontmatter, for example subagent definitions. Each rule starts with its tier. If `SKILL.md` of this skill is not in your context window, read it before you use this file. It defines the terms, the tiers, and the end-of-run report.
+These rules come from the Agent Skills specification at https://agentskills.io/specification. Each rule starts with its tier.
+
+## Before you use this file
+
+Obey the rules of this file only for a Skill that you write or edit. These rules are not applicable to other files with frontmatter, for example subagent definitions. If `SKILL.md` of this skill is not in your context window, read it before you use this file. `SKILL.md` defines the terms, the tiers, and the end-of-run report.
 
 ## When you write the folder and the frontmatter
 
 Select the folder first, as the section "When you select the folder for the Skill" tells you.
 
-A Manual-only Skill is a Skill that an agent loads only when the user calls it by name. OpenCode 2 is version 2 of OpenCode.
+A Manual-only Skill is a Skill that an agent loads only when the user calls the Skill by name. OpenCode 2 is version 2 of OpenCode.
 
 - Tier 1: A Skill is a folder with a `SKILL.md` file. The file starts with YAML frontmatter, and Markdown text comes after it. (script check)
 - Tier 1: Give `name` 1 to 64 characters: lowercase letters, digits, and hyphens. Put no hyphen at the start or at the end, and no `--`. Use the folder name. If the user gives a name that does not obey this rule, correct the name. Give the change in the Summary part. (script check)

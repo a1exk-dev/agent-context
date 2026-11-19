@@ -68,7 +68,7 @@ In each round, start 3 new reviewer subagents for the sections in the `Changes:`
 
 The pointer targets are the files that the pointers in the files of the review target identify. The glossary and `MEMORY.md` are not pointer targets. A reviewer reviews them only when the job changed them, through the `Changes:` line. Each reviewer reads the prompt in this file to know the requirements for its reports. A reviewer does only the review that the author gave to it.
 
-Copy this prompt for each reviewer. Replace only the placeholders. Do not change the report requirements. Keep the lines for the reviewer that you start. Remove the label in angle brackets from these lines. Remove the lines for the other reviewers. In the write job, also remove the lines for the loading reviewer in the edit job. Give the same `Review target:` line, `Changes:` line, and pointer targets to each reviewer.
+Copy this prompt for each reviewer. Replace only the placeholders. Do not change the report requirements. Keep the lines for the reviewer that you start. Remove the label in angle brackets from these lines. Remove the lines for the other reviewers. In the write job, also remove the 2 prompt lines that start with "For a section that the author moved" and "Also give a finding for each text that the author moved". Give the same `Review target:` line, `Changes:` line, and pointer targets to each reviewer.
 
 ```text
 You are the <name> reviewer for Agent instructions: files that an agent reads as instructions.
@@ -97,7 +97,7 @@ Review only the files in the Changes line.
 The check script findings give the pointer list: each sentence that names a file path, with its line and heading.
 Before you give a finding, read each file in the Pointer targets line and each file that a sentence in the pointer list names.
 Give no finding for a problem that one of these files already solves.
-Read the glossary only to examine a word that you found for a rule. When the glossary has that word with its meaning in the text, give no finding for the word.
+Read the glossary only to examine a word that you found for a rule. When the glossary gives that word, and the glossary meaning is the meaning of the word in the text, give no finding for the word.
 Do not compare the text with the glossary or with MEMORY.md. Give no finding that only the glossary or MEMORY.md causes.
 Read each file of the review target that is not in the Changes line only for context. Also read each pointer target that is not in the Changes line only for context. Read each file that is not Markdown in the folder of a Skill only for context. Give no finding for these files.
 In each tool call that reads a file, give the absolute path of that file. Do not use `cd`, `*`, or a loop to read files, because the tool calls must show each file that you read.
@@ -190,43 +190,15 @@ Give one line for each finding in this form:
 Give only these lines. Do not give the work to a subagent.
 ```
 
-### When a reader step does not obey the instruction
-
-Do this vote for each typical-task report whose closed list has one or more "no" answers. The reader test gives the closed list. Do the vote in each job, also for a small change. Also do the vote when you expect to correct no text.
-
-1. Start 2 new, read-only confirmer subagents for the report. Wait for the reports of the 2 confirmers, also when the first confirmer answers "yes" for each step. A round is complete only after each check gives its report. A reader-test round has a maximum of 4 confirmers: 2 for each typical-task report.
-2. Give each confirmer the path of the saved closed list, the task, and the paths of the files of the readers. Also give each step with "no" and its quote. Do not give your cause for the "no".
-3. Start the confirmers as "When you do a round" tells you. The confirmers are checks of the same reader-test round. Start them in groups of 3.
-4. A wrong step is confirmed when one or more of its confirmers answer "yes".
-
-Copy this prompt for each confirmer of a reader step. Replace only the placeholders.
-
-```text
-Check class: confirmer
-This task is read-only. Only read files. Do not edit, make, move, or delete files.
-Do not run commands that change files, Git data, or external services.
-
-Instruction files: <the absolute paths of the Instruction files line of the reader prompt>
-Project folder: <absolute path>
-Task: <the task text>
-Report: <absolute path of the saved closed list>
-Steps: <for each step with "no" in the closed list of one reader report: a number, the step in quotation marks, and its quote in quotation marks>
-
-Read the instruction files from the disk.
-For each step, decide whether the step does not obey its quote from the instruction for this task.
-Give one line for each step in this form:
-<number>. <"yes" if the step does not obey its quote, or "no">: <one sentence that gives the cause>
-Give only these lines. Do not give the work to a subagent.
-```
-
 ### After the last review round
 
 Do this check on each correction after review round 2. When you did 2 review rounds, also do it on each later correction. Examples are a correction after a reader-test round or after a failed output test.
 
-1. Run the check script on the full file of each changed file, as "When you run the check script" in `SKILL.md` tells you.
-2. Correct each script finding in the text that the corrections changed. After each correction, do items 1 and 2 again.
-3. Send a message that gives the condition of each changed pointer in quotation marks. If a pointer has no condition, add the condition to that sentence.
-4. Add a warning that tells that no reviewer examined the text that these corrections changed.
+1. If a changed pointer has no condition, add the condition to that pointer.
+2. Run the check script on the full file of each changed file, as "When you run the check script" in `SKILL.md` tells you.
+3. Correct each script finding in the text that the corrections changed. After each correction, do items 2 and 3 again.
+4. Send a message that gives the condition of each changed pointer in quotation marks.
+5. Add a warning that tells that no reviewer examined the text that these corrections changed.
 
 ## After the self-check: the reader test
 
@@ -262,9 +234,9 @@ Do the reader test in each job, also for a small change. Also do the reader test
    - Do not use the quotes in the dropped list.
 9. The script finds 2 types of problems. A typical task has a problem when its report does not use a tested quote. The out-of-scope task has a problem when its report uses an added or changed line.
 10. For each typical-task report, write a closed list: each step, its quote, and "yes" or "no". Write "yes" when the step obeys its quote for the task. Save each closed list to a new file in `<round folder>/reader-round-<n>/`, as "When you save a file or run a command in a round" tells you. Start the file name with `closed-list-`. Write one line for each step in this form: `<number>. <yes or no>: "<step>" - "<quote>"`. For each report with one or more "no" answers, do the vote in "When a reader step does not obey the instruction".
-11. Do not change the instruction file until all readers and confirmers of the round give their reports. Then all checks of a round read the same text.
+11. Do not change a file of the readers until all readers and confirmers of the round give their reports. Then all checks of a round read the same text.
 12. Correct your text for each problem of the script and each confirmed wrong step. For each quote in the unclear list, correct your text or write a warning. An unclear part never starts a new reader-test round.
-13. A reader-test round passes when it has no problem of the script and no confirmed wrong step. If the round does not pass, do the test again after your correction. Do a maximum of 2 reader-test rounds. After reader-test round 2, do not correct the text for a problem of the script or a confirmed wrong step. Each of these problems stays open as a blocking problem.
+13. A reader-test round passes when it has no problem of the script and no confirmed wrong step. If the round does not pass, do items 15 and 16 after your correction. Then do the test again. Do a maximum of 2 reader-test rounds. After reader-test round 2, do not correct the text for a problem of the script or a confirmed wrong step. Each of these problems stays open as a blocking problem.
 14. If you cannot correct a problem without help from the user, the problem stays open as a blocking problem. Do not stop the reader test for a question to the user. Ask the question that "When a blocking problem stays open at a limit" gives.
 15. After a reader-test round, a correction can change text. If you did fewer than 2 review rounds, start the reviewers again for that text before the next reader-test round. This review round is one of the 2 review rounds.
 16. If you did 2 review rounds, do the check in "After the last review round". Then do the next reader-test round, if the limit permits it.
@@ -308,6 +280,35 @@ In each line of part 2 and part 3, use quotation marks only around the quote fro
 Give only these 3 parts. Write each step and each quote from the instruction on a different line. Put long text, for example a prompt, at the end of part 1.
 ```
 
+### When a reader step does not obey the instruction
+
+Do this vote for each typical-task report whose closed list has one or more "no" answers. The reader test gives the closed list. Do the vote in each job, also for a small change. Also do the vote when you expect to correct no text.
+
+1. In the confirmer prompt below, give the path of the saved closed list, the task, and the paths of the files of the readers. Also give each step with "no" and its quote. Do not give your cause for the "no".
+2. Start 2 new, read-only confirmer subagents for the report, as "When you do a round" tells you. The confirmers are checks of the same reader-test round. Start them in groups of 3. A reader-test round has a maximum of 4 confirmers: 2 for each typical-task report.
+3. Wait for the reports of the 2 confirmers, also when the first confirmer answers "yes" for each step. A round is complete only after each check gives its report.
+4. A wrong step is confirmed when one or more of its confirmers answer "yes".
+
+Copy this prompt for each confirmer of a reader step. Replace only the placeholders.
+
+```text
+Check class: confirmer
+This task is read-only. Only read files. Do not edit, make, move, or delete files.
+Do not run commands that change files, Git data, or external services.
+
+Instruction files: <the absolute paths of the Instruction files line of the reader prompt>
+Project folder: <absolute path>
+Task: <the task text>
+Report: <absolute path of the saved closed list>
+Steps: <for each step with "no" in the closed list of one reader report: a number, the step in quotation marks, and its quote in quotation marks>
+
+Read the instruction files from the disk.
+For each step, decide whether the step does not obey its quote from the instruction for this task.
+Give one line for each step in this form:
+<number>. <"yes" if the step does not obey its quote, or "no">: <one sentence that gives the cause>
+Give only these lines. Do not give the work to a subagent.
+```
+
 ## After the reader test: the output tests and the manual checks
 
 Start these steps only after a reader-test round passes. An output test or a manual check costs more than a reader test. Run these tests only on text that a reader understands.
@@ -344,12 +345,13 @@ Do these steps for each run of a manual check:
    tmux new-session -d -s <session name> -x 200 -y 50 -c <copy folder> '<agent command>'
    ```
 
-3. Send the request of the check with `tmux send-keys -t <session name> '<request>' Enter`. Send each answer of the check in the same way.
-4. Before each answer, read the screen with `tmux capture-pane -p -t <session name>`. Read the screen again until the agent asks a question or stops.
-5. Save the screen text of each question and of the end of the session to a new file in the round folder.
-6. Compare the result with each pass criterion of the check. When a pass criterion gives a file or Git data, examine the copy.
-7. Stop the session with `tmux kill-session -t <session name>`.
-8. Record the evidence: the check, the result of each pass criterion, and the path of the screen-text file. If the change has a pull request, add the evidence to the pull request. If not, give the evidence in the end-of-run report.
+3. Send the request of the check with `tmux send-keys -t <session name> '<request>' Enter`.
+4. Read the screen with `tmux capture-pane -p -t <session name>`. Read the screen again until the agent asks a question or stops.
+5. Save the screen text to the screen-text file in the round folder. At the first save, make a new file. At each later save, add the text to the end of that file.
+6. When the agent asks a question, send the answer of the check with `tmux send-keys -t <session name> '<answer>' Enter`. Then do step 4 again.
+7. Compare the result with each pass criterion of the check. When a pass criterion gives a file or Git data, examine the copy.
+8. Stop the session with `tmux kill-session -t <session name>`.
+9. Record the evidence: the check, the result of each pass criterion, and the path of the screen-text file. If the change has a pull request and the user gives approval, add the evidence to the pull request. In the other cases, give the evidence in the end-of-run report.
 
 ## When a blocking problem stays open at a limit
 
