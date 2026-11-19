@@ -30,7 +30,7 @@ Each bold term in this section is a technical noun in this skill. When a term is
 - **Loading rules** are the rules that a file must obey. If a file does not obey them, one of 3 results occurs. A platform does not load the file, a check gives an error, or the platform does not read all of the file.
 - The **loading reviewer**, the **ASD-STE100 reviewer**, and the **ISO 24495-1 reviewer** are the 3 reviewer subagents.
 - The **review target** is the Agent instructions that one self-check examines. For a Skill, the review target is the Markdown files in the folder of that Skill.
-- The **self-check** is the review of the full review target by one reviewer subagent of each class, in a maximum of 3 rounds.
+- The **self-check** is the review of the changed sections by one reviewer subagent of each class, in a maximum of 3 rounds.
 - The **reader test** is a dry run of 3 tasks by new reader subagents after the self-check.
 - In the edit job, the **changed part** is the text that the user wants to change. It also includes each line that you add. When you move a line of that text to a different section, the line stays in the changed part. Each other part of the file is an **unchanged part**.
 - An **extraction candidate** is a whole section of an unchanged part that the author recommends to move in the edit job. In the edit job, "When you recommend text to move" in `references/loading-rules.md` gives these sections.
