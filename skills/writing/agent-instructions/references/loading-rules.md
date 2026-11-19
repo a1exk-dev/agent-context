@@ -24,7 +24,7 @@ If you find no signal, or a signal does not agree with the request, speak to the
 
 Write only features that Codex, OpenCode, and Claude Code all read. This rule is also applicable when Claude Code is the only target, because the project can add a target platform later.
 
-- Do not write `.claude/rules/`, frontmatter that only Claude Code reads, or `AGENTS.override.md`. (blocking)
+- Do not write `.claude/rules/`, frontmatter that only Claude Code reads, or `AGENTS.override.md`. (script check)
 - When you write a Manual-only Skill, read "When you write the folder and the frontmatter" in `agent-skills-spec.md`. That section gives the exception for `disable-model-invocation`.
 - Write no `@path` line, but you can write the `@AGENTS.md` line in `CLAUDE.md`. (script check)
 - Write each pointer as a sentence that gives the file and the condition to read it. (blocking)
@@ -38,7 +38,7 @@ When the user tells you clearly to write a feature that only one platform reads,
 - When the write job has Claude Code and Codex or OpenCode as target platforms, put the text for all target platforms in `AGENTS.md`. `CLAUDE.md` then contains the `@AGENTS.md` line and only the lines that are only for Claude Code. (blocking)
 - When there is one target platform, write only the entry file of that platform. (blocking)
 - If the layout gives no copy of the text to a target platform, add a warning. (blocking)
-- Put Rule text in `AGENTS.md` or `CLAUDE.md`. Do not put it in `.claude/rules/`. (blocking)
+- Put Rule text in `AGENTS.md` or `CLAUDE.md`. Do not put it in `.claude/rules/`. (script check)
 
 ## When you examine the file size
 

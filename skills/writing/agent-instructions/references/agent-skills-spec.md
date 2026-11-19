@@ -8,13 +8,13 @@ Select the folder first, as the section "When you select the folder for the Skil
 
 A Manual-only Skill is a Skill that an agent loads only when the user calls it by name. OpenCode 2 is version 2 of OpenCode.
 
-- Tier 1: A Skill is a folder with a `SKILL.md` file. The file starts with YAML frontmatter, and Markdown text comes after it. (blocking)
+- Tier 1: A Skill is a folder with a `SKILL.md` file. The file starts with YAML frontmatter, and Markdown text comes after it. (script check)
 - Tier 1: Give `name` 1 to 64 characters: lowercase letters, digits, and hyphens. Put no hyphen at the start or at the end, and no `--`. Use the folder name. If the user gives a name that does not obey this rule, correct the name. Give the change in the Summary part. (script check)
 - Tier 1: Give `description` 1 to 1024 characters. (script check)
 - Tier 1: In the frontmatter, write no top-level field other than `name`, `description`, `license`, `compatibility`, `metadata`, and `allowed-tools`. Exception: in a Manual-only Skill, also write `disable-model-invocation: true`. (script check)
-- Tier 1: Give `compatibility` a maximum of 500 characters. Write each key and each value in `metadata` as text. (blocking)
-- Tier 1: Write frontmatter that the YAML parser reads with no errors. Put a value that contains `: ` in quotation marks. You can also start the value on the next line after `|` or `>`. (blocking)
-- Tier 1: Write only `name` and `description` in the frontmatter. Only these two fields operate on Codex, OpenCode, and Claude Code. A field that is not in the list of permitted fields, for example `disable-model-invocation`, also gives an error in `skills-ref validate`. Exception: in a Manual-only Skill, also write `disable-model-invocation: true`, because Claude Code and OpenCode 2 read it. (blocking)
+- Tier 1: Give `compatibility` a maximum of 500 characters. Write each key and each value in `metadata` as text. (script check)
+- Tier 1: Write frontmatter that the YAML parser reads with no errors. Put a value that contains `: ` in quotation marks. You can also start the value on the next line after `|` or `>`. (script check)
+- Tier 1: Write only `name` and `description` in the frontmatter. Only these two fields operate on Codex, OpenCode, and Claude Code. A field that is not in the list of permitted fields, for example `disable-model-invocation`, also gives an error in `skills-ref validate`. Exception: in a Manual-only Skill, also write `disable-model-invocation: true`, because Claude Code and OpenCode 2 read it. (script check)
 - Tier 1: When the user tells you clearly to write `license`, `compatibility`, `metadata`, or `allowed-tools`, write it. Then add a warning that gives the platforms that do not read the field. (advisory)
 - Tier 1: If the user tells you to write a field that is not permitted, do not write it. Add a warning that gives the field and the error. (advisory)
 - Tier 4: Write `description` as one line in quotation marks. Some checks read only the first line of a value. In the value, write `\"` for each double quotation mark. (advisory)
@@ -32,10 +32,10 @@ policy:
   allow_implicit_invocation: true
 ```
 
-- Tier 4: In the write job, write `agents/openai.yaml` for each Skill that you write. (blocking)
+- Tier 4: In the write job, write `agents/openai.yaml` for each Skill that you write. (script check)
 - Tier 4: In the edit job, when the Skill has no `agents/openai.yaml` and is not a Manual-only Skill, do not write the file. Add a warning that recommends the file. In the warning, give the full text of the file. (advisory)
-- Tier 1: In the edit job, when a Manual-only Skill has no `agents/openai.yaml`, write the file, because Codex does not read `disable-model-invocation`. (blocking)
-- Tier 1: In a Manual-only Skill, write `allow_implicit_invocation: false` under `policy:`, because Codex does not read `disable-model-invocation` in the frontmatter. In each other Skill, write `allow_implicit_invocation: true`. (blocking)
+- Tier 1: In the edit job, when a Manual-only Skill has no `agents/openai.yaml`, write the file, because Codex does not read `disable-model-invocation`. (script check)
+- Tier 1: In a Manual-only Skill, write `allow_implicit_invocation: false` under `policy:`, because Codex does not read `disable-model-invocation` in the frontmatter. In each other Skill, write `allow_implicit_invocation: true`. (script check)
 - Tier 4: Write `display_name`, `short_description`, and `default_prompt` under `interface:`. Write no other field under `interface:`. (advisory)
 - Tier 4: Put each value that is not `true` or `false` in double quotation marks. Do not put a key in quotation marks. (advisory)
 - Tier 4: Give `short_description` 25 to 64 characters. (advisory)
@@ -45,7 +45,7 @@ policy:
 
 An agent reads the description to know when to load the Skill. When the user gives text for the description, keep its meaning and write it by these rules.
 
-- Tier 1: Write the condition first: "When ..., use this skill." Do not write "Use this skill when ...". (blocking)
+- Tier 1: Write the condition first: "When ..., use this skill." Do not write "Use this skill when ...". (script check)
 - Tier 4: Include a minimum of one user phrase in quotation marks, for example "draft a skill". The YAML quotation marks around the value do not show a user phrase. A code span also does not show a user phrase. The word rules are not applicable to quoted text, and it counts as 1 word. (advisory)
 - Tier 4: Write each condition where the Skill is applicable. Include conditions where the user does not tell the subject of the task. An example is "the agent keeps ignoring ...". Do not write a condition where the Skill is not applicable. (advisory)
 - Tier 4: Give the files and folders that make the Skill applicable, for example the files that its tasks change. (advisory)

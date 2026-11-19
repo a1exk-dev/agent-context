@@ -35,7 +35,7 @@ Always replace these words. This list gives no replacement words, because a tabl
 ## When you write a verb
 
 - A past participle after "be", "become", or "stay" is an adjective (rule 3.3). It is not the passive voice. An example is "The file is closed."
-- Do not write "can", "must", or "will" together with "be" and a past participle (rule 3.4). (blocking)
+- Do not write "can", "must", or "will" together with "be" and a past participle (rule 3.4). (script check)
 - Use the active voice (rule 3.6). You can use the passive voice only when you do not know the actor. "You" or "we" can be the subject. (blocking)
 - The only modal verbs are CAN, CANNOT, MUST, and WILL. CAN also shows that the reader is permitted to do an action. Change a "should" or a "may" to MUST, CAN, or a condition that you write in the sentence. (script check)
 - Do not use RFC 2119 "SHOULD" or "MAY". They add a second system of meanings, and agents read that system differently. Also, a self-check cannot know which "should" is from RFC 2119 and which "should" to replace. (script check)

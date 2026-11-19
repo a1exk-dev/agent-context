@@ -153,6 +153,8 @@ function main(argv: string[]): number {
         }
         findings.push(...checkText(path, source, rules));
         findings.push(...checkLoading(path, source, args.project));
+        findings.push(...checkSkill(path, source));
+        findings.push(...checkPlatformFile(path, source));
         const plain = checkPlainLanguage(path, source, args.project);
         findings.push(...plain.findings);
         pointers.push(...plain.pointers);
@@ -255,7 +257,47 @@ const wordRules: WordRule[] = [
             return `The noun "${noun}" has ${parts.length} words joined by hyphens.`;
         },
     },
+    {
+        rule: "3.4",
+        heading: "When you write a verb",
+        pattern:
+            /\b(?:can|cannot|must|will)(?:\s+not)?(?:\s+(?:also|only|then|still|always|never|now|first|again|\p{L}+ly))?\s+be(?:\s+\p{L}+ly)?\s+(\p{L}+)\b/giu,
+        problem: (words, _atStart, found) =>
+            isParticiple(found[1])
+                ? `The sentence has "${words}": "can", "must", or "will" with "be" and a past participle.`
+                : null,
+    },
 ];
+
+// The past participles that do not stop with "ed", and the words that stop
+// with "ed" but are not past participles.
+const irregularParticiples = new Set(
+    (
+        "begun bent bought bound broken brought built caught chosen cut dealt done drawn driven " +
+        "eaten fallen fed felt forbidden forgotten found frozen given got gotten grown held hidden " +
+        "hit kept known laid led left lent let lit lost made meant met overridden overwritten paid " +
+        "proven put read rebuilt redone rewritten ridden risen run said seen sent set shaken shown " +
+        "shut sold sought spent split spoken spread stolen struck stuck taken taught thought thrown " +
+        "told torn understood undone woken won worn written"
+    ).split(" "),
+);
+const notParticiples = new Set([
+    "hundred",
+    "naked",
+    "need",
+    "sacred",
+    "seed",
+    "speed",
+    "wicked",
+]);
+
+function isParticiple(word: string) {
+    const lower = word.toLowerCase();
+    if (irregularParticiples.has(lower)) return true;
+    return (
+        lower.length > 3 && lower.endsWith("ed") && !notParticiples.has(lower)
+    );
+}
 
 // Gives the rules that use the glossary terms, their `_Avoid_` words, and the
 // base list of technical-terms.md.
@@ -781,6 +823,323 @@ function isManualOnly(path: string, fields: Map<string, Field>) {
     return /^policy:[ \t]*\r?\n(?:[ \t]+.*\r?\n)*?[ \t]+allow_implicit_invocation:[ \t]*false[ \t]*$/m.test(
         readFileSync(openai, "utf8"),
     );
+}
+
+// The loading rule for a file that only one platform reads: a file in
+// `.claude/rules/` or an `AGENTS.override.md` file.
+function checkPlatformFile(path: string, source: string): Finding[] {
+    const folders = resolve(path).split(sep);
+    const problem =
+        basename(path) === "AGENTS.override.md"
+            ? 'The file is "AGENTS.override.md". Only Codex reads this file. Put the text in AGENTS.md.'
+            : folders.some(
+                    (folder, i) =>
+                        folder === ".claude" && folders[i + 1] === "rules",
+                )
+              ? 'The file is in ".claude/rules/". Only Claude Code reads this folder. Put the text in AGENTS.md or CLAUDE.md.'
+              : null;
+    if (problem === null) return [];
+    return [
+        {
+            reviewer: "loading",
+            rule: null,
+            ruleFile: "references/loading-rules.md",
+            heading: "When you select a feature",
+            text: source.split(/\r?\n/)[0],
+            path,
+            line: 1,
+            problem,
+        },
+    ];
+}
+
+// The rules of the Agent Skills specification and of `agents/openai.yaml`
+// that `checkLoading` does not examine: the frontmatter form, the YAML, the
+// fields for some platforms, the description condition, and the Codex file.
+function checkSkill(path: string, source: string): Finding[] {
+    if (basename(path) !== "SKILL.md") return [];
+    const findings: Finding[] = [];
+    const lines = source.split(/\r?\n/);
+    const finding = (
+        heading: string,
+        problem: string,
+        text = lines[0],
+        line = 1,
+        at = path,
+    ) =>
+        findings.push({
+            reviewer: "loading",
+            rule: null,
+            ruleFile: "references/agent-skills-spec.md",
+            heading,
+            text,
+            path: at,
+            line,
+            problem,
+        });
+    const front = (problem: string, index: number) =>
+        finding(
+            "When you write the folder and the frontmatter",
+            problem,
+            lines[index],
+            index + 1,
+        );
+    const end = lines[0] === "---" ? lines.indexOf("---", 1) : -1;
+    if (lines[0] !== "---")
+        front("SKILL.md does not start with YAML frontmatter.", 0);
+    else if (end < 0) front('The frontmatter has no closing "---" line.', 0);
+    else {
+        if (
+            lines
+                .slice(end + 1)
+                .join("")
+                .trim() === ""
+        )
+            front("SKILL.md has no Markdown text after the frontmatter.", 0);
+        for (const [index, problem] of yamlErrors(lines, end))
+            front(problem, index);
+    }
+    const fields = frontmatter(source);
+    const compatibility = fields.get("compatibility");
+    const length = compatibility ? [...compatibility.value].length : 0;
+    if (compatibility && length > 500)
+        front(
+            `The compatibility value has ${length} characters. The limit is 500 characters.`,
+            compatibility.line - 1,
+        );
+    const metadata = fields.get("metadata");
+    if (metadata)
+        for (const [index, problem] of metadataErrors(lines, metadata.line - 1))
+            front(problem, index);
+    for (const [key, at] of fields)
+        if (
+            ["license", "compatibility", "metadata", "allowed-tools"].includes(
+                key,
+            )
+        )
+            front(
+                `The frontmatter field "${key}" operates only on some platforms. Write only "name" and "description", and "disable-model-invocation: true" in a Manual-only Skill.`,
+                at.line - 1,
+            );
+    const description = fields.get("description");
+    if (description && description.value !== "") {
+        const condition =
+            'Write the condition first: "When ..., use this skill."';
+        const problem = /\buse this skill when\b/i.test(description.value)
+            ? `The description has "Use this skill when". ${condition}`
+            : !/^(?:when|whenever|before|after|if|while|until|each time)\b/i.test(
+                    description.value,
+                )
+              ? `The description does not start with its condition. ${condition}`
+              : null;
+        if (problem !== null)
+            finding(
+                "When you write the description",
+                problem,
+                description.text,
+                description.line,
+            );
+    }
+    const codex = (problem: string, text: string, line: number, at: string) =>
+        finding(
+            "When you write or edit a Skill: the agents/openai.yaml file",
+            problem,
+            text,
+            line,
+            at,
+        );
+    const openai = join(dirname(path), "agents", "openai.yaml");
+    if (!isFile(openai)) {
+        codex(
+            "The Skill has no agents/openai.yaml. Write the file in the write job, and in each job for a Manual-only Skill. In the edit job for a different Skill, give a warning that recommends the file.",
+            lines[0],
+            1,
+            path,
+        );
+        return findings;
+    }
+    const codexLines = readFileSync(openai, "utf8").split(/\r?\n/);
+    const manualOnly = fields.get("disable-model-invocation")?.value === "true";
+    const wanted = manualOnly ? "false" : "true";
+    const policy = codexLines.indexOf("policy:");
+    let found = -1;
+    for (
+        let i = policy + 1;
+        policy >= 0 && /^(\s|$)/.test(codexLines[i] ?? "x");
+        i++
+    )
+        if (/^\s+allow_implicit_invocation:/.test(codexLines[i])) found = i;
+    if (found < 0)
+        codex(
+            'agents/openai.yaml has no "allow_implicit_invocation" under "policy:".',
+            codexLines[0],
+            1,
+            openai,
+        );
+    else if (
+        codexLines[found]
+            .replace(/\s#.*$/, "")
+            .split(":")[1]
+            .trim() !== wanted
+    )
+        codex(
+            manualOnly
+                ? 'In a Manual-only Skill, write "allow_implicit_invocation: false" under "policy:".'
+                : 'In a Skill that is not a Manual-only Skill, write "allow_implicit_invocation: true" under "policy:".',
+            codexLines[found],
+            found + 1,
+            openai,
+        );
+    return findings;
+}
+
+// Gives the YAML errors of the frontmatter lines 1 to `end` - 1, as [index of
+// the line, problem]. It finds the errors that a YAML parser gives for the
+// forms of a frontmatter: a "key: value" line, a quoted value, a plain value,
+// a block scalar, and an indented block under a key with no value.
+function yamlErrors(lines: string[], end: number): [number, string][] {
+    const errors: [number, string][] = [];
+    const keys = new Set<string>();
+    const colon = (key: string) =>
+        `The value of "${key}" has ":" before a space or at the end of the line. Put the value in quotation marks.`;
+    // The key of the plain value that the indented lines continue, or null
+    // when the indented lines are a block.
+    let plain: string | null = null;
+    for (let i = 1; i < end; i++) {
+        const line = lines[i];
+        if (line.trim() === "" || /^\s*#/.test(line)) continue;
+        if (/^\s/.test(line)) {
+            if (plain !== null && /:(\s|$)/.test(line.replace(/\s#.*$/, "")))
+                errors.push([i, colon(plain)]);
+            continue;
+        }
+        plain = null;
+        const match = /^([^\s#:][^:]*):(?:\s+(.*))?$/.exec(line);
+        if (!match) {
+            errors.push([i, 'The line is not a "key: value" line.']);
+            continue;
+        }
+        const key = match[1];
+        if (keys.has(key))
+            errors.push([i, `The frontmatter has the key "${key}" two times.`]);
+        keys.add(key);
+        const value = (match[2] ?? "").trim();
+        if (
+            value === "" ||
+            value.startsWith("#") ||
+            /^[|>][+-]?\d?$/.test(value)
+        )
+            continue;
+        const quote = value[0];
+        if (quote === '"' || quote === "'") {
+            let text = value.slice(1);
+            let close = closingQuote(text, quote);
+            let last = i;
+            while (
+                close < 0 &&
+                last + 1 < end &&
+                /^(\s|$)/.test(lines[last + 1])
+            ) {
+                last++;
+                text += `\n${lines[last]}`;
+                close = closingQuote(text, quote);
+            }
+            if (close < 0) {
+                errors.push([
+                    i,
+                    `The value of "${key}" has no closing quotation mark.`,
+                ]);
+                continue;
+            }
+            i = last;
+            if (!/^\s*(?:#.*)?$/.test(text.slice(close + 1)))
+                errors.push([
+                    i,
+                    `The value of "${key}" has text after its closing quotation mark.`,
+                ]);
+            if (quote === '"')
+                // The escape characters of a YAML string in double quotation marks.
+                // cspell:ignore abtnvfre
+                for (const sequence of text.slice(0, close).matchAll(/\\(.)/gs))
+                    if (!/[0abtnvfre "/\\N_LPxuU\t\n]/.test(sequence[1]))
+                        errors.push([
+                            i,
+                            `The value of "${key}" has the escape "\\${sequence[1]}", which YAML does not read.`,
+                        ]);
+            continue;
+        }
+        if (/^[[\]{}*&!%@`,]/.test(value)) {
+            errors.push([
+                i,
+                `The value of "${key}" starts with "${value[0]}". Put the value in quotation marks.`,
+            ]);
+            continue;
+        }
+        if (/:(\s|$)/.test(value.replace(/\s#.*$/, "")))
+            errors.push([i, colon(key)]);
+        plain = key;
+    }
+    return errors;
+}
+
+// Gives the index of the closing quotation mark of a YAML string, or -1.
+// `text` starts after the opening quotation mark.
+function closingQuote(text: string, quote: string) {
+    for (let k = 0; k < text.length; k++) {
+        if (quote === '"' && text[k] === "\\") k++;
+        else if (text[k] === quote) {
+            if (quote === "'" && text[k + 1] === "'") k++;
+            else return k;
+        }
+    }
+    return -1;
+}
+
+// The YAML values that a parser does not read as text.
+const notText =
+    /^(?:~|null|Null|NULL|true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO|on|On|ON|off|Off|OFF|[-+]?\d[\d_]*(?:\.\d*)?(?:[eE][-+]?\d+)?|[-+]?\.\d+(?:[eE][-+]?\d+)?|0x[0-9a-fA-F]+|0o[0-7]+|[-+]?\.(?:inf|Inf|INF)|\.(?:nan|NaN|NAN)|[[{&*!].*)?$/;
+
+// Gives each key and value of the `metadata` field at line `start` that is
+// not text, as [index of the line, problem].
+function metadataErrors(lines: string[], start: number): [number, string][] {
+    const errors: [number, string][] = [];
+    const inline = lines[start].slice(lines[start].indexOf(":") + 1).trim();
+    if (inline !== "" && !inline.startsWith("#"))
+        return [
+            [
+                start,
+                "The metadata value is not a map of text keys and text values.",
+            ],
+        ];
+    let indent = -1;
+    for (let i = start + 1; i < lines.length && /^(\s|$)/.test(lines[i]); i++) {
+        const line = lines[i];
+        if (line.trim() === "" || line.trim().startsWith("#")) continue;
+        const depth = line.search(/\S/);
+        if (indent < 0) indent = depth;
+        if (depth > indent) continue;
+        const match = /^\s*([^:]+):(?:\s+(.*))?$/.exec(line);
+        if (!match) {
+            errors.push([
+                i,
+                "The metadata value is not a map of text keys and text values.",
+            ]);
+            continue;
+        }
+        const key = match[1].trim();
+        const value = (match[2] ?? "").replace(/\s#.*$/, "").trim();
+        if (notText.test(key))
+            errors.push([
+                i,
+                `The key "${key}" in metadata is not text. Put it in quotation marks.`,
+            ]);
+        else if (notText.test(value))
+            errors.push([
+                i,
+                `The value of "${key}" in metadata is not text. Put it in quotation marks.`,
+            ]);
+    }
+    return errors;
 }
 
 // Gives the total file size of the entry files in each folder from the
