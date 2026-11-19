@@ -27,9 +27,6 @@ Write only features that Codex, OpenCode, and Claude Code all read. This rule is
 - Do not write `.claude/rules/`, frontmatter that only Claude Code reads, or `AGENTS.override.md`. (script check)
 - When you write a Manual-only Skill, read "When you write the folder and the frontmatter" in `agent-skills-spec.md`. That section gives the exception for `disable-model-invocation`.
 - Write no `@path` line, but you can write the `@AGENTS.md` line in `CLAUDE.md`. (script check)
-- Write each pointer as a sentence that gives the file and the condition to read it. (blocking)
-- When the heading of a pointer gives the condition, also put the condition in the pointer sentence. (blocking)
-- Put a new pointer in a section whose heading gives its condition. If no heading gives the condition, add a heading. A topic heading, for example "Tests", gives no condition. This rule is also applicable to a pointer whose condition you change. (blocking)
 
 When the user tells you clearly to write a feature that only one platform reads, write it. This rule is also applicable to the items in the list above. Put an `@path` line in `CLAUDE.md` after the `@AGENTS.md` line. Then add a warning. The warning gives the platforms that do not read the feature and the alternative that all three platforms read. For an `@path` line in `CLAUDE.md`, the alternative is a pointer sentence in `AGENTS.md`. If `AGENTS.md` has a pointer to the same file, the alternative is a change to the condition of that pointer. When the user wants the file in each session, use the condition "At the start of each session". When two rules give a warning for the same feature, write one warning.
 
@@ -37,7 +34,7 @@ When the user tells you clearly to write a feature that only one platform reads,
 
 - When the write job has Claude Code and Codex or OpenCode as target platforms, put the text for all target platforms in `AGENTS.md`. `CLAUDE.md` then contains the `@AGENTS.md` line and only the lines that are only for Claude Code. (blocking)
 - When there is one target platform, write only the entry file of that platform. (blocking)
-- If the layout gives no copy of the text to a target platform, add a warning. (blocking)
+- If the layout gives no copy of the text to a target platform, add a warning. (advisory)
 - Put Rule text in `AGENTS.md` or `CLAUDE.md`. Do not put it in `.claude/rules/`. (script check)
 
 ## When you examine the file size
@@ -69,7 +66,7 @@ Move text to reference files from a new `SKILL.md` and from new entry-file text.
 3. Put a reference file of a Skill in `<skill>/references/<name>.md`, one level below the Skill folder. Put a reference file of an entry file in `docs/agents/<name>.md`. If the project keeps these files in a different folder, use that folder. (advisory)
 4. Write each file name in lowercase words with hyphens. The words give the subject of the file. (advisory)
 5. Make one reference file for each condition that tells the agent to read a file. Put the text that the agent reads under the same condition in one file. When the user gives rules under one condition, keep all these rules in one file. If the project has a reference file for that condition, add the text to that file. (advisory)
-6. Write one pointer sentence for each reference file, as "When you select a feature" tells you. The sentence gives the condition to read the file. (advisory)
+6. Write one pointer sentence for each reference file, as "When you put the text in sections and lists" in `plain-language-checks.md` tells you. The sentence gives the condition to read the file. (advisory)
 
 After you move the text, examine the file size. If the file is more than a limit in "When you examine the file size", move more sections that have a specified condition. Move the largest section first. When the file is not more than each limit, stop. If the file is still more than a limit, add a warning. (advisory)
 
@@ -82,8 +79,8 @@ Do not move text from a Rule. Items 2 and 3 in this section are tier 1. The othe
    - Move only whole sections that have a specified condition. A whole section includes the sections under its heading. (advisory)
    - Move the largest section first. When the file is not more than each limit, stop. (advisory)
    - Select the reference file and its name as "When the write job makes a SKILL.md or entry-file text" tells you. (advisory)
-   - The heading of the section moves with the section. In its old place, write a heading that gives the condition. Under that heading, write the pointer sentence as "When you select a feature" tells you. Write no other text in the old place, also when a finding is about the moved section. (blocking)
-   - Do not change the text of a moved section. Its new pointer is in the changed part. Its text is not in the changed part. (blocking)
+   - The heading of the section moves with the section. In its old place, write a heading that gives the condition. Under that heading, write the pointer sentence as "When you put the text in sections and lists" in `plain-language-checks.md` tells you. Write no other text in the old place, also when a finding is about the moved section. (blocking)
+   - Do not change the text of a moved section. Its new pointer is in the changed part. Its text is not in the changed part. (advisory)
    - Put each finding about the text of a moved section in a warning.
 3. If the file is still more than a limit, add a warning.
 

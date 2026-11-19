@@ -33,7 +33,7 @@ policy:
 ```
 
 - Tier 4: In the write job, write `agents/openai.yaml` for each Skill that you write. (script check)
-- Tier 4: In the edit job, when the Skill has no `agents/openai.yaml` and is not a Manual-only Skill, do not write the file. Add a warning that recommends the file. In the warning, give the full text of the file. (advisory)
+- Tier 4: In the edit job, when the Skill has no `agents/openai.yaml` and is not a Manual-only Skill, do not write the file. Add a warning that recommends the file. In the warning, give the full text of the file. The check script also reports the missing file. Reject that script finding with this warning. (advisory)
 - Tier 1: In the edit job, when a Manual-only Skill has no `agents/openai.yaml`, write the file, because Codex does not read `disable-model-invocation`. (script check)
 - Tier 1: In a Manual-only Skill, write `allow_implicit_invocation: false` under `policy:`, because Codex does not read `disable-model-invocation` in the frontmatter. In each other Skill, write `allow_implicit_invocation: true`. (script check)
 - Tier 4: Write `display_name`, `short_description`, and `default_prompt` under `interface:`. Write no other field under `interface:`. (advisory)

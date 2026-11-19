@@ -410,7 +410,7 @@ const REPORT =
 // A reviewer report with one blocking finding whose quotes are in the copy
 // of the round and in the rule files.
 const BLOCKING_REPORT =
-    '- Rule: 3.6 "Use the active voice (rule 3.6)."\n- Text: "Use pnpm."\n- Problem: The sentence is in the passive voice.\n- Correction: Use pnpm.\n';
+    '- Rule: 5.3 "Write each instruction in the imperative (rule 5.3)."\n- Text: "Use pnpm."\n- Problem: The sentence is not in the imperative.\n- Correction: Use pnpm.\n';
 // The closed lists of the 2 typical reader tasks.
 const CLOSED_YES = '1. yes: "Run make test." - "Run `make test`."\n';
 const CLOSED_NO = '1. no: "Run make test." - "Run `make test`."\n';

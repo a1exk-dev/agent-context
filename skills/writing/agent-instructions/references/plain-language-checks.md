@@ -26,7 +26,7 @@ The checks are in four groups. Each group agrees with one of the four principles
 ## When you put the text in sections and lists
 
 - Put procedure steps in the sequence of the task, with the necessary conditions first. (blocking)
-- In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. The heading of that section gives the condition where the rule is applicable, for example "Before a commit". A topic heading, for example "Branches", gives no condition. (blocking)
+- In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. In each file, put each new pointer in a section, also a pointer whose condition you change. The heading of that section gives the condition where the rule or the pointer is applicable, for example "Before a commit". If no heading gives that condition, add a heading. A topic heading, for example "Branches", gives no condition. (blocking)
 - In the glossary and `MEMORY.md`, copy the format of the entries that the file has. This rule replaces the heading rules of this section for these files. (advisory)
 - When you add a rule and no heading gives its condition, add a heading for the rule. Use the level of the other condition headings. If the file has only a level 1 heading, use level 2. Put the new section after the last section of the file. Put a new rule in a section after the last rule of that section. Do not change the headings of the other rules. (advisory)
 - Do not write the condition of the heading again in each rule of the section. A pointer sentence is different, because it gives its condition. (advisory)
@@ -34,7 +34,7 @@ The checks are in four groups. Each group agrees with one of the four principles
 - Use a numbered list for steps in a sequence. Use bullets for rules in no sequence. Use a table to compare items or to give reference data. Put each template and each command of more than one line in a code block. You can put a command of one line, a path, or a path pattern in a code span. (advisory)
 - In each other heading, give the condition or the topic of its section. (advisory)
 - Use no headings that are applicable to all subjects: "Notes", "Other", "Misc", and "General". (script check)
-- In each pointer, tell when to read its target. A pointer with no condition is a problem in the self-check. (blocking)
+- Write each pointer as a sentence that gives the file and the condition to read it. When the heading of a pointer gives the condition, also put the condition in the pointer sentence. A pointer with no condition is a problem in the self-check. (blocking)
 - In each pointer, give the path of its target. Words such as "that file" give no path. (blocking)
 - In each pointer, give the path of a file or a folder that exists. (script check)
 - When a pointer gives a heading of its target in quotation marks, give a heading that the target has. (script check)
@@ -46,12 +46,11 @@ The checks are in four groups. Each group agrees with one of the four principles
 - For words that the reader knows, and for clear, short sentences and paragraphs, obey the rules in `ste-rules.md`.
 - When the project has a glossary, use each project term with its meaning in that file. (blocking)
 - Do not use the word of a glossary term with a different meaning. This rule is also applicable when you write the word in lowercase letters. (blocking)
-- Use one term for each item: the project term, not a different word with the same meaning. (blocking)
 - Make sure that all parts of the file agree. When the file has a pointer, also make sure that the file agrees with the pointer target. When the project has a glossary, also make sure that the file agrees with the glossary. (advisory)
 - Use no images and no Mermaid diagrams. (script check)
 - Show a sequence or a structure as a numbered list or a table. You can also use a tree with indents in a code block. (advisory)
-- Use a neutral and direct tone. Write no text that tells the agent about a punishment or a reward. Write no text that tells the agent good things about itself. (blocking)
-- Do not tell the agent that it is an expert. Write a sentence about the work of the agent only when the sentence gives a correct fact. (blocking)
+- Use a neutral and direct tone. Write no text that tells the agent about a punishment or a reward. Write no text that tells the agent good things about itself. (advisory)
+- Do not tell the agent that it is an expert. Write a sentence about the work of the agent only when the sentence gives a correct fact. (advisory)
 
 ## When you test the text
 

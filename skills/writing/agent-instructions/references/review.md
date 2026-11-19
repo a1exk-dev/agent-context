@@ -105,7 +105,6 @@ Read the full text of each file only for context. Give no finding for text that 
 For a section that the author moved, the Changes line gives only its pointer. Give no finding for the words of that section.
 Use each rule in the rule files for the sections under review.
 Skip each rule that ends with "(script check)". The check script findings give the problems for these rules.
-<For the loading reviewer only:> Skip the rules about pointers and headings in "When you select a feature" in loading-rules.md.
 The ISO 24495-1 reviewer examines the conditions of the pointers and the headings.
 Write the file size of each file and its limit.
 Give a finding for each text to move in a section in the Changes line.
@@ -113,7 +112,6 @@ Also give a finding for each text that the author moved and that does not obey l
 <For the ISO 24495-1 reviewer only:> For each sentence in the pointer list that is a pointer, decide whether the heading and the sentence give the condition to read the target.
 <For the ISO 24495-1 reviewer only:> Also find each pointer that names no file, for example "that file".
 <For the ISO 24495-1 reviewer only:> In "When you select the text" in plain-language-checks.md, skip the rule about long text. The loading reviewer examines that rule.
-<For the ISO 24495-1 reviewer only:> In "When you select the words and the tone" in plain-language-checks.md, skip the rule about one term for each item. The ASD-STE100 reviewer examines that rule.
 
 For each Markdown file that you review, save one report as <report folder>/<file path>.md. <file path> is the path of the file in the project folder.
 For example, save the report of skills/x/SKILL.md as <report folder>/skills/x/SKILL.md.md.
@@ -151,11 +149,12 @@ Do not add other notes or questions.
 1. Each round examines only the sections in the `Changes:` line. In round 1 of the edit job, give each section of the changed part in the `Changes:` line. For a section that you moved, give only its pointer. Only the text of these sections is the changed text. The changed text of the write job is all text of each new file. The reviewers read the full files and the pointer targets only for context.
 2. Before you change a file of the round, run the report form of the check script once for each file in the round list. Run it as "When you run the check script" in `SKILL.md` tells you. Give the 3 reports of that file: `<round folder>/round-<n>/loading/<file path>.md`, `<round folder>/round-<n>/ste/<file path>.md`, and `<round folder>/round-<n>/iso/<file path>.md`. Do not give a report of a different file. In that command, write the full absolute path of the file under review and of each report file. Do not use `*`, because the command must show which reports the script examined. Also obey the items for a command in "When you save a file or run a command in a round". The script refuses a path with `$` or `*`. Use only the findings in the blocking list and the advisory list. Do not use the findings in the dropped list.
 3. For each reviewer with one or more reports in the confirm lists of the round, do the vote in "When a reviewer has blocking findings". The folder after `round-<n>/` in the path of a report gives its reviewer. Do not start confirmers for a reviewer that has no report in a confirm list. Before you get all confirmer reports of the round, do not correct a file.
-4. The findings to use are the script findings and the confirmed blocking findings in the changed text. For each of these findings, correct your text, or reject the finding. Put each script finding about text that you cannot edit in a warning. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
+4. The findings to use are the script findings and the confirmed blocking findings in the changed text. For each of these findings, correct your text, or reject the finding. Record each sentence that you change for a confirmed blocking finding, with its rule. Item 5 uses this record in the next round. Put each script finding about text that you cannot edit in a warning. To reject a finding, give the rule that permits the text. An example is quoted text. Write each finding that you reject in a warning.
 5. Put each of these findings in a warning, with its rule. Do not correct the text of these findings:
    - Each finding in the advisory list.
    - Each finding about text that is not in the changed text.
    - Each finding about the words of a moved section, also a finding of the loading reviewer about the place of these words.
+   - Each new finding for a different rule on a sentence that you changed for a confirmed blocking finding in the previous round. This tie-break ranks no rules. It stops 2 rules from changing one sentence again in each round.
 6. A round passes when you accept no script finding and no confirmed blocking finding in the changed text. A finding that you reject with a warning does not make the round fail. A finding in a warning never makes a round fail. The self-check stops when a round passes, or after round 3.
 7. If the round does not pass, start all 3 reviewers again in the next round, but only for the sections that the previous round changed. Give these sections in the `Changes:` line. A section is changed when one or more of its lines changed. To find these sections, compare each file and its copy in the folder of the previous round, for example with `diff`. Do not find them from memory. A correction for one source can make the text incorrect for a different source.
 8. After round 3, put each finding that you did not correct in a warning with its rule. Then do the check in "After the last review round" on the text that the round 3 corrections changed.

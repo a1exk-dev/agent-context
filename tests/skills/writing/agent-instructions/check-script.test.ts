@@ -1,5 +1,11 @@
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import {
+    mkdirSync,
+    mkdtempSync,
+    readdirSync,
+    readFileSync,
+    writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -1286,13 +1292,13 @@ const finding = (fields: {
         .filter((line, i, lines) => line !== "" || i === lines.length - 1)
         .join("\n");
 
-const passive = '3.6 "Use the active voice (rule 3.6)."';
+const imperative = '5.3 "Write each instruction in the imperative (rule 5.3)."';
 
 describe("check script, report form", () => {
     it("drops a finding whose Text quote is not in the file", () => {
         const result = checkReports("The file is read by the agent.\n", [
             finding({
-                rule: passive,
+                rule: imperative,
                 text: "The file is written by the agent.",
             }),
         ]);
@@ -1309,7 +1315,7 @@ describe("check script, report form", () => {
     it("drops a finding with a missing field", () => {
         const result = checkReports("The file is read by the agent.\n", [
             finding({
-                rule: passive,
+                rule: imperative,
                 text: "The file is read by the agent.",
                 problem: "",
             }),
@@ -1357,7 +1363,7 @@ describe("check script, report form", () => {
                 "Round 1: ASD-STE100 review",
                 "",
                 finding({
-                    rule: passive,
+                    rule: imperative,
                     text: "The file is read by the agent.",
                     problem: "The sentence is in the passive voice.",
                     correction: "The agent reads the file.",
@@ -1376,9 +1382,9 @@ describe("check script, report form", () => {
         expect(result.blocking).toEqual([
             {
                 reviewer: "ASD-STE100",
-                rule: "3.6",
+                rule: "5.3",
                 ruleFile: "references/ste-rules.md",
-                heading: "When you write a verb",
+                heading: "When you write a procedure or a rule",
                 text: "The file is read by the agent.",
                 path: expect.stringMatching(/AGENTS\.md$/),
                 line: 4,
@@ -1405,19 +1411,22 @@ describe("check script, report form", () => {
     it("lists each report with blocking findings after the drop for the confirmers of its reviewer", () => {
         const text = "# Title\n\nWork well.\nThe file is read by the agent.\n";
         const result = checkReports(text, [
-            finding({ rule: passive, text: "The file is read by the agent." }),
-            finding({ rule: passive, text: "The file is written by it." }),
+            finding({
+                rule: imperative,
+                text: "The file is read by the agent.",
+            }),
+            finding({ rule: imperative, text: "The file is written by it." }),
             finding({
                 rule: '4.1 "Write short and clear sentences (rule 4.1). Give the action or the fact, not a general statement."',
                 text: "Work well.",
             }),
             [
                 finding({
-                    rule: passive,
+                    rule: imperative,
                     text: "The file is read by the agent.",
                 }),
                 finding({
-                    rule: passive,
+                    rule: imperative,
                     text: "The file is read by the agent.",
                 }),
             ].join("\n"),
@@ -1444,6 +1453,56 @@ describe("check script, report form", () => {
             }),
         ]);
         expect(result.confirm).toEqual([]);
+    });
+
+    // #261: 20 Blocking rules stay. Each other judgment rule is advisory.
+    it.each([
+        ['3.6 "Use the active voice (rule 3.6)."', "advisory"],
+        [
+            '9.4 "Use the same terms and the same words for the same type of step (rule 9.4)."',
+            "advisory",
+        ],
+        ['"Use a neutral and direct tone."', "advisory"],
+        [
+            '1.11 "Use one technical noun for each item, and one item for each technical noun"',
+            "blocking",
+        ],
+        ['"Write each pointer as a sentence"', "blocking"],
+    ])("sorts a finding for the rule %s into the %s list", (rule, list) => {
+        const result = checkReports("The file is read by the agent.\n", [
+            finding({ rule, text: "The file is read by the agent." }),
+        ]);
+        expect(result.dropped).toEqual([]);
+        expect(result[list]).toHaveLength(1);
+    });
+
+    it("finds each marked rule of the rule files", () => {
+        const references = join(dirname(script), "../references");
+        const rules = readdirSync(references).flatMap((name) =>
+            readFileSync(join(references, name), "utf8")
+                .split("\n")
+                .map((line) =>
+                    /^\s*(?:-|\d+\.) (.*) \((blocking|advisory)\)$/.exec(line),
+                )
+                .filter((match) => match !== null)
+                .map((match) => ({ rule: match[1], mark: match[2] })),
+        );
+        const result = checkReports(
+            "The file is read by the agent.\n",
+            rules.map(({ rule }) =>
+                finding({
+                    rule: `"${rule}"`,
+                    text: "The file is read by the agent.",
+                }),
+            ),
+        );
+        expect(result.dropped).toEqual([]);
+        expect(result.blocking).toHaveLength(
+            rules.filter(({ mark }) => mark === "blocking").length,
+        );
+        expect(result.advisory).toHaveLength(
+            rules.filter(({ mark }) => mark === "advisory").length,
+        );
     });
 
     it("gives a rule with a nested list the mark of its list items", () => {
