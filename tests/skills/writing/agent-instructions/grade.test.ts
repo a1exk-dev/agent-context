@@ -1565,6 +1565,32 @@ describe("process statements", () => {
         });
     });
 
+    it("fails [3a] for readers without the first file of the review target", () => {
+        const run = claude();
+        readerRound(run, { files: [DEPLOY] });
+        expect(
+            processVerdicts(run.record(), ["3a"], TWO_FILES.slice(1))["3a"],
+        ).toMatchObject({
+            passed: false,
+            evidence: expect.stringContaining(
+                `Reader-test round 1: the reader of "${TASKS[0]}" does not get AGENTS.md or CLAUDE.md as its first file.`,
+            ),
+        });
+    });
+
+    it("fails [3a] for readers that get the first file after a changed file", () => {
+        const run = claude();
+        readerRound(run, { files: [DEPLOY, "AGENTS.md"] });
+        expect(
+            processVerdicts(run.record(), ["3a"], TWO_FILES)["3a"],
+        ).toMatchObject({
+            passed: false,
+            evidence: expect.stringContaining(
+                `Reader-test round 1: the reader of "${TASKS[0]}" does not get AGENTS.md as its first file.`,
+            ),
+        });
+    });
+
     it("fails [3a] for 3 readers of each file of a change to 2 files", () => {
         const run = claude();
         for (const file of TWO_FILES)

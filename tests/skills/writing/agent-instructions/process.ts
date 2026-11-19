@@ -542,18 +542,49 @@ function reviewerProblems(run: Run, found: Process, round: Round): string[] {
 // message, each changed Markdown file in the files of each reader, and a new
 // subagent for each failed reader. A round has a maximum of 3 readers
 // (#253), and a new subagent for a failed reader is not a new task.
+const ENTRY_FILES = [
+    "AGENTS.md",
+    "AGENTS.override.md",
+    "CLAUDE.md",
+    "CLAUDE.local.md",
+];
+
+// The paths that can be the first file of the review target of the run:
+// the SKILL.md of each Skill with a changed Markdown file. Without a Skill,
+// each changed entry file, or else each entry file of the project.
+function firstFiles(run: Run): string[] {
+    const changed = changedMarkdown(run);
+    const skills = changed.flatMap((path) => {
+        for (let folder = posix.dirname(path); folder !== "."; ) {
+            const skill = `${folder}/SKILL.md`;
+            if (run.exists(skill)) return [skill];
+            folder = posix.dirname(folder);
+        }
+        return [];
+    });
+    if (skills.length > 0) return [...new Set(skills)];
+    const entries = changed.filter((path) => ENTRY_FILES.includes(path));
+    return entries.length > 0 ? entries : ENTRY_FILES.filter(run.exists);
+}
+
 function readerProblems(run: Run, found: Process, round: Round): string[] {
     const problems: string[] = [];
     const name = label(round);
     const readers = subagentsOf(round).filter(
         (check) => check.class === "reader",
     );
-    for (const check of readers)
+    const targets = firstFiles(run);
+    for (const check of readers) {
+        if (targets.length > 0 && !targets.includes(check.files[0]))
+            problems.push(
+                `${name}: the reader of "${check.task}" does not get ${targets.join(" or ")} as its first file.`,
+            );
         for (const path of changedMarkdown(run))
             if (!check.files.includes(path))
                 problems.push(
                     `${name}: the reader of "${check.task}" does not get ${path}.`,
                 );
+    }
     const keys = new Set(readers.map((check) => check.key));
     if (readers.length > 0 && keys.size !== 3)
         problems.push(`${name} has ${keys.size} reader tasks, not 3.`);
@@ -1124,7 +1155,7 @@ export function readers(run: Run): Verdict {
         );
     return verdict(
         problems,
-        `${found.reader.length} reader-test rounds with 3 read-only readers for the change that get each changed file, after the review rounds when the run did them, and 2 confirmers for each saved closed list with a "no", with a maximum of 4 confirmers in a round.`,
+        `${found.reader.length} reader-test rounds with 3 read-only readers for the change that get the first file of the review target first and each changed file, after the review rounds when the run did them, and 2 confirmers for each saved closed list with a "no", with a maximum of 4 confirmers in a round.`,
     );
 }
 
