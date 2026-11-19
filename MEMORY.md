@@ -66,11 +66,11 @@ Reason: More runs at the same time hit the Operator's usage limit. A run that hi
 
 ## Fix failed eval topics before the full matrix
 
-Applies when: output tests for a Skill or Rule fail.
+Applies when: output tests for a Skill or Rule fail in the full matrix at the end of an effort.
 
-Guidance: Run only the failed topics until every statement for those topics passes. Then run the full matrix again.
+Guidance: Run only the failed topics until every statement for those topics passes. Then run the full matrix again. For the output tests of one change, obey "After the reader test: the output tests and the manual checks" in `skills/writing/agent-instructions/references/review.md`: run only the touched tests with `--ids`, and correct the text one time.
 
-Reason: The Operator wants agents to fix failures before they repeat tests that passed. The full matrix then checks the other topics.
+Reason: The Operator wants agents to fix failures before they repeat tests that passed. The full matrix then checks the other topics. The full matrix runs one time at the end of an effort, because it costs too many tokens for one change. See "Spec: agent-instructions reviews that stop" (#256).
 
 ## Output-test runs skip the review rounds
 
