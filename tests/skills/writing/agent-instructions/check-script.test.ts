@@ -857,6 +857,48 @@ describe("check script, ISO 24495-1 rules", () => {
         expect(result.pointers).toHaveLength(1);
     });
 
+    const headings = {
+        "skills/a/SKILL.md": `${skill("a", "When you test, use this skill.")}\n## When you stage files\n\n## Before the first \`git add\`\n`,
+        "skills/a/references/b.md": [
+            "# B",
+            "",
+            'Stage the files as "When you stage files" in `SKILL.md` tells you.',
+            'Read the section "Before the first `git add`" of `SKILL.md`.',
+            "",
+        ].join("\n"),
+    };
+
+    it("finds no problem in a pointer that quotes a heading of its target", () => {
+        const folder = project(headings);
+        expect(
+            checkFiles(folder, ["skills/a/references/b.md"]).findings,
+        ).toEqual([]);
+    });
+
+    it("finds a quoted heading that the pointer target does not have", () => {
+        const folder = project({
+            ...headings,
+            "skills/a/references/b.md": [
+                "# B",
+                "",
+                "When you commit, do the steps of",
+                '"When you commit" in `SKILL.md`.',
+                "",
+            ].join("\n"),
+        });
+        expect(
+            checkFiles(folder, ["skills/a/references/b.md"]).findings,
+        ).toEqual([
+            iso("When you put the text in sections and lists", {
+                text: 'When you commit, do the steps of\n"When you commit" in `SKILL.md`.',
+                path: "skills/a/references/b.md",
+                line: 3,
+                problem:
+                    'The pointer target "SKILL.md" has no heading "When you commit".',
+            }),
+        ]);
+    });
+
     it("does not list a name or a placeholder as a file path", () => {
         const folder = project({
             "AGENTS.md":
