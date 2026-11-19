@@ -35,7 +35,7 @@ const FOLDERS: Record<string, string> = {
 // `reports` the paths of the Reports line of a review confirmer.
 type Check = {
     class: string;
-    file: string | null;
+    files: string[];
     key: string;
     start: number;
     end: number;
@@ -63,7 +63,7 @@ type Process = {
 };
 
 const CLASS_LINE = /^\s*(?:<[^>]*>\s*)?Check class: (.+?)\s*$/gm;
-const FILE_LINE = /^\s*Instruction file: (.+?)\s*$/m;
+const FILES_LINE = /^\s*Instruction files: (.+?)\s*$/m;
 const TASK_LINE = /^\s*Task: (.+?)\s*$/m;
 const REPORT_LINE = /^\s*Report: (.+?)\s*$/m;
 const REPORTS_LINE = /^\s*Reports: (.+?)\s*$/m;
@@ -161,15 +161,14 @@ function subagentChecks(
             .map(reviewPlace)
             .find((place) => place !== null);
         if (name === "confirmer" && reportPlace) round = reportPlace.round;
-        const path = FILE_LINE.exec(agent.prompt)?.[1];
-        const file = path ? local(run, path) : null;
+        const files = changedFiles(run, FILES_LINE.exec(agent.prompt)?.[1]);
         const task = TASK_LINE.exec(agent.prompt)?.[1] ?? "";
         const report = REPORT_LINE.exec(agent.prompt)?.[1];
         return [
             {
                 ...agent,
                 class: name,
-                file,
+                files,
                 task,
                 reportPath: report ? local(run, report) : null,
                 changes: changedFiles(
@@ -177,7 +176,7 @@ function subagentChecks(
                     CHANGES_LINE.exec(agent.prompt)?.[1],
                 ),
                 reports,
-                key: `${file} ${name === "reader" ? task : name}`,
+                key: name === "reader" ? `reader ${task}` : name,
                 round,
             },
         ];
@@ -195,7 +194,11 @@ function savedChecks(run: Run): Check[] {
                 ...input.matchAll(READER_TITLE),
             ];
             if (titles.length !== 1) return [];
-            const [, round, name, task] = titles[0];
+            const [title] = titles;
+            const isReader = /^reader-test/i.test(title[0]);
+            const round = title[1];
+            const name = isReader ? "reader" : title[2];
+            const task = isReader ? title[2] : undefined;
             const reviewer = REVIEWERS.find((item) =>
                 item.toLowerCase().startsWith(name.toLowerCase()),
             );
@@ -205,7 +208,7 @@ function savedChecks(run: Run): Check[] {
             return [
                 {
                     class: task === undefined ? (reviewer ?? "") : "reader",
-                    file: null,
+                    files: [],
                     key: `saved ${name} ${task}`,
                     start: call.at,
                     end: call.at,
@@ -293,6 +296,14 @@ const savedReport = (run: Run, round: Round, reviewer: string, file: string) =>
         path.endsWith(`/${reportFile(round.number, FOLDERS[reviewer], file)}`),
     );
 
+// Each Markdown file that the run created or changed.
+const changedMarkdown = (run: Run) =>
+    run.changes
+        .filter(
+            (change) => change.after !== null && change.path.endsWith(".md"),
+        )
+        .map((change) => change.path);
+
 // The files of a round. Review round 1: each Markdown file that the run
 // created or changed. Later review rounds: each file of the Changes lines
 // of the reviewers, or, in a round without reviewer subagents, each file
@@ -300,11 +311,7 @@ const savedReport = (run: Run, round: Round, reviewer: string, file: string) =>
 // readers, and each changed Markdown file when the run saved the reports
 // itself.
 function roundFiles(run: Run, round: Round): string[] {
-    const changed = run.changes
-        .filter(
-            (change) => change.after !== null && change.path.endsWith(".md"),
-        )
-        .map((change) => change.path);
+    const changed = changedMarkdown(run);
     if (round.kind === "review") {
         if (round.number === 1) return changed;
         const changes = round.checks.flatMap((check) => check.changes);
@@ -320,9 +327,7 @@ function roundFiles(run: Run, round: Round): string[] {
             ),
         ];
     }
-    const files = new Set(
-        round.checks.flatMap((check) => (check.file ? [check.file] : [])),
-    );
+    const files = new Set(round.checks.flatMap((check) => check.files));
     if (round.checks.some((check) => check.message === null))
         for (const path of changed) files.add(path);
     return [...files];
@@ -533,26 +538,30 @@ function reviewerProblems(run: Run, found: Process, round: Round): string[] {
     return problems;
 }
 
-// The reader-test round problems of [3a]: the 3 tasks of each file in one
-// message, and a new subagent for each failed reader.
-function readerProblems(found: Process, round: Round): string[] {
+// The reader-test round problems of [3a]: the 3 tasks of the change in one
+// message, each changed Markdown file in the files of each reader, and a new
+// subagent for each failed reader. A round has a maximum of 3 readers
+// (#253), and a new subagent for a failed reader is not a new task.
+function readerProblems(run: Run, found: Process, round: Round): string[] {
     const problems: string[] = [];
     const name = label(round);
     const readers = subagentsOf(round).filter(
         (check) => check.class === "reader",
     );
-    for (const [file, checks] of groupBy(readers, (check) => `${check.file}`)) {
-        const keys = new Set(checks.map((check) => check.key));
-        if (keys.size !== 3)
-            problems.push(`${name}: ${file} has ${keys.size} reader tasks.`);
-        const firsts = [...keys].map(
-            (key) => checks.find((check) => check.key === key) as Check,
-        );
-        if (new Set(firsts.map((check) => check.message)).size > 1)
-            problems.push(
-                `${name}: the readers of ${file} start in different messages.`,
-            );
-    }
+    for (const check of readers)
+        for (const path of changedMarkdown(run))
+            if (!check.files.includes(path))
+                problems.push(
+                    `${name}: the reader of "${check.task}" does not get ${path}.`,
+                );
+    const keys = new Set(readers.map((check) => check.key));
+    if (readers.length > 0 && keys.size !== 3)
+        problems.push(`${name} has ${keys.size} reader tasks, not 3.`);
+    const firsts = [...keys].map(
+        (key) => readers.find((check) => check.key === key) as Check,
+    );
+    if (new Set(firsts.map((check) => check.message)).size > 1)
+        problems.push(`${name}: the readers start in different messages.`);
     const selfDone = round.checks.some((check) => check.message === null);
     for (const attempts of groupBy(readers, (check) => check.key).values()) {
         const last = attempts.at(-1) as Check;
@@ -561,7 +570,7 @@ function readerProblems(found: Process, round: Round): string[] {
                 name,
                 found,
                 attempts,
-                `the reader subagent of ${last.file} for "${last.task}"`,
+                `the reader subagent for "${last.task}"`,
                 selfDone,
             ),
         );
@@ -575,7 +584,7 @@ function roundProblems(run: Run, found: Process, round: Round): string[] {
     const problems =
         round.kind === "review"
             ? reviewerProblems(run, found, round)
-            : readerProblems(found, round);
+            : readerProblems(run, found, round);
     const name = label(round);
     const subagents = subagentsOf(round);
     for (const [message, checks] of groupBy(
@@ -612,9 +621,14 @@ function roundProblems(run: Run, found: Process, round: Round): string[] {
     return problems;
 }
 
-// A report form run of the main agent: the file under review and the
-// report paths, as the command gives them.
-type FormRun = { file: string; reports: string[]; reader: boolean };
+// A report form run of the main agent: the file under review (the first
+// --file), each --file, and the report paths, as the command gives them.
+type FormRun = {
+    file: string;
+    files: string[];
+    reports: string[];
+    reader: boolean;
+};
 
 // The report form runs of a shell line. One line can run the report form
 // for several files, one command on each line or after `;`, `&&`, or `||`.
@@ -654,18 +668,19 @@ function formRun(run: Run, line: string): FormRun | null {
         args.push(word);
     }
     if (!args.includes("--reports")) return null;
-    const form: FormRun = { file: "", reports: [], reader: false };
+    const form: FormRun = { file: "", files: [], reports: [], reader: false };
     for (let index = 0; index < args.length; index++) {
         const arg = args[index];
         if (arg === "--reports") continue;
         if (arg.startsWith("--")) {
             const value = args[++index] ?? "";
-            if (arg === "--file") form.file = local(run, value);
+            if (arg === "--file") form.files.push(local(run, value));
             if (arg === "--tasks") form.reader = true;
             continue;
         }
         form.reports.push(local(run, arg));
     }
+    form.file = form.files[0] ?? "";
     return form;
 }
 
@@ -843,11 +858,11 @@ function reviewVote(
     return problems;
 }
 
-// The vote of a reader-test round: 2 closed lists for each file, and each
-// closed list with a "no" has 2 confirmers that give it in their Report
-// line. A closed list without "no" answers has no confirmer. A round has a
-// maximum of 4 confirmers for each file. A round that the run did itself,
-// or a closed list whose 2 confirmers failed, has no vote.
+// The vote of a reader-test round: 2 closed lists for the 2 typical tasks,
+// and each closed list with a "no" has 2 confirmers that give it in their
+// Report line. A closed list without "no" answers has no confirmer. A round
+// has a maximum of 4 confirmers (#253). A round that the run did itself, or
+// a closed list whose 2 confirmers failed, has no vote.
 function readerVote(round: Round, reports: Map<string, SavedReport>): string[] {
     const problems: string[] = [];
     const name = label(round);
@@ -857,10 +872,9 @@ function readerVote(round: Round, reports: Map<string, SavedReport>): string[] {
     const readers = subagentsOf(round).filter(
         (check) => check.class === "reader" && !check.failed,
     );
-    const files = new Set(readers.map((check) => `${check.file}`));
-    if (ofRound.length < 2 * files.size)
+    if (readers.length > 0 && ofRound.length < 2)
         problems.push(
-            `${name}: ${ofRound.length} closed lists for ${files.size} files. Each file has 2 typical tasks.`,
+            `${name}: ${ofRound.length} closed lists. The round has 2 typical tasks.`,
         );
     const confirmers = round.checks.filter(
         (check) => check.class === "confirmer",
@@ -888,12 +902,8 @@ function readerVote(round: Round, reports: Map<string, SavedReport>): string[] {
                 `${name}: the closed list ${path} has ${report.count} "no" answers and ${started.length} confirmers.`,
             );
     }
-    for (const [file, checks] of groupBy(
-        confirmers.filter((check) => !check.failed),
-        (check) => `${check.file}`,
-    ))
-        if (checks.length > 4)
-            problems.push(`${name}: ${file} has ${checks.length} confirmers.`);
+    const total = confirmers.filter((check) => !check.failed).length;
+    if (total > 4) problems.push(`${name} has ${total} confirmers.`);
     return problems;
 }
 
@@ -1114,7 +1124,7 @@ export function readers(run: Run): Verdict {
         );
     return verdict(
         problems,
-        `${found.reader.length} reader-test rounds with 3 read-only readers for each file, after the review rounds when the run did them, and 2 confirmers for each saved closed list with a "no".`,
+        `${found.reader.length} reader-test rounds with 3 read-only readers for the change that get each changed file, after the review rounds when the run did them, and 2 confirmers for each saved closed list with a "no", with a maximum of 4 confirmers in a round.`,
     );
 }
 
@@ -1162,7 +1172,7 @@ function reportForms(run: Run, kind: Kind): Verdict {
                 return formRuns(run, command(call)).some(
                     (form) =>
                         form.reader === (kind === "reader") &&
-                        form.file === file,
+                        form.files.includes(file),
                 );
             });
             const name = `${label(round)}, ${file}`;
