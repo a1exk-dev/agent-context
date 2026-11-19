@@ -249,7 +249,7 @@ Do the reader test in each job, also for a small change. Also do the reader test
 
 4. Use the same tasks and the same tested quotes in each reader-test round. Change a tested quote only when a correction changes its text. Then write the new text in the tasks file.
 5. At the start of each reader-test round, save a copy of each file that the round tests as `<round folder>/reader-round-<n>/<file path>`. Save each copy as "When you save a file or run a command in a round" tells you. Each reader-test round has the 3 tasks of the change. A reader-test round has a maximum of 3 readers. Give each task to a different new subagent. Start the subagents as "When you do a round" tells you.
-   - Give each reader the files of the readers. The first file of the review target is the first file of the readers. Then give each new or changed file.
+   - Give each reader the files of the readers. The first file of the review target is the first file of the readers. For a Skill, the first file is its `SKILL.md`. For an Agent instruction that is not in a Skill, the first file is each changed entry file. When no entry file changed, the first file is the entry file of the project, for example `AGENTS.md`. Then give each new or changed file.
    - Also give a file that contains only an `@path` line or only moved sections. A reader can find that a line identifies an incorrect file.
    - The reader starts the task from the first file, as an agent starts a task. Then the reader can also find a pointer that does not identify a changed file.
 6. Make sure that each subagent does a dry run. The first line of the reader prompt tells the subagent to do a dry run.
