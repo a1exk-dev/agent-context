@@ -324,9 +324,9 @@ describe("check script, file form", () => {
 describe("check script, loading rules", () => {
     it("finds a SKILL.md of more than 20,000 bytes", () => {
         const body = codeBlock(210);
-        const folder = project({
-            "a/SKILL.md": skill("a", "When you test, use this skill.") + body,
-        });
+        const folder = project(
+            goodSkill(skill("a", "When you test, use this skill.") + body),
+        );
         const result = checkFiles(folder, ["a/SKILL.md"]);
         expect(result.code).toBe(1);
         expect(result.findings).toEqual([
@@ -346,9 +346,11 @@ describe("check script, loading rules", () => {
     });
 
     it("finds a SKILL.md of 500 lines or more", () => {
-        const folder = project({
-            "a/SKILL.md": `${skill("a", "When you test, use this skill.")}${"\n".repeat(494)}`,
-        });
+        const folder = project(
+            goodSkill(
+                `${skill("a", "When you test, use this skill.")}${"\n".repeat(494)}`,
+            ),
+        );
         const result = checkFiles(folder, ["a/SKILL.md"]);
         expect(result.findings).toEqual([
             loading(
@@ -366,9 +368,11 @@ describe("check script, loading rules", () => {
     });
 
     it("passes a SKILL.md of 499 lines", () => {
-        const folder = project({
-            "a/SKILL.md": `${skill("a", "When you test, use this skill.")}${"\n".repeat(493)}`,
-        });
+        const folder = project(
+            goodSkill(
+                `${skill("a", "When you test, use this skill.")}${"\n".repeat(493)}`,
+            ),
+        );
         expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([]);
     });
 
@@ -398,6 +402,12 @@ describe("check script, loading rules", () => {
                 5,
                 "model: x",
             ),
+            frontmatter(
+                'The frontmatter field "license" operates only on some platforms. Write only "name" and "description", and "disable-model-invocation: true" in a Manual-only Skill.',
+                4,
+                "license: MIT",
+            ),
+            noCodexFile("Bad--Name/SKILL.md"),
         ]);
     });
 
@@ -434,13 +444,12 @@ describe("check script, loading rules", () => {
                         'The frontmatter field "disable-model-invocation" is permitted only in a Manual-only Skill. A Manual-only Skill also has agents/openai.yaml with "allow_implicit_invocation: false" under "policy:".',
                 },
             ),
+            noCodexFile("a/SKILL.md"),
         ]);
     });
 
     it("finds a name that is not the folder name, and a long description", () => {
-        const folder = project({
-            "a/SKILL.md": skill("b", "x".repeat(1025)),
-        });
+        const folder = project(goodSkill(skill("b", "x".repeat(1025))));
         expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
             loading(
                 "references/agent-skills-spec.md",
@@ -463,15 +472,27 @@ describe("check script, loading rules", () => {
                         "The description has 1025 characters. The limit is 1 to 1024 characters.",
                 },
             ),
+            loading(
+                "references/agent-skills-spec.md",
+                "When you write the description",
+                {
+                    text: `description: "${"x".repeat(1025)}"`,
+                    path: "a/SKILL.md",
+                    line: 3,
+                    problem:
+                        'The description does not start with its condition. Write the condition first: "When ..., use this skill."',
+                },
+            ),
         ]);
     });
 
     it("finds a SKILL.md with no frontmatter", () => {
-        const folder = project({ "a/SKILL.md": "# Title\n" });
+        const folder = project(goodSkill("# Title\n"));
         expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual(
             [
                 "The frontmatter has no name.",
                 "The frontmatter has no description.",
+                "SKILL.md does not start with YAML frontmatter.",
             ].map((problem) =>
                 loading(
                     "references/agent-skills-spec.md",
@@ -483,9 +504,11 @@ describe("check script, loading rules", () => {
     });
 
     it("reads a description in a block scalar", () => {
-        const folder = project({
-            "a/SKILL.md": `---\nname: a\ndescription: >\n  When you test,\n  use this skill.\n---\n\n# Title\n`,
-        });
+        const folder = project(
+            goodSkill(
+                `---\nname: a\ndescription: >\n  When you test,\n  use this skill.\n---\n\n# Title\n`,
+            ),
+        );
         expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([]);
     });
 
@@ -702,6 +725,322 @@ describe("check script, glossary rules", () => {
                 "An **Operator** starts an **agent**.",
                 1,
                 'The bold term "Operator" is not in the glossary or in the base list of technical-terms.md.',
+            ),
+        ]);
+    });
+});
+
+// The Codex file of a Skill, with the value of allow_implicit_invocation.
+const openai = (implicit: boolean) =>
+    `interface:\n  display_name: "A"\npolicy:\n  allow_implicit_invocation: ${implicit}\n`;
+
+// A Skill folder "a" that obeys each rule of the Agent Skills specification.
+const goodSkill = (text = skill("a", "When you test, use this skill.")) => ({
+    "a/SKILL.md": text,
+    "a/agents/openai.yaml": openai(true),
+});
+
+const spec = (
+    heading: string,
+    fields: { text: string; path: string; line: number; problem: string },
+) => loading("references/agent-skills-spec.md", heading, fields);
+
+function noCodexFile(path: string) {
+    return spec("When you write or edit a Skill: the agents/openai.yaml file", {
+        text: "---",
+        path,
+        line: 1,
+        problem:
+            "The Skill has no agents/openai.yaml. Write the file in the write job, and in each job for a Manual-only Skill. In the edit job for a different Skill, give a warning that recommends the file.",
+    });
+}
+
+const front = (text: string, line: number, problem: string) =>
+    spec("When you write the folder and the frontmatter", {
+        text,
+        path: "a/SKILL.md",
+        line,
+        problem,
+    });
+
+describe("check script, rule 3.4", () => {
+    it('finds "can", "must", or "will" with "be" and a past participle', () => {
+        const result = check(
+            "The file must be closed. It can also be easily found.\n\nThe run will not be done. It cannot be read.\n",
+        );
+        expect(result.code).toBe(1);
+        expect(result.findings).toEqual(
+            [
+                ["The file must be closed.", 1, "must be closed"],
+                ["It can also be easily found.", 1, "can also be easily found"],
+                ["The run will not be done.", 3, "will not be done"],
+                ["It cannot be read.", 3, "cannot be read"],
+            ].map(([text, line, words]) =>
+                ste("3.4", "When you write a verb", {
+                    text: text as string,
+                    line: line as number,
+                    problem: `The sentence has "${words}": "can", "must", or "will" with "be" and a past participle.`,
+                }),
+            ),
+        );
+    });
+
+    it("passes an active verb, an adjective after be, and quoted text", () => {
+        const result = check(
+            'Close the file. The file is closed. You can find it. It will be ready. Write "it can be used" or `must be done`.\n',
+        );
+        expect(result.findings).toEqual([]);
+    });
+});
+
+describe("check script, loading rules for platform files", () => {
+    it("finds a file in .claude/rules/ and an AGENTS.override.md", () => {
+        const folder = project({
+            ".claude/rules/a.md": "Run the check.\n",
+            "AGENTS.override.md": "Run the check.\n",
+        });
+        const feature = (path: string, problem: string) =>
+            loading(
+                "references/loading-rules.md",
+                "When you select a feature",
+                {
+                    text: "Run the check.",
+                    path,
+                    line: 1,
+                    problem,
+                },
+            );
+        expect(
+            checkFiles(folder, [".claude/rules/a.md", "AGENTS.override.md"])
+                .findings,
+        ).toEqual([
+            feature(
+                ".claude/rules/a.md",
+                'The file is in ".claude/rules/". Only Claude Code reads this folder. Put the text in AGENTS.md or CLAUDE.md.',
+            ),
+            feature(
+                "AGENTS.override.md",
+                'The file is "AGENTS.override.md". Only Codex reads this file. Put the text in AGENTS.md.',
+            ),
+        ]);
+    });
+
+    it("passes the same text in AGENTS.md and in docs/agents/", () => {
+        const folder = project({
+            "AGENTS.md": "Run the check.\n",
+            "docs/agents/a.md": "Run the check.\n",
+        });
+        expect(
+            checkFiles(folder, ["AGENTS.md", "docs/agents/a.md"]).findings,
+        ).toEqual([]);
+    });
+});
+
+describe("check script, Agent Skills specification rules", () => {
+    it("passes a Skill that obeys each rule", () => {
+        const folder = project({
+            "a/SKILL.md": `---\nname: a\ndescription: >\n  Before you test,\n  use this skill.\n# A comment.\ndisable-model-invocation: true\n---\n\n# Title\n`,
+            "a/agents/openai.yaml": openai(false),
+        });
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([]);
+    });
+
+    it("finds a SKILL.md with no text after the frontmatter", () => {
+        const folder = project(
+            goodSkill(
+                '---\nname: a\ndescription: "When you test, use this skill."\n---\n',
+            ),
+        );
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+            front(
+                "---",
+                1,
+                "SKILL.md has no Markdown text after the frontmatter.",
+            ),
+        ]);
+    });
+
+    it("finds frontmatter with no closing line", () => {
+        const folder = project(goodSkill("---\nname: a\n\n# Title\n"));
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual(
+            [
+                "The frontmatter has no name.",
+                "The frontmatter has no description.",
+                'The frontmatter has no closing "---" line.',
+            ].map((problem) => front("---", 1, problem)),
+        );
+    });
+
+    const colon =
+        'The value of "description" has ":" before a space or at the end of the line. Put the value in quotation marks.';
+    const yamlCases: [string, number, string, string][] = [
+        [
+            "description: When you test: use this skill.",
+            3,
+            "description: When you test: use this skill.",
+            colon,
+        ],
+        [
+            "description: When you test,\n  use this: skill.",
+            4,
+            "  use this: skill.",
+            colon,
+        ],
+        [
+            "description: \"When you test, use \\'a\\' skill.\"",
+            3,
+            "description: \"When you test, use \\'a\\' skill.\"",
+            'The value of "description" has the escape "\\\'", which YAML does not read.',
+        ],
+        [
+            'description: "When you test" use this skill.',
+            3,
+            'description: "When you test" use this skill.',
+            'The value of "description" has text after its closing quotation mark.',
+        ],
+        [
+            'description: "When you test, use this skill.',
+            3,
+            'description: "When you test, use this skill.',
+            'The value of "description" has no closing quotation mark.',
+        ],
+        [
+            "description: *When* you test, use this skill.",
+            3,
+            "description: *When* you test, use this skill.",
+            'The value of "description" starts with "*". Put the value in quotation marks.',
+        ],
+        [
+            'description: "When you test, use this skill."\nname: a',
+            4,
+            "name: a",
+            'The frontmatter has the key "name" two times.',
+        ],
+        [
+            'description: "When you test, use this skill."\nuse this skill',
+            4,
+            "use this skill",
+            'The line is not a "key: value" line.',
+        ],
+    ];
+
+    for (const [field, line, text, problem] of yamlCases)
+        it(`finds the YAML error on line ${line}: ${problem}`, () => {
+            const folder = project(
+                goodSkill(`---\nname: a\n${field}\n---\n\n# Title\n`),
+            );
+            expect(checkFiles(folder, ["a/SKILL.md"]).findings).toContainEqual(
+                front(text, line, problem),
+            );
+        });
+
+    it("finds compatibility and metadata problems, and fields for some platforms", () => {
+        const compatibility = `compatibility: "${"x".repeat(501)}"`;
+        const folder = project(
+            goodSkill(
+                skill(
+                    "a",
+                    "When you test, use this skill.",
+                    `license: MIT\n${compatibility}\nmetadata:\n  author: "a"\n  version: 1.0\n  tags:\n    - x\n  true: "a"\n`,
+                ),
+            ),
+        );
+        const field = (key: string, line: number, text: string) =>
+            front(
+                text,
+                line,
+                `The frontmatter field "${key}" operates only on some platforms. Write only "name" and "description", and "disable-model-invocation: true" in a Manual-only Skill.`,
+            );
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+            front(
+                compatibility,
+                5,
+                "The compatibility value has 501 characters. The limit is 500 characters.",
+            ),
+            front(
+                "  version: 1.0",
+                8,
+                'The value of "version" in metadata is not text. Put it in quotation marks.',
+            ),
+            front(
+                "  tags:",
+                9,
+                'The value of "tags" in metadata is not text. Put it in quotation marks.',
+            ),
+            front(
+                '  true: "a"',
+                11,
+                'The key "true" in metadata is not text. Put it in quotation marks.',
+            ),
+            field("license", 4, "license: MIT"),
+            field("compatibility", 5, compatibility),
+            field("metadata", 6, "metadata:"),
+        ]);
+    });
+
+    it("finds a description that does not start with its condition", () => {
+        for (const [description, problem] of [
+            [
+                "Use this skill when you test.",
+                'The description has "Use this skill when". Write the condition first: "When ..., use this skill."',
+            ],
+            [
+                "Tests the code. Use it when you test.",
+                'The description does not start with its condition. Write the condition first: "When ..., use this skill."',
+            ],
+        ]) {
+            const folder = project(goodSkill(skill("a", description)));
+            expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+                spec("When you write the description", {
+                    text: `description: "${description}"`,
+                    path: "a/SKILL.md",
+                    line: 3,
+                    problem,
+                }),
+            ]);
+        }
+    });
+
+    it("finds a Skill with no agents/openai.yaml", () => {
+        const folder = project({
+            "a/SKILL.md": skill("a", "When you test, use this skill."),
+        });
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+            noCodexFile("a/SKILL.md"),
+        ]);
+    });
+
+    it("finds a wrong or missing allow_implicit_invocation", () => {
+        const codex = (text: string, line: number, problem: string) =>
+            spec(
+                "When you write or edit a Skill: the agents/openai.yaml file",
+                {
+                    text,
+                    path: "a/agents/openai.yaml",
+                    line,
+                    problem,
+                },
+            );
+        const folder = project({
+            ...goodSkill(),
+            "a/agents/openai.yaml": openai(false),
+        });
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+            codex(
+                "  allow_implicit_invocation: false",
+                4,
+                'In a Skill that is not a Manual-only Skill, write "allow_implicit_invocation: true" under "policy:".',
+            ),
+        ]);
+        writeFileSync(
+            join(folder, "a/agents/openai.yaml"),
+            'interface:\n  display_name: "A"\n',
+        );
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+            codex(
+                "interface:",
+                1,
+                'agents/openai.yaml has no "allow_implicit_invocation" under "policy:".',
             ),
         ]);
     });

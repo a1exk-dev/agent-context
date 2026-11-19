@@ -393,7 +393,9 @@ describe("checkInstructions", () => {
             "CLAUDE.md": ask,
             "MEMORY.md": ask,
             "docs/agents/domain.md": ask,
-            "skills/writing/foo/SKILL.md": `---\nname: foo\ndescription: Does foo.\n---\n${ask}`,
+            "skills/writing/foo/SKILL.md": `---\nname: foo\ndescription: When you foo, use this skill.\n---\n${ask}`,
+            "skills/writing/foo/agents/openai.yaml":
+                "policy:\n  allow_implicit_invocation: true\n",
             "skills/writing/foo/references/bar.md": ask,
             "rules/writing/baz.md": ask,
             ".claude/skills/other/SKILL.md": "You should run it.\n",
