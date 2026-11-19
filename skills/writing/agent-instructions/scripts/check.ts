@@ -17,6 +17,8 @@ import { parseArgs } from "node:util";
 
 const usage = `Usage: node check.ts <file>... --project <folder> --glossary <path|none>
        node check.ts --reports --file <file under review> <report>...
+       node check.ts --reports --file <file> --copy <copy|none>
+           [--file <file> --copy <copy|none>]... --tasks <tasks file> <report>...
 
 File form: checks each file for the rules that end with "(script check)" in
 the rule files of the agent-instructions Skill. Writes JSON to stdout:
@@ -37,7 +39,7 @@ It drops each finding with a missing field, a Text quote that is not in the
 file, or a Rule quote that is in no rule that ends with "(blocking)" or
 "(advisory)". It sorts the other findings by the mark of their rule. The
 confirm list gives each report with one or more findings in the blocking
-list, and tells the author to give these findings to the 2 confirmers of
+list, and tells the author to give these findings to the confirmers of
 the reviewer of that report.
 
 Report form for reader reports: give --file <file> --copy <saved copy|none>
@@ -842,49 +844,94 @@ function checkPlatformFile(path: string, source: string): Finding[] {
               : null;
     if (problem === null) return [];
     return [
-        {
-            reviewer: "loading",
-            rule: null,
-            ruleFile: "references/loading-rules.md",
-            heading: "When you select a feature",
-            text: source.split(/\r?\n/)[0],
-            path,
-            line: 1,
+        loadingFinding(
+            "references/loading-rules.md",
+            "When you select a feature",
             problem,
-        },
+            source.split(/\r?\n/)[0],
+            path,
+            1,
+        ),
     ];
 }
+
+// A finding of the loading reviewer that the script gives: it has no quoted
+// rule, only the rule file and its heading.
+function loadingFinding(
+    ruleFile: string,
+    heading: string,
+    problem: string,
+    text: string,
+    path: string,
+    line: number,
+): Finding {
+    return {
+        reviewer: "loading",
+        rule: null,
+        ruleFile,
+        heading,
+        text,
+        path,
+        line,
+        problem,
+    };
+}
+
+// The text of a YAML line without its comment.
+const withoutComment = (line: string) => line.replace(/\s#.*$/, "");
+
+// Whether a YAML line continues the block above it: an indented line or an
+// empty line. A missing line ends the block.
+const isIndentedOrBlank = (line: string | undefined) =>
+    line !== undefined && /^(\s|$)/.test(line);
+
+// A finding of a rule in `references/agent-skills-spec.md`.
+const skillFinding = (
+    heading: string,
+    problem: string,
+    text: string,
+    line: number,
+    path: string,
+) =>
+    loadingFinding(
+        "references/agent-skills-spec.md",
+        heading,
+        problem,
+        text,
+        path,
+        line,
+    );
 
 // The rules of the Agent Skills specification and of `agents/openai.yaml`
 // that `checkLoading` does not examine: the frontmatter form, the YAML, the
 // fields for some platforms, the description condition, and the Codex file.
 function checkSkill(path: string, source: string): Finding[] {
     if (basename(path) !== "SKILL.md") return [];
-    const findings: Finding[] = [];
     const lines = source.split(/\r?\n/);
-    const finding = (
-        heading: string,
-        problem: string,
-        text = lines[0],
-        line = 1,
-        at = path,
-    ) =>
-        findings.push({
-            reviewer: "loading",
-            rule: null,
-            ruleFile: "references/agent-skills-spec.md",
-            heading,
-            text,
-            path: at,
-            line,
-            problem,
-        });
+    const fields = frontmatter(source);
+    return [
+        ...checkFrontmatter(path, lines, fields),
+        ...checkDescription(path, fields),
+        ...checkOpenaiYaml(path, lines, fields),
+    ];
+}
+
+// The frontmatter form, the YAML, and the fields for some platforms.
+function checkFrontmatter(
+    path: string,
+    lines: string[],
+    fields: Map<string, Field>,
+): Finding[] {
+    const findings: Finding[] = [];
     const front = (problem: string, index: number) =>
-        finding(
-            "When you write the folder and the frontmatter",
-            problem,
-            lines[index],
-            index + 1,
+        findings.push(
+            skillFinding(
+                "When you write the folder and the frontmatter",
+                problem,
+                lines[index],
+                index + 1,
+                path,
+            ),
         );
     const end = lines[0] === "---" ? lines.indexOf("---", 1) : -1;
     if (lines[0] !== "---")
@@ -901,7 +948,6 @@ function checkSkill(path: string, source: string): Finding[] {
         for (const [index, problem] of yamlErrors(lines, end))
             front(problem, index);
     }
-    const fields = frontmatter(source);
     const compatibility = fields.get("compatibility");
     const length = compatibility ? [...compatibility.value].length : 0;
     if (compatibility && length > 500)
@@ -923,43 +969,56 @@ function checkSkill(path: string, source: string): Finding[] {
                 `The frontmatter field "${key}" operates only on some platforms. Write only "name" and "description", and "disable-model-invocation: true" in a Manual-only Skill.`,
                 at.line - 1,
             );
+    return findings;
+}
+
+// The description starts with its condition.
+function checkDescription(path: string, fields: Map<string, Field>): Finding[] {
     const description = fields.get("description");
-    if (description && description.value !== "") {
-        const condition =
-            'Write the condition first: "When ..., use this skill."';
-        const problem = /\buse this skill when\b/i.test(description.value)
-            ? `The description has "Use this skill when". ${condition}`
-            : !/^(?:when|whenever|before|after|if|while|until|each time)\b/i.test(
-                    description.value,
-                )
-              ? `The description does not start with its condition. ${condition}`
-              : null;
-        if (problem !== null)
-            finding(
-                "When you write the description",
-                problem,
-                description.text,
-                description.line,
-            );
-    }
-    const codex = (problem: string, text: string, line: number, at: string) =>
-        finding(
+    if (!description || description.value === "") return [];
+    const condition = 'Write the condition first: "When ..., use this skill."';
+    const problem = /\buse this skill when\b/i.test(description.value)
+        ? `The description has "Use this skill when". ${condition}`
+        : !/^(?:when|whenever|before|after|if|while|until|each time)\b/i.test(
+                description.value,
+            )
+          ? `The description does not start with its condition. ${condition}`
+          : null;
+    if (problem === null) return [];
+    return [
+        skillFinding(
+            "When you write the description",
+            problem,
+            description.text,
+            description.line,
+            path,
+        ),
+    ];
+}
+
+// The Codex file `agents/openai.yaml` and its "allow_implicit_invocation".
+function checkOpenaiYaml(
+    path: string,
+    lines: string[],
+    fields: Map<string, Field>,
+): Finding[] {
+    const codex = (problem: string, text: string, line: number, at: string) => [
+        skillFinding(
             "When you write or edit a Skill: the agents/openai.yaml file",
             problem,
             text,
             line,
             at,
-        );
+        ),
+    ];
     const openai = join(dirname(path), "agents", "openai.yaml");
-    if (!isFile(openai)) {
-        codex(
+    if (!isFile(openai))
+        return codex(
             "The Skill has no agents/openai.yaml. Write the file in the write job, and in each job for a Manual-only Skill. In the edit job for a different Skill, give a warning that recommends the file.",
             lines[0],
             1,
             path,
         );
-        return findings;
-    }
     const codexLines = readFileSync(openai, "utf8").split(/\r?\n/);
     const manualOnly = fields.get("disable-model-invocation")?.value === "true";
     const wanted = manualOnly ? "false" : "true";
@@ -967,24 +1026,19 @@ function checkSkill(path: string, source: string): Finding[] {
     let found = -1;
     for (
         let i = policy + 1;
-        policy >= 0 && /^(\s|$)/.test(codexLines[i] ?? "x");
+        policy >= 0 && isIndentedOrBlank(codexLines[i]);
         i++
     )
         if (/^\s+allow_implicit_invocation:/.test(codexLines[i])) found = i;
     if (found < 0)
-        codex(
+        return codex(
             'agents/openai.yaml has no "allow_implicit_invocation" under "policy:".',
             codexLines[0],
             1,
             openai,
         );
-    else if (
-        codexLines[found]
-            .replace(/\s#.*$/, "")
-            .split(":")[1]
-            .trim() !== wanted
-    )
-        codex(
+    if (withoutComment(codexLines[found]).split(":")[1].trim() !== wanted)
+        return codex(
             manualOnly
                 ? 'In a Manual-only Skill, write "allow_implicit_invocation: false" under "policy:".'
                 : 'In a Skill that is not a Manual-only Skill, write "allow_implicit_invocation: true" under "policy:".',
@@ -992,7 +1046,7 @@ function checkSkill(path: string, source: string): Finding[] {
             found + 1,
             openai,
         );
-    return findings;
+    return [];
 }
 
 // Gives the YAML errors of the frontmatter lines 1 to `end` - 1, as [index of
@@ -1011,7 +1065,7 @@ function yamlErrors(lines: string[], end: number): [number, string][] {
         const line = lines[i];
         if (line.trim() === "" || /^\s*#/.test(line)) continue;
         if (/^\s/.test(line)) {
-            if (plain !== null && /:(\s|$)/.test(line.replace(/\s#.*$/, "")))
+            if (plain !== null && /:(\s|$)/.test(withoutComment(line)))
                 errors.push([i, colon(plain)]);
             continue;
         }
@@ -1040,7 +1094,7 @@ function yamlErrors(lines: string[], end: number): [number, string][] {
             while (
                 close < 0 &&
                 last + 1 < end &&
-                /^(\s|$)/.test(lines[last + 1])
+                isIndentedOrBlank(lines[last + 1])
             ) {
                 last++;
                 text += `\n${lines[last]}`;
@@ -1077,8 +1131,7 @@ function yamlErrors(lines: string[], end: number): [number, string][] {
             ]);
             continue;
         }
-        if (/:(\s|$)/.test(value.replace(/\s#.*$/, "")))
-            errors.push([i, colon(key)]);
+        if (/:(\s|$)/.test(withoutComment(value))) errors.push([i, colon(key)]);
         plain = key;
     }
     return errors;
@@ -1114,7 +1167,11 @@ function metadataErrors(lines: string[], start: number): [number, string][] {
             ],
         ];
     let indent = -1;
-    for (let i = start + 1; i < lines.length && /^(\s|$)/.test(lines[i]); i++) {
+    for (
+        let i = start + 1;
+        i < lines.length && isIndentedOrBlank(lines[i]);
+        i++
+    ) {
         const line = lines[i];
         if (line.trim() === "" || line.trim().startsWith("#")) continue;
         const depth = line.search(/\S/);
@@ -1129,7 +1186,7 @@ function metadataErrors(lines: string[], start: number): [number, string][] {
             continue;
         }
         const key = match[1].trim();
-        const value = (match[2] ?? "").replace(/\s#.*$/, "").trim();
+        const value = withoutComment(match[2] ?? "").trim();
         if (notText.test(key))
             errors.push([
                 i,
@@ -1223,7 +1280,7 @@ function frontmatter(source: string): Map<string, Field> {
         let value = (match[2] ?? "").trim();
         if (/^[|>][+-]?$/.test(value)) {
             const block: string[] = [];
-            while (i + 1 < end && /^(\s|$)/.test(lines[i + 1]))
+            while (i + 1 < end && isIndentedOrBlank(lines[i + 1]))
                 block.push(lines[++i].trim());
             value = block.join(value[0] === "|" ? "\n" : " ").trim();
         } else if (value.startsWith('"') && value.endsWith('"')) {
@@ -1489,12 +1546,15 @@ type RuleUnit = {
     mark: string | null;
 };
 
+// The input of the report form for reader reports: each file of the readers
+// with its saved copy, or "none", and the tasks file.
+type ReaderInput = { pairs: { file: string; copy: string }[]; tasks: string };
+
 // The report form: checks the findings of the reviewer reports of one file.
 function reportForm(argv: string[]): number {
     let file: string;
     let reports: string[];
-    let readers: { files: string[]; copies: string[]; tasks: string } | null =
-        null;
+    let readers: ReaderInput | null = null;
     try {
         const { values, positionals } = parseArgs({
             args: argv,
@@ -1529,7 +1589,13 @@ function reportForm(argv: string[]): number {
         file = files[0];
         reports = positionals;
         if (values.tasks !== undefined)
-            readers = { files, copies, tasks: values.tasks };
+            readers = {
+                pairs: files.map((path, i) => ({
+                    file: path,
+                    copy: copies[i],
+                })),
+                tasks: values.tasks,
+            };
     } catch (error) {
         process.stderr.write(`${(error as Error).message}\n\n${usage}\n`);
         return 2;
@@ -1614,7 +1680,7 @@ function reportForm(argv: string[]): number {
         const count = blockingCounts.get(report) ?? 0;
         if (count === 0) return [];
         const action =
-            "Give the blocking findings of this report to the 2 confirmers of its reviewer.";
+            "Give the blocking findings of this report to the confirmers of its reviewer.";
         return [{ report, blocking: count, action }];
     });
     process.stdout.write(
@@ -1652,29 +1718,24 @@ class ReaderError extends Error {}
 // The report form for reader reports: checks the reports of the reader tasks
 // of one change against the files of the readers. The reports are in the
 // sequence of the tasks.
-function readerForm(
-    input: { files: string[]; copies: string[]; tasks: string },
-    reports: string[],
-): number {
+function readerForm(input: ReaderInput, reports: string[]): number {
     const targets: Target[] = [];
     let tasks: ReaderTask[];
     const quotes: ReaderQuote[][] = [];
     // The places of each tested quote of each task.
     const testedPlaces: Place[][][] = [];
     try {
-        input.files.forEach((file, i) => {
-            const source = readFileSync(file, "utf8");
+        for (const pair of input.pairs) {
+            const source = readFileSync(pair.file, "utf8");
             const copy =
-                input.copies[i] === "none"
-                    ? null
-                    : readFileSync(input.copies[i], "utf8");
+                pair.copy === "none" ? null : readFileSync(pair.copy, "utf8");
             targets.push({
-                file,
+                file: pair.file,
                 source,
                 ...comparableWithOffsets(source),
                 changed: changedLines(copy, source),
             });
-        });
+        }
         tasks = readerTasks(readFileSync(input.tasks, "utf8"));
         if (tasks.length !== reports.length)
             throw new ReaderError(
@@ -1686,7 +1747,7 @@ function readerForm(
                     const found = occurrences(targets, quote);
                     if (found.length === 0)
                         throw new ReaderError(
-                            `The tested quote "${quote}" of task ${i + 1} is not in the files under review.`,
+                            `The tested quote "${quote}" of task ${i + 1} is not in the files of the readers.`,
                         );
                     return found;
                 }),
@@ -1712,7 +1773,7 @@ function readerForm(
             if (found.length === 0) {
                 dropped.push({
                     ...quote,
-                    reason: "The quote is not in the files under review.",
+                    reason: "The quote is not in the files of the readers.",
                 });
                 continue;
             }

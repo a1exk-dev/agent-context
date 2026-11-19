@@ -102,7 +102,7 @@ In each tool call that reads a file, give the absolute path of that file. Do not
 The number in round-<n> of your report folder is the number of the round.
 In each round, the sections under review are only the sections in the Changes line.
 Read the full text of each file only for context. Give no finding for text that is not in a section under review.
-For a section that the author moved, the Changes line gives only its pointer. Give no finding for the words of that section.
+For a section that the author moved, the Changes line gives only its pointer. For the words of that section, give only the loading-rules.md finding that this prompt gives below.
 Use each rule in the rule files for the sections under review.
 Skip each rule that ends with "(script check)". The check script findings give the problems for these rules.
 The ISO 24495-1 reviewer examines the conditions of the pointers and the headings.
@@ -374,7 +374,7 @@ At a limit, each blocking problem stays open. Do not do more rounds or test runs
    - Stop the change: Do not change a file again. In the Summary part of the end-of-run report, write that the user stopped the change.
 2. Do the action of the answer. Then write the end-of-run report.
 
-When no person can answer the question, do not ask it. Examples are a subagent and an output test of this skill. Put the question, its blocking problems, and its 3 answers in the end-of-run report. Do not write in the report that the change passed.
+When no user can answer the question, do not ask it. Examples are a subagent and an output test of this skill. Put the question, its blocking problems, and its 3 answers in the end-of-run report. Do not write in the report that the change passed.
 
 ## When no subagent is available
 
