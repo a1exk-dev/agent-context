@@ -37,6 +37,7 @@ The checks are in four groups. Each group agrees with one of the four principles
 - In each pointer, tell when to read its target. A pointer with no condition is a problem in the self-check. (blocking)
 - In each pointer, give the path of its target. Words such as "that file" give no path. (blocking)
 - In each pointer, give the path of a file or a folder that exists. (script check)
+- When a pointer gives a heading of its target in quotation marks, give a heading that the target has. (script check)
 - Put each pointer target one step from the file that has the pointer. Make no sequences of pointers. (advisory)
 - When the file does not load in each session, find a pointer to it in a different Agent instruction. If you find no pointer, add a warning. (advisory)
 

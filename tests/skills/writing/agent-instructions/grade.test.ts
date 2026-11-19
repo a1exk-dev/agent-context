@@ -878,7 +878,7 @@ describe("process statements", () => {
             const verdicts = processVerdicts(run.record());
             expect(passed(verdicts)).toEqual(PROCESS);
             expect(verdicts["1"].evidence).toBe(
-                "1 review rounds with 1 reviewer of each class in one message, a report of each reviewer for each file, 2 confirmers for each reviewer with blocking findings, and no file change before the last report.",
+                "1 review rounds with 1 reviewer of each class in one message, a report of each reviewer for each file, 2 or 3 confirmers for each reviewer with blocking findings, a maximum of 9 confirmers, and no file change before the last report.",
             );
             expect(verdicts["2"].evidence).toMatch(
                 /Review round 1, AGENTS\.md: the report form ran\. 3 dropped findings in 3 reports/,
@@ -1129,25 +1129,33 @@ describe("process statements", () => {
             });
         });
 
-        it(`fails [1] for 7 ${platform} confirmers in a review round`, () => {
-            const all = [0, 1, 2].map((index) => reportPath(1, index));
+        it(`passes [1] for 3 ${platform} confirmers of a reviewer with a split`, () => {
             expect(
-                blockingVote(
-                    [BLOCKING_REPORT, BLOCKING_REPORT, BLOCKING_REPORT],
-                    [
-                        all[0],
-                        all[0],
-                        all[0],
-                        all[1],
-                        all[1],
-                        all[2],
-                        all[2],
-                    ].map((path) => [path]),
+                blockingVote(blocking, Array(3).fill([loading])),
+            ).toMatchObject({ passed: true });
+        });
+
+        // [1] of a run whose 3 reviewers give blocking findings, with
+        // `counts` confirmers for each reviewer.
+        const allBlocking = (counts: number[]) => {
+            const all = [0, 1, 2].map((index) => reportPath(1, index));
+            return blockingVote(
+                [BLOCKING_REPORT, BLOCKING_REPORT, BLOCKING_REPORT],
+                counts.flatMap((count, index) =>
+                    Array(count).fill([all[index]]),
                 ),
-            ).toMatchObject({
+            );
+        };
+
+        it(`passes [1] for 9 ${platform} confirmers in a review round`, () => {
+            expect(allBlocking([3, 3, 3])).toMatchObject({ passed: true });
+        });
+
+        it(`fails [1] for 10 ${platform} confirmers in a review round`, () => {
+            expect(allBlocking([4, 3, 3])).toMatchObject({
                 passed: false,
                 evidence: expect.stringContaining(
-                    "Review round 1 has 7 confirmers.",
+                    "Review round 1 has 10 confirmers.",
                 ),
             });
         });
