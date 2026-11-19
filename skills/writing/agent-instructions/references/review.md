@@ -33,7 +33,7 @@ The round list gives the files of a review round, in the alphabetical sequence o
 Each review round and each reader-test round has these steps:
 
 1. In a review round, start the 3 reviewers in one message.
-2. After you have the input of the confirmers or the readers, start them in groups of 3. For the confirmers of a review round, the input is the confirm lists of "During and after a review round". Put the 3 readers of one file in one group. Start each group in one message. After you get all reports of a group, start the next group. Codex permits a maximum of 3 subagents at the same time.
+2. After you have the input of the confirmers or the readers, start them in groups of 3. For the confirmers of a review round, the input is the confirm lists of "During and after a review round". Put the 3 readers of a reader-test round in one group. Start each group in one message. After you get all reports of a group, start the next group. Codex permits a maximum of 3 subagents at the same time.
 3. Wait for the reports of all subagents of the round:
    - Claude Code: Wait for one message for each subagent.
    - Codex: Call `wait_agent` again until each subagent gives its report. Before you get all reports, do not stop, because a stopped main agent gets no report. If the `close_agent` tool is available, close each subagent after its report. The maximum of 3 subagents includes each open subagent.
@@ -191,8 +191,8 @@ Give only these lines. Do not give the work to a subagent.
 
 Do this vote for each typical-task report whose closed list has one or more "no" answers. The reader test gives the closed list. Do the vote in each job, also for a small change. Also do the vote when you expect to correct no text.
 
-1. Start 2 new, read-only confirmer subagents for the report. Wait for the reports of the 2 confirmers, also when the first confirmer answers "yes" for each step. A round is complete only after each check gives its report.
-2. Give each confirmer the path of the saved closed list, the task, and the path of the instruction file. Also give each step with "no" and its quote. Do not give your cause for the "no".
+1. Start 2 new, read-only confirmer subagents for the report. Wait for the reports of the 2 confirmers, also when the first confirmer answers "yes" for each step. A round is complete only after each check gives its report. A reader-test round has a maximum of 4 confirmers: 2 for each typical-task report.
+2. Give each confirmer the path of the saved closed list, the task, and the paths of the files of the readers. Also give each step with "no" and its quote. Do not give your cause for the "no".
 3. Start the confirmers as "When you do a round" tells you. The confirmers are checks of the same reader-test round. Start them in groups of 3.
 4. A wrong step is confirmed when one or more of its confirmers answer "yes".
 
@@ -203,13 +203,13 @@ Check class: confirmer
 This task is read-only. Only read files. Do not edit, make, move, or delete files.
 Do not run commands that change files, Git data, or external services.
 
-Instruction file: <absolute path>
+Instruction files: <the absolute paths of the Instruction files line of the reader prompt>
 Project folder: <absolute path>
 Task: <the task text>
 Report: <absolute path of the saved closed list>
 Steps: <for each step with "no" in the closed list of one reader report: a number, the step in quotation marks, and its quote in quotation marks>
 
-Read the instruction file from the disk.
+Read the instruction files from the disk.
 For each step, decide whether the step does not obey its quote from the instruction for this task.
 Give one line for each step in this form:
 <number>. <"yes" if the step does not obey its quote, or "no">: <one sentence that gives the cause>
@@ -231,12 +231,12 @@ Start the reader test only after the self-check stops. Do not start a reader sub
 
 Do the reader test in each job, also for a small change. Also do the reader test when you expect that it finds no problem. Only the reader test shows how a new reader obeys the file.
 
-1. For each new or changed file, write 3 tasks. Also write 3 tasks for a file with many changes, and for a file that contains only an `@path` line. A reader can find that the line identifies an incorrect file. Each task tests the new or changed rules of its file:
+1. Write 3 tasks for the change. Do not write 3 tasks for each file. Also write only 3 tasks for a change with many files or many changes, for example a new Skill. Each task tests the new or changed rules of the change:
    - Write 2 typical tasks with different inputs. If the user told you that an agent did not obey an instruction, make one task from that problem.
    - Write 1 out-of-scope task. It looks almost the same as a typical task, but the new or changed instruction does not change it. It uses the same file, words, or condition as the instruction, but the instruction is not applicable to it. An example for a rule about release branches is a task that makes a feature branch. If the instruction is applicable to all project tasks, use a different project or platform for this task.
-   - Before you select the out-of-scope task, compare the task with the condition of each rule and each pointer in the file. Select a task that agrees with no condition. If a condition is applicable to the task, write a different task. For example, a pointer "Before you write code about an Order, read `GLOSSARY.md`" is applicable to a task about the code of an Order.
-2. Before reader-test round 1, write the tested quotes for each typical task. A tested quote is a short quote from the file of a new or changed rule that the task tests.
-3. Write the 3 tasks of each file and their tested quotes in a tasks file in the round folder. Use this form:
+   - Before you select the out-of-scope task, compare the task with the condition of each rule and each pointer in the files of the readers. Select a task that agrees with no condition. If a condition is applicable to the task, write a different task. For example, a pointer "Before you write code about an Order, read `GLOSSARY.md`" is applicable to a task about the code of an Order.
+2. Before reader-test round 1, write the tested quotes for each typical task. A tested quote is a short quote of a new or changed rule that the task tests. A typical task can have more than one tested quote. Then compare the tested quotes with the new or changed rules. Write each new or changed rule that no tested quote is from in the end-of-run report.
+3. Write the 3 tasks and their tested quotes in a tasks file in the round folder. Use this form:
 
    ```json
    [
@@ -247,12 +247,15 @@ Do the reader test in each job, also for a small change. Also do the reader test
    ```
 
 4. Use the same tasks and the same tested quotes in each reader-test round. Change a tested quote only when a correction changes its text. Then write the new text in the tasks file.
-5. At the start of each reader-test round, save a copy of each file that the round tests as `<round folder>/reader-round-<n>/<file path>`. Save each copy as "When you save a file or run a command in a round" tells you. Each reader-test round has the 3 tasks of each file. Give each task and the path of its new or changed file to a different new subagent. Start the subagents as "When you do a round" tells you.
+5. At the start of each reader-test round, save a copy of each file that the round tests as `<round folder>/reader-round-<n>/<file path>`. Save each copy as "When you save a file or run a command in a round" tells you. Each reader-test round has the 3 tasks of the change. A reader-test round has a maximum of 3 readers. Give each task to a different new subagent. Start the subagents as "When you do a round" tells you.
+   - Give each reader the files of the readers. The first file of the review target is the first file of the readers. Then give each new or changed file.
+   - Also give a file that contains only an `@path` line or only moved sections. A reader can find that a line identifies an incorrect file.
+   - The reader starts the task from the first file, as an agent starts a task. Then the reader can also find a pointer that does not identify a changed file.
 6. Make sure that each subagent does a dry run. The first line of the reader prompt tells the subagent to do a dry run.
 7. After the last report of the round, save each reader report to a new file in `<round folder>/reader-round-<n>/`. Save each report as "When you save a file or run a command in a round" tells you.
-8. Before you change a file of the round, run the report form for reader reports for each file of the round. The script compares each quote with the file on the disk. Run the report form for reader reports as "When you run the check script" in `SKILL.md` tells you. Write the full path of each file, as item 2 of "During and after a review round" tells you. In that command, also obey these rules:
+8. Before you change a file of the round, run the report form for reader reports one time for the round. The script compares each quote with the files on the disk. Run the report form for reader reports as "When you run the check script" in `SKILL.md` tells you. Write the full path of each file, as item 2 of "During and after a review round" tells you. In that command, also obey these rules:
    - Give the reports in the sequence of the tasks in the tasks file.
-   - In the edit job, give the copy of the file that you saved before your first change. In the write job, give "none", because all lines are new.
+   - Give each file of the readers with its copy. For a changed file, give the copy that you saved before your first change. For a new file, give "none", because all lines are new. For a file that the job did not change, give the file as its copy.
    - Do not use the quotes in the dropped list.
 9. The script finds 2 types of problems. A typical task has a problem when its report does not use a tested quote. The out-of-scope task has a problem when its report uses an added or changed line.
 10. For each typical-task report, write a closed list: each step, its quote, and "yes" or "no". Write "yes" when the step obeys its quote for the task. Save each closed list to a new file in `<round folder>/reader-round-<n>/`, as "When you save a file or run a command in a round" tells you. Start the file name with `closed-list-`. Write one line for each step in this form: `<number>. <yes or no>: "<step>" - "<quote>"`. For each report with one or more "no" answers, do the vote in "When a reader step does not obey the instruction".
@@ -270,11 +273,12 @@ Use this prompt for each reader:
 Check class: reader
 This task is a dry run. Only read files. Do not write files, change Git data, or change external services.
 
-Instruction file: <absolute path>
+Instruction files: <the absolute paths of the files of the readers: first the first file of the review target, then each other file>
 Project folder: <absolute path>
 Task: <the task text>
 
-Before your first step, read the instruction file from the disk with a file tool. A copy that loaded at the start
+Start the task from the first instruction file, as an agent starts a task.
+Before your first step, read each instruction file from the disk with a file tool. A copy that loaded at the start
 of your session can be older than the file.
 Read the files that the instruction tells you to read for this task.
 Use only these shell commands: `cat`, `head`, `tail`, `grep`, `rg`, `ls`, `wc`, `diff`, `cd`, `echo`, `pwd`, and `sed -n`.
@@ -295,7 +299,7 @@ Part 3: Unclear parts
 - "<a part of the instruction that was not clear to you>" - <one sentence that gives the cause>
 If a step uses 2 quotes from the instruction, write 2 lines with the same step number in part 2.
 If all of the instruction was clear to you, write "None" in part 3.
-Copy each quote from the instruction word for word. A script compares each quotation with the instruction file.
+Copy each quote from the instruction word for word. A script compares each quotation with the instruction files.
 In each line of part 2 and part 3, use quotation marks only around the quote from the instruction.
 Give only these 3 parts. Write each step and each quote from the instruction on a different line. Put long text, for example a prompt, at the end of part 1.
 ```
@@ -332,10 +336,10 @@ Do the checks in this sequence:
 3. Do not do the vote of "When a reviewer has blocking findings". Each finding in the blocking list counts as a confirmed blocking finding. When the new subagent of a confirmer also fails, each finding of that vote also counts as a confirmed blocking finding.
    Also do not do the vote of "When a reader step does not obey the instruction". Each "no" in a closed list counts as a confirmed wrong step.
 4. Correct your text after each round. Then do the next round, or write that the self-check stopped.
-5. After the self-check stops, do each reader task that no subagent did, one after the other. Use these titles, with the number of the reader-test round and the file name:
-   - "Reader-test round <n>, <file>, reader task 1 (typical): <task>"
-   - "Reader-test round <n>, <file>, reader task 2 (typical): <task>"
-   - "Reader-test round <n>, <file>, reader task 3 (out-of-scope): <task>"
+5. After the self-check stops, do each reader task that no subagent did, one after the other. Use these titles, with the number of the reader-test round:
+   - "Reader-test round <n>, reader task 1 (typical): <task>"
+   - "Reader-test round <n>, reader task 2 (typical): <task>"
+   - "Reader-test round <n>, reader task 3 (out-of-scope): <task>"
 6. In each reader report, give the 3 parts in the form of the reader prompt. For each step, write the part of the instruction that you used in quotation marks.
 7. When you write the end-of-run report, add the warning about the checks that you did yourself. Write it as the Warnings part in `end-of-run-report.md` tells you. In this warning, also write that no vote occurred for the blocking findings and the wrong steps.
 

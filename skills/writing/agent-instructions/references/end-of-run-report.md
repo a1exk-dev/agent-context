@@ -34,6 +34,7 @@ In the Warnings part, add one item for each of these warnings that is applicable
 - In the edit job, each finding about text that is not in the changed part.
 - In the edit job, each pointer in an unchanged part that does not give the condition to read its target. The pointer list of the check script gives each sentence that names a file path.
 - Each problem from the reader test that you cannot correct.
+- Each new or changed rule that no tested quote of a reader task is from. Write that no reader task tested these rules.
 - Each text that a round 3 correction changed, and each text that an advisory correction in the last review round changed. Also each text that changed after the reader test when you did all 3 review rounds. Write that no reviewer examined these texts.
 - Each text that a correction of an unclear part after the last reader-test round changed. Write that no reader examined these texts.
 - Each check that you did yourself because no subagent was available or because a new subagent also failed. Give the path of the report folder. Write that no vote occurred for the blocking findings and the wrong steps of these checks. If you did a reader task yourself, write that you were not a new reader for that task.

@@ -131,14 +131,14 @@ node <skill folder>/scripts/check.ts --reports --file <file under review> <repor
 - The JSON also gives the confirm list. This list gives each report that has one or more findings in the blocking list. When a subagent is available, give the blocking findings of each report in the confirm list to the 2 confirmers of its reviewer. Start no confirmers for a reviewer that has no report in a confirm list.
 - The exit codes are the same as in the first form. Exit code 1 shows one or more findings in the blocking list or the advisory list.
 
-For the reader reports of one file, also give the saved copy and the tasks file that `references/review.md` gives. Give the reports in the sequence of the tasks:
+For the reader reports of a reader-test round, give each file of the readers with its copy, and the tasks file that `references/review.md` gives. Give the reports in the sequence of the tasks:
 
 ```sh
-node <skill folder>/scripts/check.ts --reports --file <file under review> --copy <saved copy or none> --tasks <tasks file> <reader report>... > <JSON file>
+node <skill folder>/scripts/check.ts --reports --file <file of the readers> --copy <its copy or none> [--file <file> --copy <copy or none>]... --tasks <tasks file> <reader report>... > <JSON file>
 ```
 
 - The script gives JSON with 3 lists: the problems list, the unclear list, and the dropped list. Exit code 1 shows one or more items in the problems list or the unclear list.
-- A tested quote that is not in the file under review gives exit code 2. A reader report without its 3 parts also gives exit code 2.
+- A tested quote that is not in the files of the readers gives exit code 2. A reader report without its 3 parts also gives exit code 2.
 
 ## When you write the end-of-run report
 
