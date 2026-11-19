@@ -20,7 +20,7 @@ An Agent instruction is a file that an agent reads as instructions. Examples are
 _Avoid_: prompt file, instruction file
 
 **Operator**:
-The Operator is the human who controls a project and the agents that work in it. Only the Operator answers the questions of an agent and gives approval. An agent never acts as the Operator.
+The Operator is the human who controls a project and the agents that work in it. Only the Operator answers the questions of an agent and gives approval. An agent never acts as the Operator. In a manual check, an agent can answer the questions of a test session in a copy of a test project. That agent is the test driver, not the Operator.
 _Avoid_: user, owner, maintainer
 
 **Policy**:
