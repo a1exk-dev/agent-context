@@ -17,6 +17,8 @@ import { parseArgs } from "node:util";
 
 const usage = `Usage: node check.ts <file>... --project <folder> --glossary <path|none>
        node check.ts --reports --file <file under review> <report>...
+       node check.ts --reports --file <file> --copy <copy|none>
+           [--file <file> --copy <copy|none>]... --tasks <tasks file> <report>...
 
 File form: checks each file for the rules that end with "(script check)" in
 the rule files of the agent-instructions Skill. Writes JSON to stdout:
@@ -37,7 +39,7 @@ It drops each finding with a missing field, a Text quote that is not in the
 file, or a Rule quote that is in no rule that ends with "(blocking)" or
 "(advisory)". It sorts the other findings by the mark of their rule. The
 confirm list gives each report with one or more findings in the blocking
-list, and tells the author to give these findings to the 2 confirmers of
+list, and tells the author to give these findings to the confirmers of
 the reviewer of that report.
 
 Report form for reader reports: give --file <file> --copy <saved copy|none>
@@ -1614,7 +1616,7 @@ function reportForm(argv: string[]): number {
         const count = blockingCounts.get(report) ?? 0;
         if (count === 0) return [];
         const action =
-            "Give the blocking findings of this report to the 2 confirmers of its reviewer.";
+            "Give the blocking findings of this report to the confirmers of its reviewer.";
         return [{ report, blocking: count, action }];
     });
     process.stdout.write(
@@ -1686,7 +1688,7 @@ function readerForm(
                     const found = occurrences(targets, quote);
                     if (found.length === 0)
                         throw new ReaderError(
-                            `The tested quote "${quote}" of task ${i + 1} is not in the files under review.`,
+                            `The tested quote "${quote}" of task ${i + 1} is not in the files of the readers.`,
                         );
                     return found;
                 }),
@@ -1712,7 +1714,7 @@ function readerForm(
             if (found.length === 0) {
                 dropped.push({
                     ...quote,
-                    reason: "The quote is not in the files under review.",
+                    reason: "The quote is not in the files of the readers.",
                 });
                 continue;
             }

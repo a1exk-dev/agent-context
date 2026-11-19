@@ -1435,12 +1435,12 @@ describe("check script, report form", () => {
             {
                 report: expect.stringMatching(/report-1\.md$/),
                 blocking: 1,
-                action: "Give the blocking findings of this report to the 2 confirmers of its reviewer.",
+                action: "Give the blocking findings of this report to the confirmers of its reviewer.",
             },
             {
                 report: expect.stringMatching(/report-4\.md$/),
                 blocking: 2,
-                action: "Give the blocking findings of this report to the 2 confirmers of its reviewer.",
+                action: "Give the blocking findings of this report to the confirmers of its reviewer.",
             },
         ]);
     });
@@ -1740,14 +1740,14 @@ describe("check script, report form for reader reports", () => {
                 reportLine: 7,
                 part: 2,
                 text: "Make a hotfix branch.",
-                reason: "The quote is not in the files under review.",
+                reason: "The quote is not in the files of the readers.",
             },
             {
                 report: expect.stringMatching(/reader-2\.md$/),
                 reportLine: 8,
                 part: 3,
                 text: "Make a bugfix branch.",
-                reason: "The quote is not in the files under review.",
+                reason: "The quote is not in the files of the readers.",
             },
         ]);
     });
@@ -1828,7 +1828,7 @@ describe("check script, report form for reader reports", () => {
         expect(result.code).toBe(2);
         expect(result.stdout).toBe("");
         expect(result.stderr).toMatch(
-            /tested quote "release branch from develop" of task 1 is not in the file/,
+            /tested quote "release branch from develop" of task 1 is not in the files of the readers/,
         );
     });
 
@@ -1894,7 +1894,7 @@ describe("check script, report form for reader reports", () => {
             expect.objectContaining({
                 report: expect.stringMatching(/reader-3\.md$/),
                 text: "Make a hotfix branch.",
-                reason: "The quote is not in the files under review.",
+                reason: "The quote is not in the files of the readers.",
             }),
         ]);
     });
