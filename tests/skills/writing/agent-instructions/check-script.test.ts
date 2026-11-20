@@ -1,5 +1,11 @@
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import {
+    mkdirSync,
+    mkdtempSync,
+    readdirSync,
+    readFileSync,
+    writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -324,9 +330,9 @@ describe("check script, file form", () => {
 describe("check script, loading rules", () => {
     it("finds a SKILL.md of more than 20,000 bytes", () => {
         const body = codeBlock(210);
-        const folder = project({
-            "a/SKILL.md": skill("a", "When you test, use this skill.") + body,
-        });
+        const folder = project(
+            goodSkill(skill("a", "When you test, use this skill.") + body),
+        );
         const result = checkFiles(folder, ["a/SKILL.md"]);
         expect(result.code).toBe(1);
         expect(result.findings).toEqual([
@@ -346,9 +352,11 @@ describe("check script, loading rules", () => {
     });
 
     it("finds a SKILL.md of 500 lines or more", () => {
-        const folder = project({
-            "a/SKILL.md": `${skill("a", "When you test, use this skill.")}${"\n".repeat(494)}`,
-        });
+        const folder = project(
+            goodSkill(
+                `${skill("a", "When you test, use this skill.")}${"\n".repeat(494)}`,
+            ),
+        );
         const result = checkFiles(folder, ["a/SKILL.md"]);
         expect(result.findings).toEqual([
             loading(
@@ -366,9 +374,11 @@ describe("check script, loading rules", () => {
     });
 
     it("passes a SKILL.md of 499 lines", () => {
-        const folder = project({
-            "a/SKILL.md": `${skill("a", "When you test, use this skill.")}${"\n".repeat(493)}`,
-        });
+        const folder = project(
+            goodSkill(
+                `${skill("a", "When you test, use this skill.")}${"\n".repeat(493)}`,
+            ),
+        );
         expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([]);
     });
 
@@ -398,6 +408,12 @@ describe("check script, loading rules", () => {
                 5,
                 "model: x",
             ),
+            frontmatter(
+                'The frontmatter field "license" operates only on some platforms. Write only "name" and "description", and "disable-model-invocation: true" in a Manual-only Skill.',
+                4,
+                "license: MIT",
+            ),
+            noCodexFile("Bad--Name/SKILL.md"),
         ]);
     });
 
@@ -434,13 +450,12 @@ describe("check script, loading rules", () => {
                         'The frontmatter field "disable-model-invocation" is permitted only in a Manual-only Skill. A Manual-only Skill also has agents/openai.yaml with "allow_implicit_invocation: false" under "policy:".',
                 },
             ),
+            noCodexFile("a/SKILL.md"),
         ]);
     });
 
     it("finds a name that is not the folder name, and a long description", () => {
-        const folder = project({
-            "a/SKILL.md": skill("b", "x".repeat(1025)),
-        });
+        const folder = project(goodSkill(skill("b", "x".repeat(1025))));
         expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
             loading(
                 "references/agent-skills-spec.md",
@@ -463,15 +478,27 @@ describe("check script, loading rules", () => {
                         "The description has 1025 characters. The limit is 1 to 1024 characters.",
                 },
             ),
+            loading(
+                "references/agent-skills-spec.md",
+                "When you write the description",
+                {
+                    text: `description: "${"x".repeat(1025)}"`,
+                    path: "a/SKILL.md",
+                    line: 3,
+                    problem:
+                        'The description does not start with its condition. Write the condition first: "When ..., use this skill."',
+                },
+            ),
         ]);
     });
 
     it("finds a SKILL.md with no frontmatter", () => {
-        const folder = project({ "a/SKILL.md": "# Title\n" });
+        const folder = project(goodSkill("# Title\n"));
         expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual(
             [
                 "The frontmatter has no name.",
                 "The frontmatter has no description.",
+                "SKILL.md does not start with YAML frontmatter.",
             ].map((problem) =>
                 loading(
                     "references/agent-skills-spec.md",
@@ -483,9 +510,11 @@ describe("check script, loading rules", () => {
     });
 
     it("reads a description in a block scalar", () => {
-        const folder = project({
-            "a/SKILL.md": `---\nname: a\ndescription: >\n  When you test,\n  use this skill.\n---\n\n# Title\n`,
-        });
+        const folder = project(
+            goodSkill(
+                `---\nname: a\ndescription: >\n  When you test,\n  use this skill.\n---\n\n# Title\n`,
+            ),
+        );
         expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([]);
     });
 
@@ -567,104 +596,18 @@ describe("check script, glossary rules", () => {
     ].join("\n");
 
     const term = (rule: string, text: string, line: number, problem: string) =>
-        ste(
-            rule,
-            rule === "6.2"
-                ? "When you write a sentence"
-                : "When you select a technical noun",
-            {
-                text,
-                line,
-                problem,
-            },
-        );
+        ste(rule, "When you select a technical noun", { text, line, problem });
 
-    it("finds each _Avoid_ word of the glossary in any case", () => {
+    // The glossary only permits a word. Round 4 of #265 confirmed 2 findings
+    // that came only from the _Avoid_ list of a glossary.
+    it("gives no finding for an _Avoid_ word or a term in a different case", () => {
         const folder = project({
             "GLOSSARY.md": glossary,
-            "AGENTS.md":
-                "Ask the user-facing team. Ask the User.\n\nAsk the project\nowner. Ask the `user`.\n",
+            "AGENTS.md": "Ask the user. The operators approve. Do a Dry run.\n",
         });
         expect(
             checkFiles(folder, ["AGENTS.md"], "GLOSSARY.md").findings,
-        ).toEqual([
-            term(
-                "1.11",
-                "Ask the User.",
-                1,
-                'The sentence has "User", which the glossary gives after _Avoid_.',
-            ),
-            term(
-                "1.11",
-                "Ask the project\nowner.",
-                3,
-                'The sentence has "project\nowner", which the glossary gives after _Avoid_.',
-            ),
-        ]);
-    });
-
-    // The case problem tells the author to keep the case of a word with a
-    // different meaning. Run 04 of #145 wrote "Release branch" for a branch.
-    const caseProblem = (word: string, term: string, fixed: string) =>
-        `The sentence has "${word}", but the glossary term is "${term}". If "${word}" has the meaning of the glossary term, write "${fixed}". If not, do not change the case: write a different word.`;
-
-    it("finds a glossary term in a different case", () => {
-        const folder = project({
-            "GLOSSARY.md": glossary,
-            "AGENTS.md":
-                "Operator approves. The operators approve. Dry run first. Do a Dry run.\n",
-        });
-        expect(
-            checkFiles(folder, ["AGENTS.md"], "GLOSSARY.md").findings,
-        ).toEqual([
-            term(
-                "6.2",
-                "The operators approve.",
-                1,
-                caseProblem("operators", "Operator", "Operators"),
-            ),
-            term(
-                "6.2",
-                "Do a Dry run.",
-                1,
-                caseProblem("Dry run", "dry run", "dry run"),
-            ),
-        ]);
-    });
-
-    it("does not find an _Avoid_ word or a term case in a glossary term", () => {
-        const folder = project({
-            "GLOSSARY.md": [
-                "**Rule**:",
-                "A short file.",
-                "",
-                "**Setting**:",
-                "One line of a policy.",
-                "_Avoid_: option, rule",
-                "",
-                "**Blocking rule**:",
-                "A rule that fails a round.",
-                "",
-            ].join("\n"),
-            "AGENTS.md":
-                "Each Rule applies. A Blocking rule fails. Each blocking rule fails. The rule applies.\n",
-        });
-        expect(
-            checkFiles(folder, ["AGENTS.md"], "GLOSSARY.md").findings,
-        ).toEqual([
-            term(
-                "6.2",
-                "Each blocking rule fails.",
-                1,
-                caseProblem("blocking rule", "Blocking rule", "Blocking rule"),
-            ),
-            term(
-                "6.2",
-                "The rule applies.",
-                1,
-                caseProblem("rule", "Rule", "Rule"),
-            ),
-        ]);
+        ).toEqual([]);
     });
 
     it("skips the _Avoid_ lines of the glossary", () => {
@@ -702,6 +645,322 @@ describe("check script, glossary rules", () => {
                 "An **Operator** starts an **agent**.",
                 1,
                 'The bold term "Operator" is not in the glossary or in the base list of technical-terms.md.',
+            ),
+        ]);
+    });
+});
+
+// The Codex file of a Skill, with the value of allow_implicit_invocation.
+const openai = (implicit: boolean) =>
+    `interface:\n  display_name: "A"\npolicy:\n  allow_implicit_invocation: ${implicit}\n`;
+
+// A Skill folder "a" that obeys each rule of the Agent Skills specification.
+const goodSkill = (text = skill("a", "When you test, use this skill.")) => ({
+    "a/SKILL.md": text,
+    "a/agents/openai.yaml": openai(true),
+});
+
+const spec = (
+    heading: string,
+    fields: { text: string; path: string; line: number; problem: string },
+) => loading("references/agent-skills-spec.md", heading, fields);
+
+function noCodexFile(path: string) {
+    return spec("When you write or edit a Skill: the agents/openai.yaml file", {
+        text: "---",
+        path,
+        line: 1,
+        problem:
+            "The Skill has no agents/openai.yaml. Write the file in the write job, and in each job for a Manual-only Skill. In the edit job for a different Skill, give a warning that recommends the file.",
+    });
+}
+
+const front = (text: string, line: number, problem: string) =>
+    spec("When you write the folder and the frontmatter", {
+        text,
+        path: "a/SKILL.md",
+        line,
+        problem,
+    });
+
+describe("check script, rule 3.4", () => {
+    it('finds "can", "must", or "will" with "be" and a past participle', () => {
+        const result = check(
+            "The file must be closed. It can also be easily found.\n\nThe run will not be done. It cannot be read.\n",
+        );
+        expect(result.code).toBe(1);
+        expect(result.findings).toEqual(
+            [
+                ["The file must be closed.", 1, "must be closed"],
+                ["It can also be easily found.", 1, "can also be easily found"],
+                ["The run will not be done.", 3, "will not be done"],
+                ["It cannot be read.", 3, "cannot be read"],
+            ].map(([text, line, words]) =>
+                ste("3.4", "When you write a verb", {
+                    text: text as string,
+                    line: line as number,
+                    problem: `The sentence has "${words}": "can", "must", or "will" with "be" and a past participle.`,
+                }),
+            ),
+        );
+    });
+
+    it("passes an active verb, an adjective after be, and quoted text", () => {
+        const result = check(
+            'Close the file. The file is closed. You can find it. It will be ready. Write "it can be used" or `must be done`.\n',
+        );
+        expect(result.findings).toEqual([]);
+    });
+});
+
+describe("check script, loading rules for platform files", () => {
+    it("finds a file in .claude/rules/ and an AGENTS.override.md", () => {
+        const folder = project({
+            ".claude/rules/a.md": "Run the check.\n",
+            "AGENTS.override.md": "Run the check.\n",
+        });
+        const feature = (path: string, problem: string) =>
+            loading(
+                "references/loading-rules.md",
+                "When you select a feature",
+                {
+                    text: "Run the check.",
+                    path,
+                    line: 1,
+                    problem,
+                },
+            );
+        expect(
+            checkFiles(folder, [".claude/rules/a.md", "AGENTS.override.md"])
+                .findings,
+        ).toEqual([
+            feature(
+                ".claude/rules/a.md",
+                'The file is in ".claude/rules/". Only Claude Code reads this folder. Put the text in AGENTS.md or CLAUDE.md.',
+            ),
+            feature(
+                "AGENTS.override.md",
+                'The file is "AGENTS.override.md". Only Codex reads this file. Put the text in AGENTS.md.',
+            ),
+        ]);
+    });
+
+    it("passes the same text in AGENTS.md and in docs/agents/", () => {
+        const folder = project({
+            "AGENTS.md": "Run the check.\n",
+            "docs/agents/a.md": "Run the check.\n",
+        });
+        expect(
+            checkFiles(folder, ["AGENTS.md", "docs/agents/a.md"]).findings,
+        ).toEqual([]);
+    });
+});
+
+describe("check script, Agent Skills specification rules", () => {
+    it("passes a Skill that obeys each rule", () => {
+        const folder = project({
+            "a/SKILL.md": `---\nname: a\ndescription: >\n  Before you test,\n  use this skill.\n# A comment.\ndisable-model-invocation: true\n---\n\n# Title\n`,
+            "a/agents/openai.yaml": openai(false),
+        });
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([]);
+    });
+
+    it("finds a SKILL.md with no text after the frontmatter", () => {
+        const folder = project(
+            goodSkill(
+                '---\nname: a\ndescription: "When you test, use this skill."\n---\n',
+            ),
+        );
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+            front(
+                "---",
+                1,
+                "SKILL.md has no Markdown text after the frontmatter.",
+            ),
+        ]);
+    });
+
+    it("finds frontmatter with no closing line", () => {
+        const folder = project(goodSkill("---\nname: a\n\n# Title\n"));
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual(
+            [
+                "The frontmatter has no name.",
+                "The frontmatter has no description.",
+                'The frontmatter has no closing "---" line.',
+            ].map((problem) => front("---", 1, problem)),
+        );
+    });
+
+    const colon =
+        'The value of "description" has ":" before a space or at the end of the line. Put the value in quotation marks.';
+    const yamlCases: [string, number, string, string][] = [
+        [
+            "description: When you test: use this skill.",
+            3,
+            "description: When you test: use this skill.",
+            colon,
+        ],
+        [
+            "description: When you test,\n  use this: skill.",
+            4,
+            "  use this: skill.",
+            colon,
+        ],
+        [
+            "description: \"When you test, use \\'a\\' skill.\"",
+            3,
+            "description: \"When you test, use \\'a\\' skill.\"",
+            'The value of "description" has the escape "\\\'", which YAML does not read.',
+        ],
+        [
+            'description: "When you test" use this skill.',
+            3,
+            'description: "When you test" use this skill.',
+            'The value of "description" has text after its closing quotation mark.',
+        ],
+        [
+            'description: "When you test, use this skill.',
+            3,
+            'description: "When you test, use this skill.',
+            'The value of "description" has no closing quotation mark.',
+        ],
+        [
+            "description: *When* you test, use this skill.",
+            3,
+            "description: *When* you test, use this skill.",
+            'The value of "description" starts with "*". Put the value in quotation marks.',
+        ],
+        [
+            'description: "When you test, use this skill."\nname: a',
+            4,
+            "name: a",
+            'The frontmatter has the key "name" two times.',
+        ],
+        [
+            'description: "When you test, use this skill."\nuse this skill',
+            4,
+            "use this skill",
+            'The line is not a "key: value" line.',
+        ],
+    ];
+
+    for (const [field, line, text, problem] of yamlCases)
+        it(`finds the YAML error on line ${line}: ${problem}`, () => {
+            const folder = project(
+                goodSkill(`---\nname: a\n${field}\n---\n\n# Title\n`),
+            );
+            expect(checkFiles(folder, ["a/SKILL.md"]).findings).toContainEqual(
+                front(text, line, problem),
+            );
+        });
+
+    it("finds compatibility and metadata problems, and fields for some platforms", () => {
+        const compatibility = `compatibility: "${"x".repeat(501)}"`;
+        const folder = project(
+            goodSkill(
+                skill(
+                    "a",
+                    "When you test, use this skill.",
+                    `license: MIT\n${compatibility}\nmetadata:\n  author: "a"\n  version: 1.0\n  tags:\n    - x\n  true: "a"\n`,
+                ),
+            ),
+        );
+        const field = (key: string, line: number, text: string) =>
+            front(
+                text,
+                line,
+                `The frontmatter field "${key}" operates only on some platforms. Write only "name" and "description", and "disable-model-invocation: true" in a Manual-only Skill.`,
+            );
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+            front(
+                compatibility,
+                5,
+                "The compatibility value has 501 characters. The limit is 500 characters.",
+            ),
+            front(
+                "  version: 1.0",
+                8,
+                'The value of "version" in metadata is not text. Put it in quotation marks.',
+            ),
+            front(
+                "  tags:",
+                9,
+                'The value of "tags" in metadata is not text. Put it in quotation marks.',
+            ),
+            front(
+                '  true: "a"',
+                11,
+                'The key "true" in metadata is not text. Put it in quotation marks.',
+            ),
+            field("license", 4, "license: MIT"),
+            field("compatibility", 5, compatibility),
+            field("metadata", 6, "metadata:"),
+        ]);
+    });
+
+    it("finds a description that does not start with its condition", () => {
+        for (const [description, problem] of [
+            [
+                "Use this skill when you test.",
+                'The description has "Use this skill when". Write the condition first: "When ..., use this skill."',
+            ],
+            [
+                "Tests the code. Use it when you test.",
+                'The description does not start with its condition. Write the condition first: "When ..., use this skill."',
+            ],
+        ]) {
+            const folder = project(goodSkill(skill("a", description)));
+            expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+                spec("When you write the description", {
+                    text: `description: "${description}"`,
+                    path: "a/SKILL.md",
+                    line: 3,
+                    problem,
+                }),
+            ]);
+        }
+    });
+
+    it("finds a Skill with no agents/openai.yaml", () => {
+        const folder = project({
+            "a/SKILL.md": skill("a", "When you test, use this skill."),
+        });
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+            noCodexFile("a/SKILL.md"),
+        ]);
+    });
+
+    it("finds a wrong or missing allow_implicit_invocation", () => {
+        const codex = (text: string, line: number, problem: string) =>
+            spec(
+                "When you write or edit a Skill: the agents/openai.yaml file",
+                {
+                    text,
+                    path: "a/agents/openai.yaml",
+                    line,
+                    problem,
+                },
+            );
+        const folder = project({
+            ...goodSkill(),
+            "a/agents/openai.yaml": openai(false),
+        });
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+            codex(
+                "  allow_implicit_invocation: false",
+                4,
+                'In a Skill that is not a Manual-only Skill, write "allow_implicit_invocation: true" under "policy:".',
+            ),
+        ]);
+        writeFileSync(
+            join(folder, "a/agents/openai.yaml"),
+            'interface:\n  display_name: "A"\n',
+        );
+        expect(checkFiles(folder, ["a/SKILL.md"]).findings).toEqual([
+            codex(
+                "interface:",
+                1,
+                'agents/openai.yaml has no "allow_implicit_invocation" under "policy:".',
             ),
         ]);
     });
@@ -857,6 +1116,48 @@ describe("check script, ISO 24495-1 rules", () => {
         expect(result.pointers).toHaveLength(1);
     });
 
+    const headings = {
+        "skills/a/SKILL.md": `${skill("a", "When you test, use this skill.")}\n## When you stage files\n\n## Before the first \`git add\`\n`,
+        "skills/a/references/b.md": [
+            "# B",
+            "",
+            'Stage the files as "When you stage files" in `SKILL.md` tells you.',
+            'Read the section "Before the first `git add`" of `SKILL.md`.',
+            "",
+        ].join("\n"),
+    };
+
+    it("finds no problem in a pointer that quotes a heading of its target", () => {
+        const folder = project(headings);
+        expect(
+            checkFiles(folder, ["skills/a/references/b.md"]).findings,
+        ).toEqual([]);
+    });
+
+    it("finds a quoted heading that the pointer target does not have", () => {
+        const folder = project({
+            ...headings,
+            "skills/a/references/b.md": [
+                "# B",
+                "",
+                "When you commit, do the steps of",
+                '"When you commit" in `SKILL.md`.',
+                "",
+            ].join("\n"),
+        });
+        expect(
+            checkFiles(folder, ["skills/a/references/b.md"]).findings,
+        ).toEqual([
+            iso("When you put the text in sections and lists", {
+                text: 'When you commit, do the steps of\n"When you commit" in `SKILL.md`.',
+                path: "skills/a/references/b.md",
+                line: 3,
+                problem:
+                    'The pointer target "SKILL.md" has no heading "When you commit".',
+            }),
+        ]);
+    });
+
     it("does not list a name or a placeholder as a file path", () => {
         const folder = project({
             "AGENTS.md":
@@ -905,13 +1206,13 @@ const finding = (fields: {
         .filter((line, i, lines) => line !== "" || i === lines.length - 1)
         .join("\n");
 
-const passive = '3.6 "Use the active voice (rule 3.6)."';
+const imperative = '5.3 "Write each instruction in the imperative (rule 5.3)."';
 
 describe("check script, report form", () => {
     it("drops a finding whose Text quote is not in the file", () => {
         const result = checkReports("The file is read by the agent.\n", [
             finding({
-                rule: passive,
+                rule: imperative,
                 text: "The file is written by the agent.",
             }),
         ]);
@@ -928,7 +1229,7 @@ describe("check script, report form", () => {
     it("drops a finding with a missing field", () => {
         const result = checkReports("The file is read by the agent.\n", [
             finding({
-                rule: passive,
+                rule: imperative,
                 text: "The file is read by the agent.",
                 problem: "",
             }),
@@ -976,7 +1277,7 @@ describe("check script, report form", () => {
                 "Round 1: ASD-STE100 review",
                 "",
                 finding({
-                    rule: passive,
+                    rule: imperative,
                     text: "The file is read by the agent.",
                     problem: "The sentence is in the passive voice.",
                     correction: "The agent reads the file.",
@@ -995,9 +1296,9 @@ describe("check script, report form", () => {
         expect(result.blocking).toEqual([
             {
                 reviewer: "ASD-STE100",
-                rule: "3.6",
+                rule: "5.3",
                 ruleFile: "references/ste-rules.md",
-                heading: "When you write a verb",
+                heading: "When you write a procedure or a rule",
                 text: "The file is read by the agent.",
                 path: expect.stringMatching(/AGENTS\.md$/),
                 line: 4,
@@ -1024,19 +1325,22 @@ describe("check script, report form", () => {
     it("lists each report with blocking findings after the drop for the confirmers of its reviewer", () => {
         const text = "# Title\n\nWork well.\nThe file is read by the agent.\n";
         const result = checkReports(text, [
-            finding({ rule: passive, text: "The file is read by the agent." }),
-            finding({ rule: passive, text: "The file is written by it." }),
+            finding({
+                rule: imperative,
+                text: "The file is read by the agent.",
+            }),
+            finding({ rule: imperative, text: "The file is written by it." }),
             finding({
                 rule: '4.1 "Write short and clear sentences (rule 4.1). Give the action or the fact, not a general statement."',
                 text: "Work well.",
             }),
             [
                 finding({
-                    rule: passive,
+                    rule: imperative,
                     text: "The file is read by the agent.",
                 }),
                 finding({
-                    rule: passive,
+                    rule: imperative,
                     text: "The file is read by the agent.",
                 }),
             ].join("\n"),
@@ -1045,12 +1349,12 @@ describe("check script, report form", () => {
             {
                 report: expect.stringMatching(/report-1\.md$/),
                 blocking: 1,
-                action: "Give the blocking findings of this report to the 2 confirmers of its reviewer.",
+                action: "Give the blocking findings of this report to the confirmers of its reviewer.",
             },
             {
                 report: expect.stringMatching(/report-4\.md$/),
                 blocking: 2,
-                action: "Give the blocking findings of this report to the 2 confirmers of its reviewer.",
+                action: "Give the blocking findings of this report to the confirmers of its reviewer.",
             },
         ]);
     });
@@ -1063,6 +1367,56 @@ describe("check script, report form", () => {
             }),
         ]);
         expect(result.confirm).toEqual([]);
+    });
+
+    // #261: 20 Blocking rules stay. Each other judgment rule is advisory.
+    it.each([
+        ['3.6 "Use the active voice (rule 3.6)."', "advisory"],
+        [
+            '9.4 "Use the same terms and the same words for the same type of step (rule 9.4)."',
+            "advisory",
+        ],
+        ['"Use a neutral and direct tone."', "advisory"],
+        [
+            '1.11 "Use one technical noun for each item, and one item for each technical noun"',
+            "blocking",
+        ],
+        ['"Write each pointer as a sentence"', "blocking"],
+    ])("sorts a finding for the rule %s into the %s list", (rule, list) => {
+        const result = checkReports("The file is read by the agent.\n", [
+            finding({ rule, text: "The file is read by the agent." }),
+        ]);
+        expect(result.dropped).toEqual([]);
+        expect(result[list]).toHaveLength(1);
+    });
+
+    it("finds each marked rule of the rule files", () => {
+        const references = join(dirname(script), "../references");
+        const rules = readdirSync(references).flatMap((name) =>
+            readFileSync(join(references, name), "utf8")
+                .split("\n")
+                .map((line) =>
+                    /^\s*(?:-|\d+\.) (.*) \((blocking|advisory)\)$/.exec(line),
+                )
+                .filter((match) => match !== null)
+                .map((match) => ({ rule: match[1], mark: match[2] })),
+        );
+        const result = checkReports(
+            "The file is read by the agent.\n",
+            rules.map(({ rule }) =>
+                finding({
+                    rule: `"${rule}"`,
+                    text: "The file is read by the agent.",
+                }),
+            ),
+        );
+        expect(result.dropped).toEqual([]);
+        expect(result.blocking).toHaveLength(
+            rules.filter(({ mark }) => mark === "blocking").length,
+        );
+        expect(result.advisory).toHaveLength(
+            rules.filter(({ mark }) => mark === "advisory").length,
+        );
     });
 
     it("gives a rule with a nested list the mark of its list items", () => {
@@ -1134,20 +1488,42 @@ function checkReaders(input: {
     tasks: ReaderTask[];
     reports: string[];
 }) {
+    return checkReaderFiles({
+        files: [{ path: "AGENTS.md", text: input.text, copy: input.copy }],
+        tasks: input.tasks,
+        reports: input.reports,
+    });
+}
+
+// Runs the report form on the reader reports for the files of the readers,
+// with one --file and one --copy for each file, in the sequence of `files`.
+function checkReaderFiles(input: {
+    files: { path: string; text: string; copy: string | null }[];
+    tasks: ReaderTask[];
+    reports: string[];
+}) {
     const folder = project({
-        "AGENTS.md": input.text,
         "tasks.json": JSON.stringify(input.tasks),
-        ...(input.copy === null ? {} : { "copy.md": input.copy }),
+        ...Object.fromEntries(
+            input.files.flatMap((file) => [
+                [file.path, file.text],
+                ...(file.copy === null
+                    ? []
+                    : [[`copies/${file.path}`, file.copy]]),
+            ]),
+        ),
         ...Object.fromEntries(
             input.reports.map((report, i) => [`reader-${i + 1}.md`, report]),
         ),
     });
     const result = run([
         "--reports",
-        "--file",
-        join(folder, "AGENTS.md"),
-        "--copy",
-        input.copy === null ? "none" : join(folder, "copy.md"),
+        ...input.files.flatMap((file) => [
+            "--file",
+            join(folder, file.path),
+            "--copy",
+            file.copy === null ? "none" : join(folder, "copies", file.path),
+        ]),
         "--tasks",
         join(folder, "tasks.json"),
         ...input.reports.map((_, i) => join(folder, `reader-${i + 1}.md`)),
@@ -1208,6 +1584,7 @@ describe("check script, report form for reader reports", () => {
                 kind: "out-of-scope",
                 report: expect.stringMatching(/reader-3\.md$/),
                 text: release,
+                file: expect.stringMatching(/AGENTS\.md$/),
                 line: 4,
                 problem:
                     "The out-of-scope task uses a part that the job added or changed.",
@@ -1252,6 +1629,7 @@ describe("check script, report form for reader reports", () => {
                 kind: "typical",
                 report: expect.stringMatching(/reader-2\.md$/),
                 text: "release branch from main",
+                file: expect.stringMatching(/AGENTS\.md$/),
                 line: 4,
                 problem: "Part 2 of the report does not use the tested quote.",
             },
@@ -1276,14 +1654,14 @@ describe("check script, report form for reader reports", () => {
                 reportLine: 7,
                 part: 2,
                 text: "Make a hotfix branch.",
-                reason: "The quote is not in the file under review.",
+                reason: "The quote is not in the files of the readers.",
             },
             {
                 report: expect.stringMatching(/reader-2\.md$/),
                 reportLine: 8,
                 part: 3,
                 text: "Make a bugfix branch.",
-                reason: "The quote is not in the file under review.",
+                reason: "The quote is not in the files of the readers.",
             },
         ]);
     });
@@ -1307,6 +1685,7 @@ describe("check script, report form for reader reports", () => {
                 reportLine: 8,
                 part: 3,
                 text: "release branch",
+                file: expect.stringMatching(/AGENTS\.md$/),
                 line: 4,
             },
         ]);
@@ -1363,7 +1742,7 @@ describe("check script, report form for reader reports", () => {
         expect(result.code).toBe(2);
         expect(result.stdout).toBe("");
         expect(result.stderr).toMatch(
-            /tested quote "release branch from develop" of task 1 is not in the file/,
+            /tested quote "release branch from develop" of task 1 is not in the files of the readers/,
         );
     });
 
@@ -1387,5 +1766,97 @@ describe("check script, report form for reader reports", () => {
         });
         expect(result.code).toBe(2);
         expect(result.stderr).toMatch(/3 tasks, but there are 1 reports/);
+    });
+
+    // The 3 readers of a change get the first file of the review target and
+    // each changed file. The first file has no change in this test.
+    const first = {
+        path: "AGENTS.md",
+        text: "# Agents\n\nBefore you make a release, read `docs/release.md`.\n",
+        copy: "# Agents\n\nBefore you make a release, read `docs/release.md`.\n",
+    };
+    const pointer = "Before you make a release, read `docs/release.md`.";
+    const releaseFile = {
+        path: "docs/release.md",
+        text: "# Release\n\nMake a release branch from main.\n",
+        copy: null,
+    };
+
+    it("checks the reports of a change against each file of the readers", () => {
+        const result = checkReaderFiles({
+            files: [first, releaseFile],
+            tasks: readerTasks,
+            reports: [
+                readerReport([pointer, release]),
+                readerReport([release], ["release branch"]),
+                readerReport([pointer], ["Make a hotfix branch."]),
+            ],
+        });
+        expect(result.code).toBe(1);
+        expect(result.problems).toEqual([]);
+        expect(result.unclear).toEqual([
+            {
+                report: expect.stringMatching(/reader-2\.md$/),
+                reportLine: 8,
+                part: 3,
+                text: "release branch",
+                file: expect.stringMatching(/docs\/release\.md$/),
+                line: 3,
+            },
+        ]);
+        expect(result.dropped).toEqual([
+            expect.objectContaining({
+                report: expect.stringMatching(/reader-3\.md$/),
+                text: "Make a hotfix branch.",
+                reason: "The quote is not in the files of the readers.",
+            }),
+        ]);
+    });
+
+    it("fails the out-of-scope task of a change when it uses a new line of a second file", () => {
+        const result = checkReaderFiles({
+            files: [first, releaseFile],
+            tasks: readerTasks,
+            reports: [
+                readerReport([release]),
+                readerReport([release]),
+                readerReport([pointer, release]),
+            ],
+        });
+        expect(result.code).toBe(1);
+        expect(result.problems).toEqual([
+            {
+                task: 3,
+                kind: "out-of-scope",
+                report: expect.stringMatching(/reader-3\.md$/),
+                text: release,
+                file: expect.stringMatching(/docs\/release\.md$/),
+                line: 3,
+                problem:
+                    "The out-of-scope task uses a part that the job added or changed.",
+            },
+        ]);
+    });
+
+    it("gives exit code 2 when the files and the copies are not one for each file", () => {
+        const folder = project({
+            "AGENTS.md": newText,
+            "docs/release.md": releaseFile.text,
+            "tasks.json": JSON.stringify(readerTasks),
+        });
+        const result = run([
+            "--reports",
+            "--file",
+            join(folder, "AGENTS.md"),
+            "--file",
+            join(folder, "docs/release.md"),
+            "--copy",
+            "none",
+            "--tasks",
+            join(folder, "tasks.json"),
+            join(folder, "reader-1.md"),
+        ]);
+        expect(result.code).toBe(2);
+        expect(result.stderr).toMatch(/one --copy for each --file/);
     });
 });

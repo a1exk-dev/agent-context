@@ -20,7 +20,7 @@ An Agent instruction is a file that an agent reads as instructions. Examples are
 _Avoid_: prompt file, instruction file
 
 **Operator**:
-The Operator is the human who controls a project and the agents that work in it. Only the Operator answers the questions of an agent and gives approval. An agent never acts as the Operator.
+The Operator is the human who controls a project and the agents that work in it. Only the Operator answers the questions of an agent and gives approval. An agent never acts as the Operator. In a manual check, an agent can answer the questions of a test session in a copy of a test project. That agent is the test driver, not the Operator.
 _Avoid_: user, owner, maintainer
 
 **Policy**:
@@ -36,15 +36,15 @@ A Commit review is what an agent shows the Operator before one commit. It gives 
 _Avoid_: commit preview, approval request
 
 **Blocking rule**:
-A Blocking rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark "(blocking)" at its end. A confirmed finding for a Blocking rule that the author accepts makes its review round fail. A breach of a Blocking rule makes an agent do a wrong action or miss an instruction. One or two quotations from the files let a new subagent answer yes or no.
+A Blocking rule is a judgment requirement in a reference file of the agent-instructions Skill. The requirement ends with the mark "(blocking)". When the author accepts a confirmed finding for a Blocking rule in the changed text, the review round of that finding fails. A breach of a Blocking rule makes an agent do a wrong action or miss an instruction. One or two quotations from the files let a new subagent decide if the text breaks the Blocking rule.
 _Avoid_: hard rule, error rule
 
 **Advisory rule**:
-An Advisory rule is a judgment requirement in a reference file of the agent-instructions Skill, with the mark "(advisory)" at its end. A finding for an Advisory rule never makes a review round fail.
+An Advisory rule is a judgment requirement in a reference file of the agent-instructions Skill. The requirement ends with the mark "(advisory)". A finding for an Advisory rule never makes a review round fail.
 _Avoid_: soft rule, warning rule
 
 **Confirmer**:
-A Confirmer is a new subagent that answers "yes" or "no", with one sentence, for each problem in its prompt. A different check found these problems. That check can be a reviewer, the grader of the output tests, or the author in a reader test. In a review round, a Confirmer answers for all problems for Blocking rules that one reviewer found. The Confirmer gets the requirement, the quoted text, and the files, but not the reason of the other check. A problem counts when one or more Confirmers answer "yes" for it.
+A Confirmer is a new subagent that answers "yes" or "no", with one sentence, for each problem in its prompt. A different check found these problems. That check can be a reviewer, the grader of the output tests, or the author in a reader test. In a review round, the first two Confirmers of a reviewer answer for all problems for Blocking rules that the reviewer found. A third Confirmer answers only for the problems with one "yes" and one "no" from the first two. The Confirmer gets the requirement, the quoted text, and the files, but not the reason of the other check. The number of "yes" answers that make a problem count depends on the check that found the problem.
 _Avoid_: verifier, second reviewer
 
 **Review target**:

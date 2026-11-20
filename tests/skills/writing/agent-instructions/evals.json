@@ -14,17 +14,17 @@
             "assertions": [
                 {
                     "id": "3a",
-                    "text": "The run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
+                    "text": "The run did a reader test with 3 dry-run subagents for the change, not 3 for each file. Each reader prompt gave each new or changed file. In each reader-test round, the run started the 3 readers in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", no confirmer for a closed list without a \"no\", and a maximum of 4 confirmers in a round.",
                     "grader": "script"
                 },
                 {
                     "id": "3b",
-                    "text": "The 3 reader tasks of each file are 2 typical tasks and 1 out-of-scope task.",
+                    "text": "The 3 reader tasks of the change are 2 typical tasks and 1 out-of-scope task. Each reader prompt gives the first file of the review target first, then each new or changed file.",
                     "grader": "llm"
                 },
                 {
                     "id": "3c",
-                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports on the reports of each file of the round before it corrected a file.",
+                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports, with each file of the readers, before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -46,11 +46,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -102,17 +97,17 @@
             "assertions": [
                 {
                     "id": "3a",
-                    "text": "The run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
+                    "text": "The run did a reader test with 3 dry-run subagents for the change, not 3 for each file. Each reader prompt gave each new or changed file. In each reader-test round, the run started the 3 readers in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", no confirmer for a closed list without a \"no\", and a maximum of 4 confirmers in a round.",
                     "grader": "script"
                 },
                 {
                     "id": "3b",
-                    "text": "The 3 reader tasks of each file are 2 typical tasks and 1 out-of-scope task.",
+                    "text": "The 3 reader tasks of the change are 2 typical tasks and 1 out-of-scope task. Each reader prompt gives the first file of the review target first, then each new or changed file.",
                     "grader": "llm"
                 },
                 {
                     "id": "3c",
-                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports on the reports of each file of the round before it corrected a file.",
+                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports, with each file of the readers, before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -134,11 +129,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -190,17 +180,17 @@
             "assertions": [
                 {
                     "id": "3a",
-                    "text": "The run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
+                    "text": "The run did a reader test with 3 dry-run subagents for the change, not 3 for each file. Each reader prompt gave each new or changed file. In each reader-test round, the run started the 3 readers in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", no confirmer for a closed list without a \"no\", and a maximum of 4 confirmers in a round.",
                     "grader": "script"
                 },
                 {
                     "id": "3b",
-                    "text": "The 3 reader tasks of each file are 2 typical tasks and 1 out-of-scope task.",
+                    "text": "The 3 reader tasks of the change are 2 typical tasks and 1 out-of-scope task. Each reader prompt gives the first file of the review target first, then each new or changed file.",
                     "grader": "llm"
                 },
                 {
                     "id": "3c",
-                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports on the reports of each file of the round before it corrected a file.",
+                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports, with each file of the readers, before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -222,11 +212,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -273,17 +258,17 @@
             "assertions": [
                 {
                     "id": "3a",
-                    "text": "The run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
+                    "text": "The run did a reader test with 3 dry-run subagents for the change, not 3 for each file. Each reader prompt gave each new or changed file. In each reader-test round, the run started the 3 readers in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", no confirmer for a closed list without a \"no\", and a maximum of 4 confirmers in a round.",
                     "grader": "script"
                 },
                 {
                     "id": "3b",
-                    "text": "The 3 reader tasks of each file are 2 typical tasks and 1 out-of-scope task.",
+                    "text": "The 3 reader tasks of the change are 2 typical tasks and 1 out-of-scope task. Each reader prompt gives the first file of the review target first, then each new or changed file.",
                     "grader": "llm"
                 },
                 {
                     "id": "3c",
-                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports on the reports of each file of the round before it corrected a file.",
+                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports, with each file of the readers, before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -305,11 +290,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -350,17 +330,17 @@
             "assertions": [
                 {
                     "id": "3a",
-                    "text": "The run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
+                    "text": "The run did a reader test with 3 dry-run subagents for the change, not 3 for each file. Each reader prompt gave each new or changed file. In each reader-test round, the run started the 3 readers in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", no confirmer for a closed list without a \"no\", and a maximum of 4 confirmers in a round.",
                     "grader": "script"
                 },
                 {
                     "id": "3b",
-                    "text": "The 3 reader tasks of each file are 2 typical tasks and 1 out-of-scope task.",
+                    "text": "The 3 reader tasks of the change are 2 typical tasks and 1 out-of-scope task. Each reader prompt gives the first file of the review target first, then each new or changed file.",
                     "grader": "llm"
                 },
                 {
                     "id": "3c",
-                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports on the reports of each file of the round before it corrected a file.",
+                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports, with each file of the readers, before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -382,11 +362,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -432,17 +407,17 @@
             "assertions": [
                 {
                     "id": "3a",
-                    "text": "The run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
+                    "text": "The run did a reader test with 3 dry-run subagents for the change, not 3 for each file. Each reader prompt gave each new or changed file. In each reader-test round, the run started the 3 readers in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", no confirmer for a closed list without a \"no\", and a maximum of 4 confirmers in a round.",
                     "grader": "script"
                 },
                 {
                     "id": "3b",
-                    "text": "The 3 reader tasks of each file are 2 typical tasks and 1 out-of-scope task.",
+                    "text": "The 3 reader tasks of the change are 2 typical tasks and 1 out-of-scope task. Each reader prompt gives the first file of the review target first, then each new or changed file.",
                     "grader": "llm"
                 },
                 {
                     "id": "3c",
-                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports on the reports of each file of the round before it corrected a file.",
+                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports, with each file of the readers, before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -464,11 +439,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -505,17 +475,17 @@
             "assertions": [
                 {
                     "id": "3a",
-                    "text": "The run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
+                    "text": "The run did a reader test with 3 dry-run subagents for the change, not 3 for each file. Each reader prompt gave each new or changed file. In each reader-test round, the run started the 3 readers in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", no confirmer for a closed list without a \"no\", and a maximum of 4 confirmers in a round.",
                     "grader": "script"
                 },
                 {
                     "id": "3b",
-                    "text": "The 3 reader tasks of each file are 2 typical tasks and 1 out-of-scope task.",
+                    "text": "The 3 reader tasks of the change are 2 typical tasks and 1 out-of-scope task. Each reader prompt gives the first file of the review target first, then each new or changed file.",
                     "grader": "llm"
                 },
                 {
                     "id": "3c",
-                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports on the reports of each file of the round before it corrected a file.",
+                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports, with each file of the readers, before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -537,11 +507,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -584,17 +549,17 @@
             "assertions": [
                 {
                     "id": "3a",
-                    "text": "The run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
+                    "text": "The run did a reader test with 3 dry-run subagents for the change, not 3 for each file. Each reader prompt gave each new or changed file. In each reader-test round, the run started the 3 readers in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", no confirmer for a closed list without a \"no\", and a maximum of 4 confirmers in a round.",
                     "grader": "script"
                 },
                 {
                     "id": "3b",
-                    "text": "The 3 reader tasks of each file are 2 typical tasks and 1 out-of-scope task.",
+                    "text": "The 3 reader tasks of the change are 2 typical tasks and 1 out-of-scope task. Each reader prompt gives the first file of the review target first, then each new or changed file.",
                     "grader": "llm"
                 },
                 {
                     "id": "3c",
-                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports on the reports of each file of the round before it corrected a file.",
+                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports, with each file of the readers, before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -616,11 +581,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -665,17 +625,17 @@
             "assertions": [
                 {
                     "id": "3a",
-                    "text": "The run did a reader test with 3 dry-run subagents for each file. In each reader-test round, the run started the 3 readers of each file in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", and no confirmer for a closed list without a \"no\".",
+                    "text": "The run did a reader test with 3 dry-run subagents for the change, not 3 for each file. Each reader prompt gave each new or changed file. In each reader-test round, the run started the 3 readers in one message, had a maximum of 3 subagents open at the same time, and changed no tested file before the last report of the round. No reader subagent wrote a file or ran a command that is not on the read-only list. The run saved a closed list for each typical task in the folder of the round. It started 2 confirmers for each closed list with a \"no\", no confirmer for a closed list without a \"no\", and a maximum of 4 confirmers in a round.",
                     "grader": "script"
                 },
                 {
                     "id": "3b",
-                    "text": "The 3 reader tasks of each file are 2 typical tasks and 1 out-of-scope task.",
+                    "text": "The 3 reader tasks of the change are 2 typical tasks and 1 out-of-scope task. Each reader prompt gives the first file of the review target first, then each new or changed file.",
                     "grader": "llm"
                 },
                 {
                     "id": "3c",
-                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports on the reports of each file of the round before it corrected a file.",
+                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports, with each file of the readers, before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -697,11 +657,6 @@
                     "id": "8b",
                     "text": "Each new pointer sentence states when to read its target.",
                     "grader": "llm"
-                },
-                {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
                 },
                 {
                     "id": "9b",
@@ -751,7 +706,7 @@
             "assertions": [
                 {
                     "id": "3c",
-                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports on the reports of each file of the round before it corrected a file.",
+                    "text": "After each reader-test round, the run ran the report form of the check script for reader reports, with each file of the readers, before it corrected a file.",
                     "grader": "script"
                 },
                 {
@@ -775,11 +730,6 @@
                     "grader": "llm"
                 },
                 {
-                    "id": "9a",
-                    "text": "The new text has no word that `CONTEXT.md` gives after _Avoid_, and writes each `CONTEXT.md` term in the case of the glossary.",
-                    "grader": "script"
-                },
-                {
                     "id": "9b",
                     "text": "The new text uses each `CONTEXT.md` term with its glossary meaning.",
                     "grader": "llm"
@@ -791,7 +741,7 @@
                 },
                 {
                     "id": "10.2",
-                    "text": "The author agent did the 3 reader-test tasks of each file of each reader-test round itself, one after the other.",
+                    "text": "The author agent did the 3 reader-test tasks of the change in each reader-test round itself, one after the other.",
                     "grader": "script"
                 },
                 {

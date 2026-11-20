@@ -236,13 +236,37 @@
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "1.8",
-        "text": "The **self-check** is the review of the full review target by one reviewer subagent of each class, in a maximum of 3 rounds.",
+        "text": "The **self-check** is the review of the changed sections by one reviewer subagent of each class, in a maximum of 2 rounds.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     },
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "1.8",
         "text": "The **reader test** is a dry run of 3 tasks by new reader subagents after the self-check.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "An **output test** is a test of the project that runs an agent on one request.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **manual check** is a test of the project that examines a human path in an interactive session.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **human path** is a question to the user, an approval, or a handoff between agents.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **load test** is a test of the project that finds which requests make an agent load a Skill from its `description`.",
         "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
     },
     {
@@ -284,7 +308,7 @@
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "When you put the text in sections and lists",
-        "text": "These files also include the files in docs/agents/, .claude/rules/, .claude/skills/, .agents/skills/, and .opencode/skills/, and the targets of their pointers.",
+        "text": "These files also include the files in docs/agents/, .claude/rules/, .claude/skills/, .agents/skills/, and .opencode/skills/, and the targets of the pointers in these files.",
         "cause": "The path is an example of a file or folder in a project that installs the Skill."
     },
     {
@@ -374,7 +398,7 @@
     {
         "path": "skills/writing/agent-instructions/references/plain-language-checks.md",
         "rule": "When you select the text",
-        "text": "It defines the terms, the tiers, and the end-of-run report.",
+        "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
     },
     {
@@ -410,7 +434,7 @@
     {
         "path": "skills/writing/agent-instructions/references/ste-rules.md",
         "rule": "When you select the text",
-        "text": "It defines the terms, the tiers, and the end-of-run report.",
+        "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
     },
     {
@@ -422,7 +446,7 @@
     {
         "path": "skills/writing/agent-instructions/references/technical-terms.md",
         "rule": "When you select the text",
-        "text": "It defines the terms, the tiers, and the end-of-run report.",
+        "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
     },
     {
@@ -694,6 +718,18 @@
         "rule": "When you put the text in sections and lists",
         "text": "If your platform has no Skill tool, read its SKILL.md.",
         "cause": "The pointer text of the human-communication Skill, word for word. SKILL.md is the file of that Skill, not a file in the root folder."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/agent-skills-spec.md",
+        "rule": "When you select the text",
+        "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
+    },
+    {
+        "path": "skills/writing/agent-instructions/references/loading-rules.md",
+        "rule": "When you select the text",
+        "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+        "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
     },
     {
         "path": "skills/writing/wtf/SKILL.md",

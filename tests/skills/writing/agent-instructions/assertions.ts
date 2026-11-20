@@ -196,7 +196,7 @@ const sameLevel = (line: string) => line.replace(/^#+ /, "# ");
 const SUBAGENT_TOOLS = ["agent", "task"];
 
 // [10.2]: each saved reader task in its own tool call and message, the 3
-// tasks of each file of each reader-test round, and no change of a saved
+// tasks of the change in each reader-test round, and no change of a saved
 // report. An output-test run does no review round (#211), so [10.2] grades
 // no review check.
 function selfChecks(run: Run): Verdict {
@@ -219,10 +219,8 @@ function selfChecks(run: Run): Verdict {
                     `Message ${index + 1}: the report call is one of ${message.calls.length} tool calls.`,
                 );
             }
-            for (const [, round, name, task] of titles) {
-                const key = `${round}, ${name.trim()}`;
-                readers.set(key, [...(readers.get(key) ?? []), task]);
-            }
+            for (const [, round, task] of titles)
+                readers.set(round, [...(readers.get(round) ?? []), task]);
             const path = call.input.file_path ?? call.input.filePath;
             if (typeof path === "string") savedPaths.push({ path, index });
         }
@@ -242,16 +240,16 @@ function selfChecks(run: Run): Verdict {
         }
     });
     if (readers.size === 0) problems.push("No saved reader report.");
-    for (const [key, tasks] of readers) {
+    for (const [round, tasks] of readers) {
         if (tasks.toSorted().join(",") !== "1,2,3") {
             problems.push(
-                `Reader-test round ${key} has the tasks: ${tasks.join(", ")}.`,
+                `Reader-test round ${round} has the tasks: ${tasks.join(", ")}.`,
             );
         }
     }
     return verdict(
         problems,
-        `Each reader report is in its own tool call and message: ${readers.size} reader-test file rounds.`,
+        `Each reader report is in its own tool call and message: ${readers.size} reader-test rounds.`,
     );
 }
 
@@ -396,12 +394,6 @@ export const scriptStatements: Record<string, (run: Run) => Verdict> = {
                 return target !== undefined && !run.prompt.includes(target);
             },
             "No @path line on an added line, except the permitted ones.",
-        ),
-    "9a": (run) =>
-        findingVerdict(
-            run,
-            (finding) => finding.rule === "1.11" || finding.rule === "6.2",
-            "No _Avoid_ word and no glossary term in a different case on an added line.",
         ),
     "1.1": (run) => {
         const fields = [

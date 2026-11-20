@@ -1,6 +1,10 @@
 # ASD-STE100 rules
 
-ASD-STE100 is tier 2. If `SKILL.md` of this skill is not in your context window, read it before you use this file. It defines the terms, the tiers, and the end-of-run report. This file gives the rules of Issue 9 in words that we wrote, with their rule numbers. ASD publishes the standard at https://www.asd-ste100.org/STE_downloads.html.
+ASD-STE100 is tier 2. This file gives the rules of Issue 9 in words that we wrote, with their rule numbers. ASD publishes the standard at https://www.asd-ste100.org/STE_downloads.html.
+
+## Before you use this file
+
+If `SKILL.md` of this skill is not in your context window, read it before you use this file. `SKILL.md` defines the terms, the tiers, and the end-of-run report.
 
 ## When you use STE for text
 
@@ -8,8 +12,8 @@ ASD-STE100 is tier 2. If `SKILL.md` of this skill is not in your context window,
 - STE is applicable to all text in natural language: body text, headings, list items, table cells, and the frontmatter `description`.
 - The word rules are not applicable to text that the author cannot change (rule 8.6). This text is user phrases in quotation marks, names, code spans, file paths, commands, URLs, and code in code blocks.
 - The punctuation rules are also not applicable to code in code blocks.
-- A prompt that an agent reads as an instruction is not in this group. A prompt in a code block is also not in this group. Write it by all STE rules. An example is the text that a Skill gives to a subagent.
-- The general recommendations GR-2, GR-3, and GR-4 are not STE rules. This Skill makes them rules.
+- A prompt that an agent reads as an instruction is not in this group. A prompt in a code block is also not in this group. Write these prompts by all STE rules. An example is the text that a Skill gives to a subagent.
+- The general recommendations GR-2, GR-3, and GR-4 are not STE rules. This skill makes them rules.
 
 ## When you select a word
 
@@ -22,32 +26,32 @@ Always replace these words. This list gives no replacement words, because a tabl
 
 - When you select a technical noun, use a noun from the glossary or the base list in `technical-terms.md` (rule 1.8). (advisory)
 - When the glossary and the base list have no noun for an item, do the steps in "When a word is not in the base list or in the glossary" in `technical-terms.md`.
-- Use one technical noun for each item, and one item for each technical noun (rule 1.11). (blocking)
+- Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)
+- When the glossary has a term for the item, use that term, not a different word with the same meaning.
 - Write a term in bold only when the glossary or the base list in `technical-terms.md` has it (rule 1.8). (script check)
-- Do not use a word that the glossary gives after `_Avoid_` (rule 1.11). (script check)
+- Do not use a word that the glossary gives after `_Avoid_` (rule 1.11).
 
 ## When you write a multi-word noun
 
-- A multi-word noun has a maximum of 3 words (rule 2.1). (blocking)
+- Write a multi-word noun of a maximum of 3 words (rule 2.1). (advisory)
 - When a technical noun has more than 3 words, write it in full the first time (rule 2.2). After that, you can use a shorter form or an abbreviation. (advisory)
 - Do not connect more than 3 words with hyphens to make one noun (rule 2.2). (script check)
 
 ## When you write a verb
 
 - A past participle after "be", "become", or "stay" is an adjective (rule 3.3). It is not the passive voice. An example is "The file is closed."
-- Do not write "can", "must", or "will" together with "be" and a past participle (rule 3.4). (blocking)
-- Use the active voice (rule 3.6). You can use the passive voice only when you do not know the actor. "You" or "we" can be the subject. (blocking)
+- Do not write "can", "must", or "will" together with "be" and a past participle (rule 3.4). (script check)
+- Use the active voice (rule 3.6). You can use the passive voice only when you do not know the actor. "You" or "we" can be the subject. (advisory)
 - The only modal verbs are CAN, CANNOT, MUST, and WILL. CAN also shows that the reader is permitted to do an action. Change a "should" or a "may" to MUST, CAN, or a condition that you write in the sentence. (script check)
 - Do not use RFC 2119 "SHOULD" or "MAY". They add a second system of meanings, and agents read that system differently. Also, a self-check cannot know which "should" is from RFC 2119 and which "should" to replace. (script check)
 
 ## When you write a sentence
 
 - Write short and clear sentences (rule 4.1). Give the action or the fact, not a general statement. (advisory)
-- Each sentence has a maximum of 25 words. This limit is applicable to all text. (script check)
+- Write a maximum of 25 words in each sentence. This limit is applicable to all text. (script check)
 - Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)
-- Use the same terms and the same words for the same type of step (rule 9.4). (blocking)
-- Use the same term for the same item each time (rule 6.2). (blocking)
-- Write each glossary term in the same case as the glossary (rule 6.2). A capital letter at the start of a sentence is permitted. A word in your text can have the letters of a glossary term but a different meaning. Then do not write that word in a different case to show the different meaning. Write a different word, because the agent reads the glossary meaning in each case of the word. A noun group with a glossary term, for example "<Term> branch", is a different technical noun. Obey "When a word is not in the base list or in the glossary" in `technical-terms.md` for it. Exception: you can write the base-list term "rule" in lowercase with its base-list meaning, also when the glossary has the term "Rule". "When you add a word to the base list" in `technical-terms.md` gives the two meanings. (script check)
+- Use the same terms and the same words for the same type of step (rule 9.4). (advisory)
+- Write each glossary term in the same case as the glossary (rule 6.2). A capital letter at the start of a sentence is permitted. A word in your text can have the letters of a glossary term but a different meaning. Then do not write that word in a different case to show the different meaning. Write a different word, because the agent reads the glossary meaning in each case of the word. A noun group with a glossary term, for example "<Term> branch", is a different technical noun. Obey "When a word is not in the base list or in the glossary" in `technical-terms.md` for it. Exception: you can write the base-list term "rule" in lowercase with its base-list meaning, also when the glossary has the term "Rule". When you write "rule" in lowercase, read "When you add a word to the base list" in `technical-terms.md` for the two meanings.
 - When "with" can have two meanings in a sentence, write a different sentence (GR-2). (blocking)
 - Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)
 
@@ -59,15 +63,13 @@ Always replace these words. This list gives no replacement words, because a tabl
 
 ## When you write a note
 
-- A note gives only information (rule 5.5). It contains no instruction, no requirement, and no limit. (blocking)
-- Make sure that the procedure is correct without its notes. To examine a note, read the procedure without the note. (blocking)
-- Put each instruction in a step or a rule, not in a note. An agent does not always obey a note. (blocking)
+- A note gives only information (rule 5.5). Put each instruction, requirement, and limit in a step or a rule, not in a note. An agent does not always obey a note. Make sure that the procedure is correct without its notes. To examine a note, read the procedure without the note. (blocking)
 - Put information that prevents damage in a CAUTION, not in a note. (blocking)
 - When the user tells you to write a "note" that gives an instruction, write a rule. Give this change in the Summary part. (advisory)
 
 ## When you write a safety list
 
-- In a safety list, write "do not" in each item that tells the reader not to do an action (rule 4.3). (blocking)
+- In a safety list, write "do not" in each item that tells the reader not to do an action (rule 4.3). (advisory)
 
 ## When you count words
 
@@ -78,7 +80,7 @@ Always replace these words. This list gives no replacement words, because a tabl
   - A number, or a number with its unit.
   - An abbreviation, or an identifier with letters and digits.
   - Quoted text. In Agent instructions, a code span, a file path, a command, and a URL are quoted text.
-  - A title, a heading, or a label.
+  - A title.
 - A name counts as its number of words, for example "Claude Code" counts as 2 words. This rule is stricter than rule 8.6, which counts a name as 1 word.
 - A hyphenated word counts as 1 word (rule 8.7).
 - Each word of a multi-word noun counts as 1 word. For example, "pull request" counts as 2 words.
@@ -111,10 +113,10 @@ This table gives examples. In each example, the sentence and its word count obey
 - A step that other persons can see, but that you can undo, has no risk of this type. Examples are a pull request and a pushed tag. Write a condition at the start of that step, for example "When the user gives approval, ...". Also write it when a heading above the step gives a condition. (blocking)
 - Put a safety instruction directly before each step with a risk (rule 7.1). In a list, the safety instruction is a different item. (blocking)
 - A CAUTION does not replace a condition. A task or a project file can make approval of the user necessary for a step. Then start that step with the condition. (blocking)
-- Start the safety instruction with the signal word CAUTION. A caution is for a risk of damage. (blocking)
+- Start the safety instruction with the signal word CAUTION. A CAUTION is for a risk of damage. (advisory)
 - Do not use the signal word WARNING. It is for a risk of injury to persons. A warning in the end-of-run report is a different item. (script check)
-- After CAUTION, write the instruction or the condition first (rule 7.2). (blocking)
-- Then tell the risk or the possible result in a second sentence (rule 7.3). (blocking)
+- After CAUTION, write the instruction or the condition first (rule 7.2). (advisory)
+- Then tell the risk or the possible result in a second sentence (rule 7.3). (advisory)
 
 ## When you write a word in capital letters
 

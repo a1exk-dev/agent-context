@@ -14,9 +14,9 @@ When a task makes or changes a project term, use the `domain-modeling` Skill to 
 
 Keep commands, procedures, task history, and temporary findings in their operational sources. A context update is complete when every resolved or changed concept appears once under its canonical name and no conflicting definition remains.
 
-## MEMORY.md: durable guidance
+## When you record durable guidance in MEMORY.md
 
-`MEMORY.md` holds current guidance that future work must apply: durable constraints, recurring gotchas, proven lessons, and decisions with rationale that do not get an ADR. Record only verified items that cannot be inferred cheaply from the repository. Create or update it in the same task that establishes one of those items.
+`MEMORY.md` holds current guidance for future work: durable constraints, recurring gotchas, proven lessons, and decisions with rationale that do not get an ADR. Record only verified items that an agent cannot infer cheaply from the repository. Create or update `MEMORY.md` in the same task that establishes one of those items.
 
 Give each item one actionable entry:
 
@@ -30,7 +30,7 @@ Guidance: <action or constraint>
 Reason: <durable rationale>
 ```
 
-Keep the file curated as current guidance by replacing stale entries and leaving task narration in the originating ticket. A memory update is complete when every newly established durable item is represented, its applicability and rationale are explicit, and stale conflicting guidance is removed.
+Keep `MEMORY.md` current. Replace each stale entry. Keep the task history in the originating issue. A memory update is complete when every newly established durable item is represented, its applicability and rationale are explicit, and stale conflicting guidance is removed.
 
 ## Apply and preserve
 

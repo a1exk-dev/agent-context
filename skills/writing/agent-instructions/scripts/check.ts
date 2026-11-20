@@ -17,14 +17,16 @@ import { parseArgs } from "node:util";
 
 const usage = `Usage: node check.ts <file>... --project <folder> --glossary <path|none>
        node check.ts --reports --file <file under review> <report>...
+       node check.ts --reports --file <file> --copy <copy|none>
+           [--file <file> --copy <copy|none>]... --tasks <tasks file> <report>...
 
 File form: checks each file for the rules that end with "(script check)" in
 the rule files of the agent-instructions Skill. Writes JSON to stdout:
 { "findings": [ { reviewer, rule, ruleFile, heading, text, path, line, problem } ],
   "pointers": [ { path, line, heading, text, targets } ] }
 The pointers list gives each sentence that names a file path. The glossary
-gives the terms and their _Avoid_ words. The base list of technical terms
-comes from references/technical-terms.md of the Skill.
+and the base list of technical terms in references/technical-terms.md of the
+Skill give the terms that a bold word can have.
 
 Report form: checks the findings (Rule, Text, Problem, Correction) of the
 3 reviewer reports of one file under review. Writes JSON to stdout:
@@ -37,23 +39,25 @@ It drops each finding with a missing field, a Text quote that is not in the
 file, or a Rule quote that is in no rule that ends with "(blocking)" or
 "(advisory)". It sorts the other findings by the mark of their rule. The
 confirm list gives each report with one or more findings in the blocking
-list, and tells the author to give these findings to the 2 confirmers of
+list, and tells the author to give these findings to the confirmers of
 the reviewer of that report.
 
-Report form for reader reports: add --copy <saved copy|none> and --tasks
-<tasks file>, and give one reader report for each task, in the sequence of
-the tasks. The tasks file is a JSON array:
+Report form for reader reports: give --file <file> --copy <saved copy|none>
+for each file of the readers, add --tasks <tasks file>, and give one reader
+report for each task, in the sequence of the tasks. The tasks file is a JSON
+array:
 [ { "task": "...", "kind": "typical", "tested": ["<quote>", ...] },
   { "task": "...", "kind": "out-of-scope" } ]
 Each reader report has the headings "Part 1", "Part 2", and "Part 3". Each
 line of part 2 or part 3 with a quotation gives one quote. Writes JSON:
-{ "problems": [ { task, kind, report, text, line, problem } ],
-  "unclear": [ { report, reportLine, part, text, line } ],
+{ "problems": [ { task, kind, report, text, file, line, problem } ],
+  "unclear": [ { report, reportLine, part, text, file, line } ],
   "dropped": [ { report, reportLine, part, text, reason } ] }
-It drops each quote that is not in the file. An out-of-scope task fails when
-each place of a part-2 quote is on a line that is not in the copy ("none":
-all lines are new). A typical task fails when no part-2 quote overlaps a
-tested quote. A tested quote that is not in the file gives exit code 2.
+It drops each quote that is not in the files. An out-of-scope task fails when
+each place of a part-2 quote is on a line that is not in the copy of its file
+("none": all lines are new). A typical task fails when no part-2 quote
+overlaps a tested quote. A tested quote that is not in the files gives exit
+code 2.
 
 Exit code: 0 for no findings, 1 for one or more findings (in the report form:
 blocking or advisory; for reader reports: problems or unclear parts), 2 when
@@ -132,9 +136,9 @@ function main(argv: string[]): number {
     try {
         const glossary = args.glossary
             ? readGlossary(readFileSync(args.glossary, "utf8"))
-            : { terms: [], avoid: [] };
+            : { terms: [] };
         const base = readBaseList(readFileSync(technicalTerms, "utf8"));
-        rules = [...wordRules, ...glossaryRules(glossary, base)];
+        rules = [...wordRules, boldTermRule(glossary, base)];
     } catch (error) {
         process.stderr.write(
             `Cannot read the glossary or the base list: ${error}\n`,
@@ -153,6 +157,8 @@ function main(argv: string[]): number {
         }
         findings.push(...checkText(path, source, rules));
         findings.push(...checkLoading(path, source, args.project));
+        findings.push(...checkSkill(path, source));
+        findings.push(...checkPlatformFile(path, source));
         const plain = checkPlainLanguage(path, source, args.project);
         findings.push(...plain.findings);
         pointers.push(...plain.pointers);
@@ -255,65 +261,55 @@ const wordRules: WordRule[] = [
             return `The noun "${noun}" has ${parts.length} words joined by hyphens.`;
         },
     },
+    {
+        rule: "3.4",
+        heading: "When you write a verb",
+        pattern:
+            /\b(?:can|cannot|must|will)(?:\s+not)?(?:\s+(?:also|only|then|still|always|never|now|first|again|\p{L}+ly))?\s+be(?:\s+\p{L}+ly)?\s+(\p{L}+)\b/giu,
+        problem: (words, _atStart, found) =>
+            isParticiple(found[1])
+                ? `The sentence has "${words}": "can", "must", or "will" with "be" and a past participle.`
+                : null,
+    },
 ];
 
-// Gives the rules that use the glossary terms, their `_Avoid_` words, and the
-// base list of technical-terms.md.
-function glossaryRules(glossary: Glossary, base: string[]): WordRule[] {
-    const rules: WordRule[] = [];
+// The past participles that do not stop with "ed", and the words that stop
+// with "ed" but are not past participles.
+const irregularParticiples = new Set(
+    (
+        "begun bent bought bound broken brought built caught chosen cut dealt done drawn driven " +
+        "eaten fallen fed felt forbidden forgotten found frozen given got gotten grown held hidden " +
+        "hit kept known laid led left lent let lit lost made meant met overridden overwritten paid " +
+        "proven put read rebuilt redone rewritten ridden risen run said seen sent set shaken shown " +
+        "shut sold sought spent split spoken spread stolen struck stuck taken taught thought thrown " +
+        "told torn understood undone woken won worn written"
+    ).split(" "),
+);
+const notParticiples = new Set([
+    "hundred",
+    "naked",
+    "need",
+    "sacred",
+    "seed",
+    "speed",
+    "wicked",
+]);
+
+function isParticiple(word: string) {
+    const lower = word.toLowerCase();
+    if (irregularParticiples.has(lower)) return true;
+    return (
+        lower.length > 3 && lower.endsWith("ed") && !notParticiples.has(lower)
+    );
+}
+
+// Gives the rule for bold terms. The glossary and the base list of
+// technical-terms.md only permit a bold term: the glossary gives no finding.
+function boldTermRule(glossary: Glossary, base: string[]): WordRule {
     const known = new Set(
         [...base, ...glossary.terms].map((term) => term.toLowerCase()),
     );
-    const words = (word: string, plural: boolean) =>
-        new RegExp(
-            `(?<![\\p{L}\\p{N}_-])${escapeRegExp(word).replace(/\s+/g, "\\s+")}${plural ? "(?:e?s)?" : ""}(?![\\p{L}\\p{N}_-])`,
-            "giu",
-        );
-    const places = glossary.terms.map((term) => ({
-        term,
-        pattern: words(term, true),
-    }));
-    // Tells whether the match is in a place of a glossary term, in any case,
-    // other than the term `except`.
-    const inTerm = (found: RegExpMatchArray, except: string | null) => {
-        const from = found.index ?? 0;
-        const to = from + found[0].length;
-        return places.some(
-            ({ term, pattern }) =>
-                term !== except &&
-                [...(found.input ?? "").matchAll(pattern)].some(
-                    (place) =>
-                        (place.index ?? 0) <= from &&
-                        (place.index ?? 0) + place[0].length >= to,
-                ),
-        );
-    };
-    for (const avoid of glossary.avoid)
-        rules.push({
-            rule: "1.11",
-            heading: "When you select a technical noun",
-            pattern: words(avoid, false),
-            problem: (word, _atStart, found) =>
-                inTerm(found, null)
-                    ? null
-                    : `The sentence has "${word}", which the glossary gives after _Avoid_.`,
-        });
-    for (const term of glossary.terms)
-        rules.push({
-            rule: "6.2",
-            heading: "When you write a sentence",
-            pattern: words(term, true),
-            problem: (word, atStart, found) => {
-                if (inTerm(found, term)) return null;
-                const stem = word.slice(0, term.length);
-                if (stem === term) return null;
-                const capital = term[0].toUpperCase() + term.slice(1);
-                if (atStart && stem === capital) return null;
-                const fixed = term + word.slice(term.length);
-                return `The sentence has "${word}", but the glossary term is "${term}". If "${word}" has the meaning of the glossary term, write "${fixed}". If not, do not change the case: write a different word.`;
-            },
-        });
-    rules.push({
+    return {
         rule: "1.8",
         heading: "When you select a technical noun",
         pattern: /\*\*([^*\n]+?)\*\*/g,
@@ -328,30 +324,17 @@ function glossaryRules(glossary: Glossary, base: string[]): WordRule[] {
                 return null;
             return `The bold term "${term}" is not in the glossary or in the base list of technical-terms.md.`;
         },
-    });
-    return rules;
+    };
 }
 
-function escapeRegExp(text: string) {
-    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+type Glossary = { terms: string[] };
 
-type Glossary = { terms: string[]; avoid: string[] };
-
-// Reads the terms (`**Term**:`) and the `_Avoid_:` words of a glossary.
+// Reads the terms (`**Term**:`) of a glossary.
 function readGlossary(source: string): Glossary {
-    const glossary: Glossary = { terms: [], avoid: [] };
-    for (const line of source.split(/\r?\n/)) {
-        const term = /^\*\*([^*]+)\*\*:/.exec(line);
-        if (term) glossary.terms.push(term[1].trim());
-        const avoid = /^_Avoid_:\s*(.*)$/.exec(line);
-        if (avoid)
-            for (const word of avoid[1].split(",")) {
-                const clean = word.replace(/["“”.]/g, "").trim();
-                if (clean !== "") glossary.avoid.push(clean);
-            }
-    }
-    return glossary;
+    const terms = [...source.matchAll(/^\*\*([^*]+)\*\*:/gm)].map((match) =>
+        match[1].trim(),
+    );
+    return { terms };
 }
 
 // Reads the terms of the base list in technical-terms.md: the first cell of
@@ -531,8 +514,17 @@ function checkPlainLanguage(
                     sentence.line,
                     `The pointer target "${target}" does not exist.`,
                 );
-            else if (found !== resolve(path) && isFile(found))
-                targets.set(target, found);
+            else if (isFile(found)) {
+                const missing = missingHeadings(sentence.text, target, found);
+                for (const heading of missing)
+                    finding(
+                        "When you put the text in sections and lists",
+                        sentence.text,
+                        sentence.line,
+                        `The pointer target "${target}" has no heading "${heading}".`,
+                    );
+                if (found !== resolve(path)) targets.set(target, found);
+            }
         }
     }
     for (const [line, text] of fenceLines(source))
@@ -566,6 +558,22 @@ function checkPlainLanguage(
             );
     }
     return { findings, pointers };
+}
+
+// Gives each heading that a pointer sentence quotes for a target, as
+// "<heading>" in <target> or "<heading>" of <target>, and that the target
+// file does not have.
+function missingHeadings(text: string, target: string, found: string) {
+    const quoted = [...text.matchAll(/"([^"]+)"\s+(?:in|of)\s+(\S+)/g)]
+        .filter(
+            ([, , token]) => token.replace(/^`|`?[.,:;!?)]*$/g, "") === target,
+        )
+        .map(([, heading]) => collapseSpaces(heading));
+    if (quoted.length === 0) return [];
+    const headings = segments(readFileSync(found, "utf8"))
+        .filter((segment) => segment.heading)
+        .map((segment) => collapseSpaces(segment.visible));
+    return [...new Set(quoted)].filter((h) => !headings.includes(h));
 }
 
 // Gives the text with one space for each run of white space, and no white
@@ -758,6 +766,378 @@ function isManualOnly(path: string, fields: Map<string, Field>) {
     );
 }
 
+// The loading rule for a file that only one platform reads: a file in
+// `.claude/rules/` or an `AGENTS.override.md` file.
+function checkPlatformFile(path: string, source: string): Finding[] {
+    const folders = resolve(path).split(sep);
+    const problem =
+        basename(path) === "AGENTS.override.md"
+            ? 'The file is "AGENTS.override.md". Only Codex reads this file. Put the text in AGENTS.md.'
+            : folders.some(
+                    (folder, i) =>
+                        folder === ".claude" && folders[i + 1] === "rules",
+                )
+              ? 'The file is in ".claude/rules/". Only Claude Code reads this folder. Put the text in AGENTS.md or CLAUDE.md.'
+              : null;
+    if (problem === null) return [];
+    return [
+        loadingFinding(
+            "references/loading-rules.md",
+            "When you select a feature",
+            problem,
+            source.split(/\r?\n/)[0],
+            path,
+            1,
+        ),
+    ];
+}
+
+// A finding of the loading reviewer that the script gives: it has no quoted
+// rule, only the rule file and its heading.
+function loadingFinding(
+    ruleFile: string,
+    heading: string,
+    problem: string,
+    text: string,
+    path: string,
+    line: number,
+): Finding {
+    return {
+        reviewer: "loading",
+        rule: null,
+        ruleFile,
+        heading,
+        text,
+        path,
+        line,
+        problem,
+    };
+}
+
+// The text of a YAML line without its comment.
+const withoutComment = (line: string) => line.replace(/\s#.*$/, "");
+
+// Whether a YAML line continues the block above it: an indented line or an
+// empty line. A missing line ends the block.
+const isIndentedOrBlank = (line: string | undefined) =>
+    line !== undefined && /^(\s|$)/.test(line);
+
+// A finding of a rule in `references/agent-skills-spec.md`.
+const skillFinding = (
+    heading: string,
+    problem: string,
+    text: string,
+    line: number,
+    path: string,
+) =>
+    loadingFinding(
+        "references/agent-skills-spec.md",
+        heading,
+        problem,
+        text,
+        path,
+        line,
+    );
+
+// The rules of the Agent Skills specification and of `agents/openai.yaml`
+// that `checkLoading` does not examine: the frontmatter form, the YAML, the
+// fields for some platforms, the description condition, and the Codex file.
+function checkSkill(path: string, source: string): Finding[] {
+    if (basename(path) !== "SKILL.md") return [];
+    const lines = source.split(/\r?\n/);
+    const fields = frontmatter(source);
+    return [
+        ...checkFrontmatter(path, lines, fields),
+        ...checkDescription(path, fields),
+        ...checkOpenaiYaml(path, lines, fields),
+    ];
+}
+
+// The frontmatter form, the YAML, and the fields for some platforms.
+function checkFrontmatter(
+    path: string,
+    lines: string[],
+    fields: Map<string, Field>,
+): Finding[] {
+    const findings: Finding[] = [];
+    const front = (problem: string, index: number) =>
+        findings.push(
+            skillFinding(
+                "When you write the folder and the frontmatter",
+                problem,
+                lines[index],
+                index + 1,
+                path,
+            ),
+        );
+    const end = lines[0] === "---" ? lines.indexOf("---", 1) : -1;
+    if (lines[0] !== "---")
+        front("SKILL.md does not start with YAML frontmatter.", 0);
+    else if (end < 0) front('The frontmatter has no closing "---" line.', 0);
+    else {
+        if (
+            lines
+                .slice(end + 1)
+                .join("")
+                .trim() === ""
+        )
+            front("SKILL.md has no Markdown text after the frontmatter.", 0);
+        for (const [index, problem] of yamlErrors(lines, end))
+            front(problem, index);
+    }
+    const compatibility = fields.get("compatibility");
+    const length = compatibility ? [...compatibility.value].length : 0;
+    if (compatibility && length > 500)
+        front(
+            `The compatibility value has ${length} characters. The limit is 500 characters.`,
+            compatibility.line - 1,
+        );
+    const metadata = fields.get("metadata");
+    if (metadata)
+        for (const [index, problem] of metadataErrors(lines, metadata.line - 1))
+            front(problem, index);
+    for (const [key, at] of fields)
+        if (
+            ["license", "compatibility", "metadata", "allowed-tools"].includes(
+                key,
+            )
+        )
+            front(
+                `The frontmatter field "${key}" operates only on some platforms. Write only "name" and "description", and "disable-model-invocation: true" in a Manual-only Skill.`,
+                at.line - 1,
+            );
+    return findings;
+}
+
+// The description starts with its condition.
+function checkDescription(path: string, fields: Map<string, Field>): Finding[] {
+    const description = fields.get("description");
+    if (!description || description.value === "") return [];
+    const condition = 'Write the condition first: "When ..., use this skill."';
+    const problem = /\buse this skill when\b/i.test(description.value)
+        ? `The description has "Use this skill when". ${condition}`
+        : !/^(?:when|whenever|before|after|if|while|until|each time)\b/i.test(
+                description.value,
+            )
+          ? `The description does not start with its condition. ${condition}`
+          : null;
+    if (problem === null) return [];
+    return [
+        skillFinding(
+            "When you write the description",
+            problem,
+            description.text,
+            description.line,
+            path,
+        ),
+    ];
+}
+
+// The Codex file `agents/openai.yaml` and its "allow_implicit_invocation".
+function checkOpenaiYaml(
+    path: string,
+    lines: string[],
+    fields: Map<string, Field>,
+): Finding[] {
+    const codex = (problem: string, text: string, line: number, at: string) => [
+        skillFinding(
+            "When you write or edit a Skill: the agents/openai.yaml file",
+            problem,
+            text,
+            line,
+            at,
+        ),
+    ];
+    const openai = join(dirname(path), "agents", "openai.yaml");
+    if (!isFile(openai))
+        return codex(
+            "The Skill has no agents/openai.yaml. Write the file in the write job, and in each job for a Manual-only Skill. In the edit job for a different Skill, give a warning that recommends the file.",
+            lines[0],
+            1,
+            path,
+        );
+    const codexLines = readFileSync(openai, "utf8").split(/\r?\n/);
+    const manualOnly = fields.get("disable-model-invocation")?.value === "true";
+    const wanted = manualOnly ? "false" : "true";
+    const policy = codexLines.indexOf("policy:");
+    let found = -1;
+    for (
+        let i = policy + 1;
+        policy >= 0 && isIndentedOrBlank(codexLines[i]);
+        i++
+    )
+        if (/^\s+allow_implicit_invocation:/.test(codexLines[i])) found = i;
+    if (found < 0)
+        return codex(
+            'agents/openai.yaml has no "allow_implicit_invocation" under "policy:".',
+            codexLines[0],
+            1,
+            openai,
+        );
+    if (withoutComment(codexLines[found]).split(":")[1].trim() !== wanted)
+        return codex(
+            manualOnly
+                ? 'In a Manual-only Skill, write "allow_implicit_invocation: false" under "policy:".'
+                : 'In a Skill that is not a Manual-only Skill, write "allow_implicit_invocation: true" under "policy:".',
+            codexLines[found],
+            found + 1,
+            openai,
+        );
+    return [];
+}
+
+// Gives the YAML errors of the frontmatter lines 1 to `end` - 1, as [index of
+// the line, problem]. It finds the errors that a YAML parser gives for the
+// forms of a frontmatter: a "key: value" line, a quoted value, a plain value,
+// a block scalar, and an indented block under a key with no value.
+function yamlErrors(lines: string[], end: number): [number, string][] {
+    const errors: [number, string][] = [];
+    const keys = new Set<string>();
+    const colon = (key: string) =>
+        `The value of "${key}" has ":" before a space or at the end of the line. Put the value in quotation marks.`;
+    // The key of the plain value that the indented lines continue, or null
+    // when the indented lines are a block.
+    let plain: string | null = null;
+    for (let i = 1; i < end; i++) {
+        const line = lines[i];
+        if (line.trim() === "" || /^\s*#/.test(line)) continue;
+        if (/^\s/.test(line)) {
+            if (plain !== null && /:(\s|$)/.test(withoutComment(line)))
+                errors.push([i, colon(plain)]);
+            continue;
+        }
+        plain = null;
+        const match = /^([^\s#:][^:]*):(?:\s+(.*))?$/.exec(line);
+        if (!match) {
+            errors.push([i, 'The line is not a "key: value" line.']);
+            continue;
+        }
+        const key = match[1];
+        if (keys.has(key))
+            errors.push([i, `The frontmatter has the key "${key}" two times.`]);
+        keys.add(key);
+        const value = (match[2] ?? "").trim();
+        if (
+            value === "" ||
+            value.startsWith("#") ||
+            /^[|>][+-]?\d?$/.test(value)
+        )
+            continue;
+        const quote = value[0];
+        if (quote === '"' || quote === "'") {
+            let text = value.slice(1);
+            let close = closingQuote(text, quote);
+            let last = i;
+            while (
+                close < 0 &&
+                last + 1 < end &&
+                isIndentedOrBlank(lines[last + 1])
+            ) {
+                last++;
+                text += `\n${lines[last]}`;
+                close = closingQuote(text, quote);
+            }
+            if (close < 0) {
+                errors.push([
+                    i,
+                    `The value of "${key}" has no closing quotation mark.`,
+                ]);
+                continue;
+            }
+            i = last;
+            if (!/^\s*(?:#.*)?$/.test(text.slice(close + 1)))
+                errors.push([
+                    i,
+                    `The value of "${key}" has text after its closing quotation mark.`,
+                ]);
+            if (quote === '"')
+                // The escape characters of a YAML string in double quotation marks.
+                // cspell:ignore abtnvfre
+                for (const sequence of text.slice(0, close).matchAll(/\\(.)/gs))
+                    if (!/[0abtnvfre "/\\N_LPxuU\t\n]/.test(sequence[1]))
+                        errors.push([
+                            i,
+                            `The value of "${key}" has the escape "\\${sequence[1]}", which YAML does not read.`,
+                        ]);
+            continue;
+        }
+        if (/^[[\]{}*&!%@`,]/.test(value)) {
+            errors.push([
+                i,
+                `The value of "${key}" starts with "${value[0]}". Put the value in quotation marks.`,
+            ]);
+            continue;
+        }
+        if (/:(\s|$)/.test(withoutComment(value))) errors.push([i, colon(key)]);
+        plain = key;
+    }
+    return errors;
+}
+
+// Gives the index of the closing quotation mark of a YAML string, or -1.
+// `text` starts after the opening quotation mark.
+function closingQuote(text: string, quote: string) {
+    for (let k = 0; k < text.length; k++) {
+        if (quote === '"' && text[k] === "\\") k++;
+        else if (text[k] === quote) {
+            if (quote === "'" && text[k + 1] === "'") k++;
+            else return k;
+        }
+    }
+    return -1;
+}
+
+// The YAML values that a parser does not read as text.
+const notText =
+    /^(?:~|null|Null|NULL|true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO|on|On|ON|off|Off|OFF|[-+]?\d[\d_]*(?:\.\d*)?(?:[eE][-+]?\d+)?|[-+]?\.\d+(?:[eE][-+]?\d+)?|0x[0-9a-fA-F]+|0o[0-7]+|[-+]?\.(?:inf|Inf|INF)|\.(?:nan|NaN|NAN)|[[{&*!].*)?$/;
+
+// Gives each key and value of the `metadata` field at line `start` that is
+// not text, as [index of the line, problem].
+function metadataErrors(lines: string[], start: number): [number, string][] {
+    const errors: [number, string][] = [];
+    const inline = lines[start].slice(lines[start].indexOf(":") + 1).trim();
+    if (inline !== "" && !inline.startsWith("#"))
+        return [
+            [
+                start,
+                "The metadata value is not a map of text keys and text values.",
+            ],
+        ];
+    let indent = -1;
+    for (
+        let i = start + 1;
+        i < lines.length && isIndentedOrBlank(lines[i]);
+        i++
+    ) {
+        const line = lines[i];
+        if (line.trim() === "" || line.trim().startsWith("#")) continue;
+        const depth = line.search(/\S/);
+        if (indent < 0) indent = depth;
+        if (depth > indent) continue;
+        const match = /^\s*([^:]+):(?:\s+(.*))?$/.exec(line);
+        if (!match) {
+            errors.push([
+                i,
+                "The metadata value is not a map of text keys and text values.",
+            ]);
+            continue;
+        }
+        const key = match[1].trim();
+        const value = withoutComment(match[2] ?? "").trim();
+        if (notText.test(key))
+            errors.push([
+                i,
+                `The key "${key}" in metadata is not text. Put it in quotation marks.`,
+            ]);
+        else if (notText.test(value))
+            errors.push([
+                i,
+                `The value of "${key}" in metadata is not text. Put it in quotation marks.`,
+            ]);
+    }
+    return errors;
+}
+
 // Gives the total file size of the entry files in each folder from the
 // project folder to the folder of the file.
 function entryBytesFromRoot(path: string, project: string) {
@@ -837,7 +1217,7 @@ function frontmatter(source: string): Map<string, Field> {
         let value = (match[2] ?? "").trim();
         if (/^[|>][+-]?$/.test(value)) {
             const block: string[] = [];
-            while (i + 1 < end && /^(\s|$)/.test(lines[i + 1]))
+            while (i + 1 < end && isIndentedOrBlank(lines[i + 1]))
                 block.push(lines[++i].trim());
             value = block.join(value[0] === "|" ? "\n" : " ").trim();
         } else if (value.startsWith('"') && value.endsWith('"')) {
@@ -1103,19 +1483,23 @@ type RuleUnit = {
     mark: string | null;
 };
 
+// The input of the report form for reader reports: each file of the readers
+// with its saved copy, or "none", and the tasks file.
+type ReaderInput = { pairs: { file: string; copy: string }[]; tasks: string };
+
 // The report form: checks the findings of the reviewer reports of one file.
 function reportForm(argv: string[]): number {
     let file: string;
     let reports: string[];
-    let readers: { copy: string; tasks: string } | null = null;
+    let readers: ReaderInput | null = null;
     try {
         const { values, positionals } = parseArgs({
             args: argv,
             allowPositionals: true,
             options: {
                 reports: { type: "boolean" },
-                file: { type: "string" },
-                copy: { type: "string" },
+                file: { type: "string", multiple: true },
+                copy: { type: "string", multiple: true },
                 tasks: { type: "string" },
             },
         });
@@ -1127,21 +1511,33 @@ function reportForm(argv: string[]): number {
             throw new UsageError(
                 "Give --copy <path|none> and --tasks <path> together.",
             );
-        const paths = [values.file, values.copy, values.tasks, ...positionals];
+        const files = values.file;
+        const copies = values.copy ?? [];
+        if (values.tasks === undefined && files.length > 1)
+            throw new UsageError("Give one --file for the reviewer reports.");
+        if (values.tasks !== undefined && copies.length !== files.length)
+            throw new UsageError("Give one --copy for each --file.");
+        const paths = [...files, ...copies, values.tasks, ...positionals];
         for (const path of paths)
             if (path !== undefined && /[$*]/.test(path))
                 throw new UsageError(
                     `The path "${path}" has "$" or "*". Write the full path of each file without shell variables or "*".`,
                 );
-        file = values.file;
+        file = files[0];
         reports = positionals;
-        if (values.copy !== undefined && values.tasks !== undefined)
-            readers = { copy: values.copy, tasks: values.tasks };
+        if (values.tasks !== undefined)
+            readers = {
+                pairs: files.map((path, i) => ({
+                    file: path,
+                    copy: copies[i],
+                })),
+                tasks: values.tasks,
+            };
     } catch (error) {
         process.stderr.write(`${(error as Error).message}\n\n${usage}\n`);
         return 2;
     }
-    if (readers !== null) return readerForm(file, readers, reports);
+    if (readers !== null) return readerForm(readers, reports);
     let source: string;
     let units: RuleUnit[];
     const sources: [string, string][] = [];
@@ -1221,7 +1617,7 @@ function reportForm(argv: string[]): number {
         const count = blockingCounts.get(report) ?? 0;
         if (count === 0) return [];
         const action =
-            "Give the blocking findings of this report to the 2 confirmers of its reviewer.";
+            "Give the blocking findings of this report to the confirmers of its reviewer.";
         return [{ report, blocking: count, action }];
     });
     process.stdout.write(
@@ -1240,38 +1636,43 @@ type ReaderQuote = {
     text: string;
 };
 
-// The text of the file under review, with the lines that the job added or
+// The text of a file of the readers, with the lines that the job added or
 // changed.
 type Target = {
+    file: string;
     source: string;
     text: string;
     offsets: number[];
     changed: Set<number>;
 };
 
+// One place of a quote: its file of the readers, and its start and end
+// offsets in the comparable text of that file.
+type Place = { target: Target; start: number; end: number };
+
 class ReaderError extends Error {}
 
 // The report form for reader reports: checks the reports of the reader tasks
-// of one file. The reports are in the sequence of the tasks.
-function readerForm(
-    file: string,
-    input: { copy: string; tasks: string },
-    reports: string[],
-): number {
-    let target: Target;
+// of one change against the files of the readers. The reports are in the
+// sequence of the tasks.
+function readerForm(input: ReaderInput, reports: string[]): number {
+    const targets: Target[] = [];
     let tasks: ReaderTask[];
     const quotes: ReaderQuote[][] = [];
     // The places of each tested quote of each task.
-    const testedPlaces: [number, number][][][] = [];
+    const testedPlaces: Place[][][] = [];
     try {
-        const source = readFileSync(file, "utf8");
-        const copy =
-            input.copy === "none" ? null : readFileSync(input.copy, "utf8");
-        target = {
-            source,
-            ...comparableWithOffsets(source),
-            changed: changedLines(copy, source),
-        };
+        for (const pair of input.pairs) {
+            const source = readFileSync(pair.file, "utf8");
+            const copy =
+                pair.copy === "none" ? null : readFileSync(pair.copy, "utf8");
+            targets.push({
+                file: pair.file,
+                source,
+                ...comparableWithOffsets(source),
+                changed: changedLines(copy, source),
+            });
+        }
         tasks = readerTasks(readFileSync(input.tasks, "utf8"));
         if (tasks.length !== reports.length)
             throw new ReaderError(
@@ -1280,10 +1681,10 @@ function readerForm(
         tasks.forEach((task, i) => {
             testedPlaces.push(
                 task.tested.map((quote) => {
-                    const found = occurrences(target, quote);
+                    const found = occurrences(targets, quote);
                     if (found.length === 0)
                         throw new ReaderError(
-                            `The tested quote "${quote}" of task ${i + 1} is not in the file under review.`,
+                            `The tested quote "${quote}" of task ${i + 1} is not in the files of the readers.`,
                         );
                     return found;
                 }),
@@ -1303,23 +1704,23 @@ function readerForm(
     const unclear: object[] = [];
     const dropped: object[] = [];
     tasks.forEach((task, i) => {
-        const used: [number, number][][] = [];
+        const used: Place[][] = [];
         for (const quote of quotes[i]) {
-            const found = occurrences(target, quote.text);
+            const found = occurrences(targets, quote.text);
             if (found.length === 0) {
                 dropped.push({
                     ...quote,
-                    reason: "The quote is not in the file under review.",
+                    reason: "The quote is not in the files of the readers.",
                 });
                 continue;
             }
-            const line = lineOf(target, found[0][0]);
+            const where = placeOf(found[0]);
             if (quote.part === 3) {
-                unclear.push({ ...quote, line });
+                unclear.push({ ...quote, ...where });
                 continue;
             }
             used.push(found);
-            const changed = found.every(([start, end]) => {
+            const changed = found.every(({ target, start, end }) => {
                 for (
                     let k = lineOf(target, start);
                     k <= lineOf(target, end - 1);
@@ -1334,15 +1735,20 @@ function readerForm(
                     kind: task.kind,
                     report: quote.report,
                     text: quote.text,
-                    line,
+                    ...where,
                     problem:
                         "The out-of-scope task uses a part that the job added or changed.",
                 });
         }
         for (const [k, tested] of testedPlaces[i].entries()) {
-            const overlaps = tested.some(([start, end]) =>
+            const overlaps = tested.some(({ target, start, end }) =>
                 used.some((places) =>
-                    places.some(([s, e]) => s < end && start < e),
+                    places.some(
+                        (place) =>
+                            place.target === target &&
+                            place.start < end &&
+                            start < place.end,
+                    ),
                 ),
             );
             if (!overlaps)
@@ -1351,7 +1757,7 @@ function readerForm(
                     kind: task.kind,
                     report: reports[i],
                     text: task.tested[k],
-                    line: lineOf(target, tested[0][0]),
+                    ...placeOf(tested[0]),
                     problem:
                         "Part 2 of the report does not use the tested quote.",
                 });
@@ -1362,6 +1768,12 @@ function readerForm(
     );
     return problems.length + unclear.length === 0 ? 0 : 1;
 }
+
+// The file and the line of a place, for the JSON of the report form.
+const placeOf = (place: Place) => ({
+    file: place.target.file,
+    line: lineOf(place.target, place.start),
+});
 
 // Reads the tasks file: a JSON array with one object for each reader task.
 function readerTasks(source: string): ReaderTask[] {
@@ -1419,18 +1831,18 @@ function readerQuotes(report: string, text: string): ReaderQuote[] {
     return result;
 }
 
-// Gives the start and end offsets in the comparable text of each place of the
-// quote.
-function occurrences(target: Target, quote: string): [number, number][] {
+// Gives each place of the quote in the files of the readers.
+function occurrences(targets: Target[], quote: string): Place[] {
     const wanted = comparable(quote);
-    const result: [number, number][] = [];
+    const result: Place[] = [];
     if (wanted === "") return result;
-    for (
-        let at = target.text.indexOf(wanted);
-        at >= 0;
-        at = target.text.indexOf(wanted, at + 1)
-    )
-        result.push([at, at + wanted.length]);
+    for (const target of targets)
+        for (
+            let at = target.text.indexOf(wanted);
+            at >= 0;
+            at = target.text.indexOf(wanted, at + 1)
+        )
+            result.push({ target, start: at, end: at + wanted.length });
     return result;
 }
 
