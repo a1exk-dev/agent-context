@@ -151,3 +151,11 @@ Applies when: changing the reviewers of the agent-instructions Skill, its rule m
 Guidance: Give no reviewer `MEMORY.md` or the glossary as a rule source. A reviewer reads the glossary only to examine a word that it found, and the glossary can then permit the word. Give no mark and no script check to a rule that compares the text with the glossary. A reviewer reviews `MEMORY.md` or the glossary only when the job changed that file.
 
 Reason: The Skill runs in projects that have no glossary and no `MEMORY.md`. In round 4 of "One review and one full output-test matrix" (#265), 2 of the 6 confirmed findings came only from the `_Avoid_` list of this repo. The Operator decided this in "Reviewers do not depend on the glossary or MEMORY.md" (#268).
+
+## Each Skill has 2 links for the agents of this repository
+
+Applies when: adding a Skill folder `skills/<category>/<name>/`, or changing the link check in `scripts/check.ts`.
+
+Guidance: For each Skill, make the 2 symbolic links `.claude/skills/<name>` and `.agents/skills/<name>`. Make each link point to exactly `../../skills/<category>/<name>`. `bun run check` fails for a Skill without these 2 links. The check does not examine third-party Skills in `.agents/skills/`. It also does not examine a link whose Skill is gone.
+
+Reason: Without the 2 links, no agent in this repository can load the Skill. The commit that added `skills/writing/wtf` did not add the 2 links of the wtf Skill. No agent loaded the wtf Skill until "feat(agent-instructions): add reviews that stop" (#272) added them. The Operator decided the check in "How does the repository stop a new Skill without its links?" (#273).

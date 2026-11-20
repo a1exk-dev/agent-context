@@ -4,7 +4,7 @@
 
 import { Buffer } from "node:buffer";
 import { spawnSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, readlinkSync } from "node:fs";
 import { join, relative } from "node:path";
 
 export type RepoFile = { path: string; text: string };
@@ -135,6 +135,40 @@ export function checkOpenaiYaml(
             );
     }
     return findings;
+}
+
+// Each Skill has a symbolic link in .claude/skills/ for Claude Code and in
+// .agents/skills/ for Codex and OpenCode, so agents in this repo load it.
+// readLink gives the target of a symbolic link, or undefined when the path
+// is not a symbolic link.
+export function checkSkillLinks(
+    files: RepoFile[],
+    readLink: (path: string) => string | undefined,
+): Finding[] {
+    const findings: Finding[] = [];
+    for (const file of files) {
+        const parts = file.path.split("/");
+        if (parts[0] !== "skills" || parts.length !== 4) continue;
+        if (parts[3] !== "SKILL.md") continue;
+        const target = `../../skills/${parts[1]}/${parts[2]}`;
+        for (const folder of [".claude/skills", ".agents/skills"]) {
+            const path = `${folder}/${parts[2]}`;
+            if (readLink(path) !== target)
+                findings.push({
+                    level: "error",
+                    message: `${path}: must be a symbolic link to ${target}`,
+                });
+        }
+    }
+    return findings;
+}
+
+function readLinkTarget(path: string): string | undefined {
+    try {
+        return readlinkSync(path);
+    } catch {
+        return undefined;
+    }
 }
 
 // The Docker image and CI must run the same Bun, so both pins must match.
@@ -290,6 +324,7 @@ if (import.meta.main) {
     const findings = [
         ...checkRepo(repoFiles, Bun.YAML.parse),
         ...checkOpenaiYaml(repoFiles, Bun.YAML.parse),
+        ...checkSkillLinks(repoFiles, readLinkTarget),
         ...checkBunPin(
             readFileSync("package.json", "utf8"),
             readFileSync("Dockerfile", "utf8"),

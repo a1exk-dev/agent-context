@@ -7,6 +7,7 @@ import {
     checkInstructions,
     checkOpenaiYaml,
     checkRepo,
+    checkSkillLinks,
 } from "../../scripts/check.ts";
 
 // Vitest runs on Node, which has no Bun.YAML. JSON is valid YAML, so the
@@ -339,6 +340,55 @@ describe("checkOpenaiYaml", () => {
                     "skills/writing/foo/agents/openai.yaml: interface.default_prompt must mention $foo",
             },
         ]);
+    });
+});
+
+describe("checkSkillLinks", () => {
+    const foo = { path: "skills/writing/foo/SKILL.md", text: "" };
+    const target = "../../skills/writing/foo";
+    const readLink = (links: Record<string, string>) => (path: string) =>
+        links[path];
+
+    it("passes a Skill with its 2 links", () => {
+        const links = {
+            ".claude/skills/foo": target,
+            ".agents/skills/foo": target,
+        };
+        expect(checkSkillLinks([foo], readLink(links))).toEqual([]);
+    });
+
+    it("fails a Skill without its links", () => {
+        expect(checkSkillLinks([foo], readLink({}))).toEqual([
+            {
+                level: "error",
+                message: `.claude/skills/foo: must be a symbolic link to ${target}`,
+            },
+            {
+                level: "error",
+                message: `.agents/skills/foo: must be a symbolic link to ${target}`,
+            },
+        ]);
+    });
+
+    it("fails a link with a different target", () => {
+        const links = {
+            ".claude/skills/foo": "../../.agents/skills/foo",
+            ".agents/skills/foo": target,
+        };
+        expect(checkSkillLinks([foo], readLink(links))).toEqual([
+            {
+                level: "error",
+                message: `.claude/skills/foo: must be a symbolic link to ${target}`,
+            },
+        ]);
+    });
+
+    it("ignores files that are not a SKILL.md of a Skill", () => {
+        const files = [
+            { path: "skills/writing/foo/references/a.md", text: "" },
+            { path: "rules/writing/bar.md", text: "" },
+        ];
+        expect(checkSkillLinks(files, readLink({}))).toEqual([]);
     });
 });
 
