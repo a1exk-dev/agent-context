@@ -41,7 +41,7 @@ When the user tells you clearly to write a feature that only one platform reads,
 
 | File | Limit |
 |---|---|
-| Entry files | The entry files from the project root to the file have a total file size of less than 32 KiB. This total is the Codex limit. A file that an `@path` line imports is not in this total, except when it is an entry file. Each entry file has less than 200 lines. These limits are applicable to all target platforms. (script check) |
+| Entry files | The entry files from the project root to the file have a total file size of less than 32 KiB. This total is the Codex limit. A file that an `@path` line loads is not in this total, except when it is an entry file. Each entry file has less than 200 lines. These limits are applicable to all target platforms. (script check) |
 | Skills | `SKILL.md` has a maximum of 20,000 bytes. Measure the bytes with the command after this table. 20,000 bytes are approximately 5,000 tokens. When Claude Code makes the context window smaller, it keeps only the first 5,000 tokens of a Skill. (script check) |
 | The glossary, `MEMORY.md`, and `docs/agents/` files | No limit |
 
@@ -79,7 +79,7 @@ Do not move text from a Rule. Items 2 and 3 in this section are tier 1. The othe
    - Move only whole sections that have a specified condition. A whole section includes the sections under its heading. (advisory)
    - Move the largest section first. When the file is not more than each limit, stop. (advisory)
    - Select the reference file and its name as "When the write job makes a SKILL.md or entry-file text" tells you. (advisory)
-   - Move the heading of the section with the section. In its old place, write a heading that gives the condition. Under that heading, write the pointer as "When you put the text in sections and lists" in `plain-language-checks.md` tells you. Write no other text in the old place, also when a finding is about the moved section. (blocking)
+   - Keep the heading of the section at the start of the moved section. In its old place, write a heading that gives the condition. Under that heading, write the pointer as "When you put the text in sections and lists" in `plain-language-checks.md` tells you. Write no other text in the old place, also when a finding is about the moved section. (blocking)
    - Do not change the text of a moved section. Its new pointer is in the changed part. Its text is not in the changed part. (advisory)
    - Put each finding about the text of a moved section in a warning.
 3. If the file is still more than a limit, add a warning.

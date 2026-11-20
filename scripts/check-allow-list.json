@@ -308,7 +308,7 @@
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "When you put the text in sections and lists",
-        "text": "These files also include the files in docs/agents/, .claude/rules/, .claude/skills/, .agents/skills/, and .opencode/skills/, and the targets of their pointers.",
+        "text": "These files also include the files in docs/agents/, .claude/rules/, .claude/skills/, .agents/skills/, and .opencode/skills/, and the targets of the pointers in these files.",
         "cause": "The path is an example of a file or folder in a project that installs the Skill."
     },
     {

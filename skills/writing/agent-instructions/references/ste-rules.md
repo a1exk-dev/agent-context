@@ -13,7 +13,7 @@ If `SKILL.md` of this skill is not in your context window, read it before you us
 - The word rules are not applicable to text that the author cannot change (rule 8.6). This text is user phrases in quotation marks, names, code spans, file paths, commands, URLs, and code in code blocks.
 - The punctuation rules are also not applicable to code in code blocks.
 - A prompt that an agent reads as an instruction is not in this group. A prompt in a code block is also not in this group. Write these prompts by all STE rules. An example is the text that a Skill gives to a subagent.
-- The general recommendations GR-2, GR-3, and GR-4 are not STE rules. This Skill makes them rules.
+- The general recommendations GR-2, GR-3, and GR-4 are not STE rules. This skill makes them rules.
 
 ## When you select a word
 
@@ -113,7 +113,7 @@ This table gives examples. In each example, the sentence and its word count obey
 - A step that other persons can see, but that you can undo, has no risk of this type. Examples are a pull request and a pushed tag. Write a condition at the start of that step, for example "When the user gives approval, ...". Also write it when a heading above the step gives a condition. (blocking)
 - Put a safety instruction directly before each step with a risk (rule 7.1). In a list, the safety instruction is a different item. (blocking)
 - A CAUTION does not replace a condition. A task or a project file can make approval of the user necessary for a step. Then start that step with the condition. (blocking)
-- Start the safety instruction with the signal word CAUTION. A caution is for a risk of damage. (advisory)
+- Start the safety instruction with the signal word CAUTION. A CAUTION is for a risk of damage. (advisory)
 - Do not use the signal word WARNING. It is for a risk of injury to persons. A warning in the end-of-run report is a different item. (script check)
 - After CAUTION, write the instruction or the condition first (rule 7.2). (advisory)
 - Then tell the risk or the possible result in a second sentence (rule 7.3). (advisory)

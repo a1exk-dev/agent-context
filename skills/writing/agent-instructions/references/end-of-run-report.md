@@ -35,7 +35,7 @@ In the Warnings part, add one item for each of these warnings that is applicable
 
 - Each blocking problem that stayed open at a limit, with the question to the user and the answer. When you write this item, find these problems in "When a blocking problem stays open at a limit" in `references/review.md`. When no user was available to answer, give the question with its 3 answers. Then write that the change did not pass.
 - Each finding that you rejected, with the rule that permits the text.
-- Each finding that item 5 of "During and after a review round" in `references/review.md` tells you to put in a warning.
+- Each finding that a review round tells you to put in a warning. When you write this item, find these findings in item 5 of "During and after a review round" in `references/review.md`.
 - In the edit job, each pointer in an unchanged part that does not give the condition to read its target. The pointer list of the check script gives each sentence that names a file path.
 - Each problem from the reader test that you cannot correct.
 - In the edit job, each problem that you find in an unchanged part of a file that you change. Give its text in quotation marks and its rule. Do not correct it.
@@ -60,7 +60,7 @@ Obey these rules for the moved text and the extraction candidates:
 - In the Summary part of the write job and of the edit job, give each text that you moved. For each text, give its new file and the reason.
 - When the file size was the reason, give the file size before you moved the text, and the limit.
 - In the write job, write no Extraction candidates part.
-- In the edit job, before you write the report, read "When you recommend text to move" in `references/loading-rules.md`. Then find each extraction candidate in the unchanged parts as it tells you. Write each candidate in the Extraction candidates part, also when the file is less than its size limit.
+- In the edit job, before you write the report, read "When you recommend text to move" in `references/loading-rules.md`. Then find each extraction candidate in the unchanged parts as that section tells you. Write each candidate in the Extraction candidates part, also when the file is less than its size limit.
 - A reviewer other than the loading reviewer can tell you to move text in an unchanged part. Then find the section of that text. If "When you recommend text to move" in `references/loading-rules.md` gives that section, add it to the Extraction candidates part.
 - Use the heading of each section as the name of its candidate.
 

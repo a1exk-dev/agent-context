@@ -1,18 +1,21 @@
 # Technical nouns and verbs
 
+## Before you use this file
+
+If `SKILL.md` of this skill is not in your context window, read it before you use this file. `SKILL.md` defines the terms, the tiers, and the end-of-run report.
+
 ## When you find the sources of technical words
 
 - This file gives the base list of technical nouns and technical verbs.
 - When the project has a glossary, its terms are also technical nouns.
 - The base-list terms and the glossary terms are applicable only to Agent instructions. They are not applicable to text for persons, for example `README.md`.
-- If `SKILL.md` of this skill is not in your context window, read it before you use this file. `SKILL.md` defines the terms, the tiers, and the end-of-run report.
 - To find the text of a rule from its rule number, read `ste-rules.md`.
 - The list contains only terms and meanings that we wrote. It has no table that gives approved words for words that are not approved.
 
 ## When you add a word to the base list
 
 - When the edit job changes this skill, add a word to the base list only when most projects use the word in Agent instructions.
-- Do not add an entry for a platform file name or a command, because a path and a code span count as 1 word.
+- Do not add an entry for a platform file name or a command, because a file path and a command each count as 1 word.
 - The term "rule" has the meaning "a requirement in a text" in this list. A project can also give the name Rule to a type of file. Then the glossary meaning is correct for that file.
 - Do not add a term of one platform only, for example "hook" or "slash command".
 - Each table row has 3 columns: term, definition, and the words that this list does not permit.
@@ -87,7 +90,7 @@ When a technical noun is not in the base list and not in the glossary, add a war
 
 | Term | Definition | Do not use |
 |---|---|---|
-| text | The words of a file or of a part of a file | "content", "copy" |
+| text | The words of a file or of a part of a file | "content", "copy" (with this meaning) |
 | sentence | A group of words that starts with a capital letter and stops with a period or a question mark. "When you count words" in `ste-rules.md` tells when a colon stops a sentence | |
 | term | A word or words with one specified meaning | "keyword" |
 | rule | A requirement in a text that tells the reader what to do or not to do | "guideline", "directive" |

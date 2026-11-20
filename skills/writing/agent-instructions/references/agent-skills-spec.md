@@ -12,7 +12,7 @@ Select the folder first, as the section "When you select the folder for the Skil
 
 A Manual-only Skill is a Skill that an agent loads only when the user calls the Skill by name. OpenCode 2 is version 2 of OpenCode.
 
-- Tier 1: A Skill is a folder with a `SKILL.md` file. The file starts with YAML frontmatter, and Markdown text comes after it. (script check)
+- Tier 1: Put a `SKILL.md` file in the folder of each Skill. Start the file with YAML frontmatter. Put the Markdown text after the frontmatter. (script check)
 - Tier 1: Give `name` 1 to 64 characters: lowercase letters, digits, and hyphens. Put no hyphen at the start or at the end, and no `--`. Use the folder name. If the user gives a name that does not obey this rule, correct the name. Give the change in the Summary part. (script check)
 - Tier 1: Give `description` 1 to 1024 characters. (script check)
 - Tier 1: In the frontmatter, write no top-level field other than `name`, `description`, `license`, `compatibility`, `metadata`, and `allowed-tools`. Exception: in a Manual-only Skill, also write `disable-model-invocation: true`. (script check)
@@ -37,7 +37,7 @@ policy:
 ```
 
 - Tier 4: In the write job, write `agents/openai.yaml` for each Skill that you write. (script check)
-- Tier 4: In the edit job, when the Skill has no `agents/openai.yaml` and is not a Manual-only Skill, do not write the file. Add a warning that recommends the file. In the warning, give the full text of the file. The check script also reports the missing file. Reject that script finding with this warning. (advisory)
+- Tier 4: In the edit job, when the Skill has no `agents/openai.yaml` and is not a Manual-only Skill, do not write the file. Add a warning that recommends the file. In the warning, give the full text of the file. The check script also reports the missing file. Reject that script finding. Give this warning as the cause of the rejection. (advisory)
 - Tier 1: In the edit job, when a Manual-only Skill has no `agents/openai.yaml`, write the file, because Codex does not read `disable-model-invocation`. (script check)
 - Tier 1: In a Manual-only Skill, write `allow_implicit_invocation: false` under `policy:`, because Codex does not read `disable-model-invocation` in the frontmatter. In each other Skill, write `allow_implicit_invocation: true`. (script check)
 - Tier 4: Write `display_name`, `short_description`, and `default_prompt` under `interface:`. Write no other field under `interface:`. (advisory)
@@ -70,7 +70,7 @@ Tier 4: Write each script so that it operates without input from a person while 
 
 ## When you select the folder for the Skill
 
-Each platform loads Skills from these folders. When the target platforms include Claude Code and Codex, no single folder is applicable to all target platforms. Before you select the folder, find the target platforms as `loading-rules.md` tells you. Tier 1: When the target platforms include Claude Code and Codex, use the Skills folder of the project. A Skills folder of the project is a folder from this table that the project has. A `.claude/` folder without a `skills/` folder is not a Skills folder. If the project has two of these folders or none, speak to the user one time. For each Skill that you write for these target platforms, add a warning that gives the platform that does not load the Skill. (advisory)
+Each platform loads Skills from these folders. When the target platforms include Claude Code and Codex, no single folder is applicable to all target platforms. Before you select the folder, find the target platforms as `loading-rules.md` tells you. Tier 1: When the target platforms include Claude Code and Codex, use the Skills folder of the project. A Skills folder of the project is a folder from this table that the project has. A `.claude/` folder without a `skills/` folder is not a Skills folder. If the project has 2 or more of these folders, or none of these folders, ask the user one time which folder to use. For each Skill that you write for these target platforms, add a warning that gives the platform that does not load the Skill. (advisory)
 
 | Platform | Folder |
 |---|---|
