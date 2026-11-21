@@ -28,10 +28,10 @@ Link prefixes in this file:
 | Tool parameters | `model` (alias only), `effort` | `model`, `reasoning_effort` | `model` (`provider/model#variant`) |
 | Headless model with no flag | Normal startup order: env var, settings, account default (Opus 5.5) | `config.toml`, else first model of the catalog | Agent model, else `model` config, else newest model |
 | Headless effort with no flag | Settings, else model default (`medium` on Opus 5.5) | `model_reasoning_effort`, else model default | Variant of the agent model, else provider default |
-| Agent can read its own model | Yes, the system prompt names it (observed, not documented) | No, only from the session log file | No |
+| Agent can read its own model | Yes, the system prompt names it (observed, not documented) | No, only from the session log file | Yes, the system prompt block `# Your Model` |
 | Agent can read its own effort | Yes, `$CLAUDE_EFFORT` | No, only from the session log file | No |
 
-The main result: on all three platforms, a subagent with no model and no effort runs on the model of its parent. A headless run does not inherit from the agent that starts it. The headless run reads the configuration files and environment again, so a model or effort that the parent picked in the session is lost. To keep them, the agent must pass them as flags. Only Claude Code tells the agent its own model and effort.
+The main result: on all three platforms, a subagent with no model and no effort runs on the model of its parent. A headless run does not inherit from the agent that starts it. The headless run reads the configuration files and environment again, so a model or effort that the parent picked in the session is lost. To keep them, the agent must pass them as flags. Claude Code tells the agent its own model and effort. OpenCode tells the agent its own model, but not its variant. Codex tells the agent neither.
 
 ## 1. Subagent with no model and no effort
 
@@ -143,11 +143,21 @@ claude -p --model claude-opus-5-5 --effort "$CLAUDE_EFFORT" "<prompt>"
 
 ### OpenCode
 
-- The default system prompt does not name the model (`packages/core/src/session/runner/prompt/system.txt`, `packages/core/src/session/system-prompt.ts`). Only the prompt for Meta "muse" models names the model (`packages/core/src/plugin/optimize.ts#L57-L60`). No prompt names the variant.
+- Model: the identity plugin adds a block to the system prompt of each request, after the first system part (`packages/core/src/plugin/identity.ts#L10-L29`). The block holds the model name, the provider ID, and the model ID:
+
+  ```text
+  # Your Model
+  - Name: ${model.name}
+  - Provider ID: ${model.ref.providerID}
+  - Model ID: ${model.ref.id}
+  ```
+
+- The identity plugin is in the fixed list of internal plugins (`packages/core/src/plugin/internal.ts#L268`), so it runs in each session. The default prompt file itself does not name the model (`packages/core/src/session/runner/prompt/system.txt`). The prompt for Meta "muse" models names the model also (`packages/core/src/plugin/optimize.ts#L57-L60`).
+- Variant: no prompt names the variant. The identity block has no variant.
 - The `<env>` block holds the directory, git state, platform, and temp folder only (`packages/core/src/instructions/builtins.ts#L33-L46`).
 - The shell tool exports `AGENT=1`, `OPENCODE=1`, `AI_AGENT`, and `OPENCODE_SESSION_ID`, but no model or variant (`packages/core/src/tool/plugin/shell.ts#L423-L426`).
 - The `models` tool uses the session's provider only to sort its list (`packages/core/src/tool/plugin/opencode.ts#L235-L245`).
-- So the agent can only guess from the config files. Unconfirmed: whether the local server API returns the session model for `OPENCODE_SESSION_ID`.
+- So the agent can pass its model on as `-m providerID/modelID`, but it can only guess its variant from the config files. Unconfirmed: whether the local server API returns the session variant for `OPENCODE_SESSION_ID`.
 
 ## 4. Can the subagent call set the model and the effort?
 
