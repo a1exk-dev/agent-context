@@ -58,7 +58,7 @@ function diff({ path, before, after }: File): string {
 function runFolder(
     statements: Statement[],
     files: File[],
-    options: { limitHit?: boolean; record?: RunRecord } = {},
+    options: { limitHit?: boolean; record?: RunRecord; report?: string } = {},
 ): string {
     const evalDir = join(
         mkdtempSync(join(tmpdir(), "grade-")),
@@ -85,7 +85,7 @@ function runFolder(
         mkdirSync(dirname(path), { recursive: true });
         writeFileSync(path, file.after);
     }
-    writeFileSync(join(outputs, "report.md"), "Done.\n");
+    writeFileSync(join(outputs, "report.md"), options.report ?? "Done.\n");
     const record = options.record ?? { transcript: [] };
     writeFileSync(
         join(runDir, "transcript.jsonl"),
@@ -824,13 +824,21 @@ function startConfirmers(run: Builder, reports: string[][]) {
 }
 
 const PROCESS = ["1", "2", "3a", "3c", "4"];
+// The Summary part of a run that changed only a list file (#284).
+const SKIP_REPORT =
+    "## Summary\nAdded the term Release to CONTEXT.md.\nThe job skipped the loading reviewer, the reader test, and the output tests, because CONTEXT.md is a list file.\n";
 
 // Grades the process statements of a run and gives the verdict of each id.
-function processVerdicts(record: RunRecord, ids = PROCESS, files = ONE_FILE) {
+function processVerdicts(
+    record: RunRecord,
+    ids = PROCESS,
+    files = ONE_FILE,
+    report?: string,
+) {
     const runDir = runFolder(
         ids.map((id) => statement(id)),
         files,
-        { record },
+        { record, report },
     );
     const result = grade("script", runDir);
     expect(result.stderr).toBe("");
@@ -895,6 +903,38 @@ describe("process statements", () => {
             readerRound(run);
             const verdicts = processVerdicts(run.record(), ["3a", "3c"]);
             expect(passed(verdicts)).toEqual(["3a", "3c"]);
+        });
+
+        it(`passes [3d] for a ${platform} run without a reader test whose report states the skip`, () => {
+            const run = start();
+            run.edit();
+            const verdicts = processVerdicts(
+                run.record(),
+                ["3d"],
+                ONE_FILE,
+                SKIP_REPORT,
+            );
+            expect(verdicts["3d"].passed).toBe(true);
+        });
+
+        it(`fails [3d] for a ${platform} run with a reader subagent`, () => {
+            const run = start();
+            readerRound(run);
+            const verdicts = processVerdicts(
+                run.record(),
+                ["3d"],
+                ONE_FILE,
+                SKIP_REPORT,
+            );
+            expect(verdicts["3d"].passed).toBe(false);
+            expect(verdicts["3d"].evidence).toContain("reader subagents");
+        });
+
+        it(`fails [3d] for a ${platform} run whose report does not state the skip`, () => {
+            const run = start();
+            run.edit();
+            const verdicts = processVerdicts(run.record(), ["3d"]);
+            expect(verdicts["3d"].passed).toBe(false);
         });
 
         it(`fails [3a] for a ${platform} reader that runs a Bash redirect`, () => {

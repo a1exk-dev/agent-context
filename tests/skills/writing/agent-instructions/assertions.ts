@@ -79,6 +79,8 @@ export type Run = {
     pointers: Pointer[];
     glossary: string | null;
     workDir: string;
+    // The end-of-run report: the final message of the run.
+    report: string;
     messages: { id: string; calls: MainCall[] }[];
     subagents: Subagent[];
     dropped: (path: string, reports: string[]) => number | null;
@@ -194,6 +196,40 @@ const nonBlank = (body: string[]) => body.filter((line) => line.trim());
 const sameLevel = (line: string) => line.replace(/^#+ /, "# ");
 
 const SUBAGENT_TOOLS = ["agent", "task"];
+
+const READER_CLASS = /^\s*Check class: reader\s*$/m;
+
+// [3d]: a job that changes only a list file does no reader test (#284). The
+// run starts no reader subagent and saves no reader report, and a line of
+// the end-of-run report states the skip.
+function noReaderTest(run: Run): Verdict {
+    const problems: string[] = [];
+    const readerAgents = run.subagents.filter((agent) =>
+        READER_CLASS.test(agent.prompt),
+    ).length;
+    if (readerAgents > 0)
+        problems.push(`The run started ${readerAgents} reader subagents.`);
+    const savedReports = run.messages
+        .flatMap((message) => message.calls)
+        .filter(
+            (call) =>
+                !SUBAGENT_TOOLS.includes(call.name.toLowerCase()) &&
+                [...JSON.stringify(call.input).matchAll(READER_TITLE)].length >
+                    0,
+        ).length;
+    if (savedReports > 0)
+        problems.push(`The run saved ${savedReports} reader reports.`);
+    const skip = lines(run.report).find(
+        (line) =>
+            /reader test/i.test(line) &&
+            /\b(skip|skips|skipped|not|no)\b/i.test(line),
+    );
+    if (!skip)
+        problems.push(
+            "No line of the report states the skip of the reader test.",
+        );
+    return verdict(problems, `No reader test. The report states: ${skip}`);
+}
 
 // [10.2]: each saved reader task in its own tool call and message, the 3
 // tasks of the change in each reader-test round, and no change of a saved
@@ -365,6 +401,7 @@ export const scriptStatements: Record<string, (run: Run) => Verdict> = {
     "2": reviewReportForms,
     "3a": readers,
     "3c": readerReportForms,
+    "3d": noReaderTest,
     "4": roundLimits,
     "6": (run) =>
         findingVerdict(

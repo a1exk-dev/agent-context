@@ -68,6 +68,8 @@ In each round, start 3 new reviewer subagents for the sections in the `Changes:`
 
 The pointer targets are the files that the pointers in the files of the review target identify. The glossary and `MEMORY.md` are not pointer targets. A reviewer reviews them only when the job changed them, through the `Changes:` line. Each reviewer reads the prompt in this file to know the requirements for its reports. A reviewer does only the review that the author gave to it.
 
+When you start the reviewers, find the list files in "Terms in this skill" in `SKILL.md`. Give no list file in the `Changes:` line of the loading reviewer. When each changed file is a list file, start only the ASD-STE100 reviewer and the ISO 24495-1 reviewer in each round. For a list file, use only these 2 reviewers and their 2 reports. Where `review.md` gives 3 reviewers, 3 reports, or the same `Changes:` line for each reviewer, give no list file to the loading reviewer. The loading reviewer gives no report for a list file.
+
 Copy this prompt for each reviewer. Replace only the placeholders. Do not change the report requirements. Keep the lines for the reviewer that you start. Remove the label in angle brackets from these lines. Remove the lines for the other reviewers. In the write job, also remove the 2 prompt lines that start with "For a section that the author moved" and "Also give a finding for each text that the author moved". Give the same `Review target:` line, `Changes:` line, and pointer targets to each reviewer.
 
 ```text
@@ -206,6 +208,8 @@ Start the reader test only after the self-check stops. Do not start a reader sub
 
 Do the reader test in each job, also for a small change. Also do the reader test when you expect that it finds no problem. Only the reader test shows how a new reader obeys the file.
 
+The reader test does not examine a list file, because a list file gives terms or entries, not a task. When each changed file is a list file, do no reader test. When the job also changes a different file, give the readers only the files that are not list files. Write the 3 tasks only for these files.
+
 1. Write 3 tasks for the change. Do not write 3 tasks for each file. Also write only 3 tasks for a change with many files or many changes, for example a new Skill. Each task tests the new or changed rules of the change:
    - Write 2 typical tasks with different inputs. If the user told you that an agent did not obey an instruction, make one task from that problem.
    - Write 1 out-of-scope task. It looks almost the same as a typical task, but the new or changed instruction does not change it. It uses the same file, words, or condition as the instruction, but the instruction is not applicable to it. An example for a rule about release branches is a task that makes a feature branch. If the instruction is applicable to all project tasks, use a different project or platform for this task.
@@ -312,6 +316,8 @@ Give only these lines. Do not give the work to a subagent.
 ## After the reader test: the output tests and the manual checks
 
 Start these steps only after a reader-test round passes. An output test or a manual check costs more than a reader test. Run these tests only on text that a reader understands.
+
+Select no output test, no load test, and no manual check for a list file. When each changed file is a list file, do none of these steps. Then write the end-of-run report.
 
 1. Find the output tests, the load test, and the manual checks of each changed file in the project. A project often keeps the tests of a Skill in a folder with a `README.md` file, for example `tests/skills/<category>/<name>/`. If the project has no output test and no manual check for the changed files, the reader test is enough. Then write the end-of-run report.
 2. Select the touched output tests. An output test is touched when one of its statements examines the result of a new or changed rule. Read each statement to decide. If you are not sure, select the test.
