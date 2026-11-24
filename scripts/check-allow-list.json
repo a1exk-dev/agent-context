@@ -469,9 +469,21 @@
     },
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "1.8",
+        "text": "A **list file** is `GLOSSARY.md`, `CONTEXT.md`, `GLOSSARY-MAP.md`, or `MEMORY.md`.",
+        "cause": "The Terms section of this Skill defines the term. A Skill gives its own terms, because other projects install it without this glossary."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "When you put the text in sections and lists",
         "text": "If the project has a glossary, read `GLOSSARY.md` or `CONTEXT.md`, as \"Terms in this skill\" tells you.",
         "cause": "The path is a file in a project that installs the Skill."
+    },
+    {
+        "path": "skills/writing/agent-instructions/SKILL.md",
+        "rule": "When you put the text in sections and lists",
+        "text": "A **list file** is `GLOSSARY.md`, `CONTEXT.md`, `GLOSSARY-MAP.md`, or `MEMORY.md`.",
+        "cause": "The path is an example of a file or folder in a project that installs the Skill."
     },
     {
         "path": "docs/agents/commit-policy.md",

@@ -238,6 +238,7 @@ function readRun(runDir: string, metadata: Metadata): Run {
         pointers: checked.pointers.filter(onAdded),
         glossary: glossary ? readFileSync(glossary, "utf8") : null,
         workDir: timing.work_dir ?? "",
+        report: readFileSync(join(outputs, "report.md"), "utf8"),
         ...runRecord(runDir),
         dropped: (path, reports) =>
             droppedFindings(join(outputs, "files"), path, reports),
