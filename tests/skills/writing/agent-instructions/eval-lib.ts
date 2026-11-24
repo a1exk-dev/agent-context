@@ -35,7 +35,8 @@ export const FORCE_SKILL = [
     "This run is an output test of the skill, so do not do the review rounds of the self-check.",
     "Do not start a loading, ASD-STE100, or ISO 24495-1 reviewer or a confirmer for a reviewer, and do not do their review checks yourself.",
     'In place of the review rounds, make the round folder with `mktemp -d` and do the check in "After the last review round" of `references/review.md` on your changes.',
-    "Then do the reader test with its vote only when `references/review.md` asks for one.",
+    "Then do the reader test with its vote, as `references/review.md` tells you.",
+    "`references/review.md` skips the reader test for a list file.",
     'After each reader-test round, do the check in "After the last review round" on your corrections in place of a new review round.',
 ].join(" ");
 

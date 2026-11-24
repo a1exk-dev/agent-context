@@ -316,12 +316,13 @@ describe("toolCalls", () => {
 });
 
 // The prompt of each output-test run (#211): the Skill, no review rounds,
-// and the reader test with its vote when review.md asks for one (#284).
+// and the reader test with its vote, which review.md skips for a list
+// file (#284).
 const EVAL_PROMPT =
-    'Use the agent-instructions skill for this task. This run is an output test of the skill, so do not do the review rounds of the self-check. Do not start a loading, ASD-STE100, or ISO 24495-1 reviewer or a confirmer for a reviewer, and do not do their review checks yourself. In place of the review rounds, make the round folder with `mktemp -d` and do the check in "After the last review round" of `references/review.md` on your changes. Then do the reader test with its vote only when `references/review.md` asks for one. After each reader-test round, do the check in "After the last review round" on your corrections in place of a new review round.';
+    'Use the agent-instructions skill for this task. This run is an output test of the skill, so do not do the review rounds of the self-check. Do not start a loading, ASD-STE100, or ISO 24495-1 reviewer or a confirmer for a reviewer, and do not do their review checks yourself. In place of the review rounds, make the round folder with `mktemp -d` and do the check in "After the last review round" of `references/review.md` on your changes. Then do the reader test with its vote, as `references/review.md` tells you. `references/review.md` skips the reader test for a list file. After each reader-test round, do the check in "After the last review round" on your corrections in place of a new review round.';
 
 describe("FORCE_SKILL", () => {
-    it("tells an output-test run to use the Skill, skip the review rounds, and do the reader test only when review.md asks", () => {
+    it("tells an output-test run to use the Skill, skip the review rounds, and do the reader test as review.md tells", () => {
         expect(FORCE_SKILL).toBe(EVAL_PROMPT);
     });
 });

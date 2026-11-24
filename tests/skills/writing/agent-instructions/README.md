@@ -45,7 +45,7 @@ The runner copies `project/` to a temporary folder outside this repository. Thus
 - `--setting-sources project,local` keeps user Skills and user memory out of the run.
 - For a run with the Skill, the runner installs the Skill in `.claude/skills/` and adds `FORCE_SKILL` of `eval-lib.ts` to the system prompt.
 
-`FORCE_SKILL` tells the run to use the Skill and to do the reader test with its vote when `references/review.md` asks for one. For a list file, for example `CONTEXT.md` in test 04 and `MEMORY.md` in test 05, `review.md` skips the reader test, and statement [3d] examines the skip. It also tells the run to skip the review rounds of the self-check. Thus the run starts no loading, ASD-STE100, or ISO 24495-1 reviewer, and no Confirmer for these reviewers. The output tests then check how well the Skill does its job, for a small part of the tokens of a full self-check.
+`FORCE_SKILL` tells the run to use the Skill and to do the reader test with its vote, as `references/review.md` tells you. For a list file, for example `CONTEXT.md` in test 04 and `MEMORY.md` in test 05, `review.md` skips the reader test, and statement [3d] examines the skip. It also tells the run to skip the review rounds of the self-check. Thus the run starts no loading, ASD-STE100, or ISO 24495-1 reviewer, and no Confirmer for these reviewers. The output tests then check how well the Skill does its job, for a small part of the tokens of a full self-check.
 
 ## The review statements
 
