@@ -464,7 +464,7 @@ function checkPlainLanguage(
         findings.push({
             reviewer: "ISO 24495-1",
             rule: null,
-            ruleFile: "references/plain-language-checks.md",
+            ruleFile: "references/plain-language-rules.md",
             heading,
             text,
             path,
@@ -1461,7 +1461,7 @@ function lineAt(segment: Segment, offset: number) {
 const ruleFiles: [string, string][] = [
     ["references/ste-rules.md", "ASD-STE100"],
     ["references/technical-terms.md", "ASD-STE100"],
-    ["references/plain-language-checks.md", "ISO 24495-1"],
+    ["references/plain-language-rules.md", "ISO 24495-1"],
     ["references/loading-rules.md", "loading"],
     ["references/agent-skills-spec.md", "loading"],
 ];
