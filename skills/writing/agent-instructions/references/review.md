@@ -64,7 +64,7 @@ In each round, start 3 new reviewer subagents for the sections in the `Changes:`
 |---|---|---|
 | Loading reviewer | The loading rules for each file type, and the Agent Skills specification for a Skill | `review.md`, `loading-rules.md`, `agent-skills-spec.md` for a Skill, and the pointer targets |
 | ASD-STE100 reviewer | The STE rules | `review.md`, `ste-rules.md`, `technical-terms.md`, and the pointer targets |
-| ISO 24495-1 reviewer | The plain-language checks | `review.md`, `plain-language-checks.md`, and the pointer targets |
+| ISO 24495-1 reviewer | The plain-language rules | `review.md`, `plain-language-rules.md`, and the pointer targets |
 
 The pointer targets are the files that the pointers in the files of the review target identify. The glossary and `MEMORY.md` are not pointer targets. A reviewer reviews them only when the job changed them, through the `Changes:` line. Each reviewer reads the prompt in this file to know the requirements for its reports. A reviewer does only the review that the author gave to it.
 
@@ -115,7 +115,7 @@ Give a finding for each text to move in a section in the Changes line.
 Also give a finding for each text that the author moved and that does not obey loading-rules.md. In the Text field, write the pointer of that text in quotation marks. If that text has no pointer, copy the heading of the moved section.
 <For the ISO 24495-1 reviewer only:> For each sentence in the pointer list that is a pointer, decide whether the heading and the sentence give the condition to read the target.
 <For the ISO 24495-1 reviewer only:> Also find each pointer that names no file, for example "that file".
-<For the ISO 24495-1 reviewer only:> In "When you select the text" in plain-language-checks.md, skip the rule about long text. The loading reviewer examines that rule.
+<For the ISO 24495-1 reviewer only:> In "When you select the text" in plain-language-rules.md, skip the rule about long text. The loading reviewer examines that rule.
 
 For each Markdown file that you review, save one report as <report folder>/<file path>.md. <file path> is the path of the file in the project folder.
 For example, save the report of skills/x/SKILL.md as <report folder>/skills/x/SKILL.md.md.

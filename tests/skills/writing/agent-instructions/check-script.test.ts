@@ -973,7 +973,7 @@ function iso(
     return {
         reviewer: "ISO 24495-1",
         rule: null,
-        ruleFile: "references/plain-language-checks.md",
+        ruleFile: "references/plain-language-rules.md",
         heading,
         ...fields,
         path: expect.stringMatching(new RegExp(`/${fields.path}$`)),
@@ -1429,7 +1429,7 @@ describe("check script, report form", () => {
         expect(result.advisory).toEqual([
             expect.objectContaining({
                 reviewer: "ISO 24495-1",
-                ruleFile: "references/plain-language-checks.md",
+                ruleFile: "references/plain-language-rules.md",
                 heading: "When you select the text",
             }),
         ]);

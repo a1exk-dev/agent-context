@@ -1,10 +1,10 @@
-# Plain-language checks
+# Plain-language rules
 
-These checks are tier 3. The checks are applicable only to Agent instructions. They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.
+These rules are tier 3. The rules are applicable only to Agent instructions. They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.
 
-The checks come from ISO 24495-1:2023, *Plain language — Part 1: Governing principles and guidelines*. The ISO page for the standard is https://www.iso.org/standard/78907.html.
+The rules come from ISO 24495-1:2023, *Plain language — Part 1: Governing principles and guidelines*. The ISO page for the standard is https://www.iso.org/standard/78907.html.
 
-The checks are in four groups. Each group agrees with one of the four principles of the standard. These principles agree with the plain-language definition of the International Plain Language Federation: https://www.iplfederation.org/plain-language-definitions/. All four principles are applicable to an agent reader. The ISO rules that tell you to add images are not applicable.
+The rules are in four groups. Each group agrees with one of the four principles of the standard. These principles agree with the plain-language definition of the International Plain Language Federation: https://www.iplfederation.org/plain-language-definitions/. All four principles are applicable to an agent reader. The ISO rules that tell you to add images are not applicable.
 
 ## Before you use this file
 
