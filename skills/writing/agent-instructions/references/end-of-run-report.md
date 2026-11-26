@@ -25,8 +25,8 @@ The job stops with one report. Use this template. Do not write a part that has n
 ## Extraction candidates
 - <Section> → <recommended file>. Pointer: "<pointer>"
 
-## Base-list words with a project meaning
-- <Word>: <the meaning in the glossary>
+## Base-list terms with a project meaning
+- <Term>: <the meaning in the glossary>
 ```
 
 In the Summary part of the edit job, include each problem that you recorded before you changed the file. Give the cause of each problem and the change that corrected the problem.
@@ -41,13 +41,13 @@ In the Warnings part, add one item for each of these warnings that is applicable
 - In the edit job, each problem that you find in an unchanged part of a file that you change. Give its text in quotation marks and its rule. Do not correct it.
 - Each selected manual check that you did not run, with its cause. Write that the user must run it.
 - Each new or changed rule that no tested quote of a reader task is from. Write that no reader task tested these rules.
-- Each text that only the check script examined: a correction after review round 2, and each later correction when you did 2 review rounds. Write that no reviewer examined these texts. If no reader examined a text, write that no reviewer or reader examined it.
+- Each text that only the check script examined: the text that a correction after review round 2 changed. When you did 2 review rounds, also give the text that each later correction changed. Write that no reviewer examined these texts. If no reader examined a text, write that no reviewer or reader examined it.
 - Each text that a correction of an unclear part after the last reader-test round changed. Write that no reader examined these texts.
 - Each check that you did yourself because no subagent was available or because a new subagent also failed. Give the path of the report folder. Write that no vote occurred for the blocking findings and the wrong steps of these checks. If you did a reader task yourself, write that you were not a new reader for that task.
 - Each finding that you cannot correct without help from the user.
-- Each case where two sources do not agree and that the table in "When two sources do not agree" in `SKILL.md` does not give, with the obeyed tier.
+- Each case where two sources do not agree and that the table in "When two sources do not agree" in `SKILL.md` does not give, with the obeyed tier. When you write this item, find the known cases in the table in "When two sources do not agree" in `SKILL.md`.
 - A feature that only one platform reads, if you wrote it because the user told you to write it.
-- A file type that is not correct for the text, also when you found it during the edit job.
+- A file type that is not correct for the text, also when you found that file type during the edit job.
 - An entry-file layout that gives no copy of the text to a target platform.
 - An Agent instruction that does not load in each session and that no pointer identifies.
 - A file size that is more than its limit after you moved text, or after a new Rule. Give the measured file size and the limit.
@@ -60,10 +60,10 @@ Obey these rules for the moved text and the extraction candidates:
 - In the Summary part of the write job and of the edit job, give each text that you moved. For each text, give its new file and the reason.
 - When the file size was the reason, give the file size before you moved the text, and the limit.
 - In the write job, write no Extraction candidates part.
-- In the edit job, before you write the report, read "When you recommend text to move" in `references/loading-rules.md`. Then find each extraction candidate in the unchanged parts as that section tells you. Write each candidate in the Extraction candidates part, also when the file is less than its size limit.
+- In the edit job, before you write the report, read "When you recommend text to move" in `references/loading-rules.md`. Then find each extraction candidate in the unchanged parts as "When you recommend text to move" in `references/loading-rules.md` tells you. Write each extraction candidate in the Extraction candidates part, also when the file is less than its file-size limit.
 - A reviewer other than the loading reviewer can tell you to move text in an unchanged part. Then find the section of that text. If "When you recommend text to move" in `references/loading-rules.md` gives that section, add it to the Extraction candidates part.
-- Use the heading of each section as the name of its candidate.
+- Use the heading of each section as the name of its extraction candidate.
 
 In the Output tests and manual checks part, give each output test and each manual check that you selected. Give the rule that each test examines, in quotation marks. For a manual check, also give the evidence that "When you run a manual check" in `references/review.md` tells you to record.
 
-In the last part, give each base-list word that has a different meaning in the glossary.
+In the last part, give each base-list term that has a different meaning in the glossary.

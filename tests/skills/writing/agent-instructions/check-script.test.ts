@@ -1422,7 +1422,7 @@ describe("check script, report form", () => {
     it("gives a rule with a nested list the mark of its list items", () => {
         const result = checkReports("Run the tests in the container.\n", [
             finding({
-                rule: '"Add one short cause to a rule in each of these conditions:"',
+                rule: '"Add one short cause to a rule in each of these cases:"',
                 text: "Run the tests in the container.",
             }),
         ]);

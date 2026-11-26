@@ -34,7 +34,7 @@ When the user tells you clearly to write a feature that only one platform reads,
 
 - When the write job has Claude Code and Codex or OpenCode as target platforms, put the text for all target platforms in `AGENTS.md`. `CLAUDE.md` then contains the `@AGENTS.md` line and only the lines that are only for Claude Code. (blocking)
 - When there is one target platform, write only the entry file of that platform. (blocking)
-- If the layout gives no copy of the text to a target platform, add a warning. (advisory)
+- If the entry-file layout gives no copy of the text to a target platform, add a warning. (advisory)
 - Put Rule text in `AGENTS.md` or `CLAUDE.md`. Do not put it in `.claude/rules/`. (script check)
 
 ## When you examine the file size
@@ -79,7 +79,7 @@ Do not move text from a Rule. Items 2 and 3 in this section are tier 1. The othe
    - Move only whole sections that have a specified condition. A whole section includes the sections under its heading. (advisory)
    - Move the largest section first. When the file is not more than each limit, stop. (advisory)
    - Select the reference file and its name as "When the write job makes a SKILL.md or entry-file text" tells you. (advisory)
-   - Keep the heading of the section at the start of the moved section. In its old place, write a heading that gives the condition. Under that heading, write the pointer as "When you put the text in sections and lists" in `plain-language-rules.md` tells you. Write no other text in the old place, also when a finding is about the moved section. (blocking)
+   - Keep the heading of the section at the start of the moved section. In the old place of the moved section, write a heading that gives the condition. Under that heading, write the pointer as "When you put the text in sections and lists" in `plain-language-rules.md` tells you. Write no other text in the old place, also when a finding is about the moved section. (blocking)
    - Do not change the text of a moved section. Its new pointer is in the changed part. Its text is not in the changed part. (advisory)
    - Put each finding about the text of a moved section in a warning.
 3. If the file is still more than a limit, add a warning.
@@ -90,7 +90,7 @@ This recommendation is applicable only to the unchanged parts in the edit job. I
 
 1. Find each section of an unchanged part that contains text that the numbered list in "When the write job makes a SKILL.md or entry-file text" tells you to move. Each section that you find is an extraction candidate: the whole section, not only the text to move. A section that contains only a pointer is not an extraction candidate. A section with only 1 or 2 rules is also not an extraction candidate. A section that you moved because of the file size is not an extraction candidate.
 2. For each section, recommend a reference file and a pointer that gives the condition.
-3. Write each candidate in the Extraction candidates part of the report.
+3. Write each extraction candidate in the Extraction candidates part of the report.
 4. Move an extraction candidate only after the user gives approval.
 
 ## When the file is the glossary, MEMORY.md, or a Rule

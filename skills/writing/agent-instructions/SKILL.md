@@ -12,7 +12,7 @@ This skill helps you write or edit an Agent instruction. It uses three sources f
 Each bold term in this section is a technical noun in this skill. When a term is not in this section, find it in `references/technical-terms.md`.
 
 - An **Agent instruction** is a file that an agent reads as instructions. Agent instructions are these files:
-  - In a Skill folder, the `SKILL.md` file and its reference files are Agent instructions.
+  - In the folder of a Skill, the `SKILL.md` file and its reference files are Agent instructions.
   - The entry files `AGENTS.md`, `CLAUDE.md`, `CLAUDE.local.md`, and `AGENTS.override.md` are Agent instructions.
   - `GLOSSARY.md`, `CONTEXT.md`, `MEMORY.md`, Rules, the files in `.claude/rules/`, and the files in `docs/agents/` are Agent instructions.
   - The files that pointers in these files identify are also Agent instructions. A file for persons is not an Agent instruction, also when a pointer identifies it.
@@ -45,8 +45,8 @@ When the task is about one of these files, do the task without this skill:
 
 - Files for persons, for example `README.md`, `CONTRIBUTING.md`, ADRs, user manuals, code comments, and commit messages.
 - Subagent definitions, for example the files in `.claude/agents/`.
-- Files for platforms other than Codex, OpenCode, and Claude Code, for example Cursor rules and `.github/copilot-instructions.md`.
-- Prompt text in the code of a software product.
+- Files for platforms other than Codex, OpenCode, and Claude Code, for example the files of Cursor and `.github/copilot-instructions.md`.
+- Prompt text in product code.
 
 When you do the task without this skill, write no end-of-run report.
 
@@ -73,7 +73,7 @@ This table gives the known cases where two sources do not agree, and the decisio
 
 | Case | Decision |
 |---|---|
-| The "Gotchas" section of the specification and the rule "Use no headings that are applicable to all subjects" | When a Skill has a known problem, put it where `references/agent-skills-spec.md` tells you. Write no "Gotchas" section. |
+| The "Gotchas" section of the specification and the rule "Use no headings that are applicable to all subjects" | When a Skill has a known problem, put the known problem where `references/agent-skills-spec.md` tells you. Write no "Gotchas" section. |
 | The specification "give freedom where many approaches work" and the STE modal verbs | Use CAN or a condition that you write in the sentence. |
 | ISO neutral tone and CAUTION | You can use CAUTION. Use no other emphasis. |
 | The rule "Write each pointer as a sentence that gives the file" and the rule "Make no sequences of pointers" | When a reference file refers to a different reference file that `SKILL.md` also points to, give the file name. This text is not a sequence of pointers. |
@@ -99,9 +99,9 @@ Do these steps in the write job and in the edit job.
      - For long text, write a reference file.
 5. In the edit job, before your first change, save a copy of each file that you change. Save the copies in a temporary folder that is not in the project. The reader test uses these copies. Change only the changed part. In the unchanged parts, do not write lines again. Do not move lines in the unchanged parts. In the unchanged parts, do not put two lines into one line or one line into two lines. The rules about the unchanged parts are also applicable when a finding tells you to make a change. The user gives approval only for the change that they wanted. The file-size limit is one exception, as the table in "When two sources do not agree" gives. An extraction candidate that the user gives approval for is the other exception. If you find a file type that is not correct for the text, add a warning.
 6. In the edit job, the user can tell you that an agent did not obey an instruction. For that edit job, record the condition of the previous instruction in quotation marks. The condition can be in the heading of the section or in the sentence. The Summary part of the end-of-run report gives this condition. If the previous instruction has no condition, record "no condition".
-7. Before you write text, read `references/ste-rules.md`, `references/plain-language-rules.md`, and `references/technical-terms.md`. If the file that you write or edit is a Skill, also read `references/agent-skills-spec.md`. In the edit job, first use these rules to examine each section that you will change. Also examine the unchanged parts of each file that you change. Record each problem that you find there for the Warnings part. Do not correct it. A new section has no previous text to examine. The Summary part then gives no problem for that section. Before you correct a problem in a section that you will change, record that problem. Keep the list of these problems for the Summary part. Then write the text by these rules. In the write job, also move text to reference files as "When the write job makes a SKILL.md or entry-file text" in `references/loading-rules.md` tells you. In the edit job, move text as "When the edit job changes a SKILL.md or an entry file" in `references/loading-rules.md` tells you.
-8. Before the self-check, read `references/review.md`. Then do the self-check that it gives. For a list file, the self-check starts no loading reviewer. In each job, also for a small change, do the vote of the confirmers that `references/review.md` gives. Do the vote also when you expect to reject the findings.
-9. When the job changes only list files, do no reader test, and go to step 11. In the other jobs, after the self-check, do the reader test that `references/review.md` gives, also for a small change. The self-check does not examine how a new reader obeys the file. Do not give a list file to the readers, because a list file gives no task to test.
+7. Before you write text, read `references/ste-rules.md`, `references/plain-language-rules.md`, and `references/technical-terms.md`. If the file that you write or edit is in the folder of a Skill, also read `references/agent-skills-spec.md`. In the edit job, first use these rules to examine each section that you will change. Also examine the unchanged parts of each file that you change. Record each problem that you find there for the Warnings part. Do not correct it. A new section has no previous text to examine. The Summary part then gives no problem for that section. Before you correct a problem in a section that you will change, record that problem. Keep the list of these problems for the Summary part. Then write the text by these rules. In the write job, also move text to reference files as "When the write job makes a SKILL.md or entry-file text" in `references/loading-rules.md` tells you. In the edit job, move text as "When the edit job changes a SKILL.md or an entry file" in `references/loading-rules.md` tells you.
+8. Before the self-check, read `references/review.md`. Then do the self-check that `references/review.md` gives. For a list file, start no loading reviewer in the self-check. In each job, also for a small change, do the vote of the confirmers that `references/review.md` gives. Do the vote also when you expect to reject the findings.
+9. When the job changes only list files, do no reader test. Then go to step 11. In the other jobs, after the self-check, do the reader test that `references/review.md` gives, also for a small change. The self-check does not examine how a new reader obeys the file. Do not give a list file to the readers, because a list file gives no task to test.
 10. When the job changes only list files, go to step 11. In the other jobs, after the reader test passes, do the output tests and the manual checks that "After the reader test: the output tests and the manual checks" in `references/review.md` gives. Only these tests show how an agent obeys the file in a run. For a list file, do no output test, no load test, and no manual check.
 11. If a blocking problem stays open at a limit, do the steps in "When a blocking problem stays open at a limit" in `references/review.md`.
 12. Write the end-of-run report. In its Summary part, give each check that the job skipped for a list file.
@@ -133,7 +133,7 @@ The report form of the script examines the 3 reviewer reports of one file. Run i
 node <skill folder>/scripts/check.ts --reports --file <file under review> <report file>... > <JSON file>
 ```
 
-- The script gives JSON with 3 lists of findings: blocking, advisory, and dropped. It drops each finding that has a missing field, a quotation that is not in the files, or no rule with a mark.
+- The script gives JSON with 3 lists of findings: blocking, advisory, and dropped. It drops each finding that has a missing field, quoted text that is not in the files, or no rule with a mark.
 - The JSON also gives the confirm list. This list gives each report that has one or more findings in the blocking list. When a subagent is available, give the blocking findings of each report in the confirm list to the confirmers of its reviewer. Start no confirmers for a reviewer that has no report in a confirm list.
 - The exit codes are the same as in the first form. Exit code 1 shows one or more findings in the blocking list or the advisory list.
 
