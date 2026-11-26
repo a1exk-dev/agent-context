@@ -12,7 +12,7 @@ If `SKILL.md` of this skill is not in your context window, read it before you us
 - STE is applicable to all text in natural language: body text, headings, list items, table cells, and the frontmatter `description`.
 - The word rules are not applicable to text that the author cannot change (rule 8.6). This text is user phrases in quotation marks, names, code spans, file paths, commands, URLs, and code in code blocks.
 - The punctuation rules are also not applicable to code in code blocks.
-- A prompt that an agent reads as an instruction is not in this group. A prompt in a code block is also not in this group. Write these prompts by all STE rules. An example is the text that a Skill gives to a subagent.
+- A prompt that an agent reads as an instruction is not text that the author cannot change. A prompt in a code block is also not text that the author cannot change. Write these prompts by all STE rules. An example is the text that a Skill gives to a subagent.
 - The general recommendations GR-2, GR-3, and GR-4 are not STE rules. This skill makes them rules.
 
 ## When you select a word
@@ -25,7 +25,7 @@ Always replace these words. This list gives no replacement words, because a tabl
 ## When you select a technical noun
 
 - When you select a technical noun, use a noun from the glossary or the base list in `technical-terms.md` (rule 1.8). (advisory)
-- When the glossary and the base list have no noun for an item, do the steps in "When a word is not in the base list or in the glossary" in `technical-terms.md`.
+- When the glossary and the base list have no noun for an item, do the steps in "When a technical noun is not in the base list or in the glossary" in `technical-terms.md`.
 - Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)
 - When the glossary has a term for the item, use that term, not a different word with the same meaning.
 - Write a term in bold only when the glossary or the base list in `technical-terms.md` has it (rule 1.8). (script check)
@@ -51,7 +51,7 @@ Always replace these words. This list gives no replacement words, because a tabl
 - Write a maximum of 25 words in each sentence. This limit is applicable to all text. (script check)
 - Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)
 - Use the same terms and the same words for the same type of step (rule 9.4). (advisory)
-- Write each glossary term in the same case as the glossary (rule 6.2). A capital letter at the start of a sentence is permitted. A word in your text can have the letters of a glossary term but a different meaning. Then do not write that word in a different case to show the different meaning. Write a different word, because the agent reads the glossary meaning in each case of the word. A noun group with a glossary term, for example "<Term> branch", is a different technical noun. Obey "When a word is not in the base list or in the glossary" in `technical-terms.md` for it. Exception: you can write the base-list term "rule" in lowercase with its base-list meaning, also when the glossary has the term "Rule". When you write "rule" in lowercase, read "When you add a word to the base list" in `technical-terms.md` for the two meanings.
+- Write each glossary term in the same case as the glossary (rule 6.2). A capital letter at the start of a sentence is permitted. A word in your text can have the letters of a glossary term but a different meaning. Then do not write that word in a different case to show the different meaning. Write a different word, because the agent reads the glossary meaning in each case of the word. A multi-word noun with a glossary term, for example "<Term> branch", is a different technical noun. Obey "When a technical noun is not in the base list or in the glossary" in `technical-terms.md` for it. Exception: you can write the base-list term "rule" in lowercase with its base-list meaning, also when the glossary has the term "Rule". When you write "rule" in lowercase, read "When you write the word rule" in `technical-terms.md` for the two meanings.
 - When "with" can have two meanings in a sentence, write a different sentence (GR-2). (blocking)
 - Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)
 
@@ -73,7 +73,7 @@ Always replace these words. This list gives no replacement words, because a tabl
 
 ## When you count words
 
-- In a vertical list, the colon stops a sentence (rule 8.4). The sentence before the colon and each list item are each one sentence.
+- In a list, the colon stops a sentence (rule 8.4). The sentence before the colon and each list item are each one sentence.
 - A colon also stops a sentence when a table or a code block follows it. A colon in the middle of a line does not stop a sentence.
 - Text in parentheses counts as 1 word in its sentence (rule 8.5). It is also a sentence with its own word count.
 - Each of these items counts as 1 word (rule 8.6):
@@ -110,7 +110,7 @@ This table gives examples. In each example, the sentence and its word count obey
 
 - A step has a risk when it can cause data loss or makes a change that you cannot undo. Examples are a step that pushes with `--force` and a step that deletes a branch.
 - A rule bullet with a risk is also a step for this section.
-- A step that other persons can see, but that you can undo, has no risk of this type. Examples are a pull request and a pushed tag. Write a condition at the start of that step, for example "When the user gives approval, ...". Also write it when a heading above the step gives a condition. (blocking)
+- A step that other persons can see, but that you can undo, has no risk of this type. Examples are a step that opens a pull request and a step that pushes a tag. Write a condition at the start of that step, for example "When the user gives approval, ...". Also write it when a heading above the step gives a condition. (blocking)
 - Put a safety instruction directly before each step with a risk (rule 7.1). In a list, the safety instruction is a different item. (blocking)
 - A CAUTION does not replace a condition. A task or a project file can make approval of the user necessary for a step. Then start that step with the condition. (blocking)
 - Start the safety instruction with the signal word CAUTION. A CAUTION is for a risk of damage. (advisory)

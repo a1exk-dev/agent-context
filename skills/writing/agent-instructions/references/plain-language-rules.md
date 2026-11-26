@@ -1,6 +1,6 @@
 # Plain-language rules
 
-These rules are tier 3. The rules are applicable only to Agent instructions. They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.
+These rules are tier 3. The rules are applicable only to Agent instructions. The rules are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.
 
 The rules come from ISO 24495-1:2023, *Plain language — Part 1: Governing principles and guidelines*. The ISO page for the standard is https://www.iso.org/standard/78907.html.
 
@@ -17,14 +17,14 @@ If `SKILL.md` of this skill is not in your context window, read it before you us
 - Use the condition that is applicable to the smallest number of tasks. A rule with no condition is permitted only when it is applicable to all tasks for its file. (advisory)
 - In files that load in each session, write only short rules, and pointers that give a condition. Move long text to files that load only when a task makes them necessary. (advisory)
 - Keep only the text that the agent cannot find without help. Examples are project facts, decisions, special instructions of the user, and corrections of incorrect agent work. (advisory)
-- In the edit job, remove text only in the changed part. When the user tells you that an agent did not obey a rule, do not remove that rule. The user wants agents to obey that rule. You can correct the text of that rule. You can also move that rule. (advisory)
+- In the edit job, remove text only in the changed part. When the user tells you that an agent did not obey an instruction, do not remove that instruction. The user wants agents to obey that instruction. You can correct the text of that instruction. You can also move that instruction. (advisory)
 - Remove each instruction that tells the agent to do an action that it does without an instruction. Remove text that the agent can read in the code or in the Git history. Also remove text that the agent can read in a pointer target. (advisory)
 - Do not copy a sentence of 6 or more words from a pointer target. (script check)
-- Add one short cause to a rule in each of these conditions:
+- Add one short cause to a rule in each of these cases:
   - The rule changes the usual work of the agent. (advisory)
   - The rule is not usual for the agent. (advisory)
   - To obey the rule, the agent must make a decision. (advisory)
-- Examine only the rules that you add or change for these conditions.
+- Examine only the rules that you add or change for these cases.
 - A file gives the cause when it tells why the rule is necessary. A command or a setting in a file does not give the cause. If no file gives the cause and the user does not give it, add a warning. Do not speak to the user about the cause. (advisory)
 
 ## When you put the text in sections and lists
@@ -42,14 +42,14 @@ If `SKILL.md` of this skill is not in your context window, read it before you us
 - In each pointer, give the path of its target. Words such as "that file" give no path. (blocking)
 - In each pointer, give the path of a file or a folder that exists. (script check)
 - When a pointer gives a heading of its target in quotation marks, give a heading that the target has. (script check)
-- Put each pointer target one step from the file that has the pointer. Make no sequences of pointers. (advisory)
+- Put the pointer to each pointer target in the first file that the agent reads, for example the entry file or the `SKILL.md` file. Make no sequences of pointers. (advisory)
 - When the file does not load in each session, find a pointer to it in a different Agent instruction. If you find no pointer, add a warning. (advisory)
 
 ## When you select the words and the tone
 
 - When you select a word or write a sentence, obey the rules in `ste-rules.md`.
-- When the project has a glossary, use each glossary term with its meaning in that file.
-- Do not use the word of a glossary term with a different meaning. This rule is also applicable when you write the word in lowercase letters, and in the definition of that term.
+- When the project has a glossary, use each glossary term only with the meaning that the glossary gives.
+- Do not give the word of a glossary term a meaning that is different from the glossary meaning. This rule is also applicable when you write the word in lowercase letters, and in the definition of that term.
 - Make sure that all parts of the file agree. When the file has a pointer, also make sure that the file agrees with the pointer target. (advisory)
 - When the project has a glossary, make sure that the file agrees with the glossary.
 - Use no images and no Mermaid diagrams. (script check)

@@ -10,24 +10,27 @@ If `SKILL.md` of this skill is not in your context window, read it before you us
 - When the project has a glossary, its terms are also technical nouns.
 - The base-list terms and the glossary terms are applicable only to Agent instructions. They are not applicable to text for persons, for example `README.md`.
 - To find the text of a rule from its rule number, read `ste-rules.md`.
-- The list contains only terms and meanings that we wrote. It has no table that gives approved words for words that are not approved.
+- The base list contains only terms and meanings that we wrote. It has no table that gives approved words for words that are not approved.
 
-## When you add a word to the base list
+## When you add a term to the base list
 
-- When the edit job changes this skill, add a word to the base list only when most projects use the word in Agent instructions.
-- Do not add an entry for a platform file name or a command, because a file path and a command each count as 1 word.
-- The term "rule" has the meaning "a requirement in a text" in this list. A project can also give the name Rule to a type of file. Then the glossary meaning is correct for that file.
+- When the edit job changes this skill, add a term to the base list only when most projects use the term in Agent instructions.
+- Do not add a platform file path or a command to the base list. A file path and a command each count as 1 word.
 - Do not add a term of one platform only, for example "hook" or "slash command".
-- Each table row has 3 columns: term, definition, and the words that this list does not permit.
-- The last column helps you obey rule 1.11: use one term for each item. Each word in that column is in quotation marks, because the column gives the words only as examples.
+- Give each table row 3 columns: term, definition, and the words that the base list does not permit.
+- The last column helps you obey rule 1.11: use one term for each item. Put each word in that column in quotation marks, because the column gives the words only as examples.
+
+## When you write the word rule
+
+The term "rule" has the meaning "a requirement in a text" in the base list. A project can also give the name Rule to a type of file. Then use the glossary meaning for that file.
 
 ## When the glossary gives a different meaning
 
 When the glossary gives a base-list term a different meaning, use the glossary meaning. In the end-of-run report, give the name of each term of this type.
 
-## When a word is not in the base list or in the glossary
+## When a technical noun is not in the base list or in the glossary
 
-When a technical noun is not in the base list and not in the glossary, add a warning. This rule is also applicable to a technical noun that the user or a different project file uses. It is also applicable to a noun group that contains a glossary term, when the glossary does not give that noun group. In that noun group, the glossary term does not have its glossary meaning.
+When a technical noun is not in the base list and not in the glossary, add a warning. This rule is also applicable to a technical noun that the user or a different project file uses. It is also applicable to a multi-word noun that contains a glossary term, when the glossary does not give that multi-word noun. In that multi-word noun, the glossary term does not have its glossary meaning.
 
 1. If the project has a glossary, recommend a glossary entry in the format of the project.
 2. If the project has no glossary, recommend a new `GLOSSARY.md` with a short structure: the term and its definition.
@@ -51,7 +54,7 @@ When a technical noun is not in the base list and not in the glossary, add a war
 | tool | Software that an agent calls to read or change its environment | "function", "action" |
 | tool call | One time that an agent uses a tool | |
 | platform | An agent product that reads Agent instructions, for example Codex | "harness", "client" |
-| skill | A folder with a `SKILL.md` file that an agent loads when a task makes it necessary | "plugin" |
+| skill | A folder with a `SKILL.md` file. An agent loads the skill only when a task makes the skill necessary | "plugin" |
 | frontmatter | The YAML block at the top of a Markdown file | "header", "metadata block" |
 | entry file | An Agent instruction that a platform loads at the start of each session, for example `AGENTS.md` | "memory file", "rules file" |
 | reference file | A file that an agent reads only in a stated condition | |
@@ -71,7 +74,7 @@ When a technical noun is not in the base list and not in the glossary, add a war
 | pull request | A request to merge one branch into a different branch | "PR", "merge request" |
 | issue | One item in an issue tracker | "ticket", "bug report" |
 | label | A name that you attach to an issue or a pull request | |
-| file | A unit of data on a disk that has a name | "document" (for a file) |
+| file | A unit of data that has a name and that is on a disk | "document" (for a file) |
 | file size | The number of bytes in a file | |
 | folder | A container for files | "directory", "dir" |
 | path | The location of a file or a folder | |
@@ -83,7 +86,7 @@ When a technical noun is not in the base list and not in the glossary, add a war
 | heading | A Markdown line that starts with `#` | "header" |
 | URL | The location of a web page | "address", "link" (for the location) |
 | placeholder | Text in angle brackets that the author replaces, for example `<name>` | "variable" |
-| external service | A system on a different computer that the agent can change, for example GitHub | |
+| external service | A system that the agent can change and that is on a different computer, for example GitHub | |
 | structured output | Output in a fixed data format, for example JSON | |
 
 ### Terms for text
@@ -97,7 +100,7 @@ When a technical noun is not in the base list and not in the glossary, add a war
 | section | The part of a file from one heading to the next heading with the same number of `#` characters | "chapter" |
 | list | Items that are written one below the other, each with a bullet or a number | |
 | table | Data in rows and columns | "grid", "matrix" |
-| title | A heading, a bold label in a list, or a cell in the first row of a table | |
+| title | A heading, bold text at the start of a list item, or a cell in the first row of a table | |
 | note | Text that gives information only, not an instruction | "tip", "hint" |
 | description | The frontmatter field that tells an agent when to load a Skill | "summary" |
 | template | Text with placeholders that the author copies and completes | "boilerplate" |
@@ -167,7 +170,7 @@ These words are also technical nouns. They have the meaning that they have in gr
 | commit | Record a change in a repository | "check in" |
 | push | Send commits to a remote repository | "publish", "upload" |
 | merge | Put the commits of one branch into a different branch | |
-| install | Put software on a computer and make it ready to operate | "set up" |
+| install | Put software on a computer and make the software ready to operate | "set up" |
 | run | Make a command, a script, or a test operate until it stops | "execute", "invoke" |
 | load | Read a file into the context window | "import" |
 | call | Use a tool | "invoke", "trigger" |

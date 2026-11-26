@@ -344,7 +344,7 @@
     {
         "path": "skills/writing/agent-instructions/SKILL.md",
         "rule": "When you put the text in sections and lists",
-        "text": "Files for platforms other than Codex, OpenCode, and Claude Code, for example Cursor rules and `.github/copilot-instructions.md`.",
+        "text": "Files for platforms other than Codex, OpenCode, and Claude Code, for example the files of Cursor and `.github/copilot-instructions.md`.",
         "cause": "The path is an example of a file or folder in a project that installs the Skill."
     },
     {
@@ -404,7 +404,7 @@
     {
         "path": "skills/writing/agent-instructions/references/plain-language-rules.md",
         "rule": "When you select the text",
-        "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+        "text": "The rules are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
         "cause": "Each reference file states its scope and that SKILL.md comes first, because an agent can open the file alone."
     },
     {
@@ -614,7 +614,7 @@
     {
         "path": "skills/writing/agent-instructions/references/plain-language-rules.md",
         "rule": "When you put the text in sections and lists",
-        "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+        "text": "The rules are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
         "cause": "The path is an example of a file or folder in a project that installs the Skill."
     },
     {
