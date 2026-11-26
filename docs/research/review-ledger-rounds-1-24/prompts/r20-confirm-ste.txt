@@ -1,0 +1,17 @@
+Check class: confirmer
+This task is read-only. Only read files. Do not edit, make, move, or delete files.
+Do not run commands that change files, Git data, or external services.
+
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-20/ste/skills/writing/agent-instructions/references/review.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: GR-3 and GR-4, "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "For the checklist, examine only the sections under review of that file."
+
+Read each file under review from the disk.
+Also read the files that the pointers in these files identify.
+For each finding, decide whether the text in the file does not obey the rule.
+If a file that a pointer identifies already gives what the rule asks for, answer "no".
+Give one line for each finding in this form:
+<number>. <"yes" if the text does not obey the rule, or "no">: <one sentence that gives the cause>
+Give only these lines. Do not give the work to a subagent.

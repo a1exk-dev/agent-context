@@ -1,0 +1,20 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "This tie-break ranks no rules.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 161,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 161, section \"During and after a review round\", the technical noun \"tie-break\" is not in the glossary or in the base list of technical-terms.md, and the text does not define it.",
+            "correction": "\"This item does not rank the rules.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-16/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 20
+        }
+    ],
+    "dropped": [],
+    "confirm": []
+}

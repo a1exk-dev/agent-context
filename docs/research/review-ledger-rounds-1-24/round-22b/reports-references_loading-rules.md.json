@@ -1,0 +1,92 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "If the layout gives no copy of the text to a target platform, add a warning.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 37,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md line 37, \"the layout\" is the entry-file layout, which end-of-run-report.md line 51 calls \"An entry-file layout\", but loading-rules.md line 56 uses \"the file layout\" for a different item (the plan of SKILL.md and its reference files), so one noun names two items and one item has two names.",
+            "correction": "\"If the entry-file layout gives no copy of the text to a target platform, add a warning.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 20
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.2",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "For an `@path` line in `CLAUDE.md`, the alternative is a pointer in `AGENTS.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 31,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md line 31, the sentence omits the target of the pointer, so the later words \"a pointer to the same file\" and \"When the user wants the file in each session\" can refer to `CLAUDE.md`, `AGENTS.md`, or the file that the `@path` line loads.",
+            "correction": "\"For an `@path` line in `CLAUDE.md`, the alternative is a pointer in `AGENTS.md` to the file that the `@path` line loads.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 25
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "For a Rule, use the file-size limit and the extraction recommendation of the entry file that contains its text.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 100,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md line 100, \"extraction recommendation\" is a technical noun that is not in the base list, not in \"Terms in this skill\" of SKILL.md, and not used in other parts of the skill, which use \"extraction candidate\" and \"When you recommend text to move\".",
+            "correction": "\"For a Rule, use the file-size limit of the entry file that contains its text. Also find the extraction candidates of that entry file as \"When you recommend text to move\" tells you.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 30
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When you find the target platforms, examine the project files for these signals:",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 11,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, line 11 writes again the condition of the heading \"When you find the target platforms\" on line 9.",
+            "correction": "\"Examine the project files for these signals:\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 26
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "For a Rule, use the file-size limit and the extraction recommendation of the entry file that contains its text.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 100,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, lines 56 and 75 say \"Do not move text from a Rule\", but line 100 applies the extraction recommendation to a Rule, and item 4 on line 94 lets the user approve the move of an extraction candidate, so the agent cannot know whether the text of a Rule can be an extraction candidate.",
+            "correction": "\"For a Rule, use the file-size limit and the extraction recommendation of the entry file that contains its text. The text of a Rule is not an extraction candidate.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 31
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "For an `@path` line, put the line in `CLAUDE.md` after the `@AGENTS.md` line. Then add a warning.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 31,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, line 31 gives steps in a sequence (write the feature, then add a warning) in one paragraph of 9 sentences, together with the conditions for the alternative.",
+            "correction": "\"When the user tells you clearly to write a feature that only one platform reads, do these steps. The steps are also applicable to the items in the list above:\n  1. Write the feature. For an `@path` line, put the line in `CLAUDE.md` after the `@AGENTS.md` line.\n  2. Add a warning. The warning gives the platforms that do not read the feature and the alternative that all three platforms read. When two rules give a warning for the same feature, write one warning.\"\n  Keep the sentences about the alternative after the list.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 36
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "blocking": 2,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

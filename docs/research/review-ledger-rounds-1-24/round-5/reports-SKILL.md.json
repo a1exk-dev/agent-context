@@ -1,0 +1,98 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/loading-rules.md",
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "When you run the check script",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 113,
+            "problem": "The section \"When you run the check script\" in skills/writing/agent-instructions/SKILL.md, lines 113 to 147, has a specified condition in its heading and more than 3 rules (for example lines 117, 123, 124, 128, 130, 137, and 140), and it is not a numbered step of the main task, a term, a pointer, or a section with only 1 or 2 rules, so item 1 of \"When the write job makes a SKILL.md or entry-file text\" in references/loading-rules.md tells you to move it.",
+            "correction": "Move the full section, with its heading, to `references/check-script.md`. In its old place in `SKILL.md`, keep the line \"The check script requires Node.js 22.18 or later.\" only if a different rule makes it necessary, and write:\n  \"## When you run the check script",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/loading/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 10
+        },
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/loading-rules.md",
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "When two sources do not agree",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 61,
+            "problem": "The section \"When two sources do not agree\" in skills/writing/agent-instructions/SKILL.md, lines 61 to 85, has a specified condition in its heading and more than 3 rules (line 63, the 8 decisions in the table at lines 76 to 83, and line 85), and the table of cases is not a term, a pointer, or a numbered step of the main task, so item 1 of \"When the write job makes a SKILL.md or entry-file text\" in references/loading-rules.md tells you to move it.",
+            "correction": "Keep the tier list (lines 63 to 70) in `SKILL.md`, because the reference files use the tiers that `SKILL.md` defines. Move the table and the last paragraph to `references/source-conflicts.md`, under the heading \"When two sources do not agree\". In `SKILL.md`, after the tier list, write: \"When two sources do not agree, read `references/source-conflicts.md`.\" Then change the pointer \"the table in \"When two sources do not agree\" in `SKILL.md`\" in references/end-of-run-report.md (line 48) to name `source-conflicts.md`.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/loading/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 19
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "In each job, also for a small change, do the vote of the confirmers that `references/review.md` gives. Do the vote also when you expect to reject the findings.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 103,
+            "problem": "Step 8 at skills/writing/agent-instructions/SKILL.md line 103 repeats the pointer target skills/writing/agent-instructions/references/review.md line 168, which tells the agent to do the vote in each job, also for a small change, and also when it expects to reject the findings.",
+            "correction": "\"Before the self-check, read `references/review.md`. Then do the self-check that it gives, with the vote of the confirmers. For a list file, start no loading reviewer in the self-check.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 22
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "In the other jobs, after the self-check, do the reader test that `references/review.md` gives, also for a small change. The self-check does not examine how a new reader obeys the file.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 104,
+            "problem": "Step 9 at skills/writing/agent-instructions/SKILL.md line 104 repeats the pointer target skills/writing/agent-instructions/references/review.md line 209, which tells the agent to do the reader test in each job, also for a small change, and gives the same cause.",
+            "correction": "\"In the other jobs, after the self-check, do the reader test that `references/review.md` gives.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 27
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Do not give a list file to the readers, because a list file gives no task to test.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 104,
+            "problem": "Step 9 at skills/writing/agent-instructions/SKILL.md line 104 repeats the pointer target skills/writing/agent-instructions/references/review.md line 211, which tells the agent that the reader test does not examine a list file and to give the readers only the files that are not list files.",
+            "correction": "Remove the sentence.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 32
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "For a list file, do no output test, no load test, and no manual check.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 105,
+            "problem": "Step 10 at skills/writing/agent-instructions/SKILL.md line 105 repeats the pointer target skills/writing/agent-instructions/references/review.md line 320, which tells the agent to select no output test, no load test, and no manual check for a list file.",
+            "correction": "Remove the sentence.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 37
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "In a review round, the first 2 confirmers of a reviewer get all blocking findings of that reviewer.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 27,
+            "problem": "The confirmer term at skills/writing/agent-instructions/SKILL.md line 27 repeats the vote procedure of the pointer target skills/writing/agent-instructions/references/review.md lines 170 to 173, which gives the first 2 confirmers, the third confirmer, and their findings.",
+            "correction": "\"A **confirmer** is a new subagent that answers \"yes\" or \"no\", with one sentence, for each problem in its prompt. These problems come from a check other than the confirmer. A confirmer gets the rule, the quoted text, and the files, but not the cause that the other check gives. The number of \"yes\" answers that confirm a problem depends on the check that found the problem.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 42
+        }
+    ],
+    "dropped": [],
+    "confirm": []
+}

@@ -1,0 +1,97 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "If the file that you write or edit is a Skill, also read `references/agent-skills-spec.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 102,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 102, the term \"Skill\" names a file, but line 15 (\"In a Skill folder\"), line 33 (\"the Markdown files in the folder of that Skill\"), and the base list in references/technical-terms.md line 57 use \"Skill\" for a folder, so one technical noun names two items and an author who edits only a reference file of a Skill can decide that this condition is not applicable.",
+            "correction": "If the file that you write or edit is in the folder of a Skill, also read `references/agent-skills-spec.md`.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 19
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Then do the self-check that it gives.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 103,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 103 (step 8), this sentence tells the agent to do the self-check of a file, but it identifies that file only with the pronoun \"it\" and gives no path.",
+            "correction": "\"Then do the self-check that `references/review.md` gives.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 28
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/loading-rules.md",
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "When you run the check script",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 113,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, lines 113 to 147, the section has the specified condition \"When you run the check script\" in its heading and more than 3 rules (for example \"Run it with `node`\", \"Give the absolute path of each file to examine\", \"Save the output to a new file\", \"stop the self-check and the reader test\", \"Run it once for each file of the round\", and \"Give the reports in the sequence of the tasks\"), and it is not a numbered step of the main task, a term, or a pointer, so it is text to move.",
+            "correction": "Move the section, with its heading and its 3 code blocks, to `references/check-script.md`. In its old place, write the heading \"When you run the check script\" and the pointer \"When you run the check script, read `references/check-script.md`.\" Change the sentences in `references/review.md` that refer to \"When you run the check script\" in `SKILL.md` so that they give `references/check-script.md`.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/loading/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 12
+        },
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/loading-rules.md",
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "When two sources do not agree",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 61,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, lines 61 to 85, the section has the specified condition \"When two sources do not agree\" in its heading and more than 3 rules (the table at lines 74 to 83 gives 8 decisions, and lines 63 and 85 give \"Obey the higher tier\" and \"Write a warning\"), and only the tier list at lines 63 to 70 is term text that item 2 keeps.",
+            "correction": "Keep the heading, the tier list, and the paragraph at line 70 in `SKILL.md`, because the reference files tell the agent that `SKILL.md` defines the tiers. Move the sentence at line 72, the table, and the paragraph at line 85 to `references/source-conflicts.md`. After the paragraph at line 70, write the pointer \"When two sources do not agree in a case, read `references/source-conflicts.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/loading/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 17
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Do the vote also when you expect to reject the findings.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 103,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 103 (step 8), this sentence gives the same instruction as the pointer target references/review.md line 168 (\"Also do the vote when you expect to reject the findings.\").",
+            "correction": "Remove the sentence \"Do the vote also when you expect to reject the findings.\" from step 8.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 33
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Start no confirmers for a reviewer that has no report in a confirm list.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 137,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 137, this sentence gives the same instruction as the pointer target references/review.md line 155 (\"Do not start confirmers for a reviewer that has no report in a confirm list.\").",
+            "correction": "Remove the sentence \"Start no confirmers for a reviewer that has no report in a confirm list.\" from the list item at line 137.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 38
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        },
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

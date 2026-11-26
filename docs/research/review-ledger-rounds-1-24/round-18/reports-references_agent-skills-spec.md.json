@@ -1,0 +1,20 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "The tier 4 rules are recommendations of Codex.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 28,
+            "problem": "Line 28 of skills/writing/agent-instructions/references/agent-skills-spec.md puts recommendations of Codex in tier 4, but the pointer target SKILL.md (line 7 points to it) defines tier 4 at line 68 as only the recommendations of the Agent Skills specification and the move rules of references/loading-rules.md, so the tier of these rules does not agree with the tier definition.",
+            "correction": "\"The tier 4 rules are recommendations of Codex. Use them with the tier of the recommendations of the Agent Skills specification.\" Alternatively, add \"It also contains the recommendations of Codex for `agents/openai.yaml`.\" to tier 4 in \"When two sources do not agree\" in SKILL.md.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-18/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 20
+        }
+    ],
+    "dropped": [],
+    "confirm": []
+}

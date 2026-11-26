@@ -1,0 +1,188 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "One review check is one reviewer class for one file in the round list.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 396,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 396 makes one check the review of one file, but line 16 (\"Start a new subagent for each check: each reviewer ...\") makes one check the full task of one reviewer for all files of the round list, so \"check\" names two items and line 16 (\"Do not give a second check to a subagent\") then forbids a reviewer to review a second file.",
+            "correction": "\"Do the review of each file in the round list by each reviewer class as a different review check. A reviewer subagent does the review checks of all files in its round list.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 19
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "| Reviewer | Checks | Reference files |",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 63,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 63 uses \"Checks\" for the rules that a reviewer examines, but line 16 uses \"check\" for the task of one subagent, so one noun names two items.",
+            "correction": "\"| Reviewer | Rules | Reference files |\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 24
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "| Check | Limit for the change |",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 366,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 366 uses \"Check\" for rows that are rounds, corrections, and runs, but line 16 uses \"check\" for the task of one subagent, so one noun names two items.",
+            "correction": "\"| Item | Limit for the change |\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 29
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Instruction files: <the absolute paths of the files of the readers: first the first file of the review target, then each other file>",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 255,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 255 and lines 259 to 281 use \"instruction files\" for the item that lines 230 to 237 call \"the files of the readers\", so the file gives two nouns for one item.",
+            "correction": "\"Files of the readers: <the absolute paths of the files of the readers: first the first file of the review target, then each other file>\", and use \"file of the readers\" in place of \"instruction file\" in lines 259 to 281 and line 303.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 34
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "5.3",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a procedure or a rule",
+            "text": "The self-check stops when a round passes, or after round 2.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 162,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 162 gives the instruction to stop the self-check as a statement, not in the imperative.",
+            "correction": "\"Stop the self-check when a round passes, or after round 2.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 39
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "For each other finding, correct your text, or reject the finding.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 156,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 156, item 4 tells the agent to correct the text for each finding, but the condition that stops this correction after round 2 comes only later, in item 8 on line 164 (\"After round 2, do not correct the text for a confirmed blocking finding that you accept.\"), and item 4 refers only to item 5 for the exceptions.",
+            "correction": "\"Items 5 and 8 give the findings that you do not correct. For each other finding, correct your text, or reject the finding.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 27
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Correct your text for each problem of the script and each confirmed wrong step.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 242,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 242, item 12 tells the agent to correct each problem, but the condition that stops this correction after reader-test round 2 comes only later, in item 13 on line 243 (\"After reader-test round 2, do not correct the text for a problem of the script or a confirmed wrong step.\").",
+            "correction": "\"After reader-test round 1, correct your text for each problem of the script and each confirmed wrong step. After reader-test round 2, obey item 13.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 32
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "The round list gives the files of a review round, in the alphabetical sequence of their paths.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 31,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 31 uses the technical noun \"round list\", which is not in the glossary or in the base list of technical-terms.md.",
+            "correction": "Add a warning with a recommended glossary entry for \"round list\", as \"When a word is not in the base list or in the glossary\" in technical-terms.md tells you.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 44
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Before review round 1, make one new round folder that is not in the project, with the command `mktemp -d`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 54,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 54 uses the technical noun \"round folder\", which is not in the glossary or in the base list of technical-terms.md.",
+            "correction": "Add a warning with a recommended glossary entry for \"round folder\", as \"When a word is not in the base list or in the glossary\" in technical-terms.md tells you.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 49
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Before reader-test round 1, write the tested quotes for each typical task.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 217,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 217 uses the technical noun \"tested quote\", which is not in the glossary or in the base list of technical-terms.md.",
+            "correction": "Add a warning with a recommended glossary entry for \"tested quote\", as \"When a word is not in the base list or in the glossary\" in technical-terms.md tells you.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 54
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "For each typical-task report, write a closed list: each step, its quote, and \"yes\" or \"no\".",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 240,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 240 uses the technical noun \"closed list\", which is not in the glossary or in the base list of technical-terms.md.",
+            "correction": "Add a warning with a recommended glossary entry for \"closed list\", as \"When a word is not in the base list or in the glossary\" in technical-terms.md tells you.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 59
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "This tie-break ranks no rules.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 161,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 161 uses the technical noun \"tie-break\", which is not in the glossary or in the base list of technical-terms.md and which the file does not define.",
+            "correction": "\"This item ranks no rules.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 64
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 433,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 433, the pointer sends the agent to `references/review.md`, which is the file that contains the pointer, and gives no section, so the agent that came from the pointer on line 111 of SKILL.md gets a second pointer to the same file and cannot find the instruction to reject a finding (item 4 of \"During and after a review round\", line 156).",
+            "correction": "\"When a reviewer gives a finding, correct your text, or reject the finding as item 4 of \"During and after a review round\" tells you.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 37
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md",
+            "blocking": 5,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        },
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/review.md.md",
+            "blocking": 2,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

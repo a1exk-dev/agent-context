@@ -1,0 +1,98 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "examine the project files for these signals",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 11,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, line 11 (and lines 19 and 21) use \"signal\" as a technical noun, but the glossary and the base list in technical-terms.md do not give it.",
+            "correction": "Add a warning that recommends a glossary entry for \"signal\" (a file or folder that shows a target platform of the project), or write \"examine the project files for these files and folders:\".",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 16
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Get the names of the target platforms from the user.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 21,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, line 21 and other lines (for example lines 9, 25, 35, 36, and 44) use the multi-word noun \"target platform\", but the glossary and the base list in technical-terms.md give only \"platform\".",
+            "correction": "Add a warning that recommends a glossary entry for \"target platform\" (a platform that the project selects to read its Agent instructions).",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 21
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Write only features that Codex, OpenCode, and Claude Code all read.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 25,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, lines 25 and 31 use \"feature\" as a technical noun for a file, a folder, a frontmatter field, or an `@path` line, but the glossary and the base list in technical-terms.md do not give it.",
+            "correction": "Add a warning that recommends a glossary entry for \"feature\" (a file, a folder, a frontmatter field, or a line form that a platform reads), or keep the list of items under the sentence as its definition and add the warning.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 26
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "If the layout gives no copy of the text to a target platform, add a warning.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 37,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, line 37 (and \"file layout\" on line 56) use \"layout\" as a technical noun, but the glossary and the base list in technical-terms.md do not give it.",
+            "correction": "\"If no entry file of a target platform gives the text, add a warning.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 31
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "one level below the Skill folder",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 67,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, line 67 uses the multi-word noun \"Skill folder\", which contains the glossary term \"Skill\", but the glossary does not give that multi-word noun.",
+            "correction": "\"one level below the folder of the Skill\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 36
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When you find the target platforms, examine the project files for these signals:",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 11,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, line 11 writes the condition \"When you find the target platforms\" again, and the heading on line 9 already gives that condition.",
+            "correction": "\"Examine the project files for these signals:\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 27
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "When there is one target platform, write only the entry file of that platform.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 36,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, line 36 tells the agent to write only `CLAUDE.md` when Claude Code is the only target platform, but line 25 tells the agent to write only features that Codex, OpenCode, and Claude Code all read, also when Claude Code is the only target platform, and Codex does not read `CLAUDE.md`.",
+            "correction": "Add this sentence after \"This rule is also applicable when Claude Code is the only target platform, because the project can add a target platform later.\" on line 25: \"The selection of the entry file is not a feature. \"When you write or edit an entry file\" gives that selection.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 32
+        }
+    ],
+    "dropped": [],
+    "confirm": []
+}

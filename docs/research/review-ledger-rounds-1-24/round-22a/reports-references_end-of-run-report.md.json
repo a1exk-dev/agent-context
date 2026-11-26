@@ -1,0 +1,40 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.2",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Each text that only the check script examined: a correction after review round 2, and each later correction when you did 2 review rounds.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 44,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 44, the sentence omits \"the text that ... changed\", so it gives a correction (an action) as the text, where line 45 and \"After the last review round\" item 5 in references/review.md give the text that a correction changed.",
+            "correction": "\"Each text that only the check script examined: the text that a correction after review round 2 changed, and the text that each later correction changed when you did 2 review rounds.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 17
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Write each extraction candidate in the Extraction candidates part, also when the file is less than its file-size limit.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 63,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 63, this sentence repeats the pointer target skills/writing/agent-instructions/references/loading-rules.md, line 89 (\"also when the file size is less than the limit\") and line 93 (item 3, \"Write each extraction candidate in the Extraction candidates part of the report.\"), and step 3 on line 9 of the same file also tells the agent to include each extraction candidate.",
+            "correction": "Remove the sentence. Keep \"In the edit job, before you write the report, read \"When you recommend text to move\" in `references/loading-rules.md`. Then find each extraction candidate in the unchanged parts as \"When you recommend text to move\" in `references/loading-rules.md` tells you.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 25
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

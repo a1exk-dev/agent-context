@@ -1,0 +1,5 @@
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-4/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md
+   Rule: "In each pointer, give the path of its target. Words such as "that file" give no path. (blocking)"
+   Text: "When you write this item, find the known cases in that table."

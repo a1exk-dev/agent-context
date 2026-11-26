@@ -1,0 +1,170 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Do not use it for prompt text in product code.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 3,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, line 3 (the `description`) names the item \"product code\", but line 49 names the same item \"the code of a software product\", so the file uses two terms for one item.",
+            "correction": "\"Do not use it for prompt text in the code of a software product.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 19
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "In a Skill folder, the `SKILL.md` file and its reference files are Agent instructions.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 15,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, line 15 uses the term \"Skill folder\", but lines 33 and 102 use \"the folder of a Skill\" and \"the folder of that Skill\" for the same item, so the file uses two terms for one item.",
+            "correction": "\"In the folder of a Skill, the `SKILL.md` file and its reference files are Agent instructions.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 24
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "GR-3 and GR-4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "It also contains the rules in `references/loading-rules.md` that tell you to move text and that are not tier 1.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 68,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, line 68, \"It\" can refer to \"This tier\" or to \"the Agent Skills specification\" in the sentence before it.",
+            "correction": "\"This tier also contains the rules in `references/loading-rules.md` that tell you to move text and that are not tier 1.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 29
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "GR-3 and GR-4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "When a Skill has a known problem, put it where `references/agent-skills-spec.md` tells you.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 76,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, line 76, \"it\" can refer to \"a Skill\" or to \"a known problem\", and `references/agent-skills-spec.md` tells where to put each of the two items (the Skills folder and the section of the condition).",
+            "correction": "\"When a Skill has a known problem, put the known problem where `references/agent-skills-spec.md` tells you.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 34
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "GR-3 and GR-4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Run it once for each file of the round",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 130,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, line 130, \"it\" can refer to \"The report form\" or to \"the script\" in the sentence before it.",
+            "correction": "\"Run the report form once for each file of the round:\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 39
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/loading-rules.md",
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "When you run the check script",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 113,
+            "problem": "The section \"When you run the check script\" in skills/writing/agent-instructions/SKILL.md (lines 113 to 147) has the specified condition \"When you run the check script\" and more than 10 rules, for example \"Run it with `node`\", \"Replace `<skill folder>` with the absolute path\", \"Save the output to a new file in a temporary folder\", \"stop the self-check and the reader test\", and \"Run it once for each file of the round\", and it is not the numbered steps of the main task, a term, or only a pointer.",
+            "correction": "Move the whole section, with its heading \"## When you run the check script\" at its start, to `references/check-script.md`. In its old place in `SKILL.md`, write only: \"## When you run the check script\" and \"When you run the check script, read `references/check-script.md`.\" Then change the pointers that give \"When you run the check script\" in `SKILL.md` (for example in `references/review.md`) to give `references/check-script.md`.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/loading/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 12
+        },
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/loading-rules.md",
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "When two sources do not agree",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 61,
+            "problem": "The section \"When two sources do not agree\" in skills/writing/agent-instructions/SKILL.md (lines 61 to 85) has the specified condition \"When two sources do not agree\" and more than 3 rules (\"Obey the higher tier\", the 8 decisions in the table, \"use the tier sequence\", and \"Write a warning that gives the case and the tier that you obeyed\"), and the rule tells you to move it also when the condition can occur at each step.",
+            "correction": "Move the whole section, with its heading \"## When two sources do not agree\" at its start, to `references/source-conflicts.md`. In its old place in `SKILL.md`, write only: \"## When two sources do not agree\" and \"When two sources do not agree, read `references/source-conflicts.md`.\" Then change step 5 of `SKILL.md` and the sentences in `references/end-of-run-report.md` that give \"the table in \"When two sources do not agree\" in `SKILL.md`\" to give `references/source-conflicts.md`.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/loading/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 17
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "9.4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Write a warning that gives the case and the tier that you obeyed.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 85,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, line 85 uses \"Write a warning\", but lines 95 and 100 use \"add a warning\" for the same type of step.",
+            "correction": "\"Add a warning that gives the case and the tier that you obeyed.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 44
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Do the vote also when you expect to reject the findings.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 103,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 103, step 8 gives the same instruction as references/review.md line 169 (\"Also do the vote when you expect to reject the findings.\"), and step 8 tells the agent to read references/review.md before the self-check.",
+            "correction": "Remove the sentence \"Do the vote also when you expect to reject the findings.\" from step 8.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 31
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Do not give a list file to the readers, because a list file gives no task to test.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 104,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 104, step 9 gives the same instruction and cause as references/review.md line 212, which the reader test of step 9 points to.",
+            "correction": "Remove the sentence \"Do not give a list file to the readers, because a list file gives no task to test.\" from step 9.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 36
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "For a list file, do no output test, no load test, and no manual check.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 105,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 105, step 10 gives the same instruction as references/review.md line 321 (\"Select no output test, no load test, and no manual check for a list file.\"), and step 10 points to that section.",
+            "correction": "Remove the sentence \"For a list file, do no output test, no load test, and no manual check.\" from step 10.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 41
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "The **self-check** is the review of the changed sections by one reviewer subagent of each class, in a maximum of 2 rounds.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 34,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 34, the definition gives one reviewer of each class, but step 8 on line 103 and references/review.md line 61 start no loading reviewer for a list file.",
+            "correction": "\"The **self-check** is the review of the changed sections by reviewer subagents, one of each class that `references/review.md` starts, in a maximum of 2 rounds.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 46
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "blocking": 5,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

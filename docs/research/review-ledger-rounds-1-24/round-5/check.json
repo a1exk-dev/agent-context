@@ -1,0 +1,1579 @@
+{
+    "findings": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "The **write job** makes a new Agent instruction.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 20,
+            "problem": "The bold term \"write job\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "The **edit job** changes an Agent instruction that the project has.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 20,
+            "problem": "The bold term \"edit job\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "The **glossary** is the file that gives the terms of the project.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 21,
+            "problem": "The bold term \"glossary\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A **list file** is `GLOSSARY.md`, `CONTEXT.md`, `GLOSSARY-MAP.md`, or `MEMORY.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 22,
+            "problem": "The bold term \"list file\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A **finding** is one problem that a reviewer subagent gives in its report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 24,
+            "problem": "The bold term \"finding\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A **warning** is one item in the Warnings part of the end-of-run report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 28,
+            "problem": "The bold term \"warning\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": null,
+            "ruleFile": "references/ste-rules.md",
+            "heading": "Before a step with a risk",
+            "text": "It is not the STE signal word WARNING, which this skill does not use.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 28,
+            "problem": "The sentence has \"WARNING\" in capital letters."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A **tier** is one position in the sequence of the sources.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 29,
+            "problem": "The bold term \"tier\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "An **ADR** is an architecture decision record: a file that records one design decision and its cause.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 30,
+            "problem": "The bold term \"ADR\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "**Loading rules** are the rules that a file must obey.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 31,
+            "problem": "The bold term \"Loading rules\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "The **loading reviewer**, the **ASD-STE100 reviewer**, and the **ISO 24495-1 reviewer** are the 3 reviewer subagents.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 32,
+            "problem": "The bold term \"loading reviewer\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "The **loading reviewer**, the **ASD-STE100 reviewer**, and the **ISO 24495-1 reviewer** are the 3 reviewer subagents.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 32,
+            "problem": "The bold term \"ASD-STE100 reviewer\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "The **loading reviewer**, the **ASD-STE100 reviewer**, and the **ISO 24495-1 reviewer** are the 3 reviewer subagents.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 32,
+            "problem": "The bold term \"ISO 24495-1 reviewer\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "The **self-check** is the review of the changed sections by one reviewer subagent of each class, in a maximum of 2 rounds.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 34,
+            "problem": "The bold term \"self-check\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "The **reader test** is a dry run of 3 tasks by new reader subagents after the self-check.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 35,
+            "problem": "The bold term \"reader test\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "An **output test** is a test of the project that runs an agent on one request.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 36,
+            "problem": "The bold term \"output test\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A **manual check** is a test of the project that examines a human path in an interactive session.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 37,
+            "problem": "The bold term \"manual check\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A **human path** is a question to the user, an approval, or a handoff between agents.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 37,
+            "problem": "The bold term \"human path\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A **load test** is a test of the project that finds which requests make an agent load a Skill from its `description`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 38,
+            "problem": "The bold term \"load test\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "In the edit job, the **changed part** is the text that the user wants to change.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 39,
+            "problem": "The bold term \"changed part\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Each other part of the file is an **unchanged part**.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 39,
+            "problem": "The bold term \"unchanged part\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "An **extraction candidate** is a whole section of an unchanged part that the author recommends to move in the edit job.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 40,
+            "problem": "The bold term \"extraction candidate\" is not in the glossary or in the base list of technical-terms.md."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": null,
+            "ruleFile": "references/ste-rules.md",
+            "heading": "Before a step with a risk",
+            "text": "Loading rules: These are the MUST items of the Agent Skills specification for a Skill, and the platform loading rules for each Agent instruction.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 65,
+            "problem": "The sentence has \"MUST\" in capital letters."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": null,
+            "ruleFile": "references/ste-rules.md",
+            "heading": "Before a step with a risk",
+            "text": "The MUST items include all items that `skills-ref validate` examines.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 65,
+            "problem": "The sentence has \"MUST\" in capital letters."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "These files are SKILL.md files and their reference files, AGENTS.md, AGENTS.override.md, CLAUDE.md, CLAUDE.local.md, GLOSSARY.md, CONTEXT.md, MEMORY.md, and Rules.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 3,
+            "problem": "The pointer target \"AGENTS.override.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "These files are SKILL.md files and their reference files, AGENTS.md, AGENTS.override.md, CLAUDE.md, CLAUDE.local.md, GLOSSARY.md, CONTEXT.md, MEMORY.md, and Rules.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 3,
+            "problem": "The pointer target \"CLAUDE.local.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "These files are SKILL.md files and their reference files, AGENTS.md, AGENTS.override.md, CLAUDE.md, CLAUDE.local.md, GLOSSARY.md, CONTEXT.md, MEMORY.md, and Rules.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 3,
+            "problem": "The pointer target \"CONTEXT.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "These files also include the files in docs/agents/, .claude/rules/, .claude/skills/, .agents/skills/, and .opencode/skills/, and the targets of the pointers in these files.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 3,
+            "problem": "The pointer target \".claude/rules/\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "These files also include the files in docs/agents/, .claude/rules/, .claude/skills/, .agents/skills/, and .opencode/skills/, and the targets of the pointers in these files.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 3,
+            "problem": "The pointer target \".opencode/skills/\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "The entry files `AGENTS.md`, `CLAUDE.md`, `CLAUDE.local.md`, and `AGENTS.override.md` are Agent instructions.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 16,
+            "problem": "The pointer target \"CLAUDE.local.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "The entry files `AGENTS.md`, `CLAUDE.md`, `CLAUDE.local.md`, and `AGENTS.override.md` are Agent instructions.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 16,
+            "problem": "The pointer target \"AGENTS.override.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "`GLOSSARY.md`, `CONTEXT.md`, `MEMORY.md`, Rules, the files in `.claude/rules/`, and the files in `docs/agents/` are Agent instructions.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 17,
+            "problem": "The pointer target \"CONTEXT.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "`GLOSSARY.md`, `CONTEXT.md`, `MEMORY.md`, Rules, the files in `.claude/rules/`, and the files in `docs/agents/` are Agent instructions.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 17,
+            "problem": "The pointer target \".claude/rules/\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Its name is `GLOSSARY.md` or `CONTEXT.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 21,
+            "problem": "The pointer target \"CONTEXT.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "A **list file** is `GLOSSARY.md`, `CONTEXT.md`, `GLOSSARY-MAP.md`, or `MEMORY.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 22,
+            "problem": "The pointer target \"CONTEXT.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "A **list file** is `GLOSSARY.md`, `CONTEXT.md`, `GLOSSARY-MAP.md`, or `MEMORY.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 22,
+            "problem": "The pointer target \"GLOSSARY-MAP.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Subagent definitions, for example the files in `.claude/agents/`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 47,
+            "problem": "The pointer target \".claude/agents/\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Files for platforms other than Codex, OpenCode, and Claude Code, for example Cursor rules and `.github/copilot-instructions.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 48,
+            "problem": "The pointer target \".github/copilot-instructions.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "If the project has a glossary, read `GLOSSARY.md` or `CONTEXT.md`, as \"Terms in this skill\" tells you.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 92,
+            "problem": "The pointer target \"CONTEXT.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "`.opencode/skills/`, `.claude/skills/`, and `.agents/skills/`",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 79,
+            "problem": "The pointer target \".opencode/skills/\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 7,
+            "problem": "The sentence of 18 words is also in the pointer target \"loading-rules.md\"."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 7,
+            "problem": "The sentence of 10 words is also in the pointer target \"loading-rules.md\"."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "They are not applicable to other files, for example `README.md` or `.claude/settings.json`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 3,
+            "problem": "The pointer target \".claude/settings.json\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "`.opencode/` or `opencode.json`",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 17,
+            "problem": "The pointer target \".opencode/\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "`.opencode/` or `opencode.json`",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 17,
+            "problem": "The pointer target \"opencode.json\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Do not write `.claude/rules/`, frontmatter that only Claude Code reads, or `AGENTS.override.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 27,
+            "problem": "The pointer target \".claude/rules/\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Do not write `.claude/rules/`, frontmatter that only Claude Code reads, or `AGENTS.override.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 27,
+            "problem": "The pointer target \"AGENTS.override.md\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Do not put it in `.claude/rules/`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 38,
+            "problem": "The pointer target \".claude/rules/\" does not exist."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 7,
+            "problem": "The sentence of 18 words is also in the pointer target \"agent-skills-spec.md\"."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 7,
+            "problem": "The sentence of 10 words is also in the pointer target \"agent-skills-spec.md\"."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 3,
+            "problem": "The sentence of 15 words is also in the pointer target \"ste-rules.md\"."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 11,
+            "problem": "The sentence of 18 words is also in the pointer target \"ste-rules.md\"."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 11,
+            "problem": "The sentence of 10 words is also in the pointer target \"ste-rules.md\"."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": null,
+            "ruleFile": "references/ste-rules.md",
+            "heading": "Before a step with a risk",
+            "text": "The only modal verbs are CAN, CANNOT, MUST, and WILL.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 45,
+            "problem": "The sentence has \"MUST\" in capital letters."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": null,
+            "ruleFile": "references/ste-rules.md",
+            "heading": "Before a step with a risk",
+            "text": "Change a \"should\" or a \"may\" to MUST, CAN, or a condition that you write in the sentence.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 45,
+            "problem": "The sentence has \"MUST\" in capital letters."
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": null,
+            "ruleFile": "references/ste-rules.md",
+            "heading": "Before a step with a risk",
+            "text": "Do not use the signal word WARNING.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 117,
+            "problem": "The sentence has \"WARNING\" in capital letters."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 7,
+            "problem": "The sentence of 18 words is also in the pointer target \"technical-terms.md\"."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 7,
+            "problem": "The sentence of 10 words is also in the pointer target \"technical-terms.md\"."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 5,
+            "problem": "The sentence of 18 words is also in the pointer target \"ste-rules.md\"."
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 5,
+            "problem": "The sentence of 10 words is also in the pointer target \"ste-rules.md\"."
+        }
+    ],
+    "pointers": [
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 3,
+            "heading": null,
+            "text": "These files are SKILL.md files and their reference files, AGENTS.md, AGENTS.override.md, CLAUDE.md, CLAUDE.local.md, GLOSSARY.md, CONTEXT.md, MEMORY.md, and Rules.",
+            "targets": [
+                "SKILL.md",
+                "AGENTS.md",
+                "AGENTS.override.md",
+                "CLAUDE.md",
+                "CLAUDE.local.md",
+                "GLOSSARY.md",
+                "CONTEXT.md",
+                "MEMORY.md"
+            ]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 3,
+            "heading": null,
+            "text": "A project adds the text of a Rule to AGENTS.md or CLAUDE.md.",
+            "targets": ["AGENTS.md", "CLAUDE.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 3,
+            "heading": null,
+            "text": "These files also include the files in docs/agents/, .claude/rules/, .claude/skills/, .agents/skills/, and .opencode/skills/, and the targets of the pointers in these files.",
+            "targets": [
+                "docs/agents/",
+                ".claude/rules/",
+                ".claude/skills/",
+                ".agents/skills/",
+                ".opencode/skills/"
+            ]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 12,
+            "heading": "Terms in this skill",
+            "text": "When a term is not in this section, find it in `references/technical-terms.md`.",
+            "targets": ["references/technical-terms.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 15,
+            "heading": "Terms in this skill",
+            "text": "In a Skill folder, the `SKILL.md` file and its reference files are Agent instructions.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 16,
+            "heading": "Terms in this skill",
+            "text": "The entry files `AGENTS.md`, `CLAUDE.md`, `CLAUDE.local.md`, and `AGENTS.override.md` are Agent instructions.",
+            "targets": [
+                "AGENTS.md",
+                "CLAUDE.md",
+                "CLAUDE.local.md",
+                "AGENTS.override.md"
+            ]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 17,
+            "heading": "Terms in this skill",
+            "text": "`GLOSSARY.md`, `CONTEXT.md`, `MEMORY.md`, Rules, the files in `.claude/rules/`, and the files in `docs/agents/` are Agent instructions.",
+            "targets": [
+                "GLOSSARY.md",
+                "CONTEXT.md",
+                "MEMORY.md",
+                ".claude/rules/",
+                "docs/agents/"
+            ]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 21,
+            "heading": "Terms in this skill",
+            "text": "Its name is `GLOSSARY.md` or `CONTEXT.md`.",
+            "targets": ["GLOSSARY.md", "CONTEXT.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 21,
+            "heading": "Terms in this skill",
+            "text": "If the project has the two files, use `GLOSSARY.md`.",
+            "targets": ["GLOSSARY.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 22,
+            "heading": "Terms in this skill",
+            "text": "A **list file** is `GLOSSARY.md`, `CONTEXT.md`, `GLOSSARY-MAP.md`, or `MEMORY.md`.",
+            "targets": [
+                "GLOSSARY.md",
+                "CONTEXT.md",
+                "GLOSSARY-MAP.md",
+                "MEMORY.md"
+            ]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 23,
+            "heading": "Terms in this skill",
+            "text": "A project adds the text of a Rule to `AGENTS.md` or `CLAUDE.md`.",
+            "targets": ["AGENTS.md", "CLAUDE.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 40,
+            "heading": "Terms in this skill",
+            "text": "In the edit job, \"When you recommend text to move\" in `references/loading-rules.md` gives these sections.",
+            "targets": ["references/loading-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 46,
+            "heading": "Files that are not Agent instructions",
+            "text": "Files for persons, for example `README.md`, `CONTRIBUTING.md`, ADRs, user manuals, code comments, and commit messages.",
+            "targets": ["README.md", "CONTRIBUTING.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 47,
+            "heading": "Files that are not Agent instructions",
+            "text": "Subagent definitions, for example the files in `.claude/agents/`.",
+            "targets": [".claude/agents/"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 48,
+            "heading": "Files that are not Agent instructions",
+            "text": "Files for platforms other than Codex, OpenCode, and Claude Code, for example Cursor rules and `.github/copilot-instructions.md`.",
+            "targets": [".github/copilot-instructions.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 68,
+            "heading": "When two sources do not agree",
+            "text": "It also contains the rules in `references/loading-rules.md` that tell you to move text and that are not tier 1.",
+            "targets": ["references/loading-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 76,
+            "heading": "When two sources do not agree",
+            "text": "When a Skill has a known problem, put it where `references/agent-skills-spec.md` tells you.",
+            "targets": ["references/agent-skills-spec.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 79,
+            "heading": "When two sources do not agree",
+            "text": "When a reference file refers to a different reference file that `SKILL.md` also points to, give the file name.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 80,
+            "heading": "When two sources do not agree",
+            "text": "The rule \"Write only features that Codex, OpenCode, and Claude Code all read\" and the file `agents/openai.yaml`, which only Codex reads",
+            "targets": ["agents/openai.yaml"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 80,
+            "heading": "When two sources do not agree",
+            "text": "When you write or edit a Skill, obey the rules for `agents/openai.yaml` in `references/agent-skills-spec.md`.",
+            "targets": ["agents/openai.yaml", "references/agent-skills-spec.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 81,
+            "heading": "When two sources do not agree",
+            "text": "When you examine the file size, use only the limits in `references/loading-rules.md` and `references/agent-skills-spec.md`.",
+            "targets": [
+                "references/loading-rules.md",
+                "references/agent-skills-spec.md"
+            ]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 83,
+            "heading": "When two sources do not agree",
+            "text": "The rule \"Copy the format of the entries\" for the glossary and `MEMORY.md`, and the STE rule \"Do not omit words\"",
+            "targets": ["MEMORY.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 91,
+            "heading": "Steps of the write job and the edit job",
+            "text": "Before you select target platforms, read `references/loading-rules.md`.",
+            "targets": ["references/loading-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 91,
+            "heading": "Steps of the write job and the edit job",
+            "text": "Then find the target platforms as `references/loading-rules.md` tells you.",
+            "targets": ["references/loading-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 92,
+            "heading": "Steps of the write job and the edit job",
+            "text": "If the project has a glossary, read `GLOSSARY.md` or `CONTEXT.md`, as \"Terms in this skill\" tells you.",
+            "targets": ["GLOSSARY.md", "CONTEXT.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 92,
+            "heading": "Steps of the write job and the edit job",
+            "text": "The only exception is the question at a limit that `references/review.md` gives.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 97,
+            "heading": "Steps of the write job and the edit job",
+            "text": "For text that is applicable in each session, write entry-file text in the file that `references/loading-rules.md` gives.",
+            "targets": ["references/loading-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 102,
+            "heading": "Steps of the write job and the edit job",
+            "text": "Before you write text, read `references/ste-rules.md`, `references/plain-language-rules.md`, and `references/technical-terms.md`.",
+            "targets": [
+                "references/ste-rules.md",
+                "references/plain-language-rules.md",
+                "references/technical-terms.md"
+            ]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 102,
+            "heading": "Steps of the write job and the edit job",
+            "text": "If the file that you write or edit is a Skill, also read `references/agent-skills-spec.md`.",
+            "targets": ["references/agent-skills-spec.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 102,
+            "heading": "Steps of the write job and the edit job",
+            "text": "In the write job, also move text to reference files as \"When the write job makes a SKILL.md or entry-file text\" in `references/loading-rules.md` tells you.",
+            "targets": ["references/loading-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 102,
+            "heading": "Steps of the write job and the edit job",
+            "text": "In the edit job, move text as \"When the edit job changes a SKILL.md or an entry file\" in `references/loading-rules.md` tells you.",
+            "targets": ["references/loading-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 103,
+            "heading": "Steps of the write job and the edit job",
+            "text": "Before the self-check, read `references/review.md`.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 103,
+            "heading": "Steps of the write job and the edit job",
+            "text": "In each job, also for a small change, do the vote of the confirmers that `references/review.md` gives.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 104,
+            "heading": "Steps of the write job and the edit job",
+            "text": "In the other jobs, after the self-check, do the reader test that `references/review.md` gives, also for a small change.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 105,
+            "heading": "Steps of the write job and the edit job",
+            "text": "In the other jobs, after the reader test passes, do the output tests and the manual checks that \"After the reader test: the output tests and the manual checks\" in `references/review.md` gives.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 106,
+            "heading": "Steps of the write job and the edit job",
+            "text": "If a blocking problem stays open at a limit, do the steps in \"When a blocking problem stays open at a limit\" in `references/review.md`.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 111,
+            "heading": "When a reviewer gives a finding",
+            "text": "When a reviewer or the check script gives a finding, read `references/review.md`.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 117,
+            "heading": "When you run the check script",
+            "text": "The check script `scripts/check.ts` is in the folder of this `SKILL.md` file.",
+            "targets": ["scripts/check.ts", "SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 117,
+            "heading": "When you run the check script",
+            "text": "When you do the self-check, `references/review.md` tells you when to run the check script.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 123,
+            "heading": "When you run the check script",
+            "text": "Replace `<skill folder>` with the absolute path of the folder of this `SKILL.md` file.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 140,
+            "heading": "When you run the check script",
+            "text": "For the reader reports of a reader-test round, give each file of the readers with its copy, and the tasks file that `references/review.md` gives.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 151,
+            "heading": "When you write the end-of-run report",
+            "text": "When you write the end-of-run report, read `references/end-of-run-report.md`.",
+            "targets": ["references/end-of-run-report.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 7,
+            "heading": "Before you use this file",
+            "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 7,
+            "heading": "Before you use this file",
+            "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 15,
+            "heading": "When you write the folder and the frontmatter",
+            "text": "Tier 1: Put a `SKILL.md` file in the folder of each Skill.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 39,
+            "heading": "When you write or edit a Skill: the agents/openai.yaml file",
+            "text": "Tier 4: In the write job, write `agents/openai.yaml` for each Skill that you write.",
+            "targets": ["agents/openai.yaml"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 40,
+            "heading": "When you write or edit a Skill: the agents/openai.yaml file",
+            "text": "Tier 4: In the edit job, when the Skill has no `agents/openai.yaml` and is not a Manual-only Skill, do not write the file.",
+            "targets": ["agents/openai.yaml"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 41,
+            "heading": "When you write or edit a Skill: the agents/openai.yaml file",
+            "text": "Tier 1: In the edit job, when a Manual-only Skill has no `agents/openai.yaml`, write the file, because Codex does not read `disable-model-invocation`.",
+            "targets": ["agents/openai.yaml"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 62,
+            "heading": "When you write the body",
+            "text": "Tier 4: Write less than 500 lines in `SKILL.md`.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 73,
+            "heading": "When you select the folder for the Skill",
+            "text": "Before you select the folder, find the target platforms as `loading-rules.md` tells you.",
+            "targets": ["loading-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 73,
+            "heading": "When you select the folder for the Skill",
+            "text": "A `.claude/` folder without a `skills/` folder is not a Skills folder.",
+            "targets": [".claude/", "skills/"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 77,
+            "heading": "When you select the folder for the Skill",
+            "text": "`.claude/skills/`",
+            "targets": [".claude/skills/"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 78,
+            "heading": "When you select the folder for the Skill",
+            "text": "`.agents/skills/`",
+            "targets": [".agents/skills/"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 79,
+            "heading": "When you select the folder for the Skill",
+            "text": "`.opencode/skills/`, `.claude/skills/`, and `.agents/skills/`",
+            "targets": [
+                ".opencode/skills/",
+                ".claude/skills/",
+                ".agents/skills/"
+            ]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 36,
+            "heading": "When you write the end-of-run report",
+            "text": "When you write this item, find these problems in \"When a blocking problem stays open at a limit\" in `references/review.md`.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 38,
+            "heading": "When you write the end-of-run report",
+            "text": "When you write this item, find these findings in item 5 of \"During and after a review round\" in `references/review.md`.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 48,
+            "heading": "When you write the end-of-run report",
+            "text": "Each case where two sources do not agree and that the table in \"When two sources do not agree\" in `SKILL.md` does not give, with the obeyed tier.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 56,
+            "heading": "When you write the end-of-run report",
+            "text": "In the edit job, a Skill that has no `agents/openai.yaml`, with the full text of the recommended file.",
+            "targets": ["agents/openai.yaml"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 63,
+            "heading": "When you write the end-of-run report",
+            "text": "In the edit job, before you write the report, read \"When you recommend text to move\" in `references/loading-rules.md`.",
+            "targets": ["references/loading-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 64,
+            "heading": "When you write the end-of-run report",
+            "text": "If \"When you recommend text to move\" in `references/loading-rules.md` gives that section, add it to the Extraction candidates part.",
+            "targets": ["references/loading-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 67,
+            "heading": "When you write the end-of-run report",
+            "text": "For a manual check, also give the evidence that \"When you run a manual check\" in `references/review.md` tells you to record.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 3,
+            "heading": "Loading rules",
+            "text": "They are not applicable to other files, for example `README.md` or `.claude/settings.json`.",
+            "targets": ["README.md", ".claude/settings.json"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 7,
+            "heading": "Before you use this file",
+            "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 7,
+            "heading": "Before you use this file",
+            "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 15,
+            "heading": "When you find the target platforms",
+            "text": "`CLAUDE.md` or `.claude/`",
+            "targets": ["CLAUDE.md", ".claude/"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 16,
+            "heading": "When you find the target platforms",
+            "text": "`AGENTS.md` or `.agents/`",
+            "targets": ["AGENTS.md", ".agents/"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 17,
+            "heading": "When you find the target platforms",
+            "text": "`.opencode/` or `opencode.json`",
+            "targets": [".opencode/", "opencode.json"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 27,
+            "heading": "When you select a feature",
+            "text": "Do not write `.claude/rules/`, frontmatter that only Claude Code reads, or `AGENTS.override.md`.",
+            "targets": [".claude/rules/", "AGENTS.override.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 28,
+            "heading": "When you select a feature",
+            "text": "When you write a Manual-only Skill, read \"When you write the folder and the frontmatter\" in `agent-skills-spec.md`.",
+            "targets": ["agent-skills-spec.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 29,
+            "heading": "When you select a feature",
+            "text": "Write no `@path` line, but you can write the `@AGENTS.md` line in `CLAUDE.md`.",
+            "targets": ["CLAUDE.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 31,
+            "heading": "When you select a feature",
+            "text": "For an `@path` line, put the line in `CLAUDE.md` after the `@AGENTS.md` line.",
+            "targets": ["CLAUDE.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 31,
+            "heading": "When you select a feature",
+            "text": "For an `@path` line in `CLAUDE.md`, the alternative is a pointer in `AGENTS.md`.",
+            "targets": ["CLAUDE.md", "AGENTS.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 31,
+            "heading": "When you select a feature",
+            "text": "If `AGENTS.md` has a pointer to the same file, the alternative is a change to the condition of that pointer.",
+            "targets": ["AGENTS.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 35,
+            "heading": "When you write or edit an entry file",
+            "text": "When the write job has Claude Code and Codex or OpenCode as target platforms, put the text for all target platforms in `AGENTS.md`.",
+            "targets": ["AGENTS.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 35,
+            "heading": "When you write or edit an entry file",
+            "text": "`CLAUDE.md` then contains the `@AGENTS.md` line and only the lines that are only for Claude Code.",
+            "targets": ["CLAUDE.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 38,
+            "heading": "When you write or edit an entry file",
+            "text": "Put Rule text in `AGENTS.md` or `CLAUDE.md`.",
+            "targets": ["AGENTS.md", "CLAUDE.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 38,
+            "heading": "When you write or edit an entry file",
+            "text": "Do not put it in `.claude/rules/`.",
+            "targets": [".claude/rules/"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 45,
+            "heading": "When you examine the file size",
+            "text": "`SKILL.md` has a maximum of 20,000 bytes.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 46,
+            "heading": "When you examine the file size",
+            "text": "The glossary, `MEMORY.md`, and `docs/agents/` files",
+            "targets": ["MEMORY.md", "docs/agents/"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 56,
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "Move text to reference files from a new `SKILL.md` and from new entry-file text.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 69,
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "Write one pointer for each reference file, as \"When you put the text in sections and lists\" in `plain-language-rules.md` tells you.",
+            "targets": ["plain-language-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 82,
+            "heading": "When the edit job changes a SKILL.md or an entry file",
+            "text": "Under that heading, write the pointer as \"When you put the text in sections and lists\" in `plain-language-rules.md` tells you.",
+            "targets": ["plain-language-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 98,
+            "heading": "When the file is the glossary, MEMORY.md, or a Rule",
+            "text": "For the glossary and `MEMORY.md`, use the format that the project uses.",
+            "targets": ["MEMORY.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 98,
+            "heading": "When the file is the glossary, MEMORY.md, or a Rule",
+            "text": "This skill has no template for the glossary or `MEMORY.md`.",
+            "targets": ["MEMORY.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 98,
+            "heading": "When the file is the glossary, MEMORY.md, or a Rule",
+            "text": "When the project has no glossary, give each term and its definition, as `technical-terms.md` tells you.",
+            "targets": ["technical-terms.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 3,
+            "heading": "Plain-language rules",
+            "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+            "targets": ["README.md", "CHANGELOG.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 11,
+            "heading": "Before you use this file",
+            "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 11,
+            "heading": "Before you use this file",
+            "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 33,
+            "heading": "When you put the text in sections and lists",
+            "text": "In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section.",
+            "targets": ["docs/agents/"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 34,
+            "heading": "When you put the text in sections and lists",
+            "text": "In the glossary and `MEMORY.md`, copy the format of the entries that the file has.",
+            "targets": ["MEMORY.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 45,
+            "heading": "When you put the text in sections and lists",
+            "text": "Put the pointer to each pointer target in the first file that the agent reads, for example the entry file or the `SKILL.md` file.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 50,
+            "heading": "When you select the words and the tone",
+            "text": "When you select a word or write a sentence, obey the rules in `ste-rules.md`.",
+            "targets": ["ste-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 62,
+            "heading": "When you test the text",
+            "text": "When you do the self-check or the reader test, read `review.md`.",
+            "targets": ["review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 14,
+            "heading": "When you start a subagent",
+            "text": "No platform can make a subagent read-only from a `SKILL.md` file.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 15,
+            "heading": "When you start a subagent",
+            "text": "The reference files are in the `references/` folder next to the `SKILL.md` file of this skill.",
+            "targets": ["references/", "SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 56,
+            "heading": "Before each review round",
+            "text": "Run the check script on the full file of each Markdown file of the review target, as \"When you run the check script\" in `SKILL.md` tells you.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 65,
+            "heading": "When you start the reviewers",
+            "text": "`review.md`, `loading-rules.md`, `agent-skills-spec.md` for a Skill, and the pointer targets",
+            "targets": ["review.md", "loading-rules.md", "agent-skills-spec.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 66,
+            "heading": "When you start the reviewers",
+            "text": "`review.md`, `ste-rules.md`, `technical-terms.md`, and the pointer targets",
+            "targets": ["review.md", "ste-rules.md", "technical-terms.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 67,
+            "heading": "When you start the reviewers",
+            "text": "`review.md`, `plain-language-rules.md`, and the pointer targets",
+            "targets": ["review.md", "plain-language-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 69,
+            "heading": "When you start the reviewers",
+            "text": "The glossary and `MEMORY.md` are not pointer targets.",
+            "targets": ["MEMORY.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 69,
+            "heading": "When you start the reviewers",
+            "text": "A reviewer reviews the glossary and `MEMORY.md` only when the job changed them, through the `Changes:` line.",
+            "targets": ["MEMORY.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 71,
+            "heading": "When you start the reviewers",
+            "text": "When you start the reviewers, find the list files in \"Terms in this skill\" in `SKILL.md`.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 71,
+            "heading": "When you start the reviewers",
+            "text": "Where `review.md` gives 3 reviewers, 3 reports, or the same `Changes:` line for each reviewer, give no list file to the loading reviewer.",
+            "targets": ["review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 154,
+            "heading": "During and after a review round",
+            "text": "Run it as \"When you run the check script\" in `SKILL.md` tells you.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 200,
+            "heading": "After the last review round",
+            "text": "Run the check script on the full file of each changed file, as \"When you run the check script\" in `SKILL.md` tells you.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 216,
+            "heading": "After the self-check: the reader test",
+            "text": "For example, a pointer \"Before you write code about an Order, read `GLOSSARY.md`\" is applicable to a task about the code of an Order.",
+            "targets": ["GLOSSARY.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 230,
+            "heading": "After the self-check: the reader test",
+            "text": "For a Skill, the first file is its `SKILL.md`.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 230,
+            "heading": "After the self-check: the reader test",
+            "text": "When no entry file changed, the first file is the entry file of the project, for example `AGENTS.md`.",
+            "targets": ["AGENTS.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 235,
+            "heading": "After the self-check: the reader test",
+            "text": "Run the report form for reader reports as \"When you run the check script\" in `SKILL.md` tells you.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 322,
+            "heading": "After the reader test: the output tests and the manual checks",
+            "text": "A project often keeps the tests of a Skill in a folder with a `README.md` file, for example `tests/skills/<category>/<name>/`.",
+            "targets": ["README.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 327,
+            "heading": "After the reader test: the output tests and the manual checks",
+            "text": "Run each test as the `README.md` of the tests tells you.",
+            "targets": ["README.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 327,
+            "heading": "After the reader test: the output tests and the manual checks",
+            "text": "Then grade each test as that `README.md` tells you.",
+            "targets": ["README.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 347,
+            "heading": "When you run a manual check",
+            "text": "Make the setup of the check in that copy, as the `README.md` of the tests tells you.",
+            "targets": ["README.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 429,
+            "heading": "When no subagent is available",
+            "text": "Write it as the Warnings part in `end-of-run-report.md` tells you.",
+            "targets": ["end-of-run-report.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 433,
+            "heading": "When a reviewer gives a finding",
+            "text": "When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 446,
+            "heading": "When you save a file or run a command in a round",
+            "text": "You can save the JSON output of the check script with `>`, as `SKILL.md` shows.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 7,
+            "heading": "Before you use this file",
+            "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 7,
+            "heading": "Before you use this file",
+            "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 11,
+            "heading": "When you use STE for text",
+            "text": "They are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+            "targets": ["README.md", "CHANGELOG.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 27,
+            "heading": "When you select a technical noun",
+            "text": "When you select a technical noun, use a noun from the glossary or the base list in `technical-terms.md` (rule 1.8).",
+            "targets": ["technical-terms.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 28,
+            "heading": "When you select a technical noun",
+            "text": "When the glossary and the base list have no noun for an item, do the steps in \"When a word is not in the base list or in the glossary\" in `technical-terms.md`.",
+            "targets": ["technical-terms.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 31,
+            "heading": "When you select a technical noun",
+            "text": "Write a term in bold only when the glossary or the base list in `technical-terms.md` has it (rule 1.8).",
+            "targets": ["technical-terms.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 54,
+            "heading": "When you write a sentence",
+            "text": "Obey \"When a word is not in the base list or in the glossary\" in `technical-terms.md` for it.",
+            "targets": ["technical-terms.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 54,
+            "heading": "When you write a sentence",
+            "text": "When you write \"rule\" in lowercase, read \"When you write the word rule\" in `technical-terms.md` for the two meanings.",
+            "targets": ["technical-terms.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 102,
+            "heading": "When you count words",
+            "text": "Read references/review.md first.",
+            "targets": ["references/review.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 5,
+            "heading": "Before you use this file",
+            "text": "If `SKILL.md` of this skill is not in your context window, read it before you use this file.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 5,
+            "heading": "Before you use this file",
+            "text": "`SKILL.md` defines the terms, the tiers, and the end-of-run report.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 11,
+            "heading": "When you find the sources of technical words",
+            "text": "They are not applicable to text for persons, for example `README.md`.",
+            "targets": ["README.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 12,
+            "heading": "When you find the sources of technical words",
+            "text": "To find the text of a rule from its rule number, read `ste-rules.md`.",
+            "targets": ["ste-rules.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 36,
+            "heading": "When a word is not in the base list or in the glossary",
+            "text": "If the project has no glossary, recommend a new `GLOSSARY.md` with a short structure: the term and its definition.",
+            "targets": ["GLOSSARY.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 57,
+            "heading": "Agent terms",
+            "text": "A folder with a `SKILL.md` file.",
+            "targets": ["SKILL.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 59,
+            "heading": "Agent terms",
+            "text": "An Agent instruction that a platform loads at the start of each session, for example `AGENTS.md`",
+            "targets": ["AGENTS.md"]
+        },
+        {
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 97,
+            "heading": "Terms for text",
+            "text": "\"When you count words\" in `ste-rules.md` tells when a colon stops a sentence",
+            "targets": ["ste-rules.md"]
+        }
+    ]
+}

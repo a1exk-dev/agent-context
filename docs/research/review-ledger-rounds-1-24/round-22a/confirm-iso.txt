@@ -1,0 +1,8 @@
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md
+   Rule: "In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. In each file, put each new pointer in a section, also a pointer whose condition you change. In the heading of that section, give the condition where the rule or the pointer is applicable, for example "Before a commit". If no heading gives that condition, add a heading. A topic heading, for example "Branches", gives no condition. (blocking)"
+   Text: "Put the pointer to each pointer target in the first file that the agent reads, for example the entry file or the `SKILL.md` file. Make no sequences of pointers."
+2. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md
+   Rule: "In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. In each file, put each new pointer in a section, also a pointer whose condition you change. In the heading of that section, give the condition where the rule or the pointer is applicable, for example "Before a commit". If no heading gives that condition, add a heading. A topic heading, for example "Branches", gives no condition. (blocking)"
+   Text: "When the file does not load in each session, find a pointer to it in a different Agent instruction. If you find no pointer, add a warning."

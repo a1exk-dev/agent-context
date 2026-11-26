@@ -1,0 +1,92 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "When you select the folder for the Skill",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 11,
+            "problem": "In skills/writing/agent-instructions/references/agent-skills-spec.md, the heading on line 71, the quoted heading on line 11, and \"the folder\" on line 73 identify the Skills folder of the project (for example `.claude/skills/`), but lines 15, 16, and 63 use the almost identical term \"the folder of the Skill\" for the folder that contains `SKILL.md`, and the heading on line 9 uses \"the folder\" for that second item, so one noun has two items and one item has two terms.",
+            "correction": "Change the heading on line 71 to \"When you select the Skills folder of the project\" and the quoted heading on line 11 to \"When you select the Skills folder of the project\". On line 73, write \"Before you select the Skills folder of the project, find the target platforms as `loading-rules.md` tells you.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/ste/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 22
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/agent-skills-spec.md",
+            "heading": "When you write the body",
+            "text": "You can also start the value on the next line after `|` or `>`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 20,
+            "problem": "In skills/writing/agent-instructions/references/agent-skills-spec.md line 20, the rule gives a second method for a value that contains `: `, and line 24 tells the agent to write `description` as one line in quotation marks, so the alternative is not applicable to `description`.",
+            "correction": "Remove the sentence \"You can also start the value on the next line after `|` or `>`.\" Keep \"Put a value that contains `: ` in quotation marks.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/loading/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 16
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Select the Skills folder of the project first, as the section \"When you select the folder for the Skill\" tells you.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 11,
+            "problem": "In skills/writing/agent-instructions/references/agent-skills-spec.md line 11, the step has no job condition, but in the edit job the Skill already has its folder, and line 73 gives the folder rules only \"For each Skill that you write\".",
+            "correction": "\"In the write job, select the Skills folder of the project first, as the section \"When you select the folder for the Skill\" tells you.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 19
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Before you select the folder, find the target platforms as `loading-rules.md` tells you.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 73,
+            "problem": "In skills/writing/agent-instructions/references/agent-skills-spec.md line 73, one paragraph gives a sequence of steps (find the target platforms, select the Skills folder, ask the user when 2 or more folders or no folder occur, add a warning) without a numbered list.",
+            "correction": "Keep the 2 sentences of information first. Then write a numbered list: \"1. Find the target platforms as `loading-rules.md` tells you. 2. Tier 1: When the target platforms include Claude Code and Codex, use the Skills folder of the project. A Skills folder of the project is a folder from the table below that the project has. A `.claude/` folder without a `skills/` folder is not a Skills folder. 3. If the project has 2 or more of these folders, or none of these folders, ask the user one time which folder to use. 4. For each Skill that you write for these target platforms, add a warning that gives the platform that does not load the Skill.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 24
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "The tier 1 rule is a loading rule of Codex.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 28,
+            "problem": "In skills/writing/agent-instructions/references/agent-skills-spec.md line 28, the sentence gives one tier 1 rule, but the section has 2 tier 1 rules, on line 41 and line 42.",
+            "correction": "\"The tier 1 rules are loading rules of Codex.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 29
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "Each rule starts with its tier.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 3,
+            "problem": "In skills/writing/agent-instructions/references/agent-skills-spec.md line 3, the sentence tells that each rule starts with its tier, but the rules on line 11 (\"Select the Skills folder of the project first\"), line 50 (\"When the user gives text for the description, keep the meaning of that text.\"), and the first rules of line 73 do not start with a tier.",
+            "correction": "Start each of these rules with its tier, for example \"Tier 4: When the user gives text for the description, keep the meaning of that text.\" On line 73, put \"Tier 1:\" at the start of the rule that it is for, as a different item.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 34
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/ste/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

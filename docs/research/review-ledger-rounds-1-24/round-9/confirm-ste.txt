@@ -1,0 +1,26 @@
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/SKILL.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/agent-skills-spec.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/review.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md
+   Rule: 1.11 "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "for example Cursor rules and `.github/copilot-instructions.md`"
+2. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md
+   Rule: 1.11 and 6.2 "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "Move long text to files in the Skill folder or in a folder directly in it."
+3. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md
+   Rule: GR-3 and GR-4 "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "When the user gives text for the description, keep its meaning and write it by these rules."
+4. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: 1.11 "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "One review check is one reviewer class for one file in the round list."
+5. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: 1.11 "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "| Reviewer | Checks | Reference files |"
+6. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: 1.11 "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "| Check | Limit for the change |"
+7. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: 1.11 "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "Instruction files: <the absolute paths of the files of the readers: first the first file of the review target, then each other file>"
+8. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: 5.3 "Write each instruction in the imperative (rule 5.3). Do not write "must" before an imperative. Use "must" only for a condition or for a safety instruction. (blocking)"
+   Text: "The self-check stops when a round passes, or after round 2."

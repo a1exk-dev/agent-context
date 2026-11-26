@@ -1,0 +1,105 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A heading, a bold label in a list, or a cell in the first row of a table",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 103,
+            "problem": "In skills/writing/agent-instructions/references/technical-terms.md, line 76 defines the base-list term \"label\" as \"A name that you attach to an issue or a pull request\", but line 103 uses \"label\" for a different item: bold text at the start of a list item.",
+            "correction": "A heading, a bold word or words at the start of a list item, or a cell in the first row of a table",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "reportLine": 21
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Text between two fence lines in Markdown",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 84,
+            "problem": "In skills/writing/agent-instructions/references/technical-terms.md, line 84 uses the technical noun \"fence lines\", which is not in the base list and not in the glossary.",
+            "correction": "Text between two lines that start with 3 backticks in Markdown",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "reportLine": 26
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Send commits to a remote repository",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 171,
+            "problem": "In skills/writing/agent-instructions/references/technical-terms.md, line 171 uses the technical noun \"remote repository\", which is not in the base list and not in the glossary.",
+            "correction": "Send commits to a repository on a different computer",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "reportLine": 31
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When the glossary gives a base-list term a different meaning, use the glossary meaning.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 29,
+            "problem": "In skills/writing/agent-instructions/references/technical-terms.md line 29, the rule writes again the condition of its heading \"When the glossary gives a different meaning\" (line 27).",
+            "correction": "\"Use the glossary meaning.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "reportLine": 22
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When a technical noun is not in the base list and not in the glossary, add a warning.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 33,
+            "problem": "In skills/writing/agent-instructions/references/technical-terms.md line 33, the rule writes again the condition of its heading \"When a technical noun is not in the base list or in the glossary\" (line 31).",
+            "correction": "\"Add a warning.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "reportLine": 27
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "Then use the glossary meaning for that file.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 25,
+            "problem": "skills/writing/agent-instructions/SKILL.md line 23 defines Rule as a term of this skill, but skills/writing/agent-instructions/references/technical-terms.md line 25 tells the agent to use the glossary meaning, which does not exist in a project whose glossary does not give Rule.",
+            "correction": "\"Then use the meaning of Rule in \"Terms in this skill\" in `SKILL.md`. When the glossary gives Rule a different meaning, use the glossary meaning.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "reportLine": 32
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "When the edit job changes this skill, add a term to the base list only when most projects use the term in Agent instructions.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 17,
+            "problem": "In skills/writing/agent-instructions/references/technical-terms.md line 17, the agent must decide if most projects use a term, but the rule gives no cause for this limit.",
+            "correction": "\"When the edit job changes this skill, add a term to the base list only when most projects use the term in Agent instructions, because each project that uses this skill reads the base list.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "reportLine": 37
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

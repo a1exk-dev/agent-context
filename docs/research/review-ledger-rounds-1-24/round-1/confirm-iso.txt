@@ -1,0 +1,32 @@
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-1/iso/skills/writing/agent-instructions/SKILL.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-1/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-1/iso/skills/writing/agent-instructions/references/review.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-1/iso/skills/writing/agent-instructions/references/ste-rules.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-1/iso/skills/writing/agent-instructions/references/technical-terms.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md
+   Rule: "In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. In each file, put each new pointer in a section, also a pointer whose condition you change. In the heading of that section, give the condition where the rule or the pointer is applicable, for example "Before a commit". If no heading gives that condition, add a heading. A topic heading, for example "Branches", gives no condition. (blocking)"
+   Text: "When a term is not in this section, find it in `references/technical-terms.md`."
+2. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md
+   Rule: "Put procedure steps in the sequence of the task, with the necessary conditions first. (blocking)"
+   Text: "In the edit job, before you write the report, read "When you recommend text to move" in `references/loading-rules.md`."
+3. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "Put procedure steps in the sequence of the task, with the necessary conditions first. (blocking)"
+   Text: "In a review round, start the 3 reviewers in one message."
+4. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "Put procedure steps in the sequence of the task, with the necessary conditions first. (blocking)"
+   Text: "For each of these findings, correct your text, or reject the finding."
+5. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "In each pointer, give the path of its target. Words such as "that file" give no path. (blocking)"
+   Text: "Also read the files that the pointers in these files identify."
+6. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md
+   Rule: "In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. In each file, put each new pointer in a section, also a pointer whose condition you change. In the heading of that section, give the condition where the rule or the pointer is applicable, for example "Before a commit". If no heading gives that condition, add a heading. A topic heading, for example "Branches", gives no condition. (blocking)"
+   Text: "Before a step with a risk"
+7. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md
+   Rule: "Write each pointer as a sentence that gives the file and the condition to read it. When the heading of a pointer gives the condition, also put the condition in the pointer. A pointer with no condition is a problem in the self-check. (blocking)"
+   Text: "Obey "When a word is not in the base list or in the glossary" in `technical-terms.md` for it."
+8. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: "In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. In each file, put each new pointer in a section, also a pointer whose condition you change. In the heading of that section, give the condition where the rule or the pointer is applicable, for example "Before a commit". If no heading gives that condition, add a heading. A topic heading, for example "Branches", gives no condition. (blocking)"
+   Text: "To find the text of a rule from its rule number, read `ste-rules.md`."
+9. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: "In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. In each file, put each new pointer in a section, also a pointer whose condition you change. In the heading of that section, give the condition where the rule or the pointer is applicable, for example "Before a commit". If no heading gives that condition, add a heading. A topic heading, for example "Branches", gives no condition. (blocking)"
+   Text: "The term "rule" has the meaning "a requirement in a text" in this list."
+10. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: "Write each pointer as a sentence that gives the file and the condition to read it. When the heading of a pointer gives the condition, also put the condition in the pointer. A pointer with no condition is a problem in the self-check. (blocking)"
+   Text: ""When you count words" in `ste-rules.md` tells when a colon stops a sentence"

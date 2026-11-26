@@ -1,0 +1,157 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Save each review report at the path that the reviewer prompt gives",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 399,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 399, \"review report\" names the report of a reviewer, but line 436 (\"from a reviewer report\") and line 442 (\"each reviewer report\") use \"reviewer report\" for the same item, and SKILL.md line 130 also uses \"reviewer reports\".",
+            "correction": "\"Save each reviewer report at the path that the reviewer prompt gives: `<report folder>/<file path>.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 16
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Start each review report with its title",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 421,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 421, \"review report\" names the report of a reviewer, but line 436 and line 442 use \"reviewer report\" for the same item.",
+            "correction": "\"Start each reviewer report with its title, for example \"Round 2: ASD-STE100 review, skills/x/SKILL.md\".\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 21
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "5.3",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a procedure or a rule",
+            "text": "Each finding gives one rule from the rule files and the text from the file in quotation marks.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 139,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 139, the reviewer prompt gives an instruction to the reviewer as a statement, not in the imperative.",
+            "correction": "\"In each finding, give one rule from the rule files and the text from the file in quotation marks.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 26
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/agent-skills-spec.md",
+            "heading": "When you write the body",
+            "text": "When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 434,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 434, the sentence sends the agent to `references/review.md`, which is the file that the agent reads at that time, so the reference adds no information and does not give the part of the file that tells how to reject a finding.",
+            "correction": "When a reviewer gives a finding, correct your text, or reject the finding as item 4 of \"During and after a review round\" tells you.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/loading/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 11
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "9.4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "run the report form for reader reports one time for the round",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 236,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 236, the step that runs the report form says \"one time\", but the same type of step on line 155 says \"run the report form of the check script once\", and SKILL.md line 130 says \"Run it once\".",
+            "correction": "\"Before you change a file of the round, run the report form for reader reports once for the round.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 31
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "9.4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Run each selected manual check 1 time",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 330,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 330, the step says \"1 time\", but the step directly after it on line 331 says \"correct the text one time\" for the same type of count.",
+            "correction": "\"Run each selected manual check one time, as \"When you run a manual check\" tells you.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 36
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Make a copy of the test project in a new folder that is not in the project",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 348,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 348, \"test project\" is a technical noun that is not in the glossary or in the base list, and the same sentence also uses the base-list term \"project\" for a different item.",
+            "correction": "\"Make a copy of the project that the `README.md` of the tests gives for the check in a new folder that is not in the project.\" Also add a warning that recommends a glossary entry for \"test project\", as \"When a technical noun is not in the base list or in the glossary\" in technical-terms.md tells you.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 41
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.1",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "For each step, write the part of the instruction that you used in quotation marks.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 429,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 429, \"in quotation marks\" can attach to \"used\" or to \"write\", so the sentence can tell the agent to quote only the parts that it used in quotation marks.",
+            "correction": "\"For each step, write in quotation marks the part of the instruction that you used.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 46
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "A reviewer also fails when its last message does not give the report path of each file in the round list.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 42,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 42 says that a reviewer fails when its last message does not give the report path of each file in the round list, but the reviewer prompt on lines 124 and 125 tells a new reviewer with the same report folder not to review a file that has a report and to give \"only the list of the saved paths\", so a correct new reviewer fails by line 42 and item 6 then makes the author do all later checks without subagents.",
+            "correction": "\"A reviewer also fails when, after its last message, its report folder does not have the report of each file in the round list.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 41
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 434,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 434 is in review.md and points to review.md with no section, and item 4 of \"During and after a review round\" on line 157 already tells the agent to correct the text or to reject the finding.",
+            "correction": "\"When a reviewer gives a finding, correct your text, or reject the finding as item 4 of \"During and after a review round\" tells you.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 46
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Give no list file in the `Changes:` line of the loading reviewer.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 61,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 61 changes the usual review round of 3 reviewers on line 21, but neither review.md nor `SKILL.md` step 8 tells why the loading reviewer gets no list file.",
+            "correction": "\"Give no list file in the `Changes:` line of the loading reviewer, because loading-rules.md gives no file-size limit and no text to move for a list file.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 51
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/review.md.md",
+            "blocking": 3,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+22a iso B: 1 no, 2 no
+22a iso A: 1 no, 2 no
+22b iso A: 1 no
+22a ste A: 1y 2y 3n 4n 5n 6n 7y 8y 9y 10y 11n 12n
+22b iso B: 1 no
+22a ste B: 1y 2y 3n 4y 5n 6n 7y 8y 9y 10y 11y 12y
+22a ste C: 4n 11n 12n  => 22a confirmed: ste 1,2,7,8,9,10; iso none
+22b ste B: 1y 2y 3y 4y 5y 6n 7n 8n 9y 10n
+22b ste A: 1y 2y 3y 4n 5y 6n 7n 8n 9y 10y
+22b ste C: 4y 10y => 22b confirmed: ste 1,2,3,4,5,9,10; iso none

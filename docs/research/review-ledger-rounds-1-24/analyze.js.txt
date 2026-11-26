@@ -1,0 +1,65 @@
+// usage: node analyze.js <round> <file rel to skill>...
+const fs = require("fs"),
+    cp = require("child_process");
+const R =
+    "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6";
+const S =
+    "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions";
+const n = process.argv[2];
+const files = process.argv.slice(3);
+const RD = `${R}/round-${n}`;
+const out = {};
+const reps = {};
+let adv = 0,
+    drop = 0;
+for (const f of files) {
+    const args = ["--reports", "--file", `${S}/${f}`];
+    for (const c of ["loading", "ste", "iso"]) {
+        const p = `${RD}/${c}/skills/writing/agent-instructions/${f}.md`;
+        if (fs.existsSync(p)) args.push(p);
+    }
+    const r = cp.spawnSync("node", [`${S}/scripts/check.ts`, ...args], {
+        encoding: "utf8",
+    });
+    if (r.status === 2) {
+        console.log("EXIT2", f, r.stderr);
+        continue;
+    }
+    fs.writeFileSync(`${RD}/reports-${f.replace(/\//g, "_")}.json`, r.stdout);
+    const j = JSON.parse(r.stdout);
+    adv += j.advisory.length;
+    drop += j.dropped.length;
+    for (const x of j.advisory)
+        console.log(`ADV ${f}:${x.line} | ${x.text.slice(0, 100)}`);
+    for (const x of j.blocking) {
+        const c = x.report.split(`round-${n}/`)[1].split("/")[0];
+        (out[c] = out[c] || []).push(x);
+        (reps[c] = reps[c] || new Set()).add(x.report);
+        const L = fs.readFileSync(x.report, "utf8").split("\n");
+        let i = x.reportLine - 1;
+        while (i >= 0 && !L[i].startsWith("- Rule:")) i--;
+        if (i < 0) {
+            i = x.reportLine - 1;
+            while (i < L.length && !L[i].startsWith("- Rule:")) i++;
+        }
+        x.full = (L[i] || "").replace(/^- Rule: /, "");
+    }
+}
+for (const c of Object.keys(out)) {
+    let s = "Reports: " + [...reps[c]].join(", ") + "\nFindings:\n";
+    out[c].forEach((x, i) => {
+        s += `${i + 1}. File: ${x.path}\n   Rule: ${x.full}\n   Text: "${x.text}"\n`;
+        console.log(
+            `${c.toUpperCase()}${i + 1} ${x.path.split("instructions/")[1]}:${x.line}\n  T: ${x.text}\n  P: ${x.problem}\n  C: ${x.correction}`,
+        );
+    });
+    fs.writeFileSync(`${RD}/confirm-${c}.txt`, s);
+}
+console.log(
+    "advisory",
+    adv,
+    "dropped",
+    drop,
+    "blocking",
+    Object.fromEntries(Object.entries(out).map(([k, v]) => [k, v.length])),
+);

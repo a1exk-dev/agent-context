@@ -1,0 +1,222 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A script compares each quotation with the files and removes each finding with a different quotation.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 140,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 140, the reviewer prompt calls the text that is copied word for word from a file a \"quotation\", but lines 217, 235, 238, 240, and 281 call the same item a \"quote\".",
+            "correction": "\"A script compares each quote with the files and removes each finding with a different quote.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 19
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Before the first check of each round, save a copy of each file that the round examines.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 400,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 400, \"each file that the round examines\" names the copies that line 55 calls \"a copy of each Markdown file of the review target\" and line 230 calls \"a copy of each file that the round tests\", and the words can also mean only the files of the round list (line 31), so the reader cannot know which files to copy.",
+            "correction": "\"Before the first check of each review round, save the copies that item 2 of \"Before each review round\" gives. Before the first check of each reader-test round, save the copies that item 6 of \"After the self-check: the reader test\" gives.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 24
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "5.3",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a procedure or a rule",
+            "text": "The self-check stops when a round passes, or after round 2.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 162,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 162, item 6 gives the instruction to stop the self-check as a statement, not in the imperative.",
+            "correction": "\"Stop the self-check when a round passes, or after round 2.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 29
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "5.3",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a procedure or a rule",
+            "text": "The main agent obeys this section.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 439,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 439, the instruction to the main agent and the next sentence \"A subagent obeys the limits in its prompt.\" are statements, not imperatives, although a reviewer subagent also reads this file as its report requirements.",
+            "correction": "\"When you are the main agent, obey this section. When you are a subagent, obey the limits in your prompt.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 34
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "9.4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Before you change a file of the round, run the report form of the check script once for each file in the round list.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 154,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 154, the step says \"once\", but the same type of step says \"one time\" in line 235 and \"1 time\" in line 329.",
+            "correction": "\"Before you change a file of the round, run the report form of the check script one time for each file in the round list.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 39
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "9.4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Run each selected manual check 1 time, as \"When you run a manual check\" tells you.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 329,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 329, the step says \"1 time\", but the same type of step says \"one time\" in lines 235 and 330, and \"once\" in line 154.",
+            "correction": "\"Run each selected manual check one time, as \"When you run a manual check\" tells you.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 44
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Make a copy of the test project in a new folder that is not in the project, for example with `mktemp -d`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 347,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 347, \"test project\" is not in the base list or in the glossary, and the file does not tell which folder it is.",
+            "correction": "\"Make a copy of the project folder that the check uses in a new folder that is not in the project, for example with `mktemp -d`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 49
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Save the screen text to the screen-text file in the round folder.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 356,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 356, \"screen-text file\" is not in the base list or in the glossary, and the file uses it with \"the\" before it gives the item.",
+            "correction": "\"Save the screen text to a file in the round folder.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 54
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Give their identifiers to the runner of the project, for example with `--ids 3,7`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 327,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 327, \"runner\" is not in the base list or in the glossary, but the base-list term \"script\" gives the same item.",
+            "correction": "\"Give their identifiers to the test script of the project, for example with `--ids 3,7`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 59
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.1",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Write each new or changed rule that no tested quote is from in the end-of-run report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 217,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 217, the words \"is from in the end-of-run report\" put the place of the action after a relative clause, so the sentence is not clear.",
+            "correction": "\"In the end-of-run report, write each new or changed rule that no tested quote comes from.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 64
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 433,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 433, the pointer identifies its own file, so `SKILL.md` line 111 points to `references/review.md` and this section points to `references/review.md` again with no section that gives the reject rules (item 4 of \"During and after a review round\", line 156).",
+            "correction": "\"When a reviewer gives a finding, do items 4 and 5 of \"During and after a review round\".\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 27
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 433,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 433, the bullet tells the author to correct or reject each finding, but item 5 of \"During and after a review round\" (line 157) tells the author not to correct some findings and to put them in a warning.",
+            "correction": "\"When a reviewer gives a finding, do items 4 and 5 of \"During and after a review round\".\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 32
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When you start the reviewers",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 59,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 59, the section of this level 2 heading continues to line 204 and contains \"### During and after a review round\" (line 151), \"### When a reviewer has blocking findings\" (line 166), and \"### After the last review round\" (line 195), whose rules are not applicable when you start the reviewers.",
+            "correction": "Change the 3 headings to level 2: \"## During and after a review round\", \"## When a reviewer has blocking findings\", and \"## After the last review round\".",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 37
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "A wrong step is confirmed when one or more of its confirmers answer \"yes\".",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 294,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 294, 1 \"yes\" confirms a wrong step, but line 174 needs 2 \"yes\" answers to confirm a blocking finding, and no file gives the cause of this difference.",
+            "correction": "\"A wrong step is confirmed when one or more of its confirmers answer \"yes\". <One short sentence that tells why 1 \"yes\" is enough for a wrong step.>\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 42
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "After a correction for a failed manual check, run that check 2 times.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 333,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 333, an output test runs again 1 time but a manual check runs again 2 times, and no file gives the cause of this difference.",
+            "correction": "\"After a correction for a failed manual check, run that check 2 times, because <one short cause, for example that the result of an interactive session can change between runs>.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 47
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Give no list file in the `Changes:` line of the loading reviewer.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 71,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 71, the rule removes a reviewer class for a list file, but neither this file nor `SKILL.md` lines 22 and 103 give the cause.",
+            "correction": "\"Give no list file in the `Changes:` line of the loading reviewer, because <one short cause, for example that the loading rules give a list file no file-size limit>.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 52
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/review.md.md",
+            "blocking": 4,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

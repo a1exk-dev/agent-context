@@ -1,0 +1,26 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When you write this item, find the known cases in that table.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 48,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 48, the pointer tells the agent when to read the table, but it gives \"that table\" and no path, so the pointer sentence alone does not identify `SKILL.md`.",
+            "correction": "When you write this item, find the known cases in the table in \"When two sources do not agree\" in `SKILL.md`.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-4/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 21
+        }
+    ],
+    "advisory": [],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-4/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

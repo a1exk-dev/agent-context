@@ -1,0 +1,23 @@
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/ste/skills/writing/agent-instructions/SKILL.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/ste/skills/writing/agent-instructions/references/review.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md
+   Rule: 1.11 "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "If the file that you write or edit is a Skill, also read `references/agent-skills-spec.md`."
+2. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md
+   Rule: 4.2 "Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)"
+   Text: "Each text that only the check script examined: a correction after review round 2, and each later correction when you did 2 review rounds."
+3. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md
+   Rule: GR-3 and GR-4 "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "Each selected manual check that you did not run, with its cause."
+4. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md
+   Rule: GR-2 "When "with" can have two meanings in a sentence, write a different sentence (GR-2). (blocking)"
+   Text: "Do not use the word of a glossary term with a different meaning."
+5. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md
+   Rule: GR-3 and GR-4 "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "They are not applicable to text for persons"
+6. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: 4.2 "Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)"
+   Text: "An example is quoted text."
+7. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: 4.2 "Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)"
+   Text: "Examples are a subagent and an output test of this skill."

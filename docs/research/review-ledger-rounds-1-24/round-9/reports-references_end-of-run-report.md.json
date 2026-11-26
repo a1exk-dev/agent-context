@@ -1,0 +1,59 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A file type that is not correct for the text, also when you found that file type during the edit job.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 50,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 50, the technical noun \"file type\" is not in the base list of technical-terms.md, not in the glossary, and not in \"Terms in this skill\" of SKILL.md.",
+            "correction": "Recommend a glossary entry or a term in \"Terms in this skill\", for example \"**file type**: the type of an Agent instruction, for example an entry file, a Skill, a reference file, or a Rule\". Until approval, keep the text and add a warning.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 21
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "An entry-file layout that gives no copy of the text to a target platform.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 51,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 51, the technical noun \"entry-file layout\" is not in the base list of technical-terms.md, not in the glossary, and not in \"Terms in this skill\" of SKILL.md.",
+            "correction": "\"A set of entry files that gives no copy of the text to a target platform.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 26
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When you write the report, compare it with each reviewer report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 9,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md, line 9 (step 3) writes the condition of the heading \"When you write the end-of-run report\" (line 3) again, and this sentence is not a pointer.",
+            "correction": "\"Compare the report with each reviewer report.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 28
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "When you write this item, find these findings in item 5 of \"During and after a review round\" in `references/review.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 38,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md, line 38 sends the agent only to item 5, but item 4 of \"During and after a review round\" in references/review.md (line 156) also tells the agent to put each script finding about text that it cannot edit in a warning, and no item of the Warnings list on lines 36 to 56 gives that warning.",
+            "correction": "\"When you write this item, find these findings in items 4 and 5 of \"During and after a review round\" in `references/review.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 33
+        }
+    ],
+    "dropped": [],
+    "confirm": []
+}

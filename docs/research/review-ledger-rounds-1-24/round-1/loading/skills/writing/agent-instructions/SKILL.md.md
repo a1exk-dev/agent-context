@@ -1,0 +1,20 @@
+Blocking checklist:
+1. "When the write job has Claude Code and Codex or OpenCode as target platforms, put the text for all target platforms in `AGENTS.md`. `CLAUDE.md` then contains the `@AGENTS.md` line and only the lines that are only for Claude Code. (blocking)" - none
+2. "When there is one target platform, write only the entry file of that platform. (blocking)" - none
+3. "Keep the heading of the section at the start of the moved section. In its old place, write a heading that gives the condition. Under that heading, write the pointer as "When you put the text in sections and lists" in `plain-language-rules.md` tells you. Write no other text in the old place, also when a finding is about the moved section. (blocking)" - none
+
+File size:
+- skills/writing/agent-instructions/SKILL.md: 17,938 bytes. Limit: a maximum of 20,000 bytes (loading-rules.md, "When you examine the file size").
+- skills/writing/agent-instructions/SKILL.md: 151 lines. Limit: less than 500 lines (agent-skills-spec.md, tier 4).
+
+Findings:
+
+- Rule: "Each section that has a specified condition and 3 or more rules. Move such a section also when the condition can occur at each step. The agent then reads its rules only when the condition occurs. A section has a specified condition when its heading or a sentence at its start gives the condition. Examples are the heading "Before a release" and the sentence "Obey the rules in this section only when the user asks for a deploy." Count each instruction as one rule, also when one sentence or one list item gives 2 or more instructions. The number of rules does not change when you write them in fewer sentences. For example, "stop, keep the branch, and tell the user" gives 3 rules. (advisory)"
+- Text: "When two sources do not agree"
+- Problem: In skills/writing/agent-instructions/SKILL.md, lines 61-85, the section has the specified condition "When two sources do not agree" and more than 3 rules ("Obey the higher tier", the 8 decisions of the table, "use the tier sequence", "Write a warning"), and it is not a numbered step list, a term list, or a pointer, so the write-job list tells you to move it.
+- Correction: Move the section with its heading to `references/source-conflicts.md`. In its old place, write the heading "When two sources do not agree" and only this pointer: "When two sources do not agree, read `references/source-conflicts.md`." Then change the pointer in `references/end-of-run-report.md`, line 48, to name `references/source-conflicts.md`.
+
+- Rule: "Each section that has a specified condition and 3 or more rules. Move such a section also when the condition can occur at each step. The agent then reads its rules only when the condition occurs. A section has a specified condition when its heading or a sentence at its start gives the condition. Examples are the heading "Before a release" and the sentence "Obey the rules in this section only when the user asks for a deploy." Count each instruction as one rule, also when one sentence or one list item gives 2 or more instructions. The number of rules does not change when you write them in fewer sentences. For example, "stop, keep the branch, and tell the user" gives 3 rules. (advisory)"
+- Text: "When you run the check script"
+- Problem: In skills/writing/agent-instructions/SKILL.md, lines 113-147, the section has the specified condition "When you run the check script" and more than 3 rules (for example "Run it with `node`", "Replace `<skill folder>`", "Save the output to a new file", "stop the self-check and the reader test", "Run it once for each file of the round"), and it is not a numbered step list, a term list, or a pointer, so the write-job list tells you to move it.
+- Correction: Move the section with its heading to `references/check-script.md`. In its old place, write the heading "When you run the check script" and only this pointer: "When you run the check script, read `references/check-script.md`." Then change each reference to "When you run the check script" in `SKILL.md` in `references/review.md` so that it names `references/check-script.md`.

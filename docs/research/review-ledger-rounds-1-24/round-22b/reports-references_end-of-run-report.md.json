@@ -1,0 +1,71 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.2",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Each text that only the check script examined: a correction after review round 2, and each later correction when you did 2 review rounds.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 44,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 44, the words \"the text that ... changed\" are omitted, so the sentence gives \"a correction\" (an action) as a text, but line 45 and review.md line 204 use \"text that a correction changed\" for the same item.",
+            "correction": "\"Each text that only the check script examined: the text that a correction after review round 2 changed, and the text that each later correction changed when you did 2 review rounds.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 20
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "If \"When you recommend text to move\" in `references/loading-rules.md` gives that section, add it to the Extraction candidates part.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 64,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 64, the heading and this pointer do not give the condition to read the target, because the condition \"If ... gives that section\" is known only after the agent reads the target, and the previous sentence \"A reviewer other than the loading reviewer can tell you to move text in an unchanged part.\" states a possibility, not a condition.",
+            "correction": "\"When a reviewer other than the loading reviewer tells you to move text in an unchanged part, find the section of that text. Then read \"When you recommend text to move\" in `references/loading-rules.md`. If that section of `references/loading-rules.md` gives the section of that text, add the section of that text to the Extraction candidates part.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 25
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When you write the report, compare it with each reviewer report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 9,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 9, the condition \"When you write the report\" repeats the condition of the heading \"When you write the end-of-run report\" on line 3, and step 2 on line 8 already tells the agent to write the report.",
+            "correction": "\"Compare the report with each reviewer report.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 30
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "When no user was available to answer, give the question with its 3 answers. Then write that the change did not pass.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 36,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 36, these 2 sentences give again the rules of the pointer target \"When a blocking problem stays open at a limit\" in skills/writing/agent-instructions/references/review.md line 383, and the same item already points to that section.",
+            "correction": "Remove the 2 sentences. Keep \"Each blocking problem that stayed open at a limit, with the question to the user and the answer. When you write this item, find these problems in \"When a blocking problem stays open at a limit\" in `references/review.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 35
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        },
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

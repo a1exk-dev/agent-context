@@ -1,0 +1,53 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "GR-3 and GR-4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "It looks almost the same as a typical task, but the new or changed rules do not change it.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 215,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 215 (\"After the self-check: the reader test\"), the last \"it\" can refer to \"a typical task\", the nearest noun, or to the out-of-scope task, and only the out-of-scope task gives the correct meaning.",
+            "correction": "\"It looks almost the same as a typical task, but the new or changed rules do not change the out-of-scope task.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-10/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 17
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "GR-3 and GR-4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "It uses the same file, words, or condition as these rules, but these rules are not applicable to it.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 215,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 215 (\"After the self-check: the reader test\"), the last \"it\" can refer to \"a typical task\" in the sentence before it or to the out-of-scope task.",
+            "correction": "\"It uses the same file, words, or condition as these rules, but these rules are not applicable to the out-of-scope task.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-10/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 22
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.1",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Write each new or changed rule that no tested quote is from in the end-of-run report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 217,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 217 (\"After the self-check: the reader test\"), the phrase \"is from in the end-of-run report\" is not clear, because \"in the end-of-run report\" can attach to \"is from\" or to \"Write\".",
+            "correction": "\"In the end-of-run report, write each new or changed rule that no tested quote is from.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-10/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 27
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-10/ste/skills/writing/agent-instructions/references/review.md.md",
+            "blocking": 2,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

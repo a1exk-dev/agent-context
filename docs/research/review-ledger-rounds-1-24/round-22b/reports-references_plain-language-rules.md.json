@@ -1,0 +1,115 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "GR-2",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Put procedure steps in the sequence of the task, with the necessary conditions first.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 32,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 32, \"with the necessary conditions first\" can mean that each condition comes before its step, or that the steps that have conditions come before the other steps.",
+            "correction": "\"Put procedure steps in the sequence of the task. Write each necessary condition before the step that it limits.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 19
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "5.3",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a procedure or a rule",
+            "text": "A rule with no condition is permitted only when it is applicable to all tasks for its file.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 17,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 17, this sentence gives an instruction to the author as a statement, not in the imperative.",
+            "correction": "\"Write a rule with no condition only when the rule is applicable to all tasks for its file.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 24
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Use the level of the other condition headings.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 35,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 35, \"condition headings\" is a technical noun that is not in the base list, not in the glossary, and not in \"Terms in this skill\" of SKILL.md, and the same file elsewhere writes \"a heading that gives the condition\".",
+            "correction": "\"Use the level of the other headings that give a condition.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 29
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.1",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Put each template and each command of more than one line in a code block.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 38,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 38, \"of more than one line\" can apply only to \"each command\" or also to \"each template\", so the reader does not know if a template of one line goes in a code block.",
+            "correction": "\"Put each template in a code block. Also put each command of more than one line in a code block.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 34
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.1",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Examine only the rules that you add or change for these cases.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 27,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 27, \"for these cases\" can apply to \"Examine\" or to \"add or change\", so the reader does not know which rules to examine.",
+            "correction": "\"Examine only the rules that you add or change. For each of these rules, examine if one of these cases is applicable.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 39
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.1",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Make no changes for a person.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 15,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 15, \"Make no changes for a person\" is a general statement that does not tell which text the author must not add or change.",
+            "correction": "\"Do not add text that only a person needs, for example background text or a welcome sentence.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 44
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "When the user tells you that an agent did not obey an instruction, make one typical task of the reader test from that problem.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 65,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 65, the sentence gives the same instruction as skills/writing/agent-instructions/references/review.md line 215 (\"If the user told you that an agent did not obey an instruction, make one task from that problem.\"), and review.md is the pointer target of line 62, which the agent reads before the reader test.",
+            "correction": "\"After agents use the file, the edit job examines the text again.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 33
+        }
+    ],
+    "dropped": [
+        {
+            "rule": "\"Add one short cause to a rule in each of these cases:\" \"The rule changes the usual work of the agent. (advisory)\"",
+            "text": "\"Put the pointer to each pointer target in the first file that the agent reads, for example the entry file or the `SKILL.md` file. Make no sequences of pointers. (advisory)\"",
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 45, the changed rule tells the agent not to put a pointer in a pointer target, which changes the usual work of an agent that adds a pointer where it writes the text, but the rule and its pointer targets give no cause.",
+            "correction": "\"Put the pointer to each pointer target in the first file that the agent reads, for example the entry file or the `SKILL.md` file. Make no sequences of pointers, because an agent does not always read the target of a pointer in a pointer target. (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 28,
+            "reason": "The Rule quote is in no rule file."
+        }
+    ],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "blocking": 2,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

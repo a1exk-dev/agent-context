@@ -1,0 +1,98 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/agent-skills-spec.md",
+            "heading": "When you write the body",
+            "text": "Put a value that contains `: ` in quotation marks. You can also start the value on the next line after `|` or `>`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 20,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md line 20, the rule gives 3 alternative methods for a value with `: `, but line 21 permits only `name` and `description`, and line 24 tells the agent to write `description` as one line in quotation marks, so the `|` and `>` alternatives disagree with the recommended method.",
+            "correction": "\"Put a value that contains `: ` in quotation marks.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/loading/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 16
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "tasks that look almost the same as Skill tasks",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 56,
+            "problem": "In skills/writing/agent-instructions/references/agent-skills-spec.md line 56, \"Skill tasks\" is a multi-word noun that is not in the glossary or in the base list, and the sentence can use the noun \"task\" with \"of the Skill\".",
+            "correction": "\"Tier 4: Tell the agent not to use the Skill for tasks that look almost the same as the tasks of the Skill. (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 23
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A Skills folder of the project is a folder from this table that the project has.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 73,
+            "problem": "In skills/writing/agent-instructions/references/agent-skills-spec.md lines 11 and 73, \"Skills folder\" is a technical noun that is not in the glossary or in the base list, and it is almost the same as \"Skill folder\" in SKILL.md line 15, which is the folder of one Skill.",
+            "correction": "Keep the noun and add a warning that recommends a glossary entry, for example \"**Skills folder**: A folder from which a platform loads Skills, for example `.claude/skills/`. A Skills folder is not the folder of one Skill.\" Until the user gives approval, write \"the folder of the project that a platform loads Skills from\".",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/ste/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 28
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "If the user tells you to write a field that is not permitted, do not write it.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 23,
+            "problem": "Line 23 of skills/writing/agent-instructions/references/agent-skills-spec.md tells the agent not to write a field that is not permitted, but line 31 of the pointer target skills/writing/agent-instructions/references/loading-rules.md tells the agent to write \"frontmatter that only Claude Code reads\" when the user tells it clearly, so for a Skill field such as one that only Claude Code reads, the two tier 1 rules do not agree and the agent cannot know which rule to obey.",
+            "correction": "\"Tier 1: If the user tells you to write a field that is not permitted, do not write it. This rule replaces \"When you select a feature\" in `loading-rules.md` for the frontmatter of a Skill. Add a warning that gives the field and the error. (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 25
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "Exception: in a Manual-only Skill, also write `disable-model-invocation: true`, because Claude Code and OpenCode 2 read it.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 21,
+            "problem": "Line 21 of skills/writing/agent-instructions/references/agent-skills-spec.md tells that `disable-model-invocation` gives an error in `skills-ref validate`, and line 65 of skills/writing/agent-instructions/SKILL.md puts each item that `skills-ref validate` examines in tier 1, but the tier 1 exception in lines 18 and 21 tells the agent to write that field, so the agent cannot know whether the error of `skills-ref validate` for a Manual-only Skill is a problem.",
+            "correction": "\"Exception: in a Manual-only Skill, also write `disable-model-invocation: true`, because Claude Code and OpenCode 2 read it. This exception is applicable also when `skills-ref validate` gives an error for this field.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 30
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "Tier 4: Move long text to files in the folder of the Skill or in a folder directly in the folder of the Skill.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 63,
+            "problem": "Line 63 of skills/writing/agent-instructions/references/agent-skills-spec.md permits a reference file directly in the folder of the Skill, but item 4 on line 67 of the pointer target skills/writing/agent-instructions/references/loading-rules.md tells the agent to put a reference file of a Skill in `<skill>/references/<name>.md`, so the two files give different places.",
+            "correction": "\"Tier 4: Move long text to reference files, as \"When the write job makes a SKILL.md or entry-file text\" in `loading-rules.md` tells you. For each file, tell when to read it. (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 35
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "If the project has 2 or more of these folders, or none of these folders, ask the user one time which folder to use.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 73,
+            "problem": "Line 73 of skills/writing/agent-instructions/references/agent-skills-spec.md puts a sequence of steps (find the target platforms, select the folder, ask the user, add a warning) and a \"Tier 1:\" rule in one paragraph that ends with one \"(advisory)\" mark, so the agent cannot see the sequence or which mark applies to each rule.",
+            "correction": "\"Each platform loads Skills from the folders in the table after this list. When the target platforms include Claude Code and Codex, no single folder is applicable to all target platforms.\n  1. Before you select the Skills folder of the project, find the target platforms as `loading-rules.md` tells you.\n  2. Tier 1: When the target platforms include Claude Code and Codex, use the Skills folder of the project. A Skills folder of the project is a folder from the table that the project has. A `.claude/` folder without a `skills/` folder is not a Skills folder. (advisory)\n  3. If the project has 2 or more of these folders, or none of these folders, ask the user one time which folder to use. (advisory)\n  4. For each Skill that you write for these target platforms, add a warning that gives the platform that does not load the Skill. (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22b/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 40
+        }
+    ],
+    "dropped": [],
+    "confirm": []
+}

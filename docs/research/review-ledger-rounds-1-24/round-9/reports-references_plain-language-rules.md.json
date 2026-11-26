@@ -1,0 +1,69 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Use the level of the other condition headings.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 35,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 35, the multi-word noun \"condition headings\" is not in the base list of technical-terms.md and not in the glossary, and line 33 names the same item \"the heading of that section\" that gives \"the condition\".",
+            "correction": "\"Use the level of the other headings that give a condition.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 23
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "During the write job or the edit job, the self-check examines the text.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 63,
+            "problem": "Line 63 of skills/writing/agent-instructions/references/plain-language-rules.md gives a fact that the pointer target SKILL.md (pointer on line 11) already gives in its term \"self-check\" on line 34 and in step 8 on line 103.",
+            "correction": "Remove the sentence.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 33
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "After the self-check, new reader subagents examine the text in the reader test.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 64,
+            "problem": "Line 64 of skills/writing/agent-instructions/references/plain-language-rules.md gives a fact that the pointer target SKILL.md (pointer on line 11) already gives on line 35: \"The **reader test** is a dry run of 3 tasks by new reader subagents after the self-check.\"",
+            "correction": "Remove the sentence.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 38
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "When the user tells you that an agent did not obey an instruction, make one typical task of the reader test from that problem.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 65,
+            "problem": "Line 65 of skills/writing/agent-instructions/references/plain-language-rules.md gives an instruction that the pointer target review.md (pointer on line 62) already gives in item 1 of \"After the self-check: the reader test\" on line 214.",
+            "correction": "Remove the sentence.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 43
+        }
+    ],
+    "dropped": [
+        {
+            "rule": "\"Add one short cause to a rule in each of these cases:\" \"The rule is not usual for the agent. (advisory)\"",
+            "text": "\"Put the pointer to each pointer target in the first file that the agent reads, for example the entry file or the `SKILL.md` file.\"",
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 45, the changed rule tells the author not to make pointers from a pointer target, which is not usual for an agent, but the rule gives no cause, and the table row in SKILL.md line 79 gives only a decision.",
+            "correction": "\"Put the pointer to each pointer target in the first file that the agent reads, for example the entry file or the `SKILL.md` file. An agent can read only a part of a file that a different pointer target identifies.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-9/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 28,
+            "reason": "The Rule quote is in no rule file."
+        }
+    ],
+    "confirm": []
+}

@@ -1,0 +1,72 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "When a reference file refers to a different reference file that `SKILL.md` also points to, give the file name.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 79,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 79 (section \"When two sources do not agree\"), one sentence uses the two verbs \"refers to\" and \"points to\" for the same item, a pointer from one file to a reference file, and lines 18 and 31 of the same file use \"identify\" for that item.",
+            "correction": "When a reference file has a pointer to a different reference file, and `SKILL.md` also has a pointer to that file, give the file name.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 16
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "For a list file, start no loading reviewer in the self-check.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 103,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 103 (step 8), this changed rule removes one of the 3 reviewers that the self-check usually starts, but no file gives the cause (references/review.md line 71 gives the same rule without a cause).",
+            "correction": "\"For a list file, start no loading reviewer in the self-check, because <the cause>.\" If no file and no user gives the cause, add a warning.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 29
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "In a review round, the first 2 confirmers of a reviewer get all blocking findings of that reviewer. A third confirmer gets only the findings with one \"yes\" and one \"no\".",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 27,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 27, these 2 sentences copy the procedure of items 1 to 4 of \"When a reviewer has blocking findings\" in references/review.md, which the agent reads before the self-check (step 8, line 103).",
+            "correction": "Remove the 2 sentences. Keep \"A **confirmer** is a new subagent that answers \"yes\" or \"no\", with one sentence, for each problem in its prompt.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 34
+        }
+    ],
+    "dropped": [
+        {
+            "rule": "loading-rules.md, \"When the write job makes a SKILL.md or entry-file text\", item 1: \"Each section that has a specified condition and 3 or more rules. Move such a section also when the condition can occur at each step. The agent then reads its rules only when the condition occurs. A section has a specified condition when its heading or a sentence at its start gives the condition. Examples are the heading \"Before a release\" and the sentence \"Obey the rules in this section only when the user asks for a deploy.\" Count each instruction as one rule, also when one sentence or one list item gives 2 or more instructions. The number of rules does not change when you write them in fewer sentences. For example, \"stop, keep the branch, and tell the user\" gives 3 rules. (advisory)\"",
+            "text": "\"When two sources do not agree\"",
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md, lines 61-85, the section has a specified condition in its heading and more than 3 rules (\"Obey the higher tier\", the 8 decisions of the table, and \"Write a warning that gives the case and the tier that you obeyed\"), and it is not numbered steps, terms, or pointers, so item 1 of \"When the edit job changes a SKILL.md or an entry file\" tells you to move it.",
+            "correction": "Move the section, with its heading, to `references/source-conflicts.md`. In its old place in `SKILL.md`, write \"## When two sources do not agree\" and under it \"When two sources do not agree, read `references/source-conflicts.md`.\" Then change the pointers to this section in step 5 of `SKILL.md` and in the Warnings part of `references/end-of-run-report.md` (line 48) so that they give `references/source-conflicts.md`.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/loading/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 11,
+            "reason": "The Rule quote is in no rule file."
+        },
+        {
+            "rule": "loading-rules.md, \"When the write job makes a SKILL.md or entry-file text\", item 1: \"Each section that has a specified condition and 3 or more rules. Move such a section also when the condition can occur at each step. The agent then reads its rules only when the condition occurs. A section has a specified condition when its heading or a sentence at its start gives the condition. Examples are the heading \"Before a release\" and the sentence \"Obey the rules in this section only when the user asks for a deploy.\" Count each instruction as one rule, also when one sentence or one list item gives 2 or more instructions. The number of rules does not change when you write them in fewer sentences. For example, \"stop, keep the branch, and tell the user\" gives 3 rules. (advisory)\"",
+            "text": "\"When you run the check script\"",
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md, lines 113-147, the section has a specified condition in its heading and more than 3 rules, for example \"Run it with `node`\", \"Replace `<skill folder>` with the absolute path\", \"Save the output to a new file\", \"stop the self-check and the reader test\", \"Run it once for each file of the round\", and \"Start no confirmers for a reviewer that has no report in a confirm list\", so item 1 of \"When the edit job changes a SKILL.md or an entry file\" tells you to move it.",
+            "correction": "Move the section, with its heading and its 3 code blocks, to `references/check-script.md`. In its old place in `SKILL.md`, write \"## When you run the check script\" and under it \"The check script requires Node.js 22.18 or later. When you run the check script, read `references/check-script.md`.\" Then change each pointer to \"When you run the check script\" in `SKILL.md` in `references/review.md` (lines 56, 154, 200, 235, and 446) so that it gives `references/check-script.md`.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/loading/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 16,
+            "reason": "The Rule quote is in no rule file."
+        }
+    ],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

@@ -1,0 +1,46 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "One item in an issue tracker",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 75,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md line 75, the technical noun \"issue tracker\" is not in the base list and not in /Users/alexk/Projects/agent-context/GLOSSARY.md.",
+            "correction": "\"One item in a system that records the issues of a project\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "reportLine": 19
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Text between two fence lines in Markdown",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 84,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md line 84, the technical noun \"fence lines\" is not in the base list and not in /Users/alexk/Projects/agent-context/GLOSSARY.md.",
+            "correction": "\"Text between two lines that start with three backticks in Markdown\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "reportLine": 24
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Send commits to a remote repository",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 171,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md line 171, the technical noun \"remote repository\" is not in the base list and not in /Users/alexk/Projects/agent-context/GLOSSARY.md.",
+            "correction": "\"Send commits to a repository on a different computer\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "reportLine": 29
+        }
+    ],
+    "dropped": [],
+    "confirm": []
+}

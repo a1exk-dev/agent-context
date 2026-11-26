@@ -1,0 +1,14 @@
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/references/ste-rules.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/references/technical-terms.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md
+   Rule: "In each pointer, give the path of its target. Words such as "that file" give no path. (blocking)"
+   Text: "When you write this item, find the known cases in that table."
+2. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md
+   Rule: "Write each pointer as a sentence that gives the file and the condition to read it. When the heading of a pointer gives the condition, also put the condition in the pointer. A pointer with no condition is a problem in the self-check. (blocking)"
+   Text: "Obey "When a word is not in the base list or in the glossary" in `technical-terms.md` for it."
+3. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: "In reference files, `docs/agents/` files, and files that load in each session, put each rule in a section. In each file, put each new pointer in a section, also a pointer whose condition you change. In the heading of that section, give the condition where the rule or the pointer is applicable, for example "Before a commit". If no heading gives that condition, add a heading. A topic heading, for example "Branches", gives no condition. (blocking)"
+   Text: "in `ste-rules.md` tells when a colon stops a sentence"
+4. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: "Write each pointer as a sentence that gives the file and the condition to read it. When the heading of a pointer gives the condition, also put the condition in the pointer. A pointer with no condition is a problem in the self-check. (blocking)"
+   Text: "in `ste-rules.md` tells when a colon stops a sentence"

@@ -1,0 +1,95 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "When you find the target platforms, examine the project files for these signals:",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 11,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, line 11 (and lines 13 and 19), the technical noun \"signal\" is not in the glossary or in the base list of technical-terms.md.",
+            "correction": "Keep the text, and add a warning that recommends a glossary entry for \"signal\": \"A file or a folder of the project that shows a target platform.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/ste/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 20
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "If the layout gives no copy of the text to a target platform, add a warning.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 37,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md, line 37, the technical noun \"layout\" is not in the glossary or in the base list of technical-terms.md.",
+            "correction": "If the entry files give no copy of the text to a target platform, add a warning.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/ste/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 25
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When you find the target platforms, examine the project files for these signals:",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 11,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md line 11, the sentence writes again the condition of its heading \"When you find the target platforms\" (line 9).",
+            "correction": "\"Examine the project files for these signals:\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 23
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "For a Rule, use the file-size limit and the extraction recommendation of the entry file that contains its text.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 100,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md line 100, the sentence tells the agent to recommend text of a Rule to move, but lines 56 and 75 tell the agent \"Do not move text from a Rule.\"",
+            "correction": "\"For a Rule, use the file-size limit of the entry file that contains its text. Give no extraction candidate in a Rule.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 28
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "After you move the text, examine the file size.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 71,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md line 71, a paragraph gives steps in a sequence (examine the file size, move sections, move the largest section first, stop, add a warning), not a numbered list.",
+            "correction": "\"After you move the text, do these steps: 1. Examine the file size. 2. If the file is more than a limit in \"When you examine the file size\", move more sections that have a specified condition. Move the largest section first. 3. When the file is not more than each limit, stop. 4. If the file is still more than a limit, add a warning. (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 38
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "The STE rules and the plain-language rules are also applicable to these files.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md",
+            "line": 100,
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md line 100, the sentence gives a fact that the pointer target SKILL.md already gives: line 17 makes the glossary, `MEMORY.md`, and Rules Agent instructions, and step 7 (line 102) tells the agent to read and obey the STE rules and the plain-language rules for each Agent instruction.",
+            "correction": "Remove the sentence. Keep \"For a Rule, use the file-size limit and the extraction recommendation of the entry file that contains its text. The Agent Skills specification is not applicable to a Rule. (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 43
+        }
+    ],
+    "dropped": [
+        {
+            "rule": "\"Add one short cause to a rule in each of these cases:\" - \"The rule is not usual for the agent. (advisory)\"",
+            "text": "\"Do not move text from a Rule.\"",
+            "problem": "In skills/writing/agent-instructions/references/loading-rules.md lines 56 and 75, the rule stops a usual move of text, and no file gives the cause.",
+            "correction": "\"Do not move text from a Rule, because the project copies the full text of a Rule into `AGENTS.md` or `CLAUDE.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/references/loading-rules.md.md",
+            "reportLine": 33,
+            "reason": "The Rule quote is in no rule file."
+        }
+    ],
+    "confirm": []
+}

@@ -1,0 +1,5 @@
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-2/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md
+   Rule: 4.2 "Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)"
+   Text: "Put a pointer to each pointer target directly in the file that has the pointer."

@@ -1,0 +1,118 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "The tier 1 rule is a loading rule of Codex.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 28,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md line 28, the singular term \"The tier 1 rule\" identifies one item, but the section has 2 tier 1 rules (line 41 and line 42), so the reader cannot know which rule the term identifies.",
+            "correction": "\"The tier 1 rules are loading rules of Codex.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 19
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "If the user tells you to write a field that is not permitted, do not write it.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 23,
+            "problem": "Line 23 of skills/writing/agent-instructions/references/agent-skills-spec.md tells the agent not to write a field that is not permitted, also when the user asks, but the pointer target loading-rules.md line 31 tells the agent to write a feature that only one platform reads when the user tells it clearly, and line 27 of loading-rules.md includes \"frontmatter that only Claude Code reads\" in that list, so the two files give opposite actions for a user request for a Claude Code frontmatter field.",
+            "correction": "\"Tier 1: If the user tells you to write a field that is not permitted, do not write it, also when only one platform reads the field. Add a warning that gives the field and the error. This rule replaces the rule for one-platform features in `loading-rules.md` for frontmatter fields. (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 19
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "The tier 1 rule is a loading rule of Codex.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 28,
+            "problem": "Line 28 of skills/writing/agent-instructions/references/agent-skills-spec.md tells of one tier 1 rule in the section, but the section has 2 tier 1 rules, on line 41 and line 42.",
+            "correction": "\"The tier 1 rules are loading rules of Codex.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 24
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "A field that is not in the list of permitted fields, for example `disable-model-invocation`, also gives an error in `skills-ref validate`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 21,
+            "problem": "Line 21 of skills/writing/agent-instructions/references/agent-skills-spec.md calls `disable-model-invocation` a field that is not permitted, but line 18 and line 21 permit it in a Manual-only Skill, and line 23 tells the agent not to write a field that is not permitted, so the agent cannot know which rule to obey for a Manual-only Skill or whether to add a warning about the `skills-ref validate` error.",
+            "correction": "\"Each other field, also `disable-model-invocation`, gives an error in `skills-ref validate`. Exception: in a Manual-only Skill, also write `disable-model-invocation: true`, because Claude Code and OpenCode 2 read it. Then add a warning that `skills-ref validate` gives an error for this field.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 29
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "When the user gives text for the description, keep the meaning of that text.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 50,
+            "problem": "Line 3 of skills/writing/agent-instructions/references/agent-skills-spec.md tells that each rule starts with its tier, but the rule on line 50 has no tier, so the agent cannot know which tier to obey when this rule and a different rule do not agree.",
+            "correction": "\"- Tier 4: When the user gives text for the description, keep the meaning of that text. (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 34
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "Select the Skills folder of the project first, as the section \"When you select the Skills folder of the project\" tells you.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 11,
+            "problem": "Line 3 of skills/writing/agent-instructions/references/agent-skills-spec.md tells that each rule starts with its tier, but the instruction on line 11 has no tier.",
+            "correction": "\"Tier 1: Select the Skills folder of the project first, as the section \"When you select the Skills folder of the project\" tells you.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 39
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Tier 1: When the target platforms include Claude Code and Codex, use the Skills folder of the project.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 73,
+            "problem": "Line 73 of skills/writing/agent-instructions/references/agent-skills-spec.md puts steps in a sequence (find the target platforms, select the folder, ask the user, add a warning) in one paragraph, with the tier mark in the middle and one \"(advisory)\" mark at the end for all steps.",
+            "correction": "\"1. Find the target platforms as `loading-rules.md` tells you. 2. Tier 1: When the target platforms include Claude Code and Codex, use the Skills folder of the project. (advisory) 3. If the project has 2 or more of these folders, or none of these folders, ask the user one time which folder to use. (advisory) 4. For each Skill that you write for these target platforms, add a warning that gives the platform that does not load the Skill. (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 44
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "If the project has 2 or more of these folders, or none of these folders, ask the user one time which folder to use.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md",
+            "line": 73,
+            "problem": "Line 73 of skills/writing/agent-instructions/references/agent-skills-spec.md does not tell when to ask this question, but the pointer target SKILL.md step 2 (line 92) tells the agent to ask about all paths in one question before it writes text and not to stop the job for a question after it starts to write text.",
+            "correction": "\"If the project has 2 or more of these folders, or none of these folders, ask the user which folder to use in the question of step 2 in `SKILL.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/iso/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "reportLine": 49
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-17/ste/skills/writing/agent-instructions/references/agent-skills-spec.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

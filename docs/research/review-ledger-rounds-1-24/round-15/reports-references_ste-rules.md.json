@@ -1,0 +1,63 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Obey \"When a technical noun is not in the base list or in the glossary\" in `technical-terms.md` for it.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 54,
+            "problem": "In skills/writing/agent-instructions/references/ste-rules.md line 54, the pointer gives its condition only through the pronoun \"it\" from the previous sentence, and the heading \"When you write a sentence\" does not give the condition to read technical-terms.md.",
+            "correction": "\"When you write a multi-word noun with a glossary term, obey \"When a technical noun is not in the base list or in the glossary\" in `technical-terms.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 19
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "This list gives no replacement words, because a table of replacements is a part of the dictionary.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 20,
+            "problem": "In skills/writing/agent-instructions/references/ste-rules.md, line 20, the technical noun \"dictionary\" is not in the glossary or in the base list of technical-terms.md, and the file does not tell which dictionary it is.",
+            "correction": "This list gives no replacement words, because the table of replacements is a part of ASD-STE100.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/ste/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 21
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "In a safety list",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 72,
+            "problem": "In skills/writing/agent-instructions/references/ste-rules.md, line 72 and its heading on line 70, the technical noun \"safety list\" is not in the glossary or in the base list of technical-terms.md, so the reader cannot know which lists the rule is applicable to.",
+            "correction": "In a list of safety instructions, write \"do not\" in each item that tells the reader not to do an action (rule 4.3).",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/ste/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 26
+        }
+    ],
+    "dropped": [
+        {
+            "rule": "\"The rule is not usual for the agent. (advisory)\" (an item of \"Add one short cause to a rule in each of these cases:\")",
+            "text": "\"A name counts as its number of words, for example \"Claude Code\" counts as 2 words. This rule is stricter than rule 8.6, which counts a name as 1 word.\"",
+            "problem": "In skills/writing/agent-instructions/references/ste-rules.md line 84, the rule changes the word count of ASD-STE100 rule 8.6 but gives no cause for the change.",
+            "correction": "Add one short cause after the rule, for example \"This rule is stricter than rule 8.6, which counts a name as 1 word, because <the cause that the user gives>.\" If no file and no user gives the cause, add a warning.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 24,
+            "reason": "The Rule quote is in no rule file."
+        }
+    ],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-15/iso/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.1",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Then use the glossary meaning for that file.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md",
+            "line": 25,
+            "problem": "In skills/writing/agent-instructions/references/technical-terms.md line 25, in the section \"When you write the word rule\", the previous sentence gives \"a type of file\" and does not tell that the glossary gives the name Rule, so \"the glossary meaning\" and \"that file\" do not clearly identify the meaning and the files.",
+            "correction": "\"When the glossary gives the name Rule to a type of file, use the glossary meaning for each file of that type.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-6/ste/skills/writing/agent-instructions/references/technical-terms.md.md",
+            "reportLine": 17
+        }
+    ],
+    "dropped": [],
+    "confirm": []
+}

@@ -1,0 +1,38 @@
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/references/agent-skills-spec.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/references/loading-rules.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/references/review.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/references/technical-terms.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md
+   Rule: 1.11 and 6.2, "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "Some checks read only the first line of a value."
+2. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md
+   Rule: 1.11 and 6.2, "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "Write each candidate in the Extraction candidates part of the report."
+3. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md
+   Rule: 4.2, "Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)"
+   Text: "If `AGENTS.md` has a pointer to the same file, the alternative is a change to the condition of that pointer."
+4. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md
+   Rule: 4.2 "Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)"
+   Text: "Put a pointer to each pointer target directly in the file that has the pointer."
+5. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "Do this check on each correction after review round 2."
+6. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "When a reviewer gives a finding, correct your text, or reject the finding as `references/review.md` tells you."
+7. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "Do not omit words when the omission changes the meaning of the sentence (rule 4.2). (blocking)"
+   Text: "An example is a word that makes a new technical noun in the project necessary."
+8. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "Record each sentence that you change for a confirmed blocking finding, with its rule."
+9. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "The list contains only terms and meanings that we wrote."
+10. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "Each table row has 3 columns: term, definition, and the words that this list does not permit."
+11. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "The term "rule" has the meaning "a requirement in a text" in this list."
+12. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "Do not add a term of one platform only, for example "hook" or "slash command"."

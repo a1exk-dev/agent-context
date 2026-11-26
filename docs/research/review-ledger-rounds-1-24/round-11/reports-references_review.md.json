@@ -1,0 +1,20 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "After reader-test round 1, correct your text for each problem of the script and each confirmed wrong step. For each quote in the unclear list, correct your text or write a warning.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 242,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 242, the condition \"After reader-test round 1\" now also limits the rule for the unclear list, but item 17 at line 247 expects a correction of an unclear part after the last reader-test round, which can be round 2, so no item tells the author to correct or to write a warning for the unclear list of round 2.",
+            "correction": "\"After reader-test round 1, correct your text for each problem of the script and each confirmed wrong step. After each reader-test round, for each quote in the unclear list, correct your text or write a warning.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-11/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 23
+        }
+    ],
+    "dropped": [],
+    "confirm": []
+}

@@ -1,0 +1,105 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Put the pointer to each pointer target in the first file that the agent reads, for example the entry file or the `SKILL.md` file. Make no sequences of pointers.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 45,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 45, the rule is applicable when the author selects the file that contains a pointer, but its heading \"When you put the text in sections and lists\" (line 30) gives the condition for sections and lists, not for the file of a pointer.",
+            "correction": "Put the rule in a new section at the end of the file, under the heading \"## When you select the file for a pointer\".",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 28
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When the file does not load in each session, find a pointer to it in a different Agent instruction. If you find no pointer, add a warning.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 46,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 46, the rule is applicable when the author writes or edits a file that does not load in each session, but its heading \"When you put the text in sections and lists\" (line 30) does not give that condition.",
+            "correction": "Put the rule in a new section at the end of the file, under the heading \"## When you write a file that does not load in each session\".",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 33
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "You can put a command of one line, a path, or a path pattern in a code span.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 38,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md, line 38, the technical noun \"path pattern\" is not in the base list of technical-terms.md and not in /Users/alexk/Projects/agent-context/GLOSSARY.md.",
+            "correction": "You can put a command of one line or a path in a code span. You can also put a path with `*` in a code span.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 24
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "You can also use a tree with indents in a code block.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 56,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md, line 56, the technical nouns \"tree\" and \"indents\" are not in the base list of technical-terms.md and not in /Users/alexk/Projects/agent-context/GLOSSARY.md.",
+            "correction": "You can also show a structure in a code block, with each lower item more to the right than the item above it.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 29
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.1",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Examine only the rules that you add or change for these cases.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 27,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md, line 27, \"for these cases\" can attach to \"examine\" or to \"add or change\", so the reader can read \"the rules that you add or change because of these cases\".",
+            "correction": "When you examine these cases, examine only the rules that you add or change.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 34
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Put the pointer to each pointer target in the first file that the agent reads, for example the entry file or the `SKILL.md` file. Make no sequences of pointers.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 45,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 45, the job changed this rule, and the rule changes the usual work of an agent, which often puts a pointer in the file that it edits, but the rule gives no cause.",
+            "correction": "Put the pointer to each pointer target in the first file that the agent reads, for example the entry file or the `SKILL.md` file. Make no sequences of pointers, because an agent can stop before it reads the last file of a sequence.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 38
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "The rules are not applicable to text for persons, for example `README.md`, `CHANGELOG.md`, and commit messages.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 3,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 3, the job changed this sentence, and the pointer target SKILL.md already gives this limit in \"Files that are not Agent instructions\" (lines 42 to 51), which tells the agent to do a task about a file for persons, for example `README.md` or a commit message, without this skill.",
+            "correction": "These rules are tier 3. The rules are applicable only to Agent instructions.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 43
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-22a/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "blocking": 2,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

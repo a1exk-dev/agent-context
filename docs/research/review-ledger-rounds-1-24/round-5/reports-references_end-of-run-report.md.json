@@ -1,0 +1,123 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Write each candidate in the Extraction candidates part",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 63,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 63, \"candidate\" is a second term for the item that SKILL.md line 40 and line 7 of this file call \"extraction candidate\".",
+            "correction": "Write each extraction candidate in the Extraction candidates part, also when the file size is less than the file-size limit.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 21
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "also when the file is less than its size limit",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 63,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 63, \"size limit\" is a second term for the item that SKILL.md lines 82, 93, and 100 and loading-rules.md line 100 call \"file-size limit\".",
+            "correction": "also when the file size is less than the file-size limit.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 26
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Use the heading of each section as the name of its candidate.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 65,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 65, \"candidate\" is a second term for the item that SKILL.md line 40 calls \"extraction candidate\".",
+            "correction": "Use the heading of each section as the name of its extraction candidate.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 31
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "In the last part, give each base-list word that has a different meaning in the glossary.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 69,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 69 (and the heading on line 28), \"base-list word\" is a second term for the item that technical-terms.md lines 11 and 29 and ste-rules.md line 54 call \"base-list term\".",
+            "correction": "In the Base-list terms with a project meaning part, give each base-list term that has a different meaning in the glossary. Also change the heading on line 28 to \"## Base-list terms with a project meaning\" and the placeholder on line 29 to \"<Term>\".",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 36
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When you write this item, find the known cases in that table.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 48,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 48, the sentence that tells the agent to read the target gives \"that table\" and no path, but the other pointers of the same list (lines 36 and 38) give the path of the target in the sentence that tells the agent to read it.",
+            "correction": "\"When you write this item, find the known cases in the table in \"When two sources do not agree\" in `SKILL.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 23
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "9.4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "In the last part, give each base-list word that has a different meaning in the glossary.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 69,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md, lines 32, 34, and 67 start the rules for a part with the name of that part, but line 69 uses \"the last part\" for the same type of step.",
+            "correction": "In the Base-list words with a project meaning part, give each base-list word that has a different meaning in the glossary.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 41
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When you write the report, compare it with each reviewer report.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 9,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 9, step 3 writes again the condition of the heading \"When you write the end-of-run report\" on line 3.",
+            "correction": "\"Compare the report with each reviewer report.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 28
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Write each candidate in the Extraction candidates part, also when the file is less than its size limit.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md",
+            "line": 63,
+            "problem": "In skills/writing/agent-instructions/references/end-of-run-report.md line 63, this sentence gives again what the pointer target \"When you recommend text to move\" in references/loading-rules.md (lines 89 and 93) gives: the recommendation is applicable also when the file size is less than the limit, and each extraction candidate goes in the Extraction candidates part of the report.",
+            "correction": "Remove the sentence \"Write each candidate in the Extraction candidates part, also when the file is less than its size limit.\" and keep \"Then find each extraction candidate in the unchanged parts as that section tells you.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "reportLine": 33
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "blocking": 4,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        },
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/iso/skills/writing/agent-instructions/references/end-of-run-report.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

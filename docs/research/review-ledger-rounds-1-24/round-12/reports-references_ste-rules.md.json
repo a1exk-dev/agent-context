@@ -1,0 +1,105 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "A step that other persons can see, but that you can undo, has no risk of this type.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 113,
+            "problem": "In skills/writing/agent-instructions/references/ste-rules.md line 113, the rule \"Write a condition at the start of that step\" is applicable to a step that has no risk, but its heading \"Before a step with a risk\" (line 109) gives only the condition of a step with a risk.",
+            "correction": "Move the line 113 rule to a new section after the last section, with the heading \"When you write a step that other persons can see\", and keep its text: \"A step that other persons can see, but that you can undo, has no risk of this type. Examples are a pull request and a pushed tag. Write a condition at the start of that step, for example \"When the user gives approval, ...\". Also write it when a heading above the step gives a condition. (blocking)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 27
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Obey \"When a word is not in the base list or in the glossary\" in `technical-terms.md` for it.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 54,
+            "problem": "In skills/writing/agent-instructions/references/ste-rules.md line 54, the pointer to `technical-terms.md` gives no condition in its sentence, and its heading \"When you write a sentence\" does not give the condition either, so the agent must find the condition in the previous sentence through the pronoun \"it\".",
+            "correction": "\"When you write a multi-word noun with a glossary term, obey \"When a word is not in the base list or in the glossary\" in `technical-terms.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 32
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "This list gives no replacement words, because a table of replacements is a part of the dictionary.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 20,
+            "problem": "In skills/writing/agent-instructions/references/ste-rules.md line 20, the technical noun \"dictionary\" is not in the base list of technical-terms.md and not in GLOSSARY.md, and the sentence does not tell which dictionary.",
+            "correction": "\"This list gives no replacement words, because a table of replacements is a part of the ASD-STE100 standard.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/ste/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 23
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A rule bullet with a risk is also a step for this section.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 112,
+            "problem": "In skills/writing/agent-instructions/references/ste-rules.md line 112, the multi-word noun \"rule bullet\" is not in the base list of technical-terms.md and not in GLOSSARY.md.",
+            "correction": "\"A rule with a risk in a bulleted list is also a step for this section.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/ste/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 28
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Then tell the risk or the possible result in a second sentence (rule 7.3). (advisory)",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 119,
+            "problem": "In skills/writing/agent-instructions/references/ste-rules.md lines 116 to 119, the rules \"Start the safety instruction with the signal word CAUTION\", \"After CAUTION, write the instruction or the condition first\", and \"Then tell the risk\" give steps in a sequence, but they are bullets.",
+            "correction": "Write the 3 items as a numbered list: \"1. Start the safety instruction with the signal word CAUTION. A CAUTION is for a risk of damage. (advisory)\" \"2. After CAUTION, write the instruction or the condition first (rule 7.2). (advisory)\" \"3. In a second sentence, tell the risk or the possible result (rule 7.3). (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 37
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "In a safety list, write \"do not\" in each item that tells the reader not to do an action (rule 4.3). (advisory)",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 72,
+            "problem": "In skills/writing/agent-instructions/references/ste-rules.md line 72, the rule starts with \"In a safety list\", which writes again the condition of its heading \"When you write a safety list\" (line 70).",
+            "correction": "\"Write \"do not\" in each item that tells the reader not to do an action (rule 4.3). (advisory)\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 42
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "A name counts as its number of words, for example \"Claude Code\" counts as 2 words. This rule is stricter than rule 8.6, which counts a name as 1 word.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 84,
+            "problem": "In skills/writing/agent-instructions/references/ste-rules.md line 84, the rule does not obey rule 8.6 of the standard, which is not usual for the agent, and the text gives no cause for the stricter count.",
+            "correction": "\"A name counts as its number of words, for example \"Claude Code\" counts as 2 words. This rule is stricter than rule 8.6, which counts a name as 1 word, because <the cause from the author or the user>.\" If no file and no user gives the cause, add a warning.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 47
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-12/iso/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "blocking": 2,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

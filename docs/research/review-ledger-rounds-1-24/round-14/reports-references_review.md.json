@@ -1,0 +1,105 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.11",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Report: <absolute path of the saved closed list>",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 306,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 306, the confirmer prompt of \"When a reader step does not obey the instruction\" uses the term \"Report\" for the closed list, but lines 240, 289, and 307 of the same section use \"report\" for the reader report and \"closed list\" for the list that the author writes, so one term names two items.",
+            "correction": "\"Closed list: <absolute path of the saved closed list>\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-14/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 16
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "GR-3 and GR-4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "It uses the same file, words, or condition as these rules, but these rules are not applicable to it.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 215,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 215, the last \"it\" can refer to the out-of-scope task, to \"the same file\", or to the \"condition\", and \"these rules are not applicable to the file\" is also a possible reading.",
+            "correction": "\"It uses the same file, words, or condition as these rules, but these rules are not applicable to the out-of-scope task.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-14/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 21
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Write the 3 tasks and their tested quotes in a tasks file in the round folder.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 218,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 218, the technical noun \"tasks file\" is not in the base list of technical-terms.md and not in \"Terms in this skill\" of SKILL.md.",
+            "correction": "Add \"tasks file\" to \"Terms in this skill\" in SKILL.md, for example \"The **tasks file** is the JSON file in the round folder that gives the 3 tasks of the reader test and their tested quotes.\", or add a warning with a recommended glossary entry.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-14/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 26
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "For each typical-task report, write a closed list: each step, its quote, and \"yes\" or \"no\".",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 240,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md line 240, the technical noun \"closed list\" is not in the base list of technical-terms.md and not in \"Terms in this skill\" of SKILL.md.",
+            "correction": "Add \"closed list\" to \"Terms in this skill\" in SKILL.md, for example \"A **closed list** is the file in which the author gives each step of a reader report, its quote, and \"yes\" or \"no\".\", or add a warning with a recommended glossary entry.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-14/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 31
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "It uses the same file, words, or condition as these rules, but these rules are not applicable to it.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 215,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 215, the out-of-scope task uses \"the same ... condition as these rules\", but line 216 tells the author to select a task that agrees with no condition and to write a different task if a condition is applicable to it.",
+            "correction": "\"It uses the same file or words as these rules, but no condition of these rules is applicable to it.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-14/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 22
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Do the reader test in each job, also for a small change.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 209,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 209, the sentence gives again the instruction of step 9 in skills/writing/agent-instructions/SKILL.md line 104 (\"do the reader test that `references/review.md` gives, also for a small change\"), and `SKILL.md` is a pointer target of review.md (line 235).",
+            "correction": "Remove the sentence, and start the paragraph with \"Also do the reader test when you expect that it finds no problem.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-14/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 27
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "When each changed file is a list file, do no reader test.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 211,
+            "problem": "In skills/writing/agent-instructions/references/review.md line 211, the sentence gives again the instruction of step 9 in skills/writing/agent-instructions/SKILL.md line 104 (\"When the job changes only list files, do no reader test.\"), and `SKILL.md` is a pointer target of review.md (line 235).",
+            "correction": "Remove the sentence. Keep \"When the job also changes a different file, give the readers only the files that are not list files.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-14/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 32
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-14/ste/skills/writing/agent-instructions/references/review.md.md",
+            "blocking": 2,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

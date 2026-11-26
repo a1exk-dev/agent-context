@@ -1,0 +1,59 @@
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/agent-skills-spec.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/end-of-run-report.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/loading-rules.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/review.md.md, /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-5/ste/skills/writing/agent-instructions/references/technical-terms.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md
+   Rule: "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "When the user gives text for the description, keep its meaning and write it by these rules."
+2. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/agent-skills-spec.md
+   Rule: "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "Put it next to the step that the problem makes incorrect."
+3. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md
+   Rule: rule 1.11 and rule 6.2, "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "Write each candidate in the Extraction candidates part"
+4. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md
+   Rule: rule 1.11 and rule 6.2, "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "also when the file is less than its size limit"
+5. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md
+   Rule: rule 1.11 and rule 6.2, "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "Use the heading of each section as the name of its candidate."
+6. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/end-of-run-report.md
+   Rule: rule 1.11 and rule 6.2, "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "In the last part, give each base-list word that has a different meaning in the glossary."
+7. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/loading-rules.md
+   Rule: "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "In its old place, write a heading that gives the condition."
+8. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md
+   Rule: 1.11 and 6.2 "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "Add one short cause to a rule in each of these conditions:"
+9. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md
+   Rule: 1.11 and 6.2 "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "Examine only the rules that you add or change for these conditions."
+10. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md
+   Rule: GR-2 "When "with" can have two meanings in a sentence, write a different sentence (GR-2). (blocking)"
+   Text: "When the project has a glossary, use each glossary term with its meaning in that file."
+11. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "Before the first check of each round, save a copy of each file that the round examines. Send only this tool call in a new message."
+12. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "Write one instruction in each sentence (rule 5.2). When 2 actions occur at the same time, you can write them in one sentence. (blocking)"
+   Text: "Put the check in a warning, and write that the user must run it."
+13. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: 1.11 and 6.2, "Use one technical noun for each item, and one item for each technical noun (rule 1.11). Use the same term for the same item each time (rule 6.2). (blocking)"
+   Text: "add a word to the base list only when most projects use the word in Agent instructions"
+14. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: GR-3 and GR-4, "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "A unit of data on a disk that has a name"
+15. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: GR-3 and GR-4, "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "A system on a different computer that the agent can change, for example GitHub"
+16. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: GR-3 and GR-4, "Make sure that each pronoun, for example "it", "they", or "this", refers to one item only (GR-3 and GR-4). If it can refer to two items, write the noun again. (blocking)"
+   Text: "Put software on a computer and make it ready to operate"
+17. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: 5.3, "Write each instruction in the imperative (rule 5.3). Do not write "must" before an imperative. Use "must" only for a condition or for a safety instruction. (blocking)"
+   Text: "Each table row has 3 columns: term, definition, and the words that the base list does not permit."
+18. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: 5.3, "Write each instruction in the imperative (rule 5.3). Do not write "must" before an imperative. Use "must" only for a condition or for a safety instruction. (blocking)"
+   Text: "Each word in that column is in quotation marks, because the column gives the words only as examples."
+19. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/technical-terms.md
+   Rule: 5.3, "Write each instruction in the imperative (rule 5.3). Do not write "must" before an imperative. Use "must" only for a condition or for a safety instruction. (blocking)"
+   Text: "Then the glossary meaning is correct for that file."

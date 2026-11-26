@@ -1,0 +1,20 @@
+{
+    "blocking": [],
+    "advisory": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "A rule bullet with a risk is also a step for this section.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md",
+            "line": 112,
+            "problem": "In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/ste-rules.md, line 112 (\"Before a step with a risk\"), \"rule bullet\" is a technical noun that is not in the glossary or in the base list of technical-terms.md, which gives \"rule\" and \"list\" but not \"rule bullet\".",
+            "correction": "A rule in a list with a risk is also a step for this section.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-23/ste/skills/writing/agent-instructions/references/ste-rules.md.md",
+            "reportLine": 18
+        }
+    ],
+    "dropped": [],
+    "confirm": []
+}

@@ -1,0 +1,20 @@
+Check class: confirmer
+This task is read-only. Only read files. Do not edit, make, move, or delete files.
+Do not run commands that change files, Git data, or external services.
+
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-21/iso/skills/writing/agent-instructions/references/review.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "Put procedure steps in the sequence of the task, with the necessary conditions first. (blocking)"
+   Text: "When you start the reviewers, find the list files in "Terms in this skill" in `SKILL.md`."
+2. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "In each pointer, give the path of its target. Words such as "that file" give no path. (blocking)"
+   Text: "Also give a finding for each text that the author moved and that does not obey loading-rules.md."
+
+Read each file under review from the disk.
+Also read the files that the pointers in these files identify.
+For each finding, decide whether the text in the file does not obey the rule.
+If a file that a pointer identifies already gives what the rule asks for, answer "no".
+Give one line for each finding in this form:
+<number>. <"yes" if the text does not obey the rule, or "no">: <one sentence that gives the cause>
+Give only these lines. Do not give the work to a subagent.

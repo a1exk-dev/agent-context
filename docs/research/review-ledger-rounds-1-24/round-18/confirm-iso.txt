@@ -1,0 +1,5 @@
+Reports: /private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-18/iso/skills/writing/agent-instructions/references/review.md.md
+Findings:
+1. File: /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md
+   Rule: "Put procedure steps in the sequence of the task, with the necessary conditions first. (blocking)"
+   Text: "In each round, start 3 new reviewer subagents for the sections in the `Changes:` line, one of each class, as "When you do a round" tells you:"

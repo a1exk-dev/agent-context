@@ -1,0 +1,50 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.2",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Put a pointer to each pointer target directly in the file that has the pointer.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 45,
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 45, the sentence omits which file must contain the pointer, so \"the file that has the pointer\" refers back to the pointer that the sentence tells you to put, and the instruction is circular and gives no limit on where the pointer goes.",
+            "correction": "\"Write the pointer to each pointer target in the file whose task makes that target necessary, not in a different pointer target.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 19
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "When the user tells you that an agent did not obey an instruction, make one typical task of the reader test from that problem.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/plain-language-rules.md",
+            "line": 65,
+            "problem": "skills/writing/agent-instructions/references/plain-language-rules.md line 65 gives the same rule as skills/writing/agent-instructions/references/review.md line 214 (\"If the user told you that an agent did not obey an instruction, make one task from that problem.\"), and the pointer on line 62 tells the agent to read `review.md` for the reader test.",
+            "correction": "Remove the sentence. Keep \"When you do the self-check or the reader test, read `review.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 35
+        }
+    ],
+    "dropped": [
+        {
+            "rule": "\"Add one short cause to a rule in each of these conditions:\" \"The rule changes the usual work of the agent. (advisory)\"",
+            "text": "\"Put a pointer to each pointer target directly in the file that has the pointer.\"",
+            "problem": "In skills/writing/agent-instructions/references/plain-language-rules.md line 45, the changed rule stops the usual chain of references from one file to the next, but it gives no cause, and no pointer target gives the cause.",
+            "correction": "\"Put a pointer to each pointer target directly in the first file that the agent reads, for example `SKILL.md`, because an agent can stop before it reads the end of a sequence of pointers.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/iso/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "reportLine": 30,
+            "reason": "The Rule quote is in no rule file."
+        }
+    ],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/references/plain-language-rules.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

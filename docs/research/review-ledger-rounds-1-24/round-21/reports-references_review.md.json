@@ -1,0 +1,123 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.2",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Write the file size of each file and its limit.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 114,
+            "problem": "In the reviewer prompt at line 114 of /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md, the sentence omits which files (each file that the reviewer reads, or only each file that it reviews) and where to write the file size, so a reviewer can write the size of each pointer target or put the size before the blocking checklist that line 127 tells it to put first.",
+            "correction": "\"In each report, after the blocking checklist, write the file size of the file of that report and its limit.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-21/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 21
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "4.2",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Give a finding for each text to move in a section in the Changes line.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 115,
+            "problem": "In the reviewer prompt at line 115 of /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md, the words \"text to move\" omit the rule source that tells which text to move, so the ASD-STE100 reviewer and the ISO 24495-1 reviewer, whose rule files do not include loading-rules.md, can decide by their own judgment which text to move.",
+            "correction": "\"Give a finding for each text in a section in the Changes line that loading-rules.md tells you to move.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-21/ste/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 26
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "When you start the reviewers, find the list files in \"Terms in this skill\" in `SKILL.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 71,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 61 tells the agent to start 3 reviewers and line 73 tells it to copy the prompt, but the step that finds the list files, which decides which reviewers to start and which `Changes:` line each one gets, is at line 71, after the start step, and its condition \"When you start the reviewers\" does not put it before that step.",
+            "correction": "Move the list-file text of line 71 before the table at line 63, and start it with \"Before you start the reviewers, find the list files in \"Terms in this skill\" in `SKILL.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-21/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 25
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Also give a finding for each text that the author moved and that does not obey loading-rules.md.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 116,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 116 of the reviewer prompt tells the ASD-STE100 reviewer and the ISO 24495-1 reviewer to examine moved text with loading-rules.md, but the table at lines 65 to 67 puts the path of loading-rules.md only in the Rules line of the loading reviewer, so these 2 reviewers get no path when the review target has no pointer to loading-rules.md, for example an `AGENTS.md` file of a different project.",
+            "correction": "Also give a finding for each text that the author moved and that does not obey the loading-rules.md file in the Rules line or the Loading rules line. In the table, add `loading-rules.md` to the reference files of the ASD-STE100 reviewer and the ISO 24495-1 reviewer for the edit job, or add a prompt line \"Loading rules: <absolute path of loading-rules.md>\".",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-21/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 30
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "Give a finding for each text to move in a section in the Changes line.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 115,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 115 tells each reviewer to give a finding for text to move, but line 139 tells that each finding gives one rule from the rule files, and the rule files of the ASD-STE100 reviewer and the ISO 24495-1 reviewer have no rule to move text, because line 119 tells the ISO 24495-1 reviewer to skip the rule about long text.",
+            "correction": "\"<For the loading reviewer only:> Give a finding for each text to move in a section in the Changes line.\" Or tell which rule the other 2 reviewers give in the Rule field of such a finding.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-21/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 35
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "When each changed file is a list file, start only the ASD-STE100 reviewer and the ISO 24495-1 reviewer in each round.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 71,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 71 changes the usual work of the author, because line 61 tells it to start 3 reviewers, but the section gives no cause why a list file needs no loading reviewer.",
+            "correction": "When each changed file is a list file, start only the ASD-STE100 reviewer and the ISO 24495-1 reviewer in each round, because the loading rules give no file-size limit and no layout rule for a list file.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-21/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 40
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Copy this prompt for each reviewer. Replace only the placeholders.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 73,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 73 gives a sequence of steps to make each reviewer prompt (copy, replace the placeholders, keep and remove lines, remove 2 lines in the write job, give the same lines) as one paragraph, not as a numbered list.",
+            "correction": "Write line 73 as a numbered list, for example: \"1. Copy this prompt for each reviewer. 2. Replace only the placeholders. Do not change the report requirements. 3. Keep the lines for the reviewer that you start, and remove the text in angle brackets at the start of these lines. 4. Remove the lines for the other reviewers. 5. In the write job, also remove the 2 prompt lines that start with ...\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-21/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 45
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Give no list file in the `Changes:` line of the loading reviewer.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md",
+            "line": 71,
+            "problem": "In skills/writing/agent-instructions/references/review.md, line 71 gives this rule, and the same paragraph gives it again in \"Where `review.md` gives 3 reviewers, 3 reports, or the same `Changes:` line for each reviewer, give no list file to the loading reviewer.\"",
+            "correction": "Remove \"Give no list file in the `Changes:` line of the loading reviewer.\" and keep the later sentence of line 71.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-21/iso/skills/writing/agent-instructions/references/review.md.md",
+            "reportLine": 50
+        }
+    ],
+    "dropped": [],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-21/ste/skills/writing/agent-instructions/references/review.md.md",
+            "blocking": 2,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        },
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-21/iso/skills/writing/agent-instructions/references/review.md.md",
+            "blocking": 2,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

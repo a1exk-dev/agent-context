@@ -1,0 +1,12 @@
+Blocking checklist:
+1. "When the write job has Claude Code and Codex or OpenCode as target platforms, put the text for all target platforms in `AGENTS.md`. `CLAUDE.md` then contains the `@AGENTS.md` line and only the lines that are only for Claude Code. (blocking)" - none
+2. "When there is one target platform, write only the entry file of that platform. (blocking)" - none
+3. "Keep the heading of the section at the start of the moved section. In the old place of the moved section, write a heading that gives the condition. Under that heading, write the pointer as "When you put the text in sections and lists" in `plain-language-rules.md` tells you. Write no other text in the old place, also when a finding is about the moved section. (blocking)" - none
+
+File size:
+- /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md: 48,598 bytes, 451 lines. Limit: none. The table in "When you examine the file size" in loading-rules.md gives no limit for a reference file of a Skill. The 500-line limit in agent-skills-spec.md is only for `SKILL.md`.
+
+- Rule: 3. "Make one reference file for each condition that tells the agent to read a file. Put the text that the agent reads under the same condition in one file. When the user gives rules under one condition, keep all these rules in one file. If the project has a reference file for that condition, add the text to that file. (advisory)"
+- Text: "After the reader test: the output tests and the manual checks"
+- Problem: In /Users/alexk/Projects/agent-context/skills/writing/agent-instructions/references/review.md, lines 317-361 (this section and its subsection "When you run a manual check") have their own read condition in step 10 of SKILL.md ("after the reader test passes"), which is different from the self-check condition of step 8, but they are in the same file, so the author loads them before the self-check and each reviewer subagent, which must read review.md for its report requirements, loads 45 lines that it never uses.
+- Correction: Move lines 317-361 without changes to `references/output-tests.md`, and change step 10 of SKILL.md to "In the other jobs, after the reader test passes, read `references/output-tests.md`. Then do the output tests and the manual checks that it gives." Also change the 2 sentences in end-of-run-report.md and SKILL.md that name "When you run a manual check" or "After the reader test: the output tests and the manual checks" in `references/review.md` to name `references/output-tests.md`.

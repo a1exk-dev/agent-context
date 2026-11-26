@@ -1,0 +1,180 @@
+{
+    "blocking": [
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you put the text in sections and lists",
+            "text": "Then do the self-check that it gives.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 103,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 103 (step 8), the pointer refers to its target with the pronoun \"it\" and gives no path, but step 1 on line 91 and step 9 on line 104 give the path `references/review.md`.",
+            "correction": "\"Then do the self-check that `references/review.md` gives.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 29
+        }
+    ],
+    "advisory": [
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/loading-rules.md",
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "When you run the check script",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 113,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, lines 113 to 147, the section has the condition \"When you run the check script\" in its heading and more than 3 rules (for example \"Run it with `node`\", \"Replace `<skill folder>` with the absolute path\", \"Save the output to a new file\", and \"stop the self-check and the reader test\"), so the agent loads these rules in each task, also when it runs no check script.",
+            "correction": "Move the full section, with its heading, to `references/check-script.md`. In its old place, write: \"## When you run the check script\" and \"When you run the check script, read `references/check-script.md`.\" In `references/review.md`, change each \"When you run the check script\" in `SKILL.md` to \"When you run the check script\" in `references/check-script.md`.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/loading/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 11
+        },
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/loading-rules.md",
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "node <skill folder>/scripts/check.ts <file>... --project <project folder> --glossary <glossary path or none> > <JSON file>",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 120,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, lines 119 to 121, 132 to 134, and 142 to 144, the 3 code blocks are command templates with placeholders, and the rule tells you to move each template to a reference file.",
+            "correction": "Move the 3 code blocks, together with the section \"When you run the check script\", to `references/check-script.md`, and keep only the pointer \"When you run the check script, read `references/check-script.md`.\" under the heading \"When you run the check script\".",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/loading/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 16
+        },
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/loading-rules.md",
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "When two sources do not agree",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 61,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, lines 61 to 85, the section has the condition \"When two sources do not agree\" in its heading and more than 3 rules (\"Obey the higher tier\", the 8 decisions in the table, \"use the tier sequence\", and \"Write a warning\"), so the agent loads these rules in each task, also when no two sources disagree.",
+            "correction": "Move the full section, with its heading, to `references/source-conflicts.md`. In its old place, write: \"## When two sources do not agree\" and \"When two sources do not agree, read `references/source-conflicts.md`.\" In `references/end-of-run-report.md` line 48, change \"in `SKILL.md`\" to \"in `references/source-conflicts.md`\", and in the \"Before you use this file\" sections of the reference files, change \"`SKILL.md` defines the terms, the tiers, and the end-of-run report.\" so that it does not give the tiers.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/loading/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 21
+        },
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/loading-rules.md",
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "When you run the check script",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 113,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, lines 113 to 147, the section has the condition \"When you run the check script\" in its heading and more than 3 rules, for example \"Run it with `node`\" (line 117), \"Give the absolute path of each file to examine\" (line 124), and \"Start no confirmers for a reviewer that has no report in a confirm list\" (line 137), and its 3 code blocks are command templates with placeholders.",
+            "correction": "Move the full section to `references/check-script.md`. In its old place, keep the heading \"When you run the check script\" and write only this pointer: \"When you run the check script, read `references/check-script.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 17
+        },
+        {
+            "reviewer": "loading",
+            "rule": null,
+            "ruleFile": "references/loading-rules.md",
+            "heading": "When the write job makes a SKILL.md or entry-file text",
+            "text": "When two sources do not agree",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 61,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, lines 61 to 85, the section has the condition \"When two sources do not agree\" in its heading and more than 3 rules: \"Obey the higher tier\" (line 63), the 8 decisions of the table (lines 76 to 83), \"use the tier sequence\" and \"Write a warning that gives the case and the tier that you obeyed\" (line 85).",
+            "correction": "Move the table and the rules of lines 72 to 85 to `references/source-conflicts.md`. Keep the tier list of lines 63 to 70 in `SKILL.md`, because the reference files use `SKILL.md` for the tiers. After the tier list, write this pointer: \"When two sources do not agree in a case, read `references/source-conflicts.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 22
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "9.4",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you write a sentence",
+            "text": "Before you select target platforms, read `references/loading-rules.md`.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 91,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, line 91, step 1 uses the verb \"select\" and then the verb \"find\" (\"Then find the target platforms\") for the same action on the target platforms.",
+            "correction": "\"Before you find the target platforms, read `references/loading-rules.md`.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 27
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "Exit code 0 shows no findings.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 125,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, lines 125, 126, 138, 146, and 147, the technical noun \"exit code\" is not in the base list of `technical-terms.md` and not in \"Terms in this skill\".",
+            "correction": "Add a warning that recommends the base-list entry \"exit code | The number that a command or a script gives when it stops |\", or define \"exit code\" in \"Terms in this skill\".",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 32
+        },
+        {
+            "reviewer": "ASD-STE100",
+            "rule": "1.8",
+            "ruleFile": "references/ste-rules.md",
+            "heading": "When you select a technical noun",
+            "text": "In each job, also for a small change, do the vote of the confirmers that `references/review.md` gives.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 103,
+            "problem": "In skills/writing/agent-instructions/SKILL.md, line 103, the technical noun \"vote\" is not in the base list of `technical-terms.md` and not in \"Terms in this skill\".",
+            "correction": "\"In each job, also for a small change, start the confirmers that `references/review.md` gives.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/ste/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 37
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the words and the tone",
+            "text": "The report form of the script examines the 3 reviewer reports of one file.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 130,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 130, the number 3 does not agree with step 8 on line 103 and with references/review.md line 71, which start no loading reviewer for a list file and give only 2 reports for it.",
+            "correction": "\"The report form of the script examines the reviewer reports of one file: 3 reports, or 2 reports for a list file.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 34
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "Do the vote also when you expect to reject the findings.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 103,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 103 (step 8), this sentence repeats references/review.md line 168 (\"Also do the vote when you expect to reject the findings\"), which step 8 tells the agent to read in the same step.",
+            "correction": "Remove the sentence \"Do the vote also when you expect to reject the findings.\" from step 8.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 44
+        },
+        {
+            "reviewer": "ISO 24495-1",
+            "rule": null,
+            "ruleFile": "references/plain-language-rules.md",
+            "heading": "When you select the text",
+            "text": "For a list file, do no output test, no load test, and no manual check.",
+            "path": "/Users/alexk/Projects/agent-context/skills/writing/agent-instructions/SKILL.md",
+            "line": 105,
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 105 (step 10), this sentence repeats references/review.md line 320 (\"Select no output test, no load test, and no manual check for a list file\"), which the pointer in the same step identifies.",
+            "correction": "Remove the sentence \"For a list file, do no output test, no load test, and no manual check.\" from step 10.",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 49
+        }
+    ],
+    "dropped": [
+        {
+            "rule": "\"The rule changes the usual work of the agent. (advisory)\" (a condition of the rule \"Add one short cause to a rule in each of these conditions:\" in plain-language-rules.md)",
+            "text": "\"For a list file, start no loading reviewer in the self-check.\"",
+            "problem": "In skills/writing/agent-instructions/SKILL.md line 103 (step 8), the rule removes one of the 3 reviewers of the self-check but gives no cause, and references/review.md line 71 and references/loading-rules.md also give no cause, while steps 9 and 10 give a cause for their list-file rules.",
+            "correction": "\"For a list file, start no loading reviewer in the self-check, because the loading rules give no file-size limit and no move rule for a list file.\"",
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "reportLine": 39,
+            "reason": "The Rule quote is in no rule file."
+        }
+    ],
+    "confirm": [
+        {
+            "report": "/private/tmp/claude-501/-Users-alexk-Projects-agent-context/21bed514-5716-445b-809d-dd17536e9108/scratchpad/review.wPp6/round-3/iso/skills/writing/agent-instructions/SKILL.md.md",
+            "blocking": 1,
+            "action": "Give the blocking findings of this report to the confirmers of its reviewer."
+        }
+    ]
+}

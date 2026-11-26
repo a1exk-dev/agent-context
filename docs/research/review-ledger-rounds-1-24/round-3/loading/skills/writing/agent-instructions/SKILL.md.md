@@ -1,0 +1,24 @@
+Blocking checklist:
+1. "When the write job has Claude Code and Codex or OpenCode as target platforms, put the text for all target platforms in `AGENTS.md`. `CLAUDE.md` then contains the `@AGENTS.md` line and only the lines that are only for Claude Code. (blocking)" - none
+2. "When there is one target platform, write only the entry file of that platform. (blocking)" - none
+3. "Keep the heading of the section at the start of the moved section. In its old place, write a heading that gives the condition. Under that heading, write the pointer as "When you put the text in sections and lists" in `plain-language-rules.md` tells you. Write no other text in the old place, also when a finding is about the moved section. (blocking)" - none
+
+File sizes:
+- skills/writing/agent-instructions/SKILL.md: 17,941 bytes. Limit: a maximum of 20,000 bytes. 151 lines. Limit: less than 500 lines.
+
+Findings:
+
+- Rule: "Each section that has a specified condition and 3 or more rules. Move such a section also when the condition can occur at each step. The agent then reads its rules only when the condition occurs. A section has a specified condition when its heading or a sentence at its start gives the condition. Examples are the heading "Before a release" and the sentence "Obey the rules in this section only when the user asks for a deploy." Count each instruction as one rule, also when one sentence or one list item gives 2 or more instructions. The number of rules does not change when you write them in fewer sentences. For example, "stop, keep the branch, and tell the user" gives 3 rules. (advisory)"
+- Text: "When you run the check script"
+- Problem: In skills/writing/agent-instructions/SKILL.md, lines 113 to 147, the section has the condition "When you run the check script" in its heading and more than 3 rules (for example "Run it with `node`", "Replace `<skill folder>` with the absolute path", "Save the output to a new file", and "stop the self-check and the reader test"), so the agent loads these rules in each task, also when it runs no check script.
+- Correction: Move the full section, with its heading, to `references/check-script.md`. In its old place, write: "## When you run the check script" and "When you run the check script, read `references/check-script.md`." In `references/review.md`, change each "When you run the check script" in `SKILL.md` to "When you run the check script" in `references/check-script.md`.
+
+- Rule: "Each template, each prompt in a code block, and each example of a full task, also when they are short. (advisory)"
+- Text: "node <skill folder>/scripts/check.ts <file>... --project <project folder> --glossary <glossary path or none> > <JSON file>"
+- Problem: In skills/writing/agent-instructions/SKILL.md, lines 119 to 121, 132 to 134, and 142 to 144, the 3 code blocks are command templates with placeholders, and the rule tells you to move each template to a reference file.
+- Correction: Move the 3 code blocks, together with the section "When you run the check script", to `references/check-script.md`, and keep only the pointer "When you run the check script, read `references/check-script.md`." under the heading "When you run the check script".
+
+- Rule: "Each section that has a specified condition and 3 or more rules. Move such a section also when the condition can occur at each step. The agent then reads its rules only when the condition occurs. A section has a specified condition when its heading or a sentence at its start gives the condition. Examples are the heading "Before a release" and the sentence "Obey the rules in this section only when the user asks for a deploy." Count each instruction as one rule, also when one sentence or one list item gives 2 or more instructions. The number of rules does not change when you write them in fewer sentences. For example, "stop, keep the branch, and tell the user" gives 3 rules. (advisory)"
+- Text: "When two sources do not agree"
+- Problem: In skills/writing/agent-instructions/SKILL.md, lines 61 to 85, the section has the condition "When two sources do not agree" in its heading and more than 3 rules ("Obey the higher tier", the 8 decisions in the table, "use the tier sequence", and "Write a warning"), so the agent loads these rules in each task, also when no two sources disagree.
+- Correction: Move the full section, with its heading, to `references/source-conflicts.md`. In its old place, write: "## When two sources do not agree" and "When two sources do not agree, read `references/source-conflicts.md`." In `references/end-of-run-report.md` line 48, change "in `SKILL.md`" to "in `references/source-conflicts.md`", and in the "Before you use this file" sections of the reference files, change "`SKILL.md` defines the terms, the tiers, and the end-of-run report." so that it does not give the tiers.
